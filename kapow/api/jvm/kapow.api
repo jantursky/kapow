@@ -13,14 +13,26 @@ public abstract class com/jantursky/kapow/ChangeEffect {
 }
 
 public final class com/jantursky/kapow/ChangeEffect$Companion {
+	public final fun burst-DxMtmZc (JI)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun burst-DxMtmZc$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JIILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun fireworks (Ljava/util/List;I)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun fireworks$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Ljava/util/List;IILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun flash-pYXP5xo (JJ)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun flash-pYXP5xo$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun glow-5DgIosw (JFLandroidx/compose/ui/graphics/Shape;)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun glow-5DgIosw$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;ILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun pulse-RPmYEkk (Landroidx/compose/ui/graphics/Shape;JLcom/jantursky/kapow/PulseStyle;I)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun pulse-RPmYEkk$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Landroidx/compose/ui/graphics/Shape;JLcom/jantursky/kapow/PulseStyle;IILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun ripple-hjFrPpg (JLandroidx/compose/ui/graphics/Shape;JJ)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun ripple-hjFrPpg$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JLandroidx/compose/ui/graphics/Shape;JJILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun rise (Lcom/jantursky/kapow/ParticleContent;)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun rise$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Lcom/jantursky/kapow/ParticleContent;ILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun shine-O7O2-qc (FJJ)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun shine-O7O2-qc$default (Lcom/jantursky/kapow/ChangeEffect$Companion;FJJILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun sparkle-DxMtmZc (JI)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun sparkle-DxMtmZc$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JIILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun speedLines-DxMtmZc (JI)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun speedLines-DxMtmZc$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JIILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun spin (Lcom/jantursky/kapow/SpinAxis;Lcom/jantursky/kapow/SpinRate;)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun spin$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Lcom/jantursky/kapow/SpinAxis;Lcom/jantursky/kapow/SpinRate;ILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun spray (Lcom/jantursky/kapow/ParticleContent;I)Lcom/jantursky/kapow/ChangeEffect;

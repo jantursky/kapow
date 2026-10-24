@@ -1,0 +1,57 @@
+---
+title: "Change: flash"
+description: An element's own pixels flash a color and fade back when a value changes.
+---
+
+Flash tints everything the element draws in one color for a moment, then fades back, like a character taking a hit in a game. Use it for a short, sharp signal: a wrong PIN, a failed payment, a score that just dropped.
+
+## Usage
+
+The sample flashes the digit boxes of a PIN entry in coral each time a code is rejected.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun PinBoxes(failedAttempts: Int) {
+    Row(
+        modifier = Modifier.changeEffect(failedAttempts, ChangeEffect.flash(color = Color(0xFFFF6B5A))),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        repeat(4) { Box(Modifier.size(48.dp).background(Color(0xFF161616))) }
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `color` | `Color.White` | The color of the flash. At its peak it covers the element at 85 % of this color's alpha. |
+| `duration` | `400.milliseconds` | How long the flash takes to rise and fade back. Must be positive. |
+
+## Reduced motion
+
+Nothing moves in this effect either way, so the flash still plays, but at 35 % instead of 85 %.
+
+## Notes
+
+- Only the element's own pixels are tinted. Transparent parts, such as the gaps between the boxes in the sample, stay clear.
+- The flash rises over the first tenth of `duration` and fades back over the rest, quickly at first and gently at the end.
+- A new change restarts the flash. There is no cooldown.
+- While the flash shows, the element is drawn into its own offscreen layer. At rest it costs nothing extra.
+- Works the same on every target. No blur or shader is involved.
+
+## Live example
+
+<include example="change-flash">../_snippets/live-example.mdx</include>

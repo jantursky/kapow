@@ -1,0 +1,56 @@
+---
+title: "Change: speed lines"
+description: Comic action lines fly out from an element's edges when a value changes.
+---
+
+Speed lines throw short strokes out from every side of the element, like the lines a comic artist draws around something that just rang, shook or got hit. Use them for an alert that should feel loud without changing the element itself: an incoming call, an alarm, a timer that ran out.
+
+## Usage
+
+The sample throws violet lines around a caller's avatar on every ring.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun CallerAvatar(rings: Int) {
+    Box(
+        Modifier
+            .size(64.dp)
+            .changeEffect(rings, ChangeEffect.speedLines(color = Color(0xFF6B62F2), count = 14))
+            .background(Color(0xFF6B62F2), CircleShape),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `color` | `Color(0xFF6B62F2)` | Color of the lines. |
+| `count` | `12` | How many lines go around the element. Must be positive. |
+
+## Reduced motion
+
+No lines appear. The element brightens briefly instead.
+
+## Notes
+
+- The lines are spread evenly around a full turn, each nudged a little so the ring looks drawn by hand. Every change picks a new arrangement from a fixed seed, so it is the same from run to run.
+- Each line starts 6 dp outside the element's bounding box. The longest is half the element's shorter side, kept between 16 dp and 40 dp. Lines are up to 3 dp wide with round ends.
+- The outer end of each line shoots out first and the inner end follows, so the lines fly off and are gone after 0.5 s.
+- The lines are drawn outside the element's bounds. A parent that clips its children clips them too.
+- There is no cooldown. Nothing extra is drawn or allocated at rest.
+
+## Live example
+
+<include example="change-speed-lines">../_snippets/live-example.mdx</include>
