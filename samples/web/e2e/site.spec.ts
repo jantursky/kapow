@@ -160,6 +160,7 @@ const LIVE = [
   'conditional-orbit',
   'conditional-bubbles',
   'conditional-flame',
+  'conditional-grayscale',
   'progress-iris',
   'transition-iris',
   'transition-clock',

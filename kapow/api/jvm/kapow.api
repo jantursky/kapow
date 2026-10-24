@@ -44,6 +44,8 @@ public final class com/jantursky/kapow/ConditionalEffect$Companion {
 	public final fun getRainbowColors ()Ljava/util/List;
 	public final fun glow-5DgIosw (JFLandroidx/compose/ui/graphics/Shape;)Lcom/jantursky/kapow/ConditionalEffect;
 	public static synthetic fun glow-5DgIosw$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;ILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
+	public final fun grayscale (F)Lcom/jantursky/kapow/ConditionalEffect;
+	public static synthetic fun grayscale$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;FILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
 	public final fun marchingAnts-4GoNBhs (JJFLandroidx/compose/ui/graphics/Shape;FFF)Lcom/jantursky/kapow/ConditionalEffect;
 	public static synthetic fun marchingAnts-4GoNBhs$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;JJFLandroidx/compose/ui/graphics/Shape;FFFILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
 	public final fun orbit-cN3IAFE (Ljava/util/List;IFJ)Lcom/jantursky/kapow/ConditionalEffect;

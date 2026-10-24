@@ -5,7 +5,7 @@ description: Effects that stay on while a Boolean is true, and how repeat plays 
 
 A conditional effect runs while a condition is true. `Modifier.conditionalEffect(condition, effect)` starts the effect when the condition becomes true, including on first composition, and winds it down when the condition becomes false. The element then returns to its normal look.
 
-The effects are `repeat`, `glow`, `pushDown`, `smoke`, `borderBeam`, `marchingAnts`, `rainbowBorder`, `sparkles`, `orbit`, `bubbles` and `flame`.
+The effects are `repeat`, `glow`, `pushDown`, `smoke`, `borderBeam`, `marchingAnts`, `rainbowBorder`, `sparkles`, `orbit`, `bubbles`, `flame` and `grayscale`.
 
 ## Glow
 
@@ -94,6 +94,10 @@ Small, see-through bubbles rise from the top edge, wobble and pop. Like smoke, t
 ## Flame
 
 Procedural flames above the element: soft puffs rise, shrink and turn from yellow through red to transparent, drawn with radial gradients rather than sprites or shaders. See [flame](/effects/conditional-flame).
+
+## Grayscale
+
+The element fades to gray through a color filter on a layer of its own, the look of something disabled or unavailable. Pass `amount` to keep some color. See [grayscale](/effects/conditional-grayscale).
 
 ## Repeat
 

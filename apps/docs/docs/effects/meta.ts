@@ -23,6 +23,7 @@ export default defineMeta({
     'conditional-orbit',
     'conditional-bubbles',
     'conditional-flame',
+    'conditional-grayscale',
     'progress-shine',
     'progress-glow',
     'progress-iris',

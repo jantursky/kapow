@@ -10,6 +10,7 @@ import com.jantursky.kapow.effects.BorderBeamRunner
 import com.jantursky.kapow.effects.BubblesRunner
 import com.jantursky.kapow.effects.ConditionalGlowRunner
 import com.jantursky.kapow.effects.FlameRunner
+import com.jantursky.kapow.effects.GrayscaleRunner
 import com.jantursky.kapow.effects.MarchingAntsRunner
 import com.jantursky.kapow.effects.OrbitRunner
 import com.jantursky.kapow.effects.PushDownRunner
@@ -235,6 +236,19 @@ public abstract class ConditionalEffect internal constructor() {
             require(height > 0.dp) { "height must be positive" }
             return Flame(colors, height)
         }
+
+        /**
+         * Drains the color from the element, for a disabled or unavailable look. It fades in and out over 0.3 s.
+         * The element is drawn through a color filter in a graphics layer of its own.
+         *
+         * With reduced motion the color goes and comes back without a fade.
+         *
+         * @param amount how much color is taken away, from 0 (none) to 1 (fully gray).
+         */
+        public fun grayscale(amount: Float = 1f): ConditionalEffect {
+            require(amount in 0f..1f) { "amount must be between 0 and 1" }
+            return Grayscale(amount)
+        }
     }
 
     internal data class Repeat(
@@ -325,5 +339,11 @@ public abstract class ConditionalEffect internal constructor() {
         val height: Dp,
     ) : ConditionalEffect() {
         override fun createRunner(): ConditionalRunner = FlameRunner(colors, height)
+    }
+
+    internal data class Grayscale(
+        val amount: Float,
+    ) : ConditionalEffect() {
+        override fun createRunner(): ConditionalRunner = GrayscaleRunner(amount)
     }
 }
