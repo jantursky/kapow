@@ -107,7 +107,7 @@ There are three kinds of effect, each a plain modifier:
 - `Modifier.conditionalEffect(condition, effect)` runs while `condition` is true: `glow`, `pushDown`, `smoke`, and `repeat(changeEffect, every)`.
 - `Modifier.progressEffect(effect) { progress }` draws `shine`, `glow` or `iris` at a progress you supply, such as a scroll offset. `kapow-crease` uses it for `Modifier.hingeEffect(effect)`.
 
-Transitions are `KapowEnter` and `KapowExit` values: `iris`, `clock`, `wipe`, `glare`, `blinds`, and `anvil` and `pop` to enter, `poof` to exit. Use `KapowAnimatedVisibility`, or `Modifier.kapowTransition(this, enter, exit)` inside `AnimatedVisibility` or `AnimatedContent`. Every effect takes an optional `KapowFeedbackEvent` for haptics or sound; see the [feedback guide](https://kapow.vercel.app/guides/feedback).
+Transitions are `KapowEnter` and `KapowExit` values: `iris`, `clock`, `wipe`, `glare`, `blinds`, and `anvil` and `pop` to enter, `poof` to exit. Use `KapowAnimatedVisibility`, or `Modifier.kapowTransition(this, enter, exit)` inside `AnimatedVisibility` or `AnimatedContent`. Change effects and transitions take an optional `KapowFeedbackEvent` for haptics or sound; see the [feedback guide](https://kapow.vercel.app/guides/feedback).
 
 ## Demo
 

@@ -5,15 +5,15 @@ description: How Kapow reads the platform's reduced-motion setting on each targe
 
 Some people turn motion off because it makes them ill or because they find it distracting. Kapow follows that setting on every platform and swaps each effect for a quiet version: a short fade or highlight, with no particles and no movement.
 
-You do not have to call anything. Effects check the setting when they fire.
+You do not have to call anything. Change and conditional effects check the setting each time they start; transitions check it when they compose.
 
 ## Where the setting comes from
 
 | Target | Source |
 | --- | --- |
-| Android | `ValueAnimator.areAnimatorsEnabled()` on API 26 and later. Below API 26, the animator duration scale in system settings, watched for changes. Compose's `MotionDurationScale` is read on all versions. |
+| Android | `ValueAnimator.areAnimatorsEnabled()` on API 26 and later. Below API 26, Compose's `MotionDurationScale`, which is 0 when animations are off. That scale is read on all versions. |
 | iOS | Reduce Motion in Accessibility settings. Compose also reports it as a motion duration scale of 0. |
-| wasmJs | The `prefers-reduced-motion: reduce` media query, watched for changes. |
+| wasmJs | The `prefers-reduced-motion: reduce` media query. |
 | JVM desktop | No system source. Motion is full unless you override it. |
 
 On Android, both checks matter. Turning "Remove animations" on sets the animator duration scale to 0, and Compose passes that scale to coroutines as `MotionDurationScale`. Kapow treats a scale of 0 as reduced motion even on versions where the platform call is not available.
@@ -22,7 +22,8 @@ On Android, both checks matter. Turning "Remove animations" on sets the animator
 
 | Effect | With reduced motion |
 | --- | --- |
-| `spray`, `rise`, `smoke` | No particles. The element briefly brightens. |
+| `spray`, `rise` | No particles. The element briefly brightens. |
+| `smoke` | Nothing. |
 | `spin` | No rotation. The element briefly brightens. |
 | `pulse` | No rings. The element's area flashes in the pulse color and fades. |
 | `shine` | No sweep. A brief highlight that fades out. |

@@ -48,7 +48,7 @@ fun ScrollShine() {
 
 Kapow calls your lambda in the draw phase. If it reads Compose state, such as `scroll.value` above or an `Animatable`, the effect redraws when the state changes and nothing recomposes. Do not compute the progress in the composable body and pass a captured `Float`: that would recompose on every change and the effect would lag a frame behind.
 
-The lambda is not part of the modifier's equality, so passing a new lambda on each recomposition does not rebuild the effect.
+A new lambda on a recomposition updates the node in place; it does not rebuild the effect.
 
 ## Hinge
 
