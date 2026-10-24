@@ -73,6 +73,19 @@ public class KapowEnter internal constructor(
             color: Color = Color(0xFF6B62F2),
             duration: Duration = 1200.milliseconds,
         ): KapowEnter = KapowEnter(TransitionKind.Pop(color), duration.checked())
+
+        /**
+         * The content appears as a grid of small squares that turn on one by one in a random order. The order is
+         * seeded, so it is the same every time and on every target. With reduced motion it fades in instead.
+         *
+         * @param cellSize the side of one square, at least 2 dp. Large elements get bigger squares so a frame never
+         *   draws more than a few thousand.
+         * @param duration how long the transition takes, 600 ms by default.
+         */
+        public fun dissolve(
+            cellSize: Dp = 12.dp,
+            duration: Duration = 600.milliseconds,
+        ): KapowEnter = KapowEnter(TransitionKind.Dissolve(cellSize.checkedCell()), duration.checked())
     }
 }
 
@@ -134,6 +147,18 @@ public class KapowExit internal constructor(
             color: Color = Color(0xFFC2C2C2),
             duration: Duration = 400.milliseconds,
         ): KapowExit = KapowExit(TransitionKind.Poof(color), duration.checked())
+
+        /**
+         * The content vanishes as a grid of small squares that turn off one by one, in the reverse of
+         * [KapowEnter.dissolve]'s order. With reduced motion it fades out instead.
+         *
+         * @param cellSize the side of one square, at least 2 dp.
+         * @param duration how long the transition takes, 600 ms by default.
+         */
+        public fun dissolve(
+            cellSize: Dp = 12.dp,
+            duration: Duration = 600.milliseconds,
+        ): KapowExit = KapowExit(TransitionKind.Dissolve(cellSize.checkedCell()), duration.checked())
     }
 }
 
@@ -141,6 +166,11 @@ private val DefaultMaskDuration: Duration = 450.milliseconds
 
 private fun Duration.checked(): Duration {
     require(isPositive()) { "duration must be positive" }
+    return this
+}
+
+private fun Dp.checkedCell(): Dp {
+    require(this >= 2.dp) { "cellSize must be at least 2 dp" }
     return this
 }
 
@@ -174,5 +204,9 @@ internal sealed class TransitionKind {
 
     data class Poof(
         val color: Color,
+    ) : TransitionKind()
+
+    data class Dissolve(
+        val cellSize: Dp,
     ) : TransitionKind()
 }

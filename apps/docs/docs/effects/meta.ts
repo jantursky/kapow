@@ -27,5 +27,6 @@ export default defineMeta({
     'transition-poof',
     'transition-anvil',
     'transition-pop',
+    'transition-dissolve',
   ],
 })

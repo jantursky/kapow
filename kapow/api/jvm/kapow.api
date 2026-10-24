@@ -69,6 +69,8 @@ public final class com/jantursky/kapow/KapowEnter$Companion {
 	public static synthetic fun blinds-kNsnCk8$default (Lcom/jantursky/kapow/KapowEnter$Companion;FLcom/jantursky/kapow/BlindsOrientation;ZJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
 	public final fun clock-otBZfKM (JJ)Lcom/jantursky/kapow/KapowEnter;
 	public static synthetic fun clock-otBZfKM$default (Lcom/jantursky/kapow/KapowEnter$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
+	public final fun dissolve-M2fzYQI (FJ)Lcom/jantursky/kapow/KapowEnter;
+	public static synthetic fun dissolve-M2fzYQI$default (Lcom/jantursky/kapow/KapowEnter$Companion;FJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
 	public final fun getNone ()Lcom/jantursky/kapow/KapowEnter;
 	public final fun glare-ZnrAass (FJJ)Lcom/jantursky/kapow/KapowEnter;
 	public static synthetic fun glare-ZnrAass$default (Lcom/jantursky/kapow/KapowEnter$Companion;FJJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
@@ -93,6 +95,8 @@ public final class com/jantursky/kapow/KapowExit$Companion {
 	public static synthetic fun blinds-kNsnCk8$default (Lcom/jantursky/kapow/KapowExit$Companion;FLcom/jantursky/kapow/BlindsOrientation;ZJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
 	public final fun clock-otBZfKM (JJ)Lcom/jantursky/kapow/KapowExit;
 	public static synthetic fun clock-otBZfKM$default (Lcom/jantursky/kapow/KapowExit$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
+	public final fun dissolve-M2fzYQI (FJ)Lcom/jantursky/kapow/KapowExit;
+	public static synthetic fun dissolve-M2fzYQI$default (Lcom/jantursky/kapow/KapowExit$Companion;FJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
 	public final fun getNone ()Lcom/jantursky/kapow/KapowExit;
 	public final fun glare-ZnrAass (FJJ)Lcom/jantursky/kapow/KapowExit;
 	public static synthetic fun glare-ZnrAass$default (Lcom/jantursky/kapow/KapowExit$Companion;FJJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;

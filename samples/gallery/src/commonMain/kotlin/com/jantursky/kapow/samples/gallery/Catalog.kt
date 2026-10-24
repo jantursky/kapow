@@ -193,6 +193,13 @@ val entries: List<Entry> =
             Example("PopExample.kt") { PopDemo() },
         ),
         Entry(
+            "transition-dissolve",
+            Group.Transitions,
+            "Dissolve",
+            "The content appears or vanishes square by square.",
+            Example("DissolveExample.kt") { DissolveDemo() },
+        ),
+        Entry(
             "more-particle-layer",
             Group.More,
             "Particle layer",

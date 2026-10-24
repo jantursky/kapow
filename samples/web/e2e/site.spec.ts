@@ -163,6 +163,7 @@ const LIVE = [
   'transition-anvil',
   'transition-pop',
   'more-particle-layer',
+  'transition-dissolve',
 ]
 
 for (const id of LIVE) {
