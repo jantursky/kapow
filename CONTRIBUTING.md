@@ -17,6 +17,7 @@ The docs site and the browser tests use [Bun](https://bun.sh) 1.3+ and Node.js 2
 ```sh
 ./gradlew :kapow:jvmTest                              # desktop tests, quickest feedback
 ./gradlew :samples:web:wasmJsBrowserDevelopmentRun    # the effect gallery in the browser
+./gradlew :samples:desktop:run                        # the same gallery in a desktop window (hotRunJvm for hot reload)
 ```
 
 ## Where things live
@@ -27,7 +28,9 @@ The docs site and the browser tests use [Bun](https://bun.sh) 1.3+ and Node.js 2
 | `kapow/src/*Main/.../platform`       | Reduced-motion readers for Android, iOS, the browser and the JVM.                    |
 | `kapow-crease`                       | Effects driven by the hinge angle, through Crease.                                   |
 | `kapow-multihaptic`                  | A `KapowFeedback` handler backed by multihaptic.                                     |
+| `samples/gallery`                    | The gallery's examples, their controls and the catalog, shared by web and desktop.   |
 | `samples/web`                        | The effect gallery, compiled to Kotlin/Wasm. Each example's source is shown next to it. |
+| `samples/desktop`                    | The same gallery in a desktop window (JVM).                                          |
 | `samples/design`                     | Theme and widgets the gallery uses.                                                  |
 | `apps/docs`                          | The docs site. Its code samples are compiled against the library.                    |
 | `design/`                            | The design system the gallery and the docs use.                                      |

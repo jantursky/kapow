@@ -2,6 +2,8 @@ package com.jantursky.kapow.samples.web
 
 import androidx.compose.runtime.mutableStateOf
 import com.jantursky.kapow.KapowMotion
+import com.jantursky.kapow.samples.gallery.Entry
+import com.jantursky.kapow.samples.gallery.entryById
 import kotlinx.browser.document
 import kotlinx.browser.window
 import org.w3c.dom.HTMLInputElement

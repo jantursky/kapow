@@ -26,3 +26,6 @@ kotlin {
         }
     }
 }
+
+// The samples only need to compile; there are no tests to run.
+tasks.withType<Test>().configureEach { failOnNoDiscoveredTests = false }

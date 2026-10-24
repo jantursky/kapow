@@ -51,6 +51,8 @@ include(":kapow", ":kapow-crease", ":kapow-multihaptic")
 
 include(
     ":samples:design",
+    ":samples:gallery",
     ":samples:web",
+    ":samples:desktop",
     ":samples:docs-check",
 )

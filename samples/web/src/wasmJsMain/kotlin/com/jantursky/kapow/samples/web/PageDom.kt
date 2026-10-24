@@ -1,5 +1,8 @@
 package com.jantursky.kapow.samples.web
 
+import com.jantursky.kapow.samples.gallery.Entry
+import com.jantursky.kapow.samples.gallery.Group
+import com.jantursky.kapow.samples.gallery.entries
 import kotlinx.browser.document
 import org.w3c.dom.Element
 import org.w3c.dom.asList

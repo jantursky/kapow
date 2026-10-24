@@ -45,7 +45,7 @@ jobs:
           java-version: 17
       - uses: gradle/actions/setup-gradle@v6
       - name: Wasm tests (headless Chrome) and the gallery build
-        run: ./gradlew :kapow:wasmJsTest :kapow-crease:wasmJsTest :kapow-multihaptic:wasmJsTest :samples:web:wasmJsBrowserDistribution
+        run: ./gradlew :kapow:wasmJsTest :kapow-crease:wasmJsTest :kapow-multihaptic:wasmJsTest :samples:web:wasmJsBrowserDistribution :samples:desktop:build
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: .bun-version

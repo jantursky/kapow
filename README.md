@@ -36,7 +36,9 @@ Compose already animates layout, alpha and transforms well, and libraries like a
 | `kapow`             | The library, published to Maven Central as `io.github.jantursky:kapow`.                              |
 | `kapow-crease`      | Optional: progress effects driven by the hinge angle of a foldable, through [Crease](https://github.com/jantursky/crease). |
 | `kapow-multihaptic` | Optional: plays Kapow's feedback events as haptics through [multihaptic](https://github.com/xfqwdsj/multihaptic). |
+| `samples/gallery`   | The gallery's examples and their controls, shared by the web and the desktop gallery.                |
 | `samples/web`       | The effect gallery: every effect live in the browser, with controls and its source.                  |
+| `samples/desktop`   | The same gallery in a desktop window: `./gradlew :samples:desktop:run`.                              |
 | `samples/design`    | Theme and widgets the gallery uses.                                                                  |
 | `apps/docs`         | The docs site, built with [Blume](https://www.npmjs.com/package/blume).                              |
 
@@ -162,6 +164,7 @@ Needs JDK 17+, the Android SDK, Xcode for the iOS simulator, and [Bun](https://b
 ./scripts/pack-test.sh                        # publish to Maven Local and compile a consumer against it
 bun install && bun run dev:docs               # docs site
 
+./gradlew :samples:desktop:run                # the effect gallery in a desktop window
 ./gradlew :samples:web:wasmJsBrowserDistribution
 bun run test:web                              # browser tests of the gallery (Playwright, axe), desktop and phone
 bun run screenshots                           # rebuild the gallery and refresh the README GIFs

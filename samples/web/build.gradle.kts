@@ -7,10 +7,14 @@ plugins {
 }
 
 // The gallery shows the example files it runs, so the source on the page is always the code that runs.
-// They are read at build time into sources.js, next to the fonts, the brand mark and the design tokens.
+// They live in :samples:gallery and are read at build time into sources.js, next to the fonts, the brand
+// mark and the design tokens.
 val siteAssets = layout.buildDirectory.dir("generated/site")
 val generateSiteAssets by tasks.registering {
-    val examples = layout.projectDirectory.dir("src/wasmJsMain/kotlin/com/jantursky/kapow/samples/web/examples")
+    val examples =
+        project(":samples:gallery").layout.projectDirectory.dir(
+            "src/commonMain/kotlin/com/jantursky/kapow/samples/gallery/examples",
+        )
     val design = rootProject.layout.projectDirectory.dir("design")
     val fonts = project(":samples:design").layout.projectDirectory.dir("src/commonMain/composeResources/font")
     val version = providers.gradleProperty("VERSION_NAME")
@@ -73,8 +77,7 @@ kotlin {
         wasmJsMain {
             resources.srcDir(generateSiteAssets)
             dependencies {
-                implementation(project(":samples:design"))
-                implementation(project(":kapow"))
+                implementation(project(":samples:gallery"))
                 implementation(project(":kapow-multihaptic"))
             }
         }
