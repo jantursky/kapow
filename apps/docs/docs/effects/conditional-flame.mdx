@@ -1,0 +1,59 @@
+---
+title: "Conditional: flame"
+description: Procedural flames burn above an element while a condition is true.
+---
+
+Flame sets flames burning above an element while a condition holds. Use it for something on fire: a streak, a trending post, a hot deal.
+
+The flames are drawn procedurally: many soft puffs rise from the top edge, shrink, and change color from yellow through red to transparent as they burn out. Overlapping, they read as flickering tongues. Each puff is a radial gradient; there are no sprites and no shaders.
+
+## Usage
+
+The sample lets a streak counter burn while the streak is alive.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.conditionalEffect
+
+@Composable
+fun StreakCounter(onFire: Boolean) {
+    Box(
+        Modifier
+            .size(width = 140.dp, height = 72.dp)
+            .conditionalEffect(onFire, ConditionalEffect.flame())
+            .background(Color.DarkGray, RoundedCornerShape(10.dp)),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `colors` | `ConditionalEffect.FlameColors` | The colors a puff goes through, from birth to end. At least two; let the last one be transparent so puffs burn out. |
+| `height` | `40.dp` | About how high the flames reach above the element. Puffs are sized from it too. |
+
+`FlameColors` is yellow, amber, coral and a transparent deep red. Pass blues for a gas flame.
+
+## Reduced motion
+
+No flames are shown.
+
+## Notes
+
+- Flames are particles. They draw through a [particle layer](/guides/particle-layer) when one is above the element, so a clipping parent does not cut them off. Without one they draw around the element.
+- The flames rise from the middle of the top edge, at most about half the height to either side, so a wide element burns in its middle.
+- When the condition turns false, no new puffs start and the ones in flight burn out within 0.75 s.
+- Puffs are drawn over whatever is behind them with normal blending, so the flames look the same on light and dark backgrounds.
+
+## Live example
+
+<include example="conditional-flame">../_snippets/live-example.mdx</include>

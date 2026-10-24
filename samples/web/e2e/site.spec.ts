@@ -159,6 +159,7 @@ const LIVE = [
   'conditional-sparkles',
   'conditional-orbit',
   'conditional-bubbles',
+  'conditional-flame',
   'progress-iris',
   'transition-iris',
   'transition-clock',

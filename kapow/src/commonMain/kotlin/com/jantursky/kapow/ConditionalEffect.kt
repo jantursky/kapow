@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.effects.BorderBeamRunner
 import com.jantursky.kapow.effects.BubblesRunner
 import com.jantursky.kapow.effects.ConditionalGlowRunner
+import com.jantursky.kapow.effects.FlameRunner
 import com.jantursky.kapow.effects.MarchingAntsRunner
 import com.jantursky.kapow.effects.OrbitRunner
 import com.jantursky.kapow.effects.PushDownRunner
@@ -210,6 +211,30 @@ public abstract class ConditionalEffect internal constructor() {
             require(size > 0.dp) { "size must be positive" }
             return Bubbles(color, size)
         }
+
+        /** Pale yellow, amber, coral and a deep red that fades out: the colors [flame] burns through by default. */
+        public val FlameColors: List<Color> =
+            listOf(Color(0xFFFFE58A), Color(0xFFFFB547), Color(0xFFFF6B5A), Color(0x00D9363E))
+
+        /**
+         * Flames above the element, for something on fire, such as a streak. They are many soft puffs that rise,
+         * shrink and change color from the first of [colors] to the last as they burn out, overlapping into
+         * flickering tongues. Drawn with radial gradients, without sprites or shaders.
+         *
+         * Flames are particles: a [KapowParticleLayer] above the element keeps clipping parents from cutting them
+         * off. With reduced motion there are none.
+         *
+         * @param colors the colors a puff goes through, from its birth to its end. Fade the last one out.
+         * @param height about how high the flames reach above the element.
+         */
+        public fun flame(
+            colors: List<Color> = FlameColors,
+            height: Dp = 40.dp,
+        ): ConditionalEffect {
+            require(colors.size >= 2) { "colors needs at least two colors" }
+            require(height > 0.dp) { "height must be positive" }
+            return Flame(colors, height)
+        }
     }
 
     internal data class Repeat(
@@ -293,5 +318,12 @@ public abstract class ConditionalEffect internal constructor() {
         val size: Dp,
     ) : ConditionalEffect() {
         override fun createRunner(): ConditionalRunner = BubblesRunner(color, size)
+    }
+
+    internal data class Flame(
+        val colors: List<Color>,
+        val height: Dp,
+    ) : ConditionalEffect() {
+        override fun createRunner(): ConditionalRunner = FlameRunner(colors, height)
     }
 }

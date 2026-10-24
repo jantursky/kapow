@@ -151,6 +151,13 @@ val entries: List<Entry> =
             Example("BubblesExample.kt") { BubblesDemo() },
         ),
         Entry(
+            "conditional-flame",
+            Group.Conditional,
+            "Flame",
+            "Sets flames burning above the element while a condition holds.",
+            Example("FlameExample.kt") { FlameDemo() },
+        ),
+        Entry(
             "progress-shine",
             Group.Progress,
             "Shine",
