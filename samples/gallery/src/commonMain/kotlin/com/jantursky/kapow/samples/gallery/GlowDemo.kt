@@ -24,6 +24,16 @@ internal fun GlowDemo() {
     ExampleScaffold(
         autoplay = Autoplay(2.2.seconds) { count++ },
         stage = { GlowExample(count, swatch.color, radius.dp, shape.shape) },
+        code = {
+            changeEffectCode(
+                call(
+                    "ChangeEffect.glow",
+                    "color" to swatch.color.kt(),
+                    "radius" to radius.dp.kt(),
+                    "shape" to shape.kt(),
+                ),
+            )
+        },
         controls = {
             PrimaryPill("Upgrade", onClick = { count++ })
             ChoiceRow("Shape", ShapeChoice.entries, shape, { shape = it }, { it.name })
@@ -32,3 +42,11 @@ internal fun GlowDemo() {
         },
     )
 }
+
+/** The shape as the source a user would write. */
+private fun ShapeChoice.kt(): String =
+    when (this) {
+        ShapeChoice.Rectangle -> "RectangleShape"
+        ShapeChoice.Rounded -> "RoundedCornerShape(16.dp)"
+        ShapeChoice.Circle -> "CircleShape"
+    }

@@ -23,6 +23,16 @@ internal fun SprayDemo() {
     ExampleScaffold(
         autoplay = Autoplay(2.seconds) { likes++ },
         stage = { SprayExample(likes, shape, particles.roundToInt()) },
+        code = {
+            changeEffectCode(
+                call(
+                    "ChangeEffect.spray",
+                    "particles" to call("ParticleContent.shape", "" to "ParticleShape.${shape.name}"),
+                    "count" to particles.roundToInt().toString(),
+                ),
+                value = "likes",
+            )
+        },
         controls = {
             PrimaryPill("Like", onClick = { likes++ })
             ChoiceRow("Particle", ParticleShape.entries, shape, { shape = it }, { it.name })

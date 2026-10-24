@@ -24,6 +24,12 @@ internal fun GlitchDemo() {
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.4.seconds) { errors++ },
         stage = { GlitchExample(errors, duration, offset.dp) },
+        code = {
+            changeEffectCode(
+                call("ChangeEffect.glitch", "duration" to duration.kt(), "offset" to offset.dp.kt()),
+                value = "errors",
+            )
+        },
         controls = {
             PrimaryPill("Fail", onClick = { errors++ })
             LabeledSlider("Duration", "${millis.roundToInt()} ms", millis, { millis = it }, 100f..1000f)

@@ -24,6 +24,18 @@ internal fun PulseDemo() {
     ExampleScaffold(
         autoplay = Autoplay(2.seconds + 0.5.seconds * pulses.roundToInt()) { items++ },
         stage = { PulseExample(items, shape.shape, swatch.color, fill, pulses.roundToInt()) },
+        code = {
+            changeEffectCode(
+                call(
+                    "ChangeEffect.pulse",
+                    "shape" to shape.kt(),
+                    "color" to swatch.color.kt(),
+                    "style" to if (fill) "PulseStyle.Fill" else "PulseStyle.Stroke()",
+                    "count" to pulses.roundToInt().toString(),
+                ),
+                value = "items",
+            )
+        },
         controls = {
             PrimaryPill("Add to cart", onClick = { items++ })
             ChoiceRow("Shape", ShapeChoice.entries, shape, { shape = it }, { it.name })
@@ -33,3 +45,11 @@ internal fun PulseDemo() {
         },
     )
 }
+
+/** The shape as the source a user would write. */
+private fun ShapeChoice.kt(): String =
+    when (this) {
+        ShapeChoice.Rectangle -> "RectangleShape"
+        ShapeChoice.Rounded -> "RoundedCornerShape(16.dp)"
+        ShapeChoice.Circle -> "CircleShape"
+    }

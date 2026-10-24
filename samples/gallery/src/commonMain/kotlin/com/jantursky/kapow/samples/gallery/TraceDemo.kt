@@ -25,6 +25,17 @@ internal fun TraceDemo() {
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.seconds) { syncs++ },
         stage = { TraceExample(syncs, shape.shape, swatch.color, duration) },
+        code = {
+            changeEffectCode(
+                call(
+                    "ChangeEffect.trace",
+                    "shape" to shape.kt(),
+                    "color" to swatch.color.kt(),
+                    "duration" to duration.kt(),
+                ),
+                value = "syncs",
+            )
+        },
         controls = {
             PrimaryPill("Sync", onClick = { syncs++ })
             ChoiceRow("Shape", ShapeChoice.entries, shape, { shape = it }, { it.name })
@@ -33,3 +44,11 @@ internal fun TraceDemo() {
         },
     )
 }
+
+/** The shape as the source a user would write. */
+private fun ShapeChoice.kt(): String =
+    when (this) {
+        ShapeChoice.Rectangle -> "RectangleShape"
+        ShapeChoice.Rounded -> "RoundedCornerShape(16.dp)"
+        ShapeChoice.Circle -> "CircleShape"
+    }

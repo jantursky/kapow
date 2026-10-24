@@ -34,6 +34,18 @@ internal fun FireworksDemo() {
     ExampleScaffold(
         autoplay = Autoplay(2.2.seconds) { days++ },
         stage = { FireworksExample(days, palette.colors, sparks.roundToInt()) },
+        code = {
+            changeEffectCode(
+                call(
+                    "ChangeEffect.fireworks",
+                    *listOfNotNull(
+                        palette.kt()?.let { "colors" to it },
+                        "count" to sparks.roundToInt().toString(),
+                    ).toTypedArray(),
+                ),
+                value = "days",
+            )
+        },
         controls = {
             PrimaryPill("Check in", onClick = { days++ })
             ChoiceRow("Colors", SparkColors.entries, palette, { palette = it }, { it.name })
@@ -41,3 +53,7 @@ internal fun FireworksDemo() {
         },
     )
 }
+
+/** The colors as the source a user would write; the mixed default needs no argument. */
+private fun SparkColors.kt(): String? =
+    if (this == SparkColors.Mixed) null else "listOf(${colors.joinToString { it.kt() }})"

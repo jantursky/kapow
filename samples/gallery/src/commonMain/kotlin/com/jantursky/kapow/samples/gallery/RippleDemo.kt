@@ -34,6 +34,18 @@ internal fun RippleDemo() {
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.seconds) { done = !done },
         stage = { RippleExample(done, swatch.color, from.origin, duration) },
+        code = {
+            changeEffectCode(
+                call(
+                    "ChangeEffect.ripple",
+                    "color" to swatch.color.copy(alpha = 0.35f).kt(),
+                    "shape" to "RoundedCornerShape(16.dp)",
+                    "origin" to from.kt(),
+                    "duration" to duration.kt(),
+                ),
+                value = "done",
+            )
+        },
         controls = {
             PrimaryPill(if (done) "Undo" else "Done", onClick = { done = !done })
             ChoiceRow("From", RippleFrom.entries, from, { from = it }, { it.name })
@@ -42,3 +54,11 @@ internal fun RippleDemo() {
         },
     )
 }
+
+/** The origin as the source a user would write. */
+private fun RippleFrom.kt(): String =
+    when (this) {
+        RippleFrom.Checkbox -> "TransformOrigin(0.11f, 0.5f)"
+        RippleFrom.Center -> "TransformOrigin.Center"
+        RippleFrom.End -> "TransformOrigin(1f, 0.5f)"
+    }

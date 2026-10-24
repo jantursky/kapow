@@ -20,6 +20,12 @@ internal fun ConfettiPopDemo() {
     ExampleScaffold(
         autoplay = Autoplay(2.2.seconds) { payments++ },
         stage = { ConfettiPopExample(payments, pieces.roundToInt()) },
+        code = {
+            changeEffectCode(
+                call("ChangeEffect.confettiPop", "count" to pieces.roundToInt().toString()),
+                value = "payments",
+            )
+        },
         controls = {
             PrimaryPill("Pay", onClick = { payments++ })
             LabeledSlider("Pieces", pieces.roundToInt().toString(), pieces, { pieces = it }, 4f..80f)
