@@ -123,6 +123,13 @@ val entries: List<Entry> =
             Example("MarchingAntsExample.kt") { MarchingAntsDemo() },
         ),
         Entry(
+            "conditional-rainbow-border",
+            Group.Conditional,
+            "Rainbow border",
+            "Turns a rainbow outline around the element while a condition holds.",
+            Example("RainbowBorderExample.kt") { RainbowBorderDemo() },
+        ),
+        Entry(
             "progress-shine",
             Group.Progress,
             "Shine",

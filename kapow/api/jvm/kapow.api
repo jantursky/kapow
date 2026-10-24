@@ -36,12 +36,15 @@ public final class com/jantursky/kapow/ConditionalEffect$Companion {
 	public final fun borderBeam-vqZ8o5o (JFLandroidx/compose/ui/graphics/Shape;FJ)Lcom/jantursky/kapow/ConditionalEffect;
 	public static synthetic fun borderBeam-vqZ8o5o$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;FJILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
 	public final fun getMinRepeatInterval-UwyO8pc ()J
+	public final fun getRainbowColors ()Ljava/util/List;
 	public final fun glow-5DgIosw (JFLandroidx/compose/ui/graphics/Shape;)Lcom/jantursky/kapow/ConditionalEffect;
 	public static synthetic fun glow-5DgIosw$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;ILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
 	public final fun marchingAnts-4GoNBhs (JJFLandroidx/compose/ui/graphics/Shape;FFF)Lcom/jantursky/kapow/ConditionalEffect;
 	public static synthetic fun marchingAnts-4GoNBhs$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;JJFLandroidx/compose/ui/graphics/Shape;FFFILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
 	public final fun pushDown (F)Lcom/jantursky/kapow/ConditionalEffect;
 	public static synthetic fun pushDown$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;FILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
+	public final fun rainbowBorder-kLn_5LQ (Ljava/util/List;FLandroidx/compose/ui/graphics/Shape;J)Lcom/jantursky/kapow/ConditionalEffect;
+	public static synthetic fun rainbowBorder-kLn_5LQ$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;Ljava/util/List;FLandroidx/compose/ui/graphics/Shape;JILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
 	public final fun repeat-HG0u8IE (Lcom/jantursky/kapow/ChangeEffect;J)Lcom/jantursky/kapow/ConditionalEffect;
 	public final fun smoke-8_81llA (J)Lcom/jantursky/kapow/ConditionalEffect;
 	public static synthetic fun smoke-8_81llA$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;JILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;

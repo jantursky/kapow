@@ -10,6 +10,7 @@ import com.jantursky.kapow.effects.BorderBeamRunner
 import com.jantursky.kapow.effects.ConditionalGlowRunner
 import com.jantursky.kapow.effects.MarchingAntsRunner
 import com.jantursky.kapow.effects.PushDownRunner
+import com.jantursky.kapow.effects.RainbowBorderRunner
 import com.jantursky.kapow.effects.RepeatRunner
 import com.jantursky.kapow.effects.SmokeRunner
 import com.jantursky.kapow.internal.ConditionalRunner
@@ -109,6 +110,38 @@ public abstract class ConditionalEffect internal constructor() {
             require(speed >= 0.dp) { "speed must not be negative" }
             return MarchingAnts(color, gapColor, width, shape, dash, gap, speed)
         }
+
+        /** Amber, coral, pink, violet, cobalt and teal: the colors [rainbowBorder] turns through by default. */
+        public val RainbowColors: List<Color> =
+            listOf(
+                Color(0xFFFFB547),
+                Color(0xFFFF6B5A),
+                Color(0xFFF25CC4),
+                Color(0xFF6B62F2),
+                Color(0xFF3D7BFF),
+                Color(0xFF3DD6C6),
+            )
+
+        /**
+         * An outline of [shape] stroked with a sweep gradient through [colors] that turns around the element, for
+         * something premium or special, such as a Pro plan. The stroke sits inside the element's bounds.
+         *
+         * With reduced motion the gradient stands still.
+         *
+         * @param colors the colors around the sweep, in order. It closes back to the first.
+         * @param duration how long the gradient takes to turn once.
+         */
+        public fun rainbowBorder(
+            colors: List<Color> = RainbowColors,
+            width: Dp = 3.dp,
+            shape: Shape = RectangleShape,
+            duration: Duration = 3.seconds,
+        ): ConditionalEffect {
+            require(colors.isNotEmpty()) { "colors must not be empty" }
+            require(width > 0.dp) { "width must be positive" }
+            require(duration.isPositive()) { "duration must be positive" }
+            return RainbowBorder(colors, width, shape, duration)
+        }
     }
 
     internal data class Repeat(
@@ -159,5 +192,14 @@ public abstract class ConditionalEffect internal constructor() {
     ) : ConditionalEffect() {
         override fun createRunner(): ConditionalRunner =
             MarchingAntsRunner(color, gapColor, width, shape, dash, gap, speed)
+    }
+
+    internal data class RainbowBorder(
+        val colors: List<Color>,
+        val width: Dp,
+        val shape: Shape,
+        val duration: Duration,
+    ) : ConditionalEffect() {
+        override fun createRunner(): ConditionalRunner = RainbowBorderRunner(colors, width, shape, duration)
     }
 }

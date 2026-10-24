@@ -18,6 +18,7 @@ export default defineMeta({
     'conditional-smoke',
     'conditional-border-beam',
     'conditional-marching-ants',
+    'conditional-rainbow-border',
     'progress-shine',
     'progress-glow',
     'progress-iris',
