@@ -1,0 +1,102 @@
+/* Kapow design tokens. Source of truth: design/DESIGN.md. Dark is the primary theme. */
+:root {
+  --kapow-canvas: #0a0a0a;
+  --kapow-panel: #161616;
+  --kapow-glass: rgba(212, 212, 212, 0.1);
+  --kapow-stage: #111111;
+  --kapow-hairline: rgba(229, 229, 229, 0.16);
+  --kapow-title: #ffffff;
+  --kapow-ink: #ededed;
+  --kapow-ash: #c2c2c2;
+  --kapow-slate: #8a8a8a;
+  --kapow-action: #ffffff;
+  --kapow-on-action: #161616;
+  --kapow-violet: #6b62f2;
+  --kapow-violet-wash: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0) 40%,
+    rgba(107, 98, 242, 0.565) 50%,
+    rgba(0, 0, 0, 0) 60%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  --kapow-success: #7ee2a8;
+  --kapow-warning: #ffcf5c;
+  --kapow-focus: 0 0 0 2px rgba(107, 98, 242, 0.6), 0 0 6px 2px rgba(107, 98, 242, 0.25);
+  --kapow-nav-shadow: rgba(255, 255, 255, 0.02) 0 3px 4.5px, rgba(0, 0, 0, 0.04) 0 10px 8px,
+    rgba(0, 0, 0, 0.1) 0 4px 3px;
+
+  --kapow-effect-amber: #ffb547;
+  --kapow-effect-coral: #ff6b5a;
+  --kapow-effect-violet: #6b62f2;
+  --kapow-effect-cobalt: #3d7bff;
+
+  --logo-start: #9b7bff;
+  --logo-end: #ff6b7a;
+
+  --kapow-font: 'DM Sans Variable', 'DM Sans', Inter, system-ui, sans-serif;
+  --kapow-font-heading: 'Geist Variable', Geist, Inter, system-ui, sans-serif;
+  --kapow-font-mono: 'Geist Mono Variable', 'Geist Mono', ui-monospace, Menlo, monospace;
+
+  --kapow-radius-icon: 4px;
+  --kapow-radius-control: 10px;
+  --kapow-radius-nav: 19px;
+  --kapow-radius-card: 24px;
+  --kapow-radius-panel: 40px;
+  --kapow-radius-pill: 9999px;
+
+  --kapow-space-1: 4px;
+  --kapow-space-2: 8px;
+  --kapow-space-3: 12px;
+  --kapow-space-4: 16px;
+  --kapow-space-5: 20px;
+  --kapow-space-6: 24px;
+  --kapow-space-7: 28px;
+  --kapow-space-8: 32px;
+  --kapow-space-10: 40px;
+  --kapow-space-12: 48px;
+  --kapow-section-gap: 72px;
+  --kapow-max-width: 1200px;
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    --kapow-canvas: #fafafa;
+    --kapow-panel: #ffffff;
+    --kapow-glass: rgba(22, 22, 22, 0.04);
+    --kapow-stage: #f2f2f2;
+    --kapow-hairline: rgba(22, 22, 22, 0.12);
+    --kapow-title: #0a0a0a;
+    --kapow-ink: #161616;
+    --kapow-ash: #3d3d3d;
+    --kapow-slate: #6b6b6b;
+    --kapow-action: #161616;
+    --kapow-on-action: #ffffff;
+    --kapow-success: #14804a;
+    --kapow-warning: #a15c00;
+    --logo-start: #7f52ff;
+    --logo-end: #e44857;
+    color-scheme: light;
+  }
+}
+
+:root[data-theme='light'] {
+  --kapow-canvas: #fafafa;
+  --kapow-panel: #ffffff;
+  --kapow-glass: rgba(22, 22, 22, 0.04);
+  --kapow-stage: #f2f2f2;
+  --kapow-hairline: rgba(22, 22, 22, 0.12);
+  --kapow-title: #0a0a0a;
+  --kapow-ink: #161616;
+  --kapow-ash: #3d3d3d;
+  --kapow-slate: #6b6b6b;
+  --kapow-action: #161616;
+  --kapow-on-action: #ffffff;
+  --kapow-success: #14804a;
+  --kapow-warning: #a15c00;
+  --logo-start: #7f52ff;
+  --logo-end: #e44857;
+  color-scheme: light;
+}
