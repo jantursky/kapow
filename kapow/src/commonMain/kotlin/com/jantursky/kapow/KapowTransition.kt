@@ -2,6 +2,7 @@ package com.jantursky.kapow
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -103,6 +104,23 @@ public class KapowEnter internal constructor(
             orientation: BlindsOrientation = BlindsOrientation.Vertical,
             duration: Duration = DefaultMaskDuration,
         ): KapowEnter = KapowEnter(TransitionKind.Curtain(orientation), duration.checked())
+
+        /**
+         * Like [iris], but the opening is [shape] instead of a circle: it grows from [origin] until it covers the
+         * content. Pointed shapes such as a [StarShape] grow past the content's corners, so their inner corners
+         * reach them too. With reduced motion it fades in instead.
+         *
+         * @param shape the opening, drawn in a square box that grows around [origin]. `CircleShape`,
+         *   `RoundedCornerShape` or a [StarShape] all work. The shape should hold its own center. Keep a
+         *   `GenericShape` in a `remember` or a top-level value, since a new one is a new transition.
+         * @param origin the point the shape grows from, as a fraction of the content's size.
+         * @param duration how long the transition takes, 600 ms by default.
+         */
+        public fun shapeIris(
+            shape: Shape = StarShape(),
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+        ): KapowEnter = KapowEnter(TransitionKind.ShapeIris(shape, origin), duration.checked())
     }
 }
 
@@ -188,6 +206,20 @@ public class KapowExit internal constructor(
             orientation: BlindsOrientation = BlindsOrientation.Vertical,
             duration: Duration = DefaultMaskDuration,
         ): KapowExit = KapowExit(TransitionKind.Curtain(orientation), duration.checked())
+
+        /**
+         * Like [iris], but the opening is [shape]: it shrinks toward [origin] until nothing is left. With reduced
+         * motion it fades out instead.
+         *
+         * @param shape the opening, as in [KapowEnter.shapeIris].
+         * @param origin the point the shape shrinks toward, as a fraction of the content's size.
+         * @param duration how long the transition takes, 600 ms by default.
+         */
+        public fun shapeIris(
+            shape: Shape = StarShape(),
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+        ): KapowExit = KapowExit(TransitionKind.ShapeIris(shape, origin), duration.checked())
     }
 }
 
@@ -241,5 +273,10 @@ internal sealed class TransitionKind {
 
     data class Curtain(
         val orientation: BlindsOrientation,
+    ) : TransitionKind()
+
+    data class ShapeIris(
+        val shape: Shape,
+        val origin: TransformOrigin,
     ) : TransitionKind()
 }

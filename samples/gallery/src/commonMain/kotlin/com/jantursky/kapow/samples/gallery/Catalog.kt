@@ -207,6 +207,13 @@ val entries: List<Entry> =
             Example("CurtainExample.kt") { CurtainDemo() },
         ),
         Entry(
+            "transition-shape-iris",
+            Group.Transitions,
+            "Shape iris",
+            "A star or any shape opens over the content.",
+            Example("ShapeIrisExample.kt") { ShapeIrisDemo() },
+        ),
+        Entry(
             "more-particle-layer",
             Group.More,
             "Particle layer",

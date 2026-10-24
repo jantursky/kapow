@@ -29,5 +29,6 @@ export default defineMeta({
     'transition-pop',
     'transition-dissolve',
     'transition-curtain',
+    'transition-shape-iris',
   ],
 })

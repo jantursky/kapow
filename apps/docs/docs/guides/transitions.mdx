@@ -3,7 +3,7 @@ title: Transitions
 description: Masked and particle enter and exit transitions for AnimatedVisibility and AnimatedContent, and why they are applied with a modifier.
 ---
 
-Kapow has ten transitions. Seven are masks that work in both directions: `iris`, `clock`, `wipe`, `glare`, `blinds`, `dissolve` and `curtain`. `pop` and `anvil` are enter-only. `poof` is exit-only.
+Kapow has eleven transitions. Eight are masks that work in both directions: `iris`, `clock`, `wipe`, `glare`, `blinds`, `dissolve`, `curtain` and `shapeIris`. `pop` and `anvil` are enter-only. `poof` is exit-only.
 
 ## Why not `enter = KapowEnter.iris()`?
 
@@ -143,7 +143,7 @@ The stock transitions and Kapow's keep their own durations. The container waits 
 
 ## Durations
 
-Each factory has a `duration`. Masks default to 450 ms, `poof` to 400 ms, `pop` to 1200 ms and `anvil` to 1400 ms. `pop` and `anvil` include their particles, so they run longer. `dissolve` defaults to 600 ms.
+Each factory has a `duration`. Masks default to 450 ms, `poof` to 400 ms, `pop` to 1200 ms and `anvil` to 1400 ms. `pop` and `anvil` include their particles, so they run longer. `dissolve` and `shapeIris` default to 600 ms.
 
 If visibility flips back before a transition has finished, Compose interrupts it with a short spring instead of the transition's own timing, as it does for stock transitions. The mask or movement then completes quickly from where it was.
 
