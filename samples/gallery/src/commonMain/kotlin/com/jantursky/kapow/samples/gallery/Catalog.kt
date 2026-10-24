@@ -95,6 +95,13 @@ val entries: List<Entry> =
             Example("TraceExample.kt") { TraceDemo() },
         ),
         Entry(
+            "change-strike",
+            Group.Change,
+            "Strike",
+            "A line draws through the element, holds and fades.",
+            Example("StrikeExample.kt") { StrikeDemo() },
+        ),
+        Entry(
             "conditional-repeat",
             Group.Conditional,
             "Repeat",

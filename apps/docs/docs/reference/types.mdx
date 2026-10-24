@@ -32,6 +32,7 @@ public abstract class ChangeEffect {
             width: Dp = 3.dp,
             duration: Duration = 1.seconds,
         ): ChangeEffect
+        public fun strike(color: Color = Color(0xFF6B62F2), width: Dp = 2.dp, hold: Duration = 600.milliseconds): ChangeEffect
     }
 }
 ```
@@ -47,6 +48,7 @@ public abstract class ChangeEffect {
 | `spin(axis, rate)` | Spins the element one or more full turns and settles where it started. Changes mid-spin add speed. |
 | `confettiPop(colors, count)` | A short pop of `count` confetti pieces in `colors` that burst from the element, tumble and fall away. |
 | `trace(shape, color, width, duration)` | A comet-like stroke that runs once around the outline of `shape`, clockwise from the top, then disappears. |
+| `strike(color, width, hold)` | A line that draws across the middle of the element, stays for `hold`, then fades out. |
 
 ### PulseStyle, SpinAxis, SpinRate
 

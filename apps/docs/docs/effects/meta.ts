@@ -14,6 +14,7 @@ export default defineMeta({
     'change-delay',
     'change-confetti-pop',
     'change-trace',
+    'change-strike',
     'conditional-repeat',
     'conditional-glow',
     'conditional-push-down',

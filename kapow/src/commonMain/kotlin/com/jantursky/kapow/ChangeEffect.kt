@@ -13,6 +13,7 @@ import com.jantursky.kapow.effects.RiseRunner
 import com.jantursky.kapow.effects.ShineRunner
 import com.jantursky.kapow.effects.SpinRunner
 import com.jantursky.kapow.effects.SprayRunner
+import com.jantursky.kapow.effects.StrikeRunner
 import com.jantursky.kapow.effects.TraceRunner
 import com.jantursky.kapow.internal.ChangeRunner
 import kotlin.time.Duration
@@ -139,6 +140,24 @@ public abstract class ChangeEffect internal constructor() {
             require(duration.isPositive()) { "duration must be positive" }
             return Trace(shape, color, width, duration)
         }
+
+        /**
+         * A line that draws across the middle of the element, in the reading direction, like crossing off a
+         * finished to-do. It stays for [hold], then fades out; keep your own done style, such as dimmed text, for
+         * after. With reduced motion the line appears whole instead of drawing across, then holds and fades the
+         * same way.
+         *
+         * @param width the line's thickness.
+         */
+        public fun strike(
+            color: Color = Color(0xFF6B62F2),
+            width: Dp = 2.dp,
+            hold: Duration = 600.milliseconds,
+        ): ChangeEffect {
+            require(width > 0.dp) { "width must be positive" }
+            require(!hold.isNegative()) { "hold must not be negative" }
+            return Strike(color, width, hold)
+        }
     }
 
     internal data class Delayed(
@@ -226,6 +245,16 @@ public abstract class ChangeEffect internal constructor() {
         override val cooldown: Duration get() = duration / 2
 
         override fun createRunner(): ChangeRunner = TraceRunner(shape, color, width, duration)
+    }
+
+    internal data class Strike(
+        val color: Color,
+        val width: Dp,
+        val hold: Duration,
+    ) : ChangeEffect() {
+        override val cooldown: Duration get() = Duration.ZERO
+
+        override fun createRunner(): ChangeRunner = StrikeRunner(color, width, hold)
     }
 }
 

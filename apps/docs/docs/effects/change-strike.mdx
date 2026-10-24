@@ -1,0 +1,52 @@
+---
+title: "Change: strike"
+description: A line draws through an element when a value changes, holds, then fades.
+---
+
+Strike draws a line across the middle of the element, like crossing off a finished to-do, keeps it there for a moment and fades it out. Your own "done" style, such as dimmed text, takes over after that.
+
+## Usage
+
+The sample strikes through a to-do label when it is ticked. `isEnabled = done` keeps unticking from playing the effect, and the dimmed color stays after the line has faded.
+
+```kotlin
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun TodoLabel(text: String, done: Boolean) {
+    BasicText(
+        text = text,
+        style = TextStyle(color = if (done) Color.Gray else Color.Black),
+        modifier = Modifier.changeEffect(done, ChangeEffect.strike(Color(0xFFFF6B5A)), isEnabled = done),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `color` | `Color(0xFF6B62F2)` | Color of the line. |
+| `width` | `2.dp` | Thickness of the line. Must be positive. |
+| `hold` | `600.milliseconds` | How long the full line stays before it fades. Must not be negative. |
+
+## Reduced motion
+
+The line does not draw across. It appears whole, holds for `hold` and fades the same way.
+
+## Notes
+
+- The line draws across in 0.26 s, from the start edge in the reading direction: left to right, or right to left in a right-to-left layout. It fades over 0.3 s after the hold.
+- It runs through the vertical middle of the element, across its full width. Put the modifier on the text itself rather than on the whole row, so the line crosses the words and not a checkbox or padding.
+- The line does not stay. If the finished state should keep a strikethrough, style the text with `TextDecoration.LineThrough` yourself.
+- A new change restarts the line. There is no cooldown.
+
+## Live example
+
+<include example="change-strike">../_snippets/live-example.mdx</include>
