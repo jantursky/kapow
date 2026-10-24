@@ -1,0 +1,57 @@
+---
+title: "Transition: tear"
+description: A wipe whose leading edge is torn like paper.
+---
+
+Tear is a [wipe](/effects/transition-wipe) with a ragged edge: an irregular tear with a light rim of paper along it. Use it for things made of paper in your UI, such as a coupon, a ticket, a receipt or a note.
+
+## Usage
+
+The sample tears a coupon in from the left and tears it off the same way.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+
+@Composable
+fun Coupon(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        enter = KapowEnter.tear(angle = 0f, toothSize = 12.dp),
+        exit = KapowExit.tear(angle = 0f, toothSize = 12.dp),
+    ) {
+        Box(Modifier.size(260.dp, 130.dp).background(Color.DarkGray))
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `angle` | `0f` | The direction the edge moves in, in degrees: 0 is rightward, 90 downward. |
+| `toothSize` | `12.dp` | How far the tear strays off a straight line. Its jags come at under half of that apart. Must be at least 2 dp. |
+| `duration` | `500.milliseconds` | How long the transition takes. Must be positive. |
+
+## Reduced motion
+
+The transition becomes a fade over the same duration or shorter. There is no mask.
+
+## Notes
+
+- Available as `KapowEnter.tear()` and `KapowExit.tear()`. The exit runs the edge backward, covering the content.
+- The tear is irregular but seeded, so it is the same on every run.
+- The rim is a thin white line drawn on the content's own pixels, so it does not show on white content.
+- The mask is drawn with an offscreen layer and a blend mode, so it works on all targets, including Android API 23.
+
+## Live example
+
+<include example="transition-tear">../_snippets/live-example.mdx</include>

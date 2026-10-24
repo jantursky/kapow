@@ -134,6 +134,21 @@ public class KapowEnter internal constructor(
             cellSize: Dp = 24.dp,
             duration: Duration = 600.milliseconds,
         ): KapowEnter = KapowEnter(TransitionKind.Checker(cellSize.checkedCell()), duration.checked())
+
+        /**
+         * A [wipe] whose leading edge is torn like paper: an irregular zigzag with a light rim along it, moving
+         * across the content in the direction of [angle]. With reduced motion it fades in instead.
+         *
+         * @param angle the direction the edge moves in, in degrees: 0 is rightward, 90 downward.
+         * @param toothSize how far the tear strays off a straight line, at least 2 dp. Its jags come at under
+         *   half of that apart. They are irregular, but the same every time.
+         * @param duration how long the transition takes, 500 ms by default.
+         */
+        public fun tear(
+            angle: Float = 0f,
+            toothSize: Dp = 12.dp,
+            duration: Duration = 500.milliseconds,
+        ): KapowEnter = KapowEnter(TransitionKind.Tear(angle, toothSize.checkedTooth()), duration.checked())
     }
 }
 
@@ -245,6 +260,20 @@ public class KapowExit internal constructor(
             cellSize: Dp = 24.dp,
             duration: Duration = 600.milliseconds,
         ): KapowExit = KapowExit(TransitionKind.Checker(cellSize.checkedCell()), duration.checked())
+
+        /**
+         * A torn edge, like [KapowEnter.tear], that covers the content moving against [angle]. With reduced motion
+         * it fades out instead.
+         *
+         * @param angle the direction the edge moved in on enter, in degrees; the exit runs it backward.
+         * @param toothSize how far the tear strays off a straight line, at least 2 dp.
+         * @param duration how long the transition takes, 500 ms by default.
+         */
+        public fun tear(
+            angle: Float = 0f,
+            toothSize: Dp = 12.dp,
+            duration: Duration = 500.milliseconds,
+        ): KapowExit = KapowExit(TransitionKind.Tear(angle, toothSize.checkedTooth()), duration.checked())
     }
 }
 
@@ -257,6 +286,11 @@ private fun Duration.checked(): Duration {
 
 private fun Dp.checkedCell(): Dp {
     require(this >= 2.dp) { "cellSize must be at least 2 dp" }
+    return this
+}
+
+private fun Dp.checkedTooth(): Dp {
+    require(this >= 2.dp) { "toothSize must be at least 2 dp" }
     return this
 }
 
@@ -307,5 +341,10 @@ internal sealed class TransitionKind {
 
     data class Checker(
         val cellSize: Dp,
+    ) : TransitionKind()
+
+    data class Tear(
+        val angle: Float,
+        val toothSize: Dp,
     ) : TransitionKind()
 }

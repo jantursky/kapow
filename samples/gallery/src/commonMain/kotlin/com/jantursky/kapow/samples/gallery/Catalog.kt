@@ -221,6 +221,13 @@ val entries: List<Entry> =
             Example("CheckerExample.kt") { CheckerDemo() },
         ),
         Entry(
+            "transition-tear",
+            Group.Transitions,
+            "Tear",
+            "A torn paper edge reveals or hides the content.",
+            Example("TearExample.kt") { TearDemo() },
+        ),
+        Entry(
             "more-particle-layer",
             Group.More,
             "Particle layer",

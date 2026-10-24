@@ -122,6 +122,7 @@ final class com.jantursky.kapow/KapowEnter { // com.jantursky.kapow/KapowEnter|n
         final fun iris(androidx.compose.ui.graphics/TransformOrigin = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowEnter // com.jantursky.kapow/KapowEnter.Companion.iris|iris(androidx.compose.ui.graphics.TransformOrigin;kotlin.time.Duration){}[0]
         final fun pop(androidx.compose.ui.graphics/Color = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowEnter // com.jantursky.kapow/KapowEnter.Companion.pop|pop(androidx.compose.ui.graphics.Color;kotlin.time.Duration){}[0]
         final fun shapeIris(androidx.compose.ui.graphics/Shape = ..., androidx.compose.ui.graphics/TransformOrigin = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowEnter // com.jantursky.kapow/KapowEnter.Companion.shapeIris|shapeIris(androidx.compose.ui.graphics.Shape;androidx.compose.ui.graphics.TransformOrigin;kotlin.time.Duration){}[0]
+        final fun tear(kotlin/Float = ..., androidx.compose.ui.unit/Dp = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowEnter // com.jantursky.kapow/KapowEnter.Companion.tear|tear(kotlin.Float;androidx.compose.ui.unit.Dp;kotlin.time.Duration){}[0]
         final fun wipe(kotlin/Float = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowEnter // com.jantursky.kapow/KapowEnter.Companion.wipe|wipe(kotlin.Float;kotlin.time.Duration){}[0]
     }
 }
@@ -144,6 +145,7 @@ final class com.jantursky.kapow/KapowExit { // com.jantursky.kapow/KapowExit|nul
         final fun iris(androidx.compose.ui.graphics/TransformOrigin = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowExit // com.jantursky.kapow/KapowExit.Companion.iris|iris(androidx.compose.ui.graphics.TransformOrigin;kotlin.time.Duration){}[0]
         final fun poof(androidx.compose.ui.graphics/Color = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowExit // com.jantursky.kapow/KapowExit.Companion.poof|poof(androidx.compose.ui.graphics.Color;kotlin.time.Duration){}[0]
         final fun shapeIris(androidx.compose.ui.graphics/Shape = ..., androidx.compose.ui.graphics/TransformOrigin = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowExit // com.jantursky.kapow/KapowExit.Companion.shapeIris|shapeIris(androidx.compose.ui.graphics.Shape;androidx.compose.ui.graphics.TransformOrigin;kotlin.time.Duration){}[0]
+        final fun tear(kotlin/Float = ..., androidx.compose.ui.unit/Dp = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowExit // com.jantursky.kapow/KapowExit.Companion.tear|tear(kotlin.Float;androidx.compose.ui.unit.Dp;kotlin.time.Duration){}[0]
         final fun wipe(kotlin/Float = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowExit // com.jantursky.kapow/KapowExit.Companion.wipe|wipe(kotlin.Float;kotlin.time.Duration){}[0]
     }
 }
@@ -285,6 +287,7 @@ final val com.jantursky.kapow/com_jantursky_kapow_TransitionKind_None$stableprop
 final val com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Poof$stableprop // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Poof$stableprop|#static{}com_jantursky_kapow_TransitionKind_Poof$stableprop[0]
 final val com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Pop$stableprop // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Pop$stableprop|#static{}com_jantursky_kapow_TransitionKind_Pop$stableprop[0]
 final val com.jantursky.kapow/com_jantursky_kapow_TransitionKind_ShapeIris$stableprop // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_ShapeIris$stableprop|#static{}com_jantursky_kapow_TransitionKind_ShapeIris$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Tear$stableprop // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Tear$stableprop|#static{}com_jantursky_kapow_TransitionKind_Tear$stableprop[0]
 final val com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Wipe$stableprop // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Wipe$stableprop|#static{}com_jantursky_kapow_TransitionKind_Wipe$stableprop[0]
 
 final fun (androidx.compose.ui/Modifier).com.jantursky.kapow/changeEffect(kotlin/Any?, com.jantursky.kapow/ChangeEffect, kotlin/Boolean = ..., com.jantursky.kapow/KapowFeedbackEvent? = ...): androidx.compose.ui/Modifier // com.jantursky.kapow/changeEffect|changeEffect@androidx.compose.ui.Modifier(kotlin.Any?;com.jantursky.kapow.ChangeEffect;kotlin.Boolean;com.jantursky.kapow.KapowFeedbackEvent?){}[0]
@@ -323,5 +326,6 @@ final fun com.jantursky.kapow/com_jantursky_kapow_TransitionKind_None$stableprop
 final fun com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Poof$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Poof$stableprop_getter|com_jantursky_kapow_TransitionKind_Poof$stableprop_getter(){}[0]
 final fun com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Pop$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Pop$stableprop_getter|com_jantursky_kapow_TransitionKind_Pop$stableprop_getter(){}[0]
 final fun com.jantursky.kapow/com_jantursky_kapow_TransitionKind_ShapeIris$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_ShapeIris$stableprop_getter|com_jantursky_kapow_TransitionKind_ShapeIris$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Tear$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Tear$stableprop_getter|com_jantursky_kapow_TransitionKind_Tear$stableprop_getter(){}[0]
 final fun com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Wipe$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Wipe$stableprop_getter|com_jantursky_kapow_TransitionKind_Wipe$stableprop_getter(){}[0]
 final fun com.jantursky.kapow/isReducedMotion(androidx.compose.runtime/Composer?, kotlin/Int): kotlin/Boolean // com.jantursky.kapow/isReducedMotion|isReducedMotion(androidx.compose.runtime.Composer?;kotlin.Int){}[0]

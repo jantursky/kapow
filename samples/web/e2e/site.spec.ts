@@ -167,6 +167,7 @@ const LIVE = [
   'transition-curtain',
   'transition-shape-iris',
   'transition-checker',
+  'transition-tear',
 ]
 
 for (const id of LIVE) {
