@@ -1,0 +1,57 @@
+---
+title: "Transition: blinds"
+description: Slats open or close like venetian blinds.
+---
+
+Blinds opens content through a row of slats. Use it where a plain fade feels flat, such as a gallery image or a hero banner.
+
+## Usage
+
+The sample opens a picture through staggered vertical slats.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.BlindsOrientation
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+
+@Composable
+fun Picture(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        enter = KapowEnter.blinds(orientation = BlindsOrientation.Vertical, staggered = true),
+        exit = KapowExit.blinds(orientation = BlindsOrientation.Vertical, staggered = true),
+    ) {
+        Box(Modifier.size(240.dp).background(Color.DarkGray))
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `slatWidth` | `10.dp` | The width of one slat. Values below 5 dp are raised to 5 dp. |
+| `orientation` | `BlindsOrientation.Horizontal` | The direction of the slats. |
+| `staggered` | `false` | When true, slats nearer the top (or the start) open first. |
+| `duration` | `450.milliseconds` | How long the transition takes. Must be positive. |
+
+## Reduced motion
+
+The transition becomes a fade over the same duration or shorter. There is no mask.
+
+## Notes
+
+- On exit the slats close.
+- The mask works on all targets without blur or shaders.
+
+## Live example
+
+<include example="transition-blinds">../_snippets/live-example.mdx</include>

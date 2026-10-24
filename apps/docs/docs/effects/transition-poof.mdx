@@ -1,0 +1,54 @@
+---
+title: "Transition: poof"
+description: Content vanishes at once in a puff of smoke.
+---
+
+Poof is an exit only. Use it when something is deleted or dismissed and should disappear with a little humor, such as a cleared notification or a removed item.
+
+## Usage
+
+The sample removes a notification card in a puff.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowExit
+
+@Composable
+fun Notification(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        exit = KapowExit.poof(color = Color(0xFFC2C2C2)),
+    ) {
+        Box(Modifier.size(280.dp, 64.dp).background(Color.DarkGray))
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `color` | `Color(0xFFC2C2C2)` | Color of the smoke. |
+| `duration` | `400.milliseconds` | How long the puff plays. Must be positive. |
+
+## Reduced motion
+
+The transition becomes a fade over the same duration or shorter. There are no particles and no movement.
+
+## Notes
+
+- Particles draw through a [particle layer](/guides/particle-layer) when one is above the element, so a clipping parent does not cut them off. Without one they draw around the element.
+- The content is hidden at the start. The puff plays over the duration, centered on where the content was.
+- The smoke is drawn procedurally, with no images.
+- There is no enter version. Pair it with another enter, such as `KapowEnter.pop()`.
+
+## Live example
+
+<include example="transition-poof">../_snippets/live-example.mdx</include>

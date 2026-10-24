@@ -1,0 +1,57 @@
+---
+title: "Change: spin"
+description: The element turns full circles and settles when a value changes.
+---
+
+Spin turns the element around an axis and lands it exactly where it started. Use it for a toggle that flipped or an icon that confirms an action.
+
+## Usage
+
+The sample turns a coin like a coin on a table each time the balance changes.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.SpinAxis
+import com.jantursky.kapow.SpinRate
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun Coin(balance: Int) {
+    Box(
+        Modifier
+            .size(48.dp)
+            .background(Color(0xFFFFB547), CircleShape)
+            .changeEffect(balance, ChangeEffect.spin(axis = SpinAxis.Y, rate = SpinRate.Fast)),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `axis` | `SpinAxis.Y` | `X` flips top over bottom, `Y` turns like a coin on a table, `Z` turns like a wheel. |
+| `rate` | `SpinRate.Default` | How fast the spin starts. `SpinRate.Fast` starts quicker. |
+
+## Reduced motion
+
+The element does not rotate. It brightens briefly.
+
+## Notes
+
+- The spin ends at a rotation of 0 degrees, so the element is back in its normal pose.
+- A change while the element is still spinning adds speed instead of restarting.
+- There is no cooldown.
+- The rotation is applied to the element's layer, so it does not change layout. Neighbors do not move.
+
+## Live example
+
+<include example="change-spin">../_snippets/live-example.mdx</include>

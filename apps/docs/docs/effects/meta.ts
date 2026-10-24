@@ -1,9 +1,31 @@
 import { defineMeta } from 'blume'
 
-// Per-effect pages are listed here, in this order, as they are written.
-// Names: change-<effect>, conditional-<effect>, progress-<effect>, transition-<effect>.
+// Per-effect pages are named <kind>-<name>. Add a new one here, in the order it should appear.
 export default defineMeta({
   title: 'Effects',
   order: 4,
-  pages: [],
+  pages: [
+    'change-shine',
+    'change-pulse',
+    'change-glow',
+    'change-spray',
+    'change-rise',
+    'change-spin',
+    'change-delay',
+    'conditional-repeat',
+    'conditional-glow',
+    'conditional-push-down',
+    'conditional-smoke',
+    'progress-shine',
+    'progress-glow',
+    'progress-iris',
+    'transition-iris',
+    'transition-clock',
+    'transition-wipe',
+    'transition-glare',
+    'transition-blinds',
+    'transition-poof',
+    'transition-anvil',
+    'transition-pop',
+  ],
 })

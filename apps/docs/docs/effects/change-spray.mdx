@@ -1,0 +1,63 @@
+---
+title: "Change: spray"
+description: A burst of particles fans upward from an element when a value changes.
+---
+
+Spray throws a short burst of particles up and out of the element. It fits a reward moment, such as a like, a favorite or a purchase.
+
+## Usage
+
+The sample sprays red hearts when the like count goes up. It uses a particle layer so the hearts are not clipped by the list around them.
+
+```kotlin
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.ParticleContent
+import com.jantursky.kapow.ParticleShape
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun LikeButton(likes: Int) {
+    BasicText(
+        text = "Likes: $likes",
+        modifier = Modifier.changeEffect(
+            value = likes,
+            effect = ChangeEffect.spray(
+                particles = ParticleContent.shape(
+                    shape = ParticleShape.Heart,
+                    colors = listOf(Color.Red, Color(0xFFFF6B5A)),
+                    size = 12.dp,
+                ),
+                count = 14,
+            ),
+        ),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `particles` | `ParticleContent.shape()` | What each particle looks like. `ParticleContent.shape(shape, colors, size)` draws a built-in shape (`Circle`, `Square`, `Star`, `Heart`, `Sparkle`), taking colors in turn. `ParticleContent.painter(painter, size, tint)` draws an icon or image. The default is a 14 dp sparkle in amber, coral, violet and cobalt. |
+| `count` | `11` | How many particles one change sprays. Must be positive. |
+
+## Reduced motion
+
+No particles are emitted. The element brightens briefly.
+
+## Notes
+
+- Particles draw through a [particle layer](/guides/particle-layer) when one is above the element, so a clipping parent does not cut them off. Without one they draw around the element.
+- The particles fan upward, scale in, then fade. A burst is gone in about a second.
+- There is no cooldown, so quick changes start overlapping bursts.
+- A `painter` should be remembered.
+- Particles that are in flight do not follow the element if it moves or scrolls.
+
+## Live example
+
+<include example="change-spray">../_snippets/live-example.mdx</include>

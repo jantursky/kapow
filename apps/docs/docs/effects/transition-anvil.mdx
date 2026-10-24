@@ -1,0 +1,52 @@
+---
+title: "Transition: anvil"
+description: Content drops in from above, lands with a shake and throws dust.
+---
+
+Anvil is an enter only. Use it for something heavy that should land, such as an error banner or a "Level complete" card.
+
+## Usage
+
+The sample drops a card in with dust at its base.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+
+@Composable
+fun LevelComplete(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        enter = KapowEnter.anvil(),
+    ) {
+        Box(Modifier.size(240.dp, 120.dp).background(Color.DarkGray))
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `duration` | `1400.milliseconds` | How long the whole transition takes, including the shake and the dust. Must be positive. |
+
+## Reduced motion
+
+The transition becomes a fade over the same duration or shorter. There are no particles and no movement.
+
+## Notes
+
+- Particles draw through a [particle layer](/guides/particle-layer) when one is above the element, so a clipping parent does not cut them off. Without one they draw around the element.
+- The content falls into place in the first tenth of the transition. Then it shakes briefly and dust spreads sideways from its base.
+- There is no exit version. Pair it with an exit such as `KapowExit.poof()`.
+
+## Live example
+
+<include example="transition-anvil">../_snippets/live-example.mdx</include>

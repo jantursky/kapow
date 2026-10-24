@@ -1,0 +1,58 @@
+---
+title: "Change: pulse"
+description: Rings or filled shapes grow outward behind an element when a value changes.
+---
+
+Pulse sends one or more rings out from the element, in the element's shape. It suits something that arrived, such as a new message on a badge or a button that just registered a tap.
+
+## Usage
+
+The sample sends two circular rings from a badge each time the unread count changes.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun UnreadBadge(unread: Int) {
+    Box(
+        Modifier
+            .size(24.dp)
+            .background(Color.Red, CircleShape)
+            .changeEffect(unread, ChangeEffect.pulse(shape = CircleShape, color = Color.Red, count = 2)),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `shape` | `RectangleShape` | The shape of the rings or fills. Use the element's own shape so the pulse matches it. |
+| `color` | `Color(0xFF6B62F2)` | Color of the rings or fills. |
+| `style` | `PulseStyle.Stroke()` | `PulseStyle.Stroke(width)` draws rings, 2 dp wide by default. `PulseStyle.Fill` draws filled shapes. |
+| `count` | `1` | How many pulses one change sends, 0.2 s apart. Must be positive. |
+
+## Reduced motion
+
+No rings grow. The element's area flashes in the pulse color at about 30 % opacity and fades out in 0.4 s.
+
+## Notes
+
+- Each pulse grows outward from the element's bounds by three quarters of its shorter side, at most 64 dp, quickly at first and then slower, while it fades.
+- A ring lasts 1.5 s. A fill lasts 2 s and starts at about a third of the color's opacity.
+- The pulses are drawn behind the element's content.
+- The cooldown is 0.2 s for each pulse after the first, so `count = 3` ignores changes for 0.4 s.
+- A parent that clips its children will clip the pulse, since it is drawn outside the element's bounds.
+
+## Live example
+
+<include example="change-pulse">../_snippets/live-example.mdx</include>

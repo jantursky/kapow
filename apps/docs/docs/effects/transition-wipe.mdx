@@ -1,0 +1,55 @@
+---
+title: "Transition: wipe"
+description: A straight edge moves across content to reveal or hide it.
+---
+
+Wipe moves an edge across the content. Use it to swap pages or to reveal an image from one side.
+
+## Usage
+
+The sample wipes a banner in from the left and out toward the left.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+
+@Composable
+fun Banner(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        enter = KapowEnter.wipe(angle = 0f),
+        exit = KapowExit.wipe(angle = 0f),
+    ) {
+        Box(Modifier.size(280.dp, 64.dp).background(Color.DarkGray))
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `angle` | `0f` | The direction the edge moves, in degrees. 0 is rightward. |
+| `duration` | `450.milliseconds` | How long the transition takes. Must be positive. |
+
+## Reduced motion
+
+The transition becomes a fade over the same duration or shorter. There is no mask.
+
+## Notes
+
+- On exit the edge moves against `angle` and covers the content.
+- The mask works on all targets without blur or shaders.
+- [Glare](/effects/transition-glare) is a wipe with a bright streak along the edge.
+
+## Live example
+
+<include example="transition-wipe">../_snippets/live-example.mdx</include>

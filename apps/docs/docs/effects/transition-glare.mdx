@@ -1,0 +1,55 @@
+---
+title: "Transition: glare"
+description: A wipe with a bright streak along its edge.
+---
+
+Glare is a wipe that catches the light. Use it for a premium or highlighted item that should arrive with a bit more drama than a plain wipe.
+
+## Usage
+
+The sample wipes a promo card in at 45 degrees with a white streak on the edge.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+
+@Composable
+fun PromoCard(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        enter = KapowEnter.glare(angle = 45f, color = Color.White),
+        exit = KapowExit.glare(angle = 45f, color = Color.White),
+    ) {
+        Box(Modifier.size(240.dp, 120.dp).background(Color.DarkGray))
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `angle` | `45f` | The direction the edge moves, in degrees. 0 is rightward. |
+| `color` | `Color.White` | Color of the streak. |
+| `duration` | `450.milliseconds` | How long the transition takes. Must be positive. |
+
+## Reduced motion
+
+The transition becomes a fade over the same duration or shorter. There is no mask.
+
+## Notes
+
+- On exit the edge moves against `angle` and covers the content, with the streak on it.
+- The mask and the streak are drawn without blur or shaders.
+
+## Live example
+
+<include example="transition-glare">../_snippets/live-example.mdx</include>

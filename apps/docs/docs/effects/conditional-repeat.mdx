@@ -1,0 +1,60 @@
+---
+title: "Conditional: repeat"
+description: Play a change effect now and then while a condition is true.
+---
+
+Repeat plays a change effect when a condition becomes true and again at a fixed interval while it stays true. Use it for a gentle nudge, such as a shine across an "Update available" button every few seconds.
+
+## Usage
+
+The sample pulses a badge every two seconds while there is unread mail.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.conditionalEffect
+import kotlin.time.Duration.Companion.seconds
+
+@Composable
+fun MailBadge(hasUnread: Boolean) {
+    Box(
+        Modifier
+            .size(12.dp)
+            .background(Color.Red, CircleShape)
+            .conditionalEffect(
+                condition = hasUnread,
+                effect = ConditionalEffect.repeat(ChangeEffect.pulse(shape = CircleShape, color = Color.Red), every = 2.seconds),
+            ),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `effect` | required | The change effect to play. |
+| `every` | required | The time between plays. Anything shorter than `ConditionalEffect.MinRepeatInterval` (1/15 s) is raised to it. |
+
+## Reduced motion
+
+Each repetition plays the wrapped effect's reduced version.
+
+## Notes
+
+- The first play is immediate, including when the condition is already true on first composition.
+- When the condition turns false, no more plays are scheduled. A play that is already running finishes.
+- The wrapped effect keeps its cooldown. If `every` is shorter than the cooldown, some repetitions are skipped.
+- You can wrap a [delayed](/effects/change-delay) effect.
+
+## Live example
+
+<include example="conditional-repeat">../_snippets/live-example.mdx</include>

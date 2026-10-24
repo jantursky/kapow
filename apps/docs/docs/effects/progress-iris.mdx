@@ -1,0 +1,53 @@
+---
+title: "Progress: iris"
+description: A circular reveal whose radius follows a progress value.
+---
+
+Progress iris shows an element through a circle that grows with a value you control. Use it for a reveal tied to a scroll or a gesture, or to open content as a foldable opens.
+
+## Usage
+
+The sample reveals an image placeholder from its center as `progress` goes from 0 to 1.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ProgressEffect
+import com.jantursky.kapow.progressEffect
+
+@Composable
+fun RevealCard(progress: () -> Float) {
+    Box(
+        Modifier
+            .size(200.dp)
+            .background(Color(0xFF6B62F2))
+            .progressEffect(ProgressEffect.iris(origin = TransformOrigin.Center), progress),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `origin` | `TransformOrigin.Center` | The point the circle grows from, as a fraction of the element's size. `TransformOrigin(0f, 0f)` is the top left corner. |
+
+## Reduced motion
+
+Progress effects do not animate on their own. The element is revealed as far as the progress says.
+
+## Notes
+
+- At progress 0 nothing is visible. At progress 1 the whole element is.
+- The reveal is a mask, so it works on all targets without blur or shaders.
+- The [iris transition](/effects/transition-iris) is the timed version of the same reveal.
+
+## Live example
+
+<include example="progress-iris">../_snippets/live-example.mdx</include>

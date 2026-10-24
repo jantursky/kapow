@@ -1,0 +1,58 @@
+---
+title: "Change: glow"
+description: A colored halo flares up around an element when a value changes.
+---
+
+Glow lights the element's surroundings for a moment and brightens the element itself. It reads well on dark surfaces for something that just got attention, such as a card that received a reply or a score that went up.
+
+## Usage
+
+The sample glows around a rounded card whenever its score changes. Pass the card's own shape so the halo matches its corners.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun ScoreCard(score: Int) {
+    val shape = RoundedCornerShape(16.dp)
+    BasicText(
+        text = "Score: $score",
+        modifier = Modifier
+            .background(Color.DarkGray, shape)
+            .changeEffect(score, ChangeEffect.glow(color = Color(0xFFFFB547), radius = 20.dp, shape = shape)),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `color` | `Color(0xFF6B62F2)` | Color of the halo. |
+| `radius` | `16.dp` | How far the halo reaches at its normal strength. A strengthened halo reaches further. |
+| `shape` | `RectangleShape` | The shape the halo follows. |
+
+## Reduced motion
+
+No spring. A faint halo appears and fades out in 0.3 s. The element is brightened only a little.
+
+## Notes
+
+- The halo follows the `shape` you pass, not the alpha of the content. A transparent image inside a rectangle still gets a rectangular halo.
+- Changes that arrive while the glow is still running add to it. The halo gets stronger up to a cap, then stays there.
+- The element itself is brightened by up to a quarter at the strongest point.
+- Where the platform can blur (all Skia targets and Android 12 and later) the halo is one blurred layer. On Android below 12 it is five stacked copies of the shape at falling opacity. It looks harder-edged there.
+- There is no cooldown. Every change adds a push.
+- The halo is drawn outside the element's bounds, so a clipping parent cuts it off.
+
+## Live example
+
+<include example="change-glow">../_snippets/live-example.mdx</include>

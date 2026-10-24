@@ -13,12 +13,14 @@ Attach with `Modifier.changeEffect(value, effect)`. They play once each time `va
 
 | Effect | What it does |
 | --- | --- |
-| `shine` | A soft band of light sweeps across the element's drawn pixels. |
-| `pulse` | Rings or fills in the element's shape grow outward behind it and fade. |
-| `glow` | A colored halo flares up and fades. Quick repeats make it stronger, up to a limit. |
-| `spray` | A burst of particles fans upward from the element, grows, then fades. |
-| `rise` | One particle per change, such as "+1", floats up from the element and fades. |
-| `spin` | The element turns one or more full turns and settles where it started. |
+| [`shine`](/effects/change-shine) | A soft band of light sweeps across the element's drawn pixels. |
+| [`pulse`](/effects/change-pulse) | Rings or fills in the element's shape grow outward behind it and fade. |
+| [`glow`](/effects/change-glow) | A colored halo flares up and fades. Quick repeats make it stronger, up to a limit. |
+| [`spray`](/effects/change-spray) | A burst of particles fans upward from the element, grows, then fades. |
+| [`rise`](/effects/change-rise) | One particle per change, such as "+1", floats up from the element and fades. |
+| [`spin`](/effects/change-spin) | The element turns one or more full turns and settles where it started. |
+
+[`delay`](/effects/change-delay) wraps any change effect so it starts a fixed time after the change.
 
 ## Conditional effects
 
@@ -26,10 +28,10 @@ Attach with `Modifier.conditionalEffect(condition, effect)`. They stay on while 
 
 | Effect | What it does |
 | --- | --- |
-| `repeat` | Plays a change effect when the condition turns true, then every interval while it stays true. |
-| `glow` | A steady halo in the element's shape that fades in and out with the condition. |
-| `pushDown` | The element scales down slightly, as if pressed, and springs back. |
-| `smoke` | Soft particles rise from the top of the element. |
+| [`repeat`](/effects/conditional-repeat) | Plays a change effect when the condition turns true, then every interval while it stays true. |
+| [`glow`](/effects/conditional-glow) | A steady halo in the element's shape that fades in and out with the condition. |
+| [`pushDown`](/effects/conditional-push-down) | The element scales down slightly, as if pressed, and springs back. |
+| [`smoke`](/effects/conditional-smoke) | Soft particles rise from the top of the element. |
 
 ## Progress effects
 
@@ -37,9 +39,9 @@ Attach with `Modifier.progressEffect(effect) { progress }`. You control the prog
 
 | Effect | What it does |
 | --- | --- |
-| `shine` | A band of light whose position across the element follows the progress. |
-| `glow` | A halo whose strength follows the progress. |
-| `iris` | A circular reveal from an origin whose radius follows the progress. |
+| [`shine`](/effects/progress-shine) | A band of light whose position across the element follows the progress. |
+| [`glow`](/effects/progress-glow) | A halo whose strength follows the progress. |
+| [`iris`](/effects/progress-iris) | A circular reveal from an origin whose radius follows the progress. |
 
 ## Transitions
 
@@ -47,15 +49,11 @@ Attach with `Modifier.kapowTransition(scope, enter, exit)` inside `AnimatedVisib
 
 | Transition | Enter | Exit | What it does |
 | --- | --- | --- | --- |
-| `iris` | yes | yes | A circle grows from an origin until it covers the content, or shrinks back. |
-| `clock` | yes | yes | A sweep around an origin, clockwise from 12 o'clock, like a clock hand. |
-| `wipe` | yes | yes | A straight edge moves across the content at an angle. |
-| `glare` | yes | yes | A wipe with a bright streak along its edge. |
-| `blinds` | yes | yes | Slats open or close like venetian blinds, optionally staggered. |
-| `pop` | yes | no | The content scales in with an overshoot while a ring and a burst of particles go off behind it. |
-| `anvil` | yes | no | The content drops in from above, lands with a shake and kicks up dust. |
-| `poof` | no | yes | The content vanishes at once in a puff of smoke. |
-
-## Per-effect pages
-
-Each effect gets its own page with usage, parameters, reduced-motion behavior, fallback notes and a live example. They are being added one at a time.
+| [`iris`](/effects/transition-iris) | yes | yes | A circle grows from an origin until it covers the content, or shrinks back. |
+| [`clock`](/effects/transition-clock) | yes | yes | A sweep around an origin, clockwise from 12 o'clock, like a clock hand. |
+| [`wipe`](/effects/transition-wipe) | yes | yes | A straight edge moves across the content at an angle. |
+| [`glare`](/effects/transition-glare) | yes | yes | A wipe with a bright streak along its edge. |
+| [`blinds`](/effects/transition-blinds) | yes | yes | Slats open or close like venetian blinds, optionally staggered. |
+| [`pop`](/effects/transition-pop) | yes | no | The content scales in with an overshoot while a ring and a burst of particles go off behind it. |
+| [`anvil`](/effects/transition-anvil) | yes | no | The content drops in from above, lands with a shake and kicks up dust. |
+| [`poof`](/effects/transition-poof) | no | yes | The content vanishes at once in a puff of smoke. |

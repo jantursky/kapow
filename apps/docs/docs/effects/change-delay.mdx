@@ -1,0 +1,49 @@
+---
+title: "Change: delay"
+description: Wrap any change effect so it starts a fixed time after the change.
+---
+
+`delay` is not an effect of its own. It wraps one so the effect starts a little after the value changes. Use it to line an effect up with something else, such as a number that finishes counting up or a card that lands.
+
+## Usage
+
+The sample sprays 300 ms after the coin count changes.
+
+```kotlin
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+import kotlin.time.Duration.Companion.milliseconds
+
+@Composable
+fun Reward(coins: Int) {
+    BasicText(
+        text = "Coins: $coins",
+        modifier = Modifier.changeEffect(coins, ChangeEffect.spray().delay(300.milliseconds)),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `delay` | required | How long to wait after the change is accepted. Must not be negative. |
+
+## Reduced motion
+
+The wrapped effect plays its reduced version, after the same delay.
+
+## Notes
+
+- Call it on any `ChangeEffect`: `ChangeEffect.shine().delay(...)`. It returns a new `ChangeEffect`.
+- Delays add up if you nest them.
+- The cooldown of the wrapped effect is checked when the change arrives, before the delay starts. The wait does not extend it.
+- The feedback event, if you set one, is sent when the delay ends, just before the effect starts.
+- A [conditional `repeat`](/effects/conditional-repeat) can wrap a delayed effect too.
+
+## Live example
+
+<include example="change-delay">../_snippets/live-example.mdx</include>

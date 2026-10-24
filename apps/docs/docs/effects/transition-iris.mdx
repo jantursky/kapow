@@ -1,0 +1,57 @@
+---
+title: "Transition: iris"
+description: A circle grows from a point to reveal content, and shrinks to hide it.
+---
+
+Iris opens content like a camera iris. Use it for a dialog that appears from the button that opened it, or a card that opens from the point you tapped.
+
+## Usage
+
+The sample opens a panel from its top left corner and closes it back to the same point.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+
+@Composable
+fun Panel(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        enter = KapowEnter.iris(origin = TransformOrigin(0f, 0f)),
+        exit = KapowExit.iris(origin = TransformOrigin(0f, 0f)),
+    ) {
+        Box(Modifier.size(200.dp).background(Color.DarkGray))
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `origin` | `TransformOrigin.Center` | The point the circle grows from or shrinks to, as a fraction of the content's size. |
+| `duration` | `450.milliseconds` | How long the transition takes. Must be positive. |
+
+## Reduced motion
+
+The transition becomes a fade over the same duration or shorter. There is no mask.
+
+## Notes
+
+- Available as `KapowEnter.iris()` and `KapowExit.iris()`. The exit runs the enter in reverse.
+- The circle ends large enough to cover the whole content from any origin inside it.
+- The mask is drawn with an offscreen layer and a blend mode, so it works on all targets, including Android API 23.
+- Use it with `KapowAnimatedVisibility`, or with `Modifier.kapowTransition` inside `AnimatedVisibility` or `AnimatedContent`. See [Transitions](/guides/transitions).
+
+## Live example
+
+<include example="transition-iris">../_snippets/live-example.mdx</include>

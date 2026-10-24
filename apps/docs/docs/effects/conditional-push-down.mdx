@@ -1,0 +1,52 @@
+---
+title: "Conditional: pushDown"
+description: Scale an element down slightly while a condition is true.
+---
+
+Push down makes an element look pressed. Use it for a custom button that is held down, or for an item that is being dragged.
+
+## Usage
+
+The sample shrinks a button while the user holds it. `pressed` comes from your own state.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.conditionalEffect
+
+@Composable
+fun HoldButton(pressed: Boolean) {
+    Box(
+        Modifier
+            .size(96.dp)
+            .background(Color.Gray, CircleShape)
+            .conditionalEffect(pressed, ConditionalEffect.pushDown(scale = 0.9f)),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `scale` | `0.95f` | The size the element is drawn at while the condition holds, as a fraction of its normal size. Must be positive. |
+
+## Reduced motion
+
+The element is not scaled.
+
+## Notes
+
+- The element is scaled around its center and springs back to full size when the condition turns false.
+- Only the drawing is scaled. Layout and hit testing keep the element's real size.
+
+## Live example
+
+<include example="conditional-push-down">../_snippets/live-example.mdx</include>

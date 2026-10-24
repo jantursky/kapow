@@ -1,0 +1,57 @@
+---
+title: "Transition: clock"
+description: A sweep around a point reveals content like a clock hand.
+---
+
+Clock reveals content with a sweep that goes around a point. Use it for a timer, a loading result or a card that turns into view.
+
+## Usage
+
+The sample reveals a card with a sweep from the center, and hides it the same way.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+import kotlin.time.Duration.Companion.milliseconds
+
+@Composable
+fun TimerCard(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        enter = KapowEnter.clock(duration = 600.milliseconds),
+        exit = KapowExit.clock(duration = 600.milliseconds),
+    ) {
+        Box(Modifier.size(160.dp).background(Color.DarkGray, CircleShape))
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `origin` | `TransformOrigin.Center` | The point the sweep turns around, as a fraction of the content's size. |
+| `duration` | `450.milliseconds` | How long the transition takes. Must be positive. |
+
+## Reduced motion
+
+The transition becomes a fade over the same duration or shorter. There is no mask.
+
+## Notes
+
+- On enter the sweep starts at 12 o'clock and goes clockwise. About half the content around the origin is visible at the halfway point.
+- On exit the sweep goes back counterclockwise to 12 o'clock.
+- The mask works on all targets without blur or shaders.
+
+## Live example
+
+<include example="transition-clock">../_snippets/live-example.mdx</include>

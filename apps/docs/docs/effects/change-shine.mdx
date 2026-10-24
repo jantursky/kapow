@@ -1,0 +1,51 @@
+---
+title: "Change: shine"
+description: A soft band of light sweeps across an element when a value changes.
+---
+
+Shine sweeps a soft band of light over the element's own pixels. Use it to draw the eye to something that just updated, such as a price that changed or a button that became available.
+
+## Usage
+
+Attach it with `Modifier.changeEffect`. The sample sweeps the band from the top left to the bottom right when the price changes.
+
+```kotlin
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+import kotlin.time.Duration.Companion.milliseconds
+
+@Composable
+fun PriceTag(price: Int) {
+    BasicText(
+        text = "Price: $price",
+        modifier = Modifier.changeEffect(price, ChangeEffect.shine(angle = 30f, duration = 800.milliseconds)),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `angle` | `45f` | Direction the band travels, in degrees clockwise from pointing right. 45 sweeps from the top left to the bottom right. |
+| `duration` | `1.seconds` | How long the sweep takes. Must be positive. |
+| `color` | `Color.White` | Color of the band. At its center the band is 80 % of this color's alpha. |
+
+## Reduced motion
+
+No band moves. The element gets a brief highlight of the band's color that fades out over half the `duration`.
+
+## Notes
+
+- The band is drawn only over the element's own pixels. Transparent parts of the content stay transparent.
+- The band is 60 % as long as the element measured along the sweep direction, and it eases in and out.
+- The effect has a cooldown of half its `duration`. A change that arrives sooner after the last accepted one is ignored.
+- While the sweep runs, the element is drawn into its own offscreen layer. At rest it costs nothing extra.
+- Works the same on every target. No blur or shader is involved.
+
+## Live example
+
+<include example="change-shine">../_snippets/live-example.mdx</include>

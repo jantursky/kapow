@@ -1,0 +1,61 @@
+---
+title: "Change: rise"
+description: A label such as +1 floats up from an element when a value changes.
+---
+
+Rise floats one particle, usually a short label, up from the element. It suits counters: a score that gained points, a cart that gained an item.
+
+## Usage
+
+The sample floats a `+1` in green each time the cart count changes.
+
+```kotlin
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.ParticleContent
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun CartCount(items: Int) {
+    BasicText(
+        text = "Cart: $items",
+        modifier = Modifier.changeEffect(
+            value = items,
+            effect = ChangeEffect.rise(
+                ParticleContent.text(
+                    "+1",
+                    TextStyle(color = Color(0xFF7EE2A8), fontSize = 18.sp, fontWeight = FontWeight.SemiBold),
+                ),
+            ),
+        ),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `particles` | `ParticleContent.text("+1")` | What floats up. `ParticleContent.text(text, style)` draws a label, and the default style is 16 sp semibold amber. `ParticleContent.painter(...)` draws an icon. `ParticleContent.shape(...)` also works. |
+
+## Reduced motion
+
+No label floats. The element brightens briefly.
+
+## Notes
+
+- Particles draw through a [particle layer](/guides/particle-layer) when one is above the element, so a clipping parent does not cut them off. Without one they draw around the element.
+- Each change emits one particle. Two quick changes float two labels, each on its own.
+- The label drifts up with a slight horizontal wobble and fades out.
+- The label is measured once per emission.
+- The label is a fixed string. If you want the number to differ per change, put it in a `ParticleContent.text` built from your state, for example `"+$delta"`.
+
+## Live example
+
+<include example="change-rise">../_snippets/live-example.mdx</include>

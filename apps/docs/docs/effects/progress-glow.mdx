@@ -1,0 +1,57 @@
+---
+title: "Progress: glow"
+description: A halo whose strength follows a progress value.
+---
+
+Progress glow raises and lowers a halo with a value you control. Use it for a meter or a charge level, or let the hinge angle of a foldable light up a card as the device opens.
+
+## Usage
+
+The sample strengthens a halo as `charge` goes from 0 to 1. It is a function that returns the progress, so a changing state does not recompose the card.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ProgressEffect
+import com.jantursky.kapow.progressEffect
+
+@Composable
+fun ChargeCard(charge: () -> Float) {
+    val shape = RoundedCornerShape(20.dp)
+    Box(
+        Modifier
+            .size(160.dp)
+            .background(Color.DarkGray, shape)
+            .progressEffect(ProgressEffect.glow(color = Color(0xFF7EE2A8), shape = shape), charge),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `color` | `Color(0xFF6B62F2)` | Color of the halo. |
+| `radius` | `16.dp` | How far the halo reaches at full progress. |
+| `shape` | `RectangleShape` | The shape the halo follows. |
+
+## Reduced motion
+
+Progress effects do not animate on their own. The halo is drawn at the strength the progress gives.
+
+## Notes
+
+- At progress 1 the halo is at the strongest it can be. The element is brightened by up to a quarter, as with the change glow.
+- The halo follows the `shape` you pass, not the alpha of the content.
+- Blur is used where the platform has it (all Skia targets and Android 12 and later). On Android below 12 the halo is stacked copies of the shape.
+- The halo is drawn outside the element's bounds, so a clipping parent cuts it off.
+
+## Live example
+
+<include example="progress-glow">../_snippets/live-example.mdx</include>

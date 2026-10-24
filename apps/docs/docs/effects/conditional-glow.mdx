@@ -1,0 +1,58 @@
+---
+title: "Conditional: glow"
+description: A steady halo while a condition is true.
+---
+
+Conditional glow keeps a halo around an element for as long as a condition holds. Use it for a selected card, a focused field or the active item in a list.
+
+## Usage
+
+The sample lights up a card while it is selected.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.conditionalEffect
+
+@Composable
+fun SelectableCard(selected: Boolean) {
+    val shape = RoundedCornerShape(16.dp)
+    Box(
+        Modifier
+            .size(160.dp)
+            .background(Color.DarkGray, shape)
+            .conditionalEffect(selected, ConditionalEffect.glow(color = Color(0xFF3D7BFF), shape = shape)),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `color` | `Color(0xFF6B62F2)` | Color of the halo. |
+| `radius` | `16.dp` | How far the halo reaches. |
+| `shape` | `RectangleShape` | The shape the halo follows. |
+
+## Reduced motion
+
+The halo stays steady and appears without the fade. It is not removed.
+
+## Notes
+
+- The halo fades in over a quarter of a second when the condition turns true and fades out when it turns false.
+- The halo follows the `shape` you pass, not the alpha of the content.
+- The element is brightened a little while the halo is on.
+- Blur is used where the platform has it (all Skia targets and Android 12 and later). On Android below 12 the halo is five stacked copies of the shape at falling opacity.
+- The halo is drawn outside the element's bounds, so a clipping parent cuts it off.
+
+## Live example
+
+<include example="conditional-glow">../_snippets/live-example.mdx</include>

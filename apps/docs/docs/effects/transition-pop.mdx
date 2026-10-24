@@ -1,0 +1,54 @@
+---
+title: "Transition: pop"
+description: Content pops in with an overshoot, a ring and a burst of particles.
+---
+
+Pop is an enter only. Use it for a reward or a confirmation, such as a badge you just earned.
+
+## Usage
+
+The sample pops a badge in with a violet ring and particles.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+
+@Composable
+fun Badge(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        enter = KapowEnter.pop(color = Color(0xFF6B62F2)),
+    ) {
+        Box(Modifier.size(96.dp).background(Color(0xFF6B62F2), CircleShape))
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `color` | `Color(0xFF6B62F2)` | Color of the ring and particles. |
+| `duration` | `1200.milliseconds` | How long the whole transition takes. Must be positive. |
+
+## Reduced motion
+
+The transition becomes a fade over the same duration or shorter. There are no particles and no movement.
+
+## Notes
+
+- Particles draw through a [particle layer](/guides/particle-layer) when one is above the element, so a clipping parent does not cut them off. Without one they draw around the element.
+- The content scales in from nothing, overshoots its size and settles. A ring expands behind it and a ring of small particles bursts outward. All of it has faded by the end.
+- There is no exit version. Pair it with an exit such as `KapowExit.poof()`.
+
+## Live example
+
+<include example="transition-pop">../_snippets/live-example.mdx</include>
