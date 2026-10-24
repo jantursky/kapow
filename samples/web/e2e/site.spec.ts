@@ -153,6 +153,7 @@ const LIVE = [
   'conditional-repeat',
   'conditional-push-down',
   'conditional-smoke',
+  'conditional-border-beam',
   'progress-iris',
   'transition-iris',
   'transition-clock',

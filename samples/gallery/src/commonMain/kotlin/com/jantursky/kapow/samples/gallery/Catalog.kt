@@ -109,6 +109,13 @@ val entries: List<Entry> =
             Example("SmokeExample.kt") { SmokeDemo() },
         ),
         Entry(
+            "conditional-border-beam",
+            Group.Conditional,
+            "Border beam",
+            "Sends a beam of light around the element while a condition holds.",
+            Example("BorderBeamExample.kt") { BorderBeamDemo() },
+        ),
+        Entry(
             "progress-shine",
             Group.Progress,
             "Shine",

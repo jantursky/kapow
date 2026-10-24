@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.effects.BorderBeamRunner
 import com.jantursky.kapow.effects.ConditionalGlowRunner
 import com.jantursky.kapow.effects.PushDownRunner
 import com.jantursky.kapow.effects.RepeatRunner
@@ -13,6 +14,7 @@ import com.jantursky.kapow.effects.SmokeRunner
 import com.jantursky.kapow.internal.ConditionalRunner
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /** An effect that stays on while a condition is true. Attach it with [conditionalEffect]. */
 @Immutable
@@ -52,6 +54,30 @@ public abstract class ConditionalEffect internal constructor() {
 
         /** Soft particles that rise from the top of the element, like smoke. */
         public fun smoke(color: Color = Color(0xFF8A8A8A)): ConditionalEffect = Smoke(color)
+
+        /**
+         * A short, bright beam of light that travels around the outline of [shape], on a faint track of the same
+         * color, for something live or in progress, such as a recording or a running task. The stroke sits inside
+         * the element's bounds, like `Modifier.border`.
+         *
+         * With reduced motion the beam doesn't travel: the whole outline is lit evenly instead.
+         *
+         * @param width the stroke width of the beam and its track.
+         * @param length how much of the outline the beam covers, from just above 0 to 1.
+         * @param duration how long the beam takes to go around once.
+         */
+        public fun borderBeam(
+            color: Color = Color(0xFF6B62F2),
+            width: Dp = 2.dp,
+            shape: Shape = RectangleShape,
+            length: Float = 0.25f,
+            duration: Duration = 2.seconds,
+        ): ConditionalEffect {
+            require(width > 0.dp) { "width must be positive" }
+            require(length > 0f && length <= 1f) { "length must be above 0 and at most 1" }
+            require(duration.isPositive()) { "duration must be positive" }
+            return BorderBeam(color, width, shape, length, duration)
+        }
     }
 
     internal data class Repeat(
@@ -79,5 +105,15 @@ public abstract class ConditionalEffect internal constructor() {
         val color: Color,
     ) : ConditionalEffect() {
         override fun createRunner(): ConditionalRunner = SmokeRunner(color)
+    }
+
+    internal data class BorderBeam(
+        val color: Color,
+        val width: Dp,
+        val shape: Shape,
+        val length: Float,
+        val duration: Duration,
+    ) : ConditionalEffect() {
+        override fun createRunner(): ConditionalRunner = BorderBeamRunner(color, width, shape, length, duration)
     }
 }

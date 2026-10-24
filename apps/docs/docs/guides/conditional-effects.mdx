@@ -5,7 +5,7 @@ description: Effects that stay on while a Boolean is true, and how repeat plays 
 
 A conditional effect runs while a condition is true. `Modifier.conditionalEffect(condition, effect)` starts the effect when the condition becomes true, including on first composition, and winds it down when the condition becomes false. The element then returns to its normal look.
 
-The effects are `repeat`, `glow`, `pushDown` and `smoke`.
+The effects are `repeat`, `glow`, `pushDown`, `smoke` and `borderBeam`.
 
 ## Glow
 
@@ -66,6 +66,10 @@ fun HoldButton(pressed: Boolean) {
 ## Smoke
 
 Soft particles rise from the top of the element while the condition is true. When it turns false, no new particles start and the ones in flight finish their life. Smoke is a particle effect, so a [particle layer](/guides/particle-layer) keeps a clipping parent from cutting it off.
+
+## Border beam
+
+A short, bright beam travels around the element's outline on a faint track, for something live or in progress, such as a recording. With reduced motion the whole outline is lit evenly instead. See [border beam](/effects/conditional-border-beam).
 
 ## Repeat
 

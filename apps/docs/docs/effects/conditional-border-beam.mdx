@@ -1,0 +1,59 @@
+---
+title: "Conditional: border beam"
+description: A beam of light travels around an element's outline while a condition is true.
+---
+
+Border beam sends a short, bright beam around the outline of an element, on a faint track of the same color, for as long as a condition holds. Use it for something live or in progress: a recording, a running build, a call that is connecting.
+
+## Usage
+
+The sample runs a beam around a card while it records.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.conditionalEffect
+
+@Composable
+fun RecordingCard(recording: Boolean) {
+    val shape = RoundedCornerShape(20.dp)
+    Box(
+        Modifier
+            .size(width = 240.dp, height = 80.dp)
+            .conditionalEffect(recording, ConditionalEffect.borderBeam(Color(0xFFFF6B5A), shape = shape))
+            .background(Color.DarkGray, shape),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `color` | `Color(0xFF6B62F2)` | Color of the beam and its track. |
+| `width` | `2.dp` | Stroke width of the beam and the track. |
+| `shape` | `RectangleShape` | The outline the beam follows. |
+| `length` | `0.25f` | How much of the outline the beam covers, above 0 and at most 1. |
+| `duration` | `2.seconds` | How long one lap takes. |
+
+## Reduced motion
+
+The beam does not travel. The whole outline is lit evenly in the beam color while the condition holds.
+
+## Notes
+
+- The beam and its track fade in over 0.3 s when the condition turns true and fade out when it turns false.
+- The stroke sits inside the element's bounds, as `Modifier.border` draws it. A soft glow around the front of the beam reaches a little past them.
+- The beam keeps its place between activations, so turning the condition on again continues the lap.
+- The outline follows the `shape` you pass, not the alpha of the content.
+
+## Live example
+
+<include example="conditional-border-beam">../_snippets/live-example.mdx</include>
