@@ -21,6 +21,11 @@ internal fun SpinDemo() {
     ExampleScaffold(
         autoplay = Autoplay(2.4.seconds) { count++ },
         stage = { SpinExample(count, axis, rate) },
+        code = {
+            changeEffectCode(
+                call("ChangeEffect.spin", "axis" to "SpinAxis.${axis.name}", "rate" to "SpinRate.${rate.name}"),
+            )
+        },
         controls = {
             PrimaryPill("Collect", onClick = { count++ })
             ChoiceRow("Axis", SpinAxis.entries, axis, { axis = it }, { it.name })

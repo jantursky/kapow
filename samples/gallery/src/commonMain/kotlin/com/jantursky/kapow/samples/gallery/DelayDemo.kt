@@ -22,6 +22,13 @@ internal fun DelayDemo() {
     ExampleScaffold(
         autoplay = Autoplay(duration + 2.seconds) { count++ },
         stage = { DelayExample(count, duration) },
+        code = {
+            call(
+                "Modifier.changeEffect",
+                "" to "count",
+                "" to "ChangeEffect.shine().delay(${duration.kt()})",
+            ).render()
+        },
         controls = {
             PrimaryPill("Fire", onClick = { count++ })
             LabeledSlider("Delay", "${seconds.oneDecimal()} s", seconds, { seconds = it }, 0f..2f)

@@ -18,6 +18,12 @@ internal fun RiseDemo() {
     ExampleScaffold(
         autoplay = Autoplay(2.seconds) { items++ },
         stage = { RiseExample(items, label) },
+        code = {
+            changeEffectCode(
+                call("ChangeEffect.rise", "" to call("ParticleContent.text", "" to "\"$label\"")),
+                value = "items",
+            )
+        },
         controls = {
             PrimaryPill("Add to cart", onClick = { items++ })
             ChoiceRow("Label", listOf("+1", "+5", "New"), label, { label = it })

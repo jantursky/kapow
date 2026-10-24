@@ -24,6 +24,14 @@ internal fun StrikeDemo() {
         // Done stays long enough for the line to draw, hold and fade; not done is a short pause.
         autoplay = Autoplay({ if (done) hold + 1.2.seconds else 0.8.seconds }) { done = !done },
         stage = { StrikeExample(done, swatch.color, hold) },
+        code = {
+            call(
+                "Modifier.changeEffect",
+                "" to "done",
+                "" to call("ChangeEffect.strike", "color" to swatch.color.kt(), "hold" to hold.kt()),
+                "isEnabled" to "done",
+            ).render()
+        },
         controls = {
             PrimaryPill("Toggle", onClick = { done = !done })
             ChoiceRow("Color", Swatch.Palette, swatch, { swatch = it }, { it.name })

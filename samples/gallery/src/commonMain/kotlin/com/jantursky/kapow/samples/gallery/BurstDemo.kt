@@ -22,6 +22,12 @@ internal fun BurstDemo() {
     ExampleScaffold(
         autoplay = Autoplay(1.6.seconds) { level++ },
         stage = { BurstExample(level, swatch.color, spikes.roundToInt()) },
+        code = {
+            changeEffectCode(
+                call("ChangeEffect.burst", "color" to swatch.color.kt(), "spikes" to spikes.roundToInt().toString()),
+                value = "level",
+            )
+        },
         controls = {
             PrimaryPill("Level up", onClick = { level++ })
             ChoiceRow("Color", Swatch.Palette, swatch, { swatch = it }, { it.name })

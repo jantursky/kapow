@@ -20,6 +20,9 @@ internal fun StampDemo() {
     ExampleScaffold(
         autoplay = Autoplay(1.8.seconds) { approvals++ },
         stage = { StampExample(approvals, scale) },
+        code = {
+            changeEffectCode(call("ChangeEffect.stamp", "scale" to scale.kt()), value = "approvals")
+        },
         controls = {
             PrimaryPill("Approve", onClick = { approvals++ })
             LabeledSlider("Scale", "${(scale * 100).roundToInt()} %", scale, { scale = it }, 1f..2f)

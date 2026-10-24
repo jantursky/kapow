@@ -22,6 +22,12 @@ internal fun SpeedLinesDemo() {
     ExampleScaffold(
         autoplay = Autoplay(1.seconds) { rings++ },
         stage = { SpeedLinesExample(rings, swatch.color, lines.roundToInt()) },
+        code = {
+            changeEffectCode(
+                call("ChangeEffect.speedLines", "color" to swatch.color.kt(), "count" to lines.roundToInt().toString()),
+                value = "rings",
+            )
+        },
         controls = {
             PrimaryPill("Ring", onClick = { rings++ })
             ChoiceRow("Color", Swatch.Palette, swatch, { swatch = it }, { it.name })

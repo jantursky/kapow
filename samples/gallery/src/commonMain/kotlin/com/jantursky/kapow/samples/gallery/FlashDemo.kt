@@ -24,6 +24,12 @@ internal fun FlashDemo() {
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.2.seconds) { attempts++ },
         stage = { FlashExample(attempts, swatch.color, duration) },
+        code = {
+            changeEffectCode(
+                call("ChangeEffect.flash", "color" to swatch.color.kt(), "duration" to duration.kt()),
+                value = "attempts",
+            )
+        },
         controls = {
             PrimaryPill("Try code", onClick = { attempts++ })
             ChoiceRow("Color", Swatch.Palette, swatch, { swatch = it }, { it.name })

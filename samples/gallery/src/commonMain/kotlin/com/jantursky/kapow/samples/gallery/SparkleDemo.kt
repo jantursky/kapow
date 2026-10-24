@@ -33,6 +33,12 @@ internal fun SparkleDemo() {
     ExampleScaffold(
         autoplay = Autoplay(1.6.seconds) { points += 50 },
         stage = { SparkleExample(points, star.color, count.roundToInt()) },
+        code = {
+            changeEffectCode(
+                call("ChangeEffect.sparkle", "color" to star.color.kt(), "count" to count.roundToInt().toString()),
+                value = "points",
+            )
+        },
         controls = {
             PrimaryPill("Add points", onClick = { points += 50 })
             ChoiceRow("Color", StarColor.entries, star, { star = it }, { it.name })
