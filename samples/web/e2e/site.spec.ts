@@ -156,6 +156,7 @@ const LIVE = [
   'conditional-border-beam',
   'conditional-marching-ants',
   'conditional-rainbow-border',
+  'conditional-sparkles',
   'progress-iris',
   'transition-iris',
   'transition-clock',

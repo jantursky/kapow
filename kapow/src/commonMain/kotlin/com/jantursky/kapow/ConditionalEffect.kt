@@ -13,6 +13,7 @@ import com.jantursky.kapow.effects.PushDownRunner
 import com.jantursky.kapow.effects.RainbowBorderRunner
 import com.jantursky.kapow.effects.RepeatRunner
 import com.jantursky.kapow.effects.SmokeRunner
+import com.jantursky.kapow.effects.SparklesRunner
 import com.jantursky.kapow.internal.ConditionalRunner
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -142,6 +143,29 @@ public abstract class ConditionalEffect internal constructor() {
             require(duration.isPositive()) { "duration must be positive" }
             return RainbowBorder(colors, width, shape, duration)
         }
+
+        /**
+         * Four-point stars that keep twinkling in and out over the element and just past its edges, a few at a
+         * time, for something new or special. Each sparkle stays where it appears; their spots, sizes and colors
+         * come from a fixed seed.
+         *
+         * Sparkles are particles: a [KapowParticleLayer] above the element keeps clipping parents from cutting them
+         * off. With reduced motion there are none.
+         *
+         * @param colors the sparkles' colors, used in turn.
+         * @param size the size of the largest sparkle.
+         * @param count about how many sparkles are visible at once.
+         */
+        public fun sparkles(
+            colors: List<Color> = listOf(Color(0xFFFFF1C2), Color(0xFFFFB547)),
+            size: Dp = 18.dp,
+            count: Int = 4,
+        ): ConditionalEffect {
+            require(colors.isNotEmpty()) { "colors must not be empty" }
+            require(size > 0.dp) { "size must be positive" }
+            require(count > 0) { "count must be positive" }
+            return Sparkles(colors, size, count)
+        }
     }
 
     internal data class Repeat(
@@ -201,5 +225,13 @@ public abstract class ConditionalEffect internal constructor() {
         val duration: Duration,
     ) : ConditionalEffect() {
         override fun createRunner(): ConditionalRunner = RainbowBorderRunner(colors, width, shape, duration)
+    }
+
+    internal data class Sparkles(
+        val colors: List<Color>,
+        val size: Dp,
+        val count: Int,
+    ) : ConditionalEffect() {
+        override fun createRunner(): ConditionalRunner = SparklesRunner(colors, size, count)
     }
 }

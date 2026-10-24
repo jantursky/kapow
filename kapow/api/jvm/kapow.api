@@ -48,6 +48,8 @@ public final class com/jantursky/kapow/ConditionalEffect$Companion {
 	public final fun repeat-HG0u8IE (Lcom/jantursky/kapow/ChangeEffect;J)Lcom/jantursky/kapow/ConditionalEffect;
 	public final fun smoke-8_81llA (J)Lcom/jantursky/kapow/ConditionalEffect;
 	public static synthetic fun smoke-8_81llA$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;JILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
+	public final fun sparkles-lG28NQ4 (Ljava/util/List;FI)Lcom/jantursky/kapow/ConditionalEffect;
+	public static synthetic fun sparkles-lG28NQ4$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;Ljava/util/List;FIILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
 }
 
 public final class com/jantursky/kapow/EffectModifiersKt {

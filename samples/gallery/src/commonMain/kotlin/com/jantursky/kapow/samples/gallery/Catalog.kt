@@ -130,6 +130,13 @@ val entries: List<Entry> =
             Example("RainbowBorderExample.kt") { RainbowBorderDemo() },
         ),
         Entry(
+            "conditional-sparkles",
+            Group.Conditional,
+            "Sparkles",
+            "Lets stars twinkle over the element while a condition holds.",
+            Example("ConditionalSparklesExample.kt") { ConditionalSparklesDemo() },
+        ),
+        Entry(
             "progress-shine",
             Group.Progress,
             "Shine",
