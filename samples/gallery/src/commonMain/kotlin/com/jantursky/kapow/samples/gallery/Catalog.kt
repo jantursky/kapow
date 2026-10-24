@@ -88,6 +88,13 @@ val entries: List<Entry> =
             Example("FlashExample.kt") { FlashDemo() },
         ),
         Entry(
+            "change-burst",
+            Group.Change,
+            "Burst",
+            "A comic star burst pops out behind the element.",
+            Example("BurstExample.kt") { BurstDemo() },
+        ),
+        Entry(
             "change-delay",
             Group.Change,
             "Delay",

@@ -1,0 +1,61 @@
+---
+title: "Change: burst"
+description: A spiky comic star burst pops out behind an element when a value changes.
+---
+
+Burst pops a spiky star out from behind the element, like the "KAPOW!" balloon in a comic. It overshoots a little, turns slightly and fades. Use it for a moment worth celebrating: a level up, a new record, an achievement.
+
+## Usage
+
+The sample pops an amber burst behind a level badge each time the level goes up.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun LevelBadge(level: Int) {
+    Box(
+        Modifier
+            .size(72.dp)
+            .changeEffect(level, ChangeEffect.burst(color = Color(0xFFFFB547), spikes = 14))
+            .background(Color(0xFF161616), CircleShape),
+        contentAlignment = Alignment.Center,
+    ) {
+        BasicText("$level")
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `color` | `Color(0xFFFFB547)` | Color of the burst. Its core is the same color mixed about halfway with white. |
+| `spikes` | `12` | How many points the burst has. Must be at least 3. |
+
+## Reduced motion
+
+No burst appears. The element brightens briefly instead.
+
+## Notes
+
+- The burst is centered on the element. Its tips reach past the element's corners by half its shorter side, at most 28 dp, and its notches sit close to the corners.
+- Every burst has a slightly different, hand-drawn outline. The outlines come from a fixed seed, so they are the same from run to run.
+- It pops from 30 % to 115 % of its size in the first 0.18 s, then fades over the rest of its 0.6 s while easing back a little.
+- The burst is drawn behind the element's content. A parent that clips its children clips the burst too.
+- There is no cooldown. A change while a burst is showing starts a new one.
+
+## Live example
+
+<include example="change-burst">../_snippets/live-example.mdx</include>

@@ -165,6 +165,7 @@ const LIVE = [
   'more-particle-layer',
   'change-ripple',
   'change-flash',
+  'change-burst',
 ]
 
 for (const id of LIVE) {

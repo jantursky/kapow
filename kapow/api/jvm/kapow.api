@@ -13,6 +13,8 @@ public abstract class com/jantursky/kapow/ChangeEffect {
 }
 
 public final class com/jantursky/kapow/ChangeEffect$Companion {
+	public final fun burst-DxMtmZc (JI)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun burst-DxMtmZc$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JIILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun flash-pYXP5xo (JJ)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun flash-pYXP5xo$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun glow-5DgIosw (JFLandroidx/compose/ui/graphics/Shape;)Lcom/jantursky/kapow/ChangeEffect;

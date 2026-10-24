@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.effects.BurstRunner
 import com.jantursky.kapow.effects.ColorFlashRunner
 import com.jantursky.kapow.effects.GlowRunner
 import com.jantursky.kapow.effects.PulseRunner
@@ -137,6 +138,21 @@ public abstract class ChangeEffect internal constructor() {
             require(duration.isPositive()) { "duration must be positive" }
             return Flash(color, duration)
         }
+
+        /**
+         * A spiky comic star burst, in [color] with a lighter core, that pops out from behind the element, overshoots
+         * a little and fades. Its tips reach past the element's corners. With reduced motion no burst appears and the
+         * element brightens briefly instead.
+         *
+         * @param spikes how many points the burst has. At least 3.
+         */
+        public fun burst(
+            color: Color = Color(0xFFFFB547),
+            spikes: Int = 12,
+        ): ChangeEffect {
+            require(spikes >= 3) { "spikes must be at least 3" }
+            return Burst(color, spikes)
+        }
     }
 
     internal data class Delayed(
@@ -224,6 +240,15 @@ public abstract class ChangeEffect internal constructor() {
         override val cooldown: Duration get() = Duration.ZERO
 
         override fun createRunner(): ChangeRunner = ColorFlashRunner(color, duration)
+    }
+
+    internal data class Burst(
+        val color: Color,
+        val spikes: Int,
+    ) : ChangeEffect() {
+        override val cooldown: Duration get() = Duration.ZERO
+
+        override fun createRunner(): ChangeRunner = BurstRunner(color, spikes)
     }
 }
 
