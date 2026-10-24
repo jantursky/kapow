@@ -35,6 +35,9 @@ internal data class Emission(
     val offsetY: Spread = Spread(0f),
     /** Particles start one after another over this many seconds instead of all at once. */
     val stagger: Float = 0f,
+    /** A sideways sway on top of the motion: its width in pixels and how many times a second it swings. */
+    val wobble: Float = 0f,
+    val wobbleRate: Float = 1f,
 )
 
 /**
@@ -56,6 +59,7 @@ internal class ParticleSystem(
     private val lifetime = FloatArray(count)
     private val delay = FloatArray(count)
     private val age = FloatArray(count)
+    private val phase = FloatArray(count)
 
     init {
         val random = Random(seed)
@@ -71,11 +75,19 @@ internal class ParticleSystem(
             scale[i] = emission.scale.pick(random)
             lifetime[i] = emission.lifetime.pick(random)
             delay[i] = if (count > 1) emission.stagger * i / (count - 1) else 0f
+            if (emission.wobble != 0f) phase[i] = random.nextFloat() * 2 * PI.toFloat()
         }
     }
 
     /** Whether particle [i] has started and not yet expired. */
     fun isAlive(i: Int): Boolean = age[i] >= delay[i] && age[i] - delay[i] < lifetime[i]
+
+    /** Where particle [i] is drawn horizontally: its position plus the sway. */
+    fun drawnX(i: Int): Float {
+        if (emission.wobble == 0f) return x[i]
+        val time = (age[i] - delay[i]).coerceAtLeast(0f)
+        return x[i] + emission.wobble * sin(2 * PI.toFloat() * emission.wobbleRate * time + phase[i])
+    }
 
     /** How far particle [i] is through its life, from 0 to 1. */
     fun progress(i: Int): Float = ((age[i] - delay[i]) / lifetime[i]).coerceIn(0f, 1f)

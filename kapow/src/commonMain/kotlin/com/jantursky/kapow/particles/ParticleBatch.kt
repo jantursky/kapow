@@ -37,7 +37,7 @@ internal class ParticleBatch(
                 val alpha = opacity(t).coerceIn(0f, 1f)
                 val size = system.scale[i] * growth(t)
                 if (alpha <= 0f || size <= 0f) continue
-                translate(origin.x + system.x[i], origin.y + system.y[i]) {
+                translate(origin.x + system.drawnX(i), origin.y + system.y[i]) {
                     rotate(system.rotation[i], pivot = Offset.Zero) {
                         scale(size, size, pivot = Offset.Zero) {
                             with(painter) { drawParticle(i, alpha) }

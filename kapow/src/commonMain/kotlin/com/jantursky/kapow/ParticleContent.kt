@@ -44,7 +44,7 @@ public sealed class ParticleContent {
         public fun shape(
             shape: ParticleShape = ParticleShape.Sparkle,
             colors: List<Color> = DefaultColors,
-            size: Dp = 10.dp,
+            size: Dp = 14.dp,
         ): ParticleContent {
             require(colors.isNotEmpty()) { "colors must not be empty" }
             return Shape(shape, colors, size)

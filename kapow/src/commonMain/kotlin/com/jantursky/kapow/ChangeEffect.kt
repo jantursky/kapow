@@ -8,7 +8,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.effects.GlowRunner
 import com.jantursky.kapow.effects.PulseRunner
+import com.jantursky.kapow.effects.RiseRunner
 import com.jantursky.kapow.effects.ShineRunner
+import com.jantursky.kapow.effects.SpinRunner
+import com.jantursky.kapow.effects.SprayRunner
 import com.jantursky.kapow.internal.ChangeRunner
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -113,7 +116,7 @@ public abstract class ChangeEffect internal constructor() {
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
 
-        override fun createRunner(): ChangeRunner = TODO()
+        override fun createRunner(): ChangeRunner = SprayRunner(particles, count)
     }
 
     internal data class Rise(
@@ -121,7 +124,7 @@ public abstract class ChangeEffect internal constructor() {
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
 
-        override fun createRunner(): ChangeRunner = TODO()
+        override fun createRunner(): ChangeRunner = RiseRunner(particles)
     }
 
     internal data class Shine(
@@ -161,7 +164,7 @@ public abstract class ChangeEffect internal constructor() {
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
 
-        override fun createRunner(): ChangeRunner = TODO()
+        override fun createRunner(): ChangeRunner = SpinRunner(axis, rate)
     }
 }
 
