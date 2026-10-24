@@ -35,7 +35,7 @@ internal fun shineBand(
     val direction = Offset(cos(radians), sin(radians))
     // How long the element is when measured along the sweep direction.
     val length = abs(size.width * direction.x) + abs(size.height * direction.y)
-    val band = length * BandFraction
+    val band = length * BAND_FRACTION
     val travel = length / 2 + band / 2
     val center = Offset(size.width / 2, size.height / 2) + direction * (-travel + 2 * travel * progress)
     return (center - direction * (band / 2)) to (center + direction * (band / 2))
@@ -43,8 +43,8 @@ internal fun shineBand(
 
 /** The band's colors: transparent at both edges, strongest in the middle. */
 internal fun shineStops(color: Color): Array<Pair<Float, Color>> =
-    Array(BandSteps + 1) { i ->
-        val x = i.toFloat() / BandSteps
+    Array(BAND_STEPS + 1) { i ->
+        val x = i.toFloat() / BAND_STEPS
         val s = sin(x * PI.toFloat())
         x to color.copy(alpha = color.alpha * s * s * 0.8f)
     }
@@ -85,7 +85,7 @@ internal class ShineRunner(
             drawShine(stops, angle, t, alpha = 1f - t.pow8())
         }
         val f = flash.value
-        if (f > 0f) drawRect(stops[BandSteps / 2].second, alpha = f, blendMode = BlendMode.SrcAtop)
+        if (f > 0f) drawRect(stops[BAND_STEPS / 2].second, alpha = f, blendMode = BlendMode.SrcAtop)
     }
 
     override fun fire(context: EffectContext) {
@@ -134,5 +134,5 @@ private fun Float.pow8(): Float {
     return q * q
 }
 
-private const val BandFraction = 0.6f
-private const val BandSteps = 10
+private const val BAND_FRACTION = 0.6f
+private const val BAND_STEPS = 10

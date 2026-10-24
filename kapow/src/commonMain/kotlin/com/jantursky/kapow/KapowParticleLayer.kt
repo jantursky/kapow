@@ -12,9 +12,9 @@ import androidx.compose.ui.node.GlobalPositionAwareModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.InspectorInfo
 import com.jantursky.kapow.particles.LocalParticleHost
+import com.jantursky.kapow.particles.ParticleBatch
 import com.jantursky.kapow.particles.ParticleField
 import com.jantursky.kapow.particles.ParticleHost
-import com.jantursky.kapow.particles.ParticleBatch
 
 /**
  * Draws the particles of every Kapow effect inside [content] on top of it, so parents that clip their children

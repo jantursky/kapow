@@ -33,7 +33,7 @@ internal class ParticleField {
                 while (batches.isNotEmpty()) {
                     withFrameNanos { now ->
                         // A long frame (a tab in the background, a stall) moves particles at most 1/30 s.
-                        val seconds = if (last < 0) 0f else ((now - last) / 1e9f).coerceAtMost(MaxStep)
+                        val seconds = if (last < 0) 0f else ((now - last) / 1e9f).coerceAtMost(MAX_STEP)
                         last = now
                         batches.removeAll { !it.step(seconds) }
                         frame++
@@ -55,6 +55,6 @@ internal class ParticleField {
     }
 
     private companion object {
-        const val MaxStep = 1f / 30f
+        const val MAX_STEP = 1f / 30f
     }
 }

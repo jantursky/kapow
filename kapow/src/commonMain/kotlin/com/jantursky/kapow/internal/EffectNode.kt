@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
-import com.jantursky.kapow.LocalKapowFeedback
 import com.jantursky.kapow.KapowFeedbackEvent
+import com.jantursky.kapow.LocalKapowFeedback
 import com.jantursky.kapow.LocalKapowMotion
 import com.jantursky.kapow.durationScale
 import com.jantursky.kapow.particles.LocalParticleHost

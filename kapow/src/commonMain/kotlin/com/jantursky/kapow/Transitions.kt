@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.InspectorInfo
@@ -22,7 +23,6 @@ import com.jantursky.kapow.internal.EffectNode
 import com.jantursky.kapow.internal.TransitionRunner
 import com.jantursky.kapow.transitions.createRunner
 import kotlinx.coroutines.flow.drop
-import androidx.compose.runtime.snapshotFlow
 import kotlin.time.Duration
 
 /**
@@ -55,7 +55,13 @@ public fun Modifier.kapowTransition(
     val progress: State<Float> =
         transition.animateFloat(
             transitionSpec = {
-                if (targetState == EnterExitState.Visible) spec(enter.kind, enter.duration) else spec(exit.kind, exit.duration)
+                if (targetState ==
+                    EnterExitState.Visible
+                ) {
+                    spec(enter.kind, enter.duration)
+                } else {
+                    spec(exit.kind, exit.duration)
+                }
             },
             label = "kapowTransition",
         ) { if (it == EnterExitState.Visible) 1f else 0f }
@@ -90,7 +96,8 @@ public fun KapowAnimatedVisibility(
     content: @Composable AnimatedVisibilityScope.() -> Unit,
 ) {
     AnimatedVisibility(visible, modifier, stockEnter, stockExit) {
-        androidx.compose.foundation.layout.Box(Modifier.kapowTransition(this, enter, exit, feedback)) { content() }
+        androidx.compose.foundation.layout
+            .Box(Modifier.kapowTransition(this, enter, exit, feedback)) { content() }
     }
 }
 
@@ -101,8 +108,10 @@ private fun spec(
     val millis = duration.inWholeMilliseconds.toInt()
     return when (kind) {
         TransitionKind.None -> snap()
+
         // These run their own curves on a linear clock.
         TransitionKind.Anvil, is TransitionKind.Pop, is TransitionKind.Poof -> tween(millis, easing = LinearEasing)
+
         else -> tween(millis, easing = FastOutSlowInEasing)
     }
 }
@@ -131,7 +140,8 @@ private class TransitionElement(
         other is TransitionElement && other.enter == enter && other.exit == exit && other.reduced == reduced &&
             other.progress === progress
 
-    override fun hashCode(): Int = ((enter.hashCode() * 31 + exit.hashCode()) * 31 + reduced.hashCode()) * 31 + progress.hashCode()
+    override fun hashCode(): Int =
+        ((enter.hashCode() * 31 + exit.hashCode()) * 31 + reduced.hashCode()) * 31 + progress.hashCode()
 }
 
 private class TransitionNode(

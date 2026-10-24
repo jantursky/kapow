@@ -23,7 +23,10 @@ internal fun ParticleContent.painter(
     textMeasurer: () -> TextMeasurer,
 ): ParticlePainter =
     when (this) {
-        is ParticleContent.Shape -> shapePainter(shape, colors, with(density) { size.toPx() })
+        is ParticleContent.Shape -> {
+            shapePainter(shape, colors, with(density) { size.toPx() })
+        }
+
         is ParticleContent.Image -> {
             val px = with(density) { size.toPx() }
             val filter = tint?.let { ColorFilter.tint(it) }
@@ -33,6 +36,7 @@ internal fun ParticleContent.painter(
                 }
             }
         }
+
         is ParticleContent.Text -> {
             val layout: TextLayoutResult = textMeasurer().measure(text, style)
             val half = Offset(layout.size.width / 2f, layout.size.height / 2f)
@@ -47,11 +51,21 @@ internal fun shapePainter(
 ): ParticlePainter {
     val half = sizePx / 2
     return when (shape) {
-        ParticleShape.Circle -> ParticlePainter { i, alpha -> drawCircle(colors[i % colors.size], half, Offset.Zero, alpha) }
-        ParticleShape.Square ->
+        ParticleShape.Circle -> {
+            ParticlePainter {
+                i,
+                alpha,
+                ->
+                drawCircle(colors[i % colors.size], half, Offset.Zero, alpha)
+            }
+        }
+
+        ParticleShape.Square -> {
             ParticlePainter { i, alpha ->
                 drawRect(colors[i % colors.size], Offset(-half, -half), Size(sizePx, sizePx), alpha)
             }
+        }
+
         else -> {
             val path = unitPath(shape).apply { transform(scaleMatrix(sizePx)) }
             ParticlePainter { i, alpha -> drawPath(path, colors[i % colors.size], alpha) }
@@ -64,7 +78,12 @@ internal fun puffPainter(
     color: Color,
     radiusPx: Float,
 ): ParticlePainter {
-    val brush = Brush.radialGradient(listOf(color, color.copy(alpha = color.alpha * 0.6f), Color.Transparent), Offset.Zero, radiusPx)
+    val brush =
+        Brush.radialGradient(
+            listOf(color, color.copy(alpha = color.alpha * 0.6f), Color.Transparent),
+            Offset.Zero,
+            radiusPx,
+        )
     return ParticlePainter { _, alpha -> drawCircle(brush, radiusPx, Offset.Zero, alpha) }
 }
 
@@ -80,12 +99,14 @@ private fun unitPath(shape: ParticleShape): Path =
                 }
                 close()
             }
+
             ParticleShape.Heart -> {
                 moveTo(0f, 0.45f)
                 cubicTo(-0.55f, 0.05f, -0.42f, -0.48f, 0f, -0.22f)
                 cubicTo(0.42f, -0.48f, 0.55f, 0.05f, 0f, 0.45f)
                 close()
             }
+
             ParticleShape.Sparkle -> {
                 val w = 0.09f
                 moveTo(0f, -0.5f)
@@ -95,9 +116,14 @@ private fun unitPath(shape: ParticleShape): Path =
                 quadraticTo(-w, -w, 0f, -0.5f)
                 close()
             }
-            ParticleShape.Circle, ParticleShape.Square -> error("drawn without a path")
+
+            ParticleShape.Circle, ParticleShape.Square -> {
+                error("drawn without a path")
+            }
         }
     }
 
 private fun scaleMatrix(factor: Float) =
-    androidx.compose.ui.graphics.Matrix().apply { scale(factor, factor) }
+    androidx.compose.ui.graphics
+        .Matrix()
+        .apply { scale(factor, factor) }

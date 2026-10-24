@@ -31,7 +31,9 @@ public sealed class KapowFeedbackEvent {
     public data object Error : KapowFeedbackEvent()
 
     /** An event your own handler understands, such as a sound named "coin". */
-    public data class Custom(val name: String) : KapowFeedbackEvent()
+    public data class Custom(
+        val name: String,
+    ) : KapowFeedbackEvent()
 }
 
 /** The feedback handler for a part of the composition tree. `null`, the default, plays nothing. */

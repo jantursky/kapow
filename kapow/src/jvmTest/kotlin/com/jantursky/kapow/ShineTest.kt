@@ -32,7 +32,10 @@ class ShineTest {
         }
     }
 
-    private fun rowLuminance(image: androidx.compose.ui.graphics.ImageBitmap) = (0 until 100).map { image.colorAt(it, 50).luminance }
+    private fun rowLuminance(image: androidx.compose.ui.graphics.ImageBitmap) =
+        (0 until 100).map {
+            image.colorAt(it, 50).luminance
+        }
 
     @Test
     fun theBandBrightensPartOfTheElementMidway() =
