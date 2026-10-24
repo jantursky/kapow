@@ -1,0 +1,76 @@
+package com.jantursky.kapow.internal
+
+import androidx.compose.ui.graphics.GraphicsLayerScope
+import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
+import com.jantursky.kapow.particles.ParticleBatch
+import kotlinx.coroutines.CoroutineScope
+
+/**
+ * The part of an effect that runs on an element. It keeps its animation state in snapshot state and reads it only
+ * in [drawEffect] and [applyLayer], so animation frames redraw the element without recomposing anything.
+ */
+internal abstract class EffectRunner {
+    /** Whether the element needs its own graphics layer for [applyLayer] or for offscreen blending. */
+    open val needsLayer: Boolean get() = false
+
+    open fun GraphicsLayerScope.applyLayer() {}
+
+    open fun ContentDrawScope.drawEffect() {
+        drawContent()
+    }
+
+    /** Stops running work. Called when the element leaves the tree or the effect is replaced. */
+    open fun stop() {}
+}
+
+/** What a runner can reach on the element it is attached to. */
+internal interface EffectContext {
+    val scope: CoroutineScope
+    val density: Density
+    val layoutDirection: LayoutDirection
+    val fontFamilyResolver: FontFamily.Resolver
+
+    /** The element's size. Zero until it is measured. */
+    val size: IntSize
+
+    /** Reads the reduced-motion setting now, as the effect fires. */
+    fun isReducedMotion(): Boolean
+
+    /** Hands particles to the nearest particle layer, or draws them around the element without one. */
+    fun emit(batch: ParticleBatch)
+}
+
+/** A runner that plays once each time its effect fires. */
+internal abstract class ChangeRunner : EffectRunner() {
+    abstract fun fire(context: EffectContext)
+}
+
+/** A runner that is on while a condition holds. */
+internal abstract class ConditionalRunner : EffectRunner() {
+    abstract fun setActive(
+        context: EffectContext,
+        active: Boolean,
+    )
+}
+
+/** A runner drawn at a progress the caller controls, from 0 to 1. */
+internal abstract class ProgressRunner : EffectRunner() {
+    /** Read in the draw phase, so a progress backed by snapshot state redraws without recomposition. */
+    lateinit var progress: () -> Float
+}
+
+/**
+ * A runner for one direction of a visibility transition. [progress] goes from 0 (hidden) to 1 (shown): up while
+ * entering, down while exiting. Both lambdas are read in the draw and layer phases.
+ */
+internal abstract class TransitionRunner : EffectRunner() {
+    lateinit var progress: () -> Float
+    lateinit var entering: () -> Boolean
+
+    /** Called when the node attaches, to start watchers such as particle emission at a given progress. */
+    open fun start(context: EffectContext) {}
+}

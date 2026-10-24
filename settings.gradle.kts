@@ -48,3 +48,9 @@ dependencyResolutionManagement {
 rootProject.name = "kapow"
 
 include(":kapow", ":kapow-crease", ":kapow-multihaptic")
+
+include(
+    ":samples:design",
+    ":samples:web",
+    ":samples:docs-check",
+)

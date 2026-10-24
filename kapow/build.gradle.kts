@@ -67,6 +67,11 @@ tasks.withType<Test>().matching { it.name == "testAndroidHostTest" }.configureEa
     jvmArgs("--add-exports=java.base/jdk.internal.access=ALL-UNNAMED")
 }
 
+tasks.named<Test>("jvmTest") {
+    // Skiko loads its native library; recent JDKs warn unless native access is granted.
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
+}
+
 roborazzi {
     outputDir.set(layout.projectDirectory.dir("src/jvmTest/screenshots"))
 }
