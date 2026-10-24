@@ -105,11 +105,11 @@ fun Post(likes: Int, hasUnread: Boolean, showToast: Boolean) {
 
 There are three kinds of effect, each a plain modifier:
 
-- `Modifier.changeEffect(value, effect)` plays once when `value` changes: `spray`, `rise`, `shine`, `pulse`, `glow`, `spin`, and `.delay(…)` on any of them.
-- `Modifier.conditionalEffect(condition, effect)` runs while `condition` is true: `glow`, `pushDown`, `smoke`, and `repeat(changeEffect, every)`.
-- `Modifier.progressEffect(effect) { progress }` draws `shine`, `glow` or `iris` at a progress you supply, such as a scroll offset. `kapow-crease` uses it for `Modifier.hingeEffect(effect)`.
+- `Modifier.changeEffect(value, effect)` plays once when `value` changes: `spray`, `rise`, `shine`, `pulse`, `glow`, `spin`, `ripple`, `flash`, `burst`, `speedLines`, `sparkle`, `fireworks`, `confettiPop`, `trace`, `strike`, `stamp` and `glitch`, with `.delay(…)` on any of them.
+- `Modifier.conditionalEffect(condition, effect)` runs while `condition` is true: `glow`, `pushDown`, `smoke`, `borderBeam`, `marchingAnts`, `rainbowBorder`, `sparkles`, `orbit`, `bubbles`, `flame`, `grayscale`, `spotlight`, and `repeat(changeEffect, every)`.
+- `Modifier.progressEffect(effect) { progress }` draws `shine`, `glow`, `iris`, `fill` or `trace` at a progress you supply, such as a scroll offset. `kapow-crease` uses it for `Modifier.hingeEffect(effect)`.
 
-Transitions are `KapowEnter` and `KapowExit` values: `iris`, `clock`, `wipe`, `glare`, `blinds`, and `anvil` and `pop` to enter, `poof` to exit. Use `KapowAnimatedVisibility`, or `Modifier.kapowTransition(this, enter, exit)` inside `AnimatedVisibility` or `AnimatedContent`. Change effects and transitions take an optional `KapowFeedbackEvent` for haptics or sound; see the [feedback guide](https://kapow-docs.vercel.app/guides/feedback).
+Transitions are `KapowEnter` and `KapowExit` values: `iris`, `clock`, `wipe`, `glare`, `blinds`, `dissolve`, `curtain`, `shapeIris`, `checker`, `tear` and `blob` both ways, `anvil` and `pop` to enter, and `poof`, `shatter` and `disintegrate` to exit. Use `KapowAnimatedVisibility`, or `Modifier.kapowTransition(this, enter, exit)` inside `AnimatedVisibility` or `AnimatedContent`. Change effects and transitions take an optional `KapowFeedbackEvent` for haptics or sound; see the [feedback guide](https://kapow-docs.vercel.app/guides/feedback).
 
 ## Demo
 

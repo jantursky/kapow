@@ -35,6 +35,17 @@ public abstract class ChangeEffect {
         public fun strike(color: Color = Color(0xFF6B62F2), width: Dp = 2.dp, hold: Duration = 600.milliseconds): ChangeEffect
         public fun stamp(scale: Float = 1.3f, dustColor: Color = Color(0xFFB0B0B0)): ChangeEffect
         public fun glitch(duration: Duration = 300.milliseconds, offset: Dp = 6.dp): ChangeEffect
+        public fun ripple(
+            color: Color = Color(0x66FFFFFF),
+            shape: Shape = RectangleShape,
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+        ): ChangeEffect
+        public fun flash(color: Color = Color.White, duration: Duration = 400.milliseconds): ChangeEffect
+        public fun burst(color: Color = Color(0xFFFFB547), spikes: Int = 12): ChangeEffect
+        public fun speedLines(color: Color = Color(0xFF6B62F2), count: Int = 12): ChangeEffect
+        public fun sparkle(color: Color = Color.White, count: Int = 6): ChangeEffect
+        public fun fireworks(colors: List<Color> = ParticleContent.DefaultColors, count: Int = 28): ChangeEffect
     }
 }
 ```
@@ -53,6 +64,12 @@ public abstract class ChangeEffect {
 | `strike(color, width, hold)` | A line that draws across the middle of the element, stays for `hold`, then fades out. |
 | `stamp(scale, dustColor)` | Drops the element from `scale` times its size like a rubber stamp, with a squash on impact and dust at its base. `scale` must be at least 1. |
 | `glitch(duration, offset)` | Splits the element into offset color channels and shifts horizontal slices of it for `duration`, then snaps back. |
+| `ripple(color, shape, origin, duration)` | An ink ripple that spreads from `origin` across the element, inside `shape`, and fades. |
+| `flash(color, duration)` | The element's own pixels flash `color` and fade back. |
+| `burst(color, spikes)` | A comic star burst with `spikes` points pops out behind the element and fades. `spikes` is at least 3. |
+| `speedLines(color, count)` | `count` comic action lines fly outward from the element's edges and vanish. |
+| `sparkle(color, count)` | `count` four-point stars twinkle over the element, one after another. |
+| `fireworks(colors, count)` | A spark climbs from the element, then bursts into `count` sparks that fall and fade. |
 
 ### PulseStyle, SpinAxis, SpinRate
 
@@ -82,6 +99,50 @@ public abstract class ConditionalEffect {
         public fun glow(color: Color = Color(0xFF6B62F2), radius: Dp = 16.dp, shape: Shape = RectangleShape): ConditionalEffect
         public fun pushDown(scale: Float = 0.95f): ConditionalEffect
         public fun smoke(color: Color = Color(0xFF8A8A8A)): ConditionalEffect
+        public val RainbowColors: List<Color>
+        public val FlameColors: List<Color>
+        public fun borderBeam(
+            color: Color = Color(0xFF6B62F2),
+            width: Dp = 2.dp,
+            shape: Shape = RectangleShape,
+            length: Float = 0.25f,
+            duration: Duration = 2.seconds,
+        ): ConditionalEffect
+        public fun marchingAnts(
+            color: Color = Color.White,
+            gapColor: Color = Color.Black,
+            width: Dp = 2.dp,
+            shape: Shape = RectangleShape,
+            dash: Dp = 6.dp,
+            gap: Dp = 4.dp,
+            speed: Dp = 24.dp,
+        ): ConditionalEffect
+        public fun rainbowBorder(
+            colors: List<Color> = RainbowColors,
+            width: Dp = 3.dp,
+            shape: Shape = RectangleShape,
+            duration: Duration = 3.seconds,
+        ): ConditionalEffect
+        public fun sparkles(
+            colors: List<Color> = listOf(Color(0xFFFFF1C2), Color(0xFFFFB547)),
+            size: Dp = 18.dp,
+            count: Int = 4,
+        ): ConditionalEffect
+        public fun orbit(
+            colors: List<Color> = ParticleContent.DefaultColors,
+            count: Int = 3,
+            size: Dp = 8.dp,
+            duration: Duration = 2.5.seconds,
+        ): ConditionalEffect
+        public fun bubbles(color: Color = Color(0xFF9ED8FF), size: Dp = 10.dp): ConditionalEffect
+        public fun flame(colors: List<Color> = FlameColors, height: Dp = 40.dp): ConditionalEffect
+        public fun grayscale(amount: Float = 1f): ConditionalEffect
+        public fun spotlight(
+            color: Color = Color(0x99000000),
+            shape: Shape = RectangleShape,
+            padding: Dp = 8.dp,
+            softness: Dp = 24.dp,
+        ): ConditionalEffect
     }
 }
 ```
@@ -93,6 +154,15 @@ public abstract class ConditionalEffect {
 | `glow(color, radius, shape)` | A steady halo in `shape` that fades in while the condition holds. |
 | `pushDown(scale)` | Scales the element down slightly, as if pressed, and springs back when the condition ends. `scale` must be positive. |
 | `smoke(color)` | Soft particles that rise from the top of the element, like smoke. |
+| `borderBeam(color, width, shape, length, duration)` | A bright segment, `length` of the outline long, travels around `shape` once every `duration`. |
+| `marchingAnts(color, gapColor, width, shape, dash, gap, speed)` | A dashed outline around `shape` whose dashes move, like a selection. |
+| `rainbowBorder(colors, width, shape, duration)` | An outline stroked with a sweep gradient of `colors` that turns once every `duration`. |
+| `sparkles(colors, size, count)` | Four-point stars keep twinkling over and around the element, about `count` at a time. |
+| `orbit(colors, count, size, duration)` | `count` particles circle the element on an ellipse, smaller and fainter behind it. |
+| `bubbles(color, size)` | Small bubbles keep rising from the top edge, wobbling and fading. |
+| `flame(colors, height)` | Procedural flames about `height` tall above the element. |
+| `grayscale(amount)` | The element desaturates by `amount`, from 0 to 1. |
+| `spotlight(color, shape, padding, softness)` | Everything around the element dims with `color`, leaving `shape` plus `padding` lit, with a soft edge. Later siblings still draw on top. |
 
 ## ProgressEffect
 
@@ -139,6 +209,19 @@ public class KapowEnter {
         ): KapowEnter
         public fun anvil(duration: Duration = 1400.milliseconds): KapowEnter
         public fun pop(color: Color = Color(0xFF6B62F2), duration: Duration = 1200.milliseconds): KapowEnter
+        public fun dissolve(cellSize: Dp = 12.dp, duration: Duration = 600.milliseconds): KapowEnter
+        public fun curtain(
+            orientation: BlindsOrientation = BlindsOrientation.Vertical,
+            duration: Duration = 450.milliseconds,
+        ): KapowEnter
+        public fun shapeIris(
+            shape: Shape = StarShape(),
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+        ): KapowEnter
+        public fun checker(cellSize: Dp = 24.dp, duration: Duration = 600.milliseconds): KapowEnter
+        public fun tear(angle: Float = 0f, toothSize: Dp = 12.dp, duration: Duration = 500.milliseconds): KapowEnter
+        public fun blob(origin: TransformOrigin = TransformOrigin.Center, duration: Duration = 600.milliseconds): KapowEnter
     }
 }
 ```
@@ -153,6 +236,12 @@ public class KapowEnter {
 | `blinds(slatWidth, orientation, staggered, duration)` | Slats that open like venetian blinds. With `staggered`, slats nearer the top (or start) open first. `slatWidth` is at least 5 dp. |
 | `anvil(duration)` | The content drops in from above, lands with a shake and kicks up dust. |
 | `pop(color, duration)` | The content pops in with an overshoot while a ring and a burst of particles of `color` go off behind it. |
+| `dissolve(cellSize, duration)` | The content appears as a random grid of squares `cellSize` wide. `cellSize` is at least 2 dp. |
+| `curtain(orientation, duration)` | Two halves slide apart to reveal the content. |
+| `shapeIris(shape, origin, duration)` | Like `iris`, through any `shape`, such as a `StarShape`, growing from `origin`. |
+| `checker(cellSize, duration)` | A checkerboard of `cellSize` cells that fills in two waves. |
+| `tear(angle, toothSize, duration)` | A `wipe` whose edge is a torn zigzag with teeth `toothSize` deep. |
+| `blob(origin, duration)` | An organic wobbly blob that grows from `origin` until it covers the content. |
 
 Every `duration` must be positive.
 
@@ -176,6 +265,21 @@ public class KapowExit {
             duration: Duration = 450.milliseconds,
         ): KapowExit
         public fun poof(color: Color = Color(0xFFC2C2C2), duration: Duration = 400.milliseconds): KapowExit
+        public fun dissolve(cellSize: Dp = 12.dp, duration: Duration = 600.milliseconds): KapowExit
+        public fun curtain(
+            orientation: BlindsOrientation = BlindsOrientation.Vertical,
+            duration: Duration = 450.milliseconds,
+        ): KapowExit
+        public fun shapeIris(
+            shape: Shape = StarShape(),
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+        ): KapowExit
+        public fun checker(cellSize: Dp = 24.dp, duration: Duration = 600.milliseconds): KapowExit
+        public fun tear(angle: Float = 0f, toothSize: Dp = 12.dp, duration: Duration = 500.milliseconds): KapowExit
+        public fun blob(origin: TransformOrigin = TransformOrigin.Center, duration: Duration = 600.milliseconds): KapowExit
+        public fun shatter(shards: Int = 24, duration: Duration = 900.milliseconds): KapowExit
+        public fun disintegrate(color: Color = Color.Unspecified, duration: Duration = 1500.milliseconds): KapowExit
     }
 }
 ```
@@ -189,6 +293,14 @@ public class KapowExit {
 | `glare(angle, color, duration)` | A `wipe` with a bright streak of `color` along its edge. |
 | `blinds(slatWidth, orientation, staggered, duration)` | Slats that close like venetian blinds. |
 | `poof(color, duration)` | The content vanishes at once in a puff of smoke of `color`. |
+| `dissolve(cellSize, duration)` | The content vanishes as a random grid of squares. |
+| `curtain(orientation, duration)` | Two halves slide shut over the content. |
+| `shapeIris(shape, origin, duration)` | Like `iris`, through any `shape`, shrinking toward `origin`. |
+| `checker(cellSize, duration)` | A checkerboard that empties in two waves. |
+| `tear(angle, toothSize, duration)` | A torn-edge `wipe` that covers the content. |
+| `blob(origin, duration)` | An organic blob that shrinks toward `origin`. |
+| `shatter(shards, duration)` | The content breaks into `shards` triangular pieces that fall, turn and fade. |
+| `disintegrate(color, duration)` | A band sweeps across and turns the content into drifting dust, in the content's colors where the platform can read them, otherwise in `color` or light gray. |
 
 ### BlindsOrientation
 
@@ -196,7 +308,15 @@ public class KapowExit {
 public enum class BlindsOrientation { Horizontal, Vertical }
 ```
 
-The direction of the slats in `blinds`.
+The direction of the slats in `blinds` and of the split in `curtain`.
+
+### StarShape
+
+```kotlin
+public class StarShape(points: Int = 5, innerRatio: Float = 0.5f) : Shape
+```
+
+A star with `points` points whose inner corners sit at `innerRatio` of the outer radius. The default mask of `shapeIris`, and usable anywhere a `Shape` is.
 
 ## ParticleContent
 
