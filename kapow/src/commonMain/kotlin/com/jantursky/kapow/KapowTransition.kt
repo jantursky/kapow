@@ -316,6 +316,22 @@ public class KapowExit internal constructor(
             require(shards in 2..200) { "shards must be from 2 to 200" }
             return KapowExit(TransitionKind.Shatter(shards), duration.checked())
         }
+
+        /**
+         * The content turns to dust: a ragged band sweeps across it from left to right, grain by grain, and as it
+         * passes, small square particles drift up and away. The band crosses in the first half or so of
+         * [duration] and the dust settles in the rest, so a particle layer is not needed for it to finish. With
+         * reduced motion it fades out instead, with no particles.
+         *
+         * @param color the color of the dust. Left unspecified, the dust takes the content's own colors, read once
+         *   from a snapshot of the content as the exit starts: a few pixels per column. Where that snapshot can't
+         *   be read, or reads only transparent pixels, the dust is light gray.
+         * @param duration how long the transition takes, 1500 ms by default.
+         */
+        public fun disintegrate(
+            color: Color = Color.Unspecified,
+            duration: Duration = 1500.milliseconds,
+        ): KapowExit = KapowExit(TransitionKind.Disintegrate(color, duration.checked()), duration)
     }
 }
 
@@ -396,5 +412,10 @@ internal sealed class TransitionKind {
 
     data class Shatter(
         val shards: Int,
+    ) : TransitionKind()
+
+    data class Disintegrate(
+        val color: Color,
+        val duration: Duration,
     ) : TransitionKind()
 }

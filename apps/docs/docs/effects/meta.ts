@@ -34,5 +34,6 @@ export default defineMeta({
     'transition-tear',
     'transition-blob',
     'transition-shatter',
+    'transition-disintegrate',
   ],
 })

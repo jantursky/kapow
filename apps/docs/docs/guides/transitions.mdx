@@ -3,7 +3,7 @@ title: Transitions
 description: Masked and particle enter and exit transitions for AnimatedVisibility and AnimatedContent, and why they are applied with a modifier.
 ---
 
-Kapow has fifteen transitions. Eleven are masks that work in both directions: `iris`, `clock`, `wipe`, `glare`, `blinds`, `dissolve`, `curtain`, `shapeIris`, `checker`, `tear` and `blob`. `pop` and `anvil` are enter-only. `poof` and `shatter` are exit-only.
+Kapow has sixteen transitions. Eleven are masks that work in both directions: `iris`, `clock`, `wipe`, `glare`, `blinds`, `dissolve`, `curtain`, `shapeIris`, `checker`, `tear` and `blob`. `pop` and `anvil` are enter-only. `poof`, `shatter` and `disintegrate` are exit-only.
 
 ## Why not `enter = KapowEnter.iris()`?
 
@@ -143,7 +143,7 @@ The stock transitions and Kapow's keep their own durations. The container waits 
 
 ## Durations
 
-Each factory has a `duration`. Masks default to 450 ms, `poof` to 400 ms, `pop` to 1200 ms and `anvil` to 1400 ms. `pop` and `anvil` include their particles, so they run longer. `tear` defaults to 500 ms, and `dissolve`, `shapeIris`, `checker` and `blob` to 600 ms, and `shatter` to 900 ms.
+Each factory has a `duration`. Masks default to 450 ms, `poof` to 400 ms, `pop` to 1200 ms and `anvil` to 1400 ms. `pop` and `anvil` include their particles, so they run longer. `tear` defaults to 500 ms; `dissolve`, `shapeIris`, `checker` and `blob` to 600 ms; `shatter` to 900 ms; and `disintegrate` to 1500 ms.
 
 If visibility flips back before a transition has finished, Compose interrupts it with a short spring instead of the transition's own timing, as it does for stock transitions. The mask or movement then completes quickly from where it was.
 
@@ -157,4 +157,4 @@ With reduced motion every Kapow transition becomes a fade over the same duration
 
 ## Particles in transitions
 
-`poof`, `anvil` and `pop` emit particles. They draw through a [`KapowParticleLayer`](/guides/particle-layer) when there is one above the content. Without one, they draw around the content, and the container's own bounds can clip them.
+`poof`, `anvil`, `pop` and `disintegrate` emit particles. They draw through a [`KapowParticleLayer`](/guides/particle-layer) when there is one above the content. Without one, they draw around the content, and the container's own bounds can clip them.

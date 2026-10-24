@@ -115,7 +115,7 @@ private fun spec(
         // These run their own curves on a linear clock.
         TransitionKind.Anvil, is TransitionKind.Pop, is TransitionKind.Poof -> tween(millis, easing = LinearEasing)
 
-        is TransitionKind.Shatter -> tween(millis, easing = LinearEasing)
+        is TransitionKind.Shatter, is TransitionKind.Disintegrate -> tween(millis, easing = LinearEasing)
 
         else -> tween(millis, easing = FastOutSlowInEasing)
     }

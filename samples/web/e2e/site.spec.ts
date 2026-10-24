@@ -170,6 +170,7 @@ const LIVE = [
   'transition-tear',
   'transition-blob',
   'transition-shatter',
+  'transition-disintegrate',
 ]
 
 for (const id of LIVE) {

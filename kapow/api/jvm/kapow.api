@@ -111,6 +111,8 @@ public final class com/jantursky/kapow/KapowExit$Companion {
 	public static synthetic fun clock-otBZfKM$default (Lcom/jantursky/kapow/KapowExit$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
 	public final fun curtain-HG0u8IE (Lcom/jantursky/kapow/BlindsOrientation;J)Lcom/jantursky/kapow/KapowExit;
 	public static synthetic fun curtain-HG0u8IE$default (Lcom/jantursky/kapow/KapowExit$Companion;Lcom/jantursky/kapow/BlindsOrientation;JILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
+	public final fun disintegrate-pYXP5xo (JJ)Lcom/jantursky/kapow/KapowExit;
+	public static synthetic fun disintegrate-pYXP5xo$default (Lcom/jantursky/kapow/KapowExit$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
 	public final fun dissolve-M2fzYQI (FJ)Lcom/jantursky/kapow/KapowExit;
 	public static synthetic fun dissolve-M2fzYQI$default (Lcom/jantursky/kapow/KapowExit$Companion;FJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
 	public final fun getNone ()Lcom/jantursky/kapow/KapowExit;

@@ -242,6 +242,13 @@ val entries: List<Entry> =
             Example("ShatterExample.kt") { ShatterDemo() },
         ),
         Entry(
+            "transition-disintegrate",
+            Group.Transitions,
+            "Disintegrate",
+            "The content turns to drifting dust.",
+            Example("DisintegrateExample.kt") { DisintegrateDemo() },
+        ),
+        Entry(
             "more-particle-layer",
             Group.More,
             "Particle layer",

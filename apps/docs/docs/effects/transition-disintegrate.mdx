@@ -1,0 +1,60 @@
+---
+title: "Transition: disintegrate"
+description: Content turns to dust in a sweeping band, and the dust drifts away.
+---
+
+Disintegrate is an exit only. A ragged band sweeps across the content from left to right and takes it away grain by grain. As the band passes, small square particles drift up and away. Use it for something dismissed for good, such as a cleared notification, a deleted message or an expired offer.
+
+## Usage
+
+The sample turns a notification to dust when it is dismissed. The dust takes the card's own colors.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowExit
+
+@Composable
+fun Notification(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        exit = KapowExit.disintegrate(),
+    ) {
+        Box(Modifier.size(290.dp, 84.dp).background(Color(0xFF6B62F2)))
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `color` | `Color.Unspecified` | The color of the dust. Unspecified takes the content's own colors; see below. |
+| `duration` | `1500.milliseconds` | How long the transition takes. Must be positive. |
+
+## Where the dust gets its color
+
+With `color` left unspecified, Kapow takes a snapshot of the content once, as the exit starts, and reads four pixels in each of ten columns across it. The dust that rises from a column takes that column's colors, so a card with a gradient leaves dust in the same gradient. Mostly transparent pixels are skipped.
+
+The snapshot comes from the graphics layer Kapow already draws the content into, with Compose's `GraphicsLayer.toImageBitmap()`. It is tested on desktop. If a target can't read the layer back, or the content has no opaque pixels in a column, that dust is light gray (`0xFFC2C2C2`). Pass a `color` when you want to be sure of the result, or when the content is mostly white.
+
+## Reduced motion
+
+The transition becomes a fade over the same duration or shorter. There are no particles and no band.
+
+## Notes
+
+- The band crosses in the first half or so of the duration and the dust settles in the rest, so all the dust is gone by the time the content leaves composition.
+- Particles draw through a [particle layer](/guides/particle-layer) when one is above the content, so a clipping parent does not cut them off. Without one they draw around the content.
+- The band always sweeps from left to right. The grain order inside it is seeded, so it is the same on every run.
+- There is no enter version. Pair it with another enter, such as `KapowEnter.dissolve()`.
+
+## Live example
+
+<include example="transition-disintegrate">../_snippets/live-example.mdx</include>
