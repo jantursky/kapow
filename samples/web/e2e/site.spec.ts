@@ -235,7 +235,7 @@ test('?autoplay=0 opens an example paused, and its controls still work', async (
 })
 
 const LINKS = {
-  Docs: 'https://kapow.vercel.app',
+  Docs: 'https://kapow-docs.vercel.app',
   GitHub: 'https://github.com/jantursky/kapow',
   'Maven Central': 'https://central.sonatype.com/artifact/io.github.jantursky/kapow',
 }

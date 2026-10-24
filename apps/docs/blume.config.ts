@@ -31,7 +31,7 @@ export default defineConfig({
     mode: 'dark',
   },
   deployment: {
-    site: 'https://kapow.vercel.app',
+    site: 'https://kapow-docs.vercel.app',
   },
   variables: {
     version,

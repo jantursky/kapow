@@ -4,7 +4,7 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.jantursky/kapow)](https://central.sonatype.com/artifact/io.github.jantursky/kapow) [![CI](https://github.com/jantursky/kapow/actions/workflows/ci.yml/badge.svg)](https://github.com/jantursky/kapow/actions/workflows/ci.yml) [![Kotlin](https://img.shields.io/badge/kotlin-2.4-7f52ff)](https://kotlinlang.org) [![license](https://img.shields.io/github/license/jantursky/kapow)](LICENSE) [![codecov](https://codecov.io/gh/jantursky/kapow/graph/badge.svg)](https://codecov.io/gh/jantursky/kapow)
 
-[Docs](https://kapow.vercel.app) · [Demo](https://kapow-demo.vercel.app) · [Maven Central](https://central.sonatype.com/artifact/io.github.jantursky/kapow) · [Changelog](CHANGELOG.md)
+[Docs](https://kapow-docs.vercel.app) · [Demo](https://kapow-demo.vercel.app) · [Maven Central](https://central.sonatype.com/artifact/io.github.jantursky/kapow) · [Changelog](CHANGELOG.md)
 
 Effects for Compose Multiplatform that react to state: a burst of particles when a value changes, a halo while a condition holds, an iris or a puff of smoke when content appears or goes. Android, iOS, desktop and the browser, from one `commonMain`.
 
@@ -109,7 +109,7 @@ There are three kinds of effect, each a plain modifier:
 - `Modifier.conditionalEffect(condition, effect)` runs while `condition` is true: `glow`, `pushDown`, `smoke`, and `repeat(changeEffect, every)`.
 - `Modifier.progressEffect(effect) { progress }` draws `shine`, `glow` or `iris` at a progress you supply, such as a scroll offset. `kapow-crease` uses it for `Modifier.hingeEffect(effect)`.
 
-Transitions are `KapowEnter` and `KapowExit` values: `iris`, `clock`, `wipe`, `glare`, `blinds`, and `anvil` and `pop` to enter, `poof` to exit. Use `KapowAnimatedVisibility`, or `Modifier.kapowTransition(this, enter, exit)` inside `AnimatedVisibility` or `AnimatedContent`. Change effects and transitions take an optional `KapowFeedbackEvent` for haptics or sound; see the [feedback guide](https://kapow.vercel.app/guides/feedback).
+Transitions are `KapowEnter` and `KapowExit` values: `iris`, `clock`, `wipe`, `glare`, `blinds`, and `anvil` and `pop` to enter, `poof` to exit. Use `KapowAnimatedVisibility`, or `Modifier.kapowTransition(this, enter, exit)` inside `AnimatedVisibility` or `AnimatedContent`. Change effects and transitions take an optional `KapowFeedbackEvent` for haptics or sound; see the [feedback guide](https://kapow-docs.vercel.app/guides/feedback).
 
 ## Demo
 
@@ -133,7 +133,7 @@ The [gallery](https://kapow-demo.vercel.app) runs every effect in the browser, c
 - [compose-shimmer](https://github.com/valentinilk/compose-shimmer): a looping placeholder shimmer. Kapow's `shine` plays once on a change.
 - [compose-theme-reveal](https://github.com/mofeejegi/compose-theme-reveal): iris, shutter and similar reveals for theme switches. Kapow's masks work on any content you show or hide.
 
-A search of the web and GitHub in October 2026 found no port of Pow to Compose. The [prior art page](https://kapow.vercel.app/prior-art) has more detail.
+A search of the web and GitHub in October 2026 found no port of Pow to Compose. The [prior art page](https://kapow-docs.vercel.app/prior-art) has more detail.
 
 ## Not covered yet
 
