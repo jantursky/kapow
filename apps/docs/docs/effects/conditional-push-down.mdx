@@ -40,12 +40,12 @@ fun HoldButton(pressed: Boolean) {
 
 ## Reduced motion
 
-The element is not scaled.
+The element keeps its size and dims slightly while the condition holds, so the pressed state still shows.
 
 ## Notes
 
 - The element is scaled around its center and springs back to full size when the condition turns false.
-- Only the drawing is scaled. Layout and hit testing keep the element's real size.
+- The scale is applied on the element's graphics layer. Layout keeps the real size, so neighbors don't move.
 
 ## Live example
 

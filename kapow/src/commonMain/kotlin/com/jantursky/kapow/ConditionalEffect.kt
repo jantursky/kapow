@@ -7,6 +7,9 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.effects.ConditionalGlowRunner
+import com.jantursky.kapow.effects.PushDownRunner
+import com.jantursky.kapow.effects.RepeatRunner
+import com.jantursky.kapow.effects.SmokeRunner
 import com.jantursky.kapow.internal.ConditionalRunner
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -35,7 +38,10 @@ public abstract class ConditionalEffect internal constructor() {
             shape: Shape = RectangleShape,
         ): ConditionalEffect = Glow(color, radius, shape)
 
-        /** Scales the element down slightly, as if pressed, and springs back when the condition ends. */
+        /**
+         * Scales the element down slightly, as if pressed, and springs back when the condition ends. With reduced
+         * motion the element dims instead.
+         */
         public fun pushDown(scale: Float = 0.95f): ConditionalEffect {
             require(scale > 0f) { "scale must be positive" }
             return PushDown(scale)
@@ -49,7 +55,7 @@ public abstract class ConditionalEffect internal constructor() {
         val effect: ChangeEffect,
         val every: Duration,
     ) : ConditionalEffect() {
-        override fun createRunner(): ConditionalRunner = TODO()
+        override fun createRunner(): ConditionalRunner = RepeatRunner(effect, every)
     }
 
     internal data class Glow(
@@ -63,12 +69,12 @@ public abstract class ConditionalEffect internal constructor() {
     internal data class PushDown(
         val scale: Float,
     ) : ConditionalEffect() {
-        override fun createRunner(): ConditionalRunner = TODO()
+        override fun createRunner(): ConditionalRunner = PushDownRunner(scale)
     }
 
     internal data class Smoke(
         val color: Color,
     ) : ConditionalEffect() {
-        override fun createRunner(): ConditionalRunner = TODO()
+        override fun createRunner(): ConditionalRunner = SmokeRunner(color)
     }
 }
