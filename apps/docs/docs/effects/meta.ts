@@ -28,5 +28,6 @@ export default defineMeta({
     'transition-anvil',
     'transition-pop',
     'transition-dissolve',
+    'transition-curtain',
   ],
 })

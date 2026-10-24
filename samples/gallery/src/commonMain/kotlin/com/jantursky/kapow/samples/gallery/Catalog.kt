@@ -200,6 +200,13 @@ val entries: List<Entry> =
             Example("DissolveExample.kt") { DissolveDemo() },
         ),
         Entry(
+            "transition-curtain",
+            Group.Transitions,
+            "Curtain",
+            "Two halves part to reveal the content.",
+            Example("CurtainExample.kt") { CurtainDemo() },
+        ),
+        Entry(
             "more-particle-layer",
             Group.More,
             "Particle layer",

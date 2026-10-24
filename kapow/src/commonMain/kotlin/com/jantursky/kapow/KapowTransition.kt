@@ -8,7 +8,10 @@ import androidx.compose.ui.unit.dp
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-/** The direction of the slats in [KapowEnter.blinds] and [KapowExit.blinds]. */
+/**
+ * The direction of the slats in [KapowEnter.blinds] and [KapowExit.blinds], and of the seam in [KapowEnter.curtain]
+ * and [KapowExit.curtain].
+ */
 public enum class BlindsOrientation { Horizontal, Vertical }
 
 /**
@@ -86,6 +89,20 @@ public class KapowEnter internal constructor(
             cellSize: Dp = 12.dp,
             duration: Duration = 600.milliseconds,
         ): KapowEnter = KapowEnter(TransitionKind.Dissolve(cellSize.checkedCell()), duration.checked())
+
+        /**
+         * Two halves part from the middle to reveal the content, like a stage curtain. With reduced motion it fades
+         * in instead.
+         *
+         * @param orientation the direction of the seam between the halves, as in [blinds]: with
+         *   [BlindsOrientation.Vertical] they slide apart to the left and right, with [BlindsOrientation.Horizontal]
+         *   up and down.
+         * @param duration how long the transition takes, 450 ms by default.
+         */
+        public fun curtain(
+            orientation: BlindsOrientation = BlindsOrientation.Vertical,
+            duration: Duration = DefaultMaskDuration,
+        ): KapowEnter = KapowEnter(TransitionKind.Curtain(orientation), duration.checked())
     }
 }
 
@@ -159,6 +176,18 @@ public class KapowExit internal constructor(
             cellSize: Dp = 12.dp,
             duration: Duration = 600.milliseconds,
         ): KapowExit = KapowExit(TransitionKind.Dissolve(cellSize.checkedCell()), duration.checked())
+
+        /**
+         * Two halves close in from the sides and meet in the middle, hiding the content. With reduced motion it fades
+         * out instead.
+         *
+         * @param orientation the direction of the seam where the halves meet, as in [KapowEnter.curtain].
+         * @param duration how long the transition takes, 450 ms by default.
+         */
+        public fun curtain(
+            orientation: BlindsOrientation = BlindsOrientation.Vertical,
+            duration: Duration = DefaultMaskDuration,
+        ): KapowExit = KapowExit(TransitionKind.Curtain(orientation), duration.checked())
     }
 }
 
@@ -208,5 +237,9 @@ internal sealed class TransitionKind {
 
     data class Dissolve(
         val cellSize: Dp,
+    ) : TransitionKind()
+
+    data class Curtain(
+        val orientation: BlindsOrientation,
     ) : TransitionKind()
 }

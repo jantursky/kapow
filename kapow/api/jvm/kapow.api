@@ -69,6 +69,8 @@ public final class com/jantursky/kapow/KapowEnter$Companion {
 	public static synthetic fun blinds-kNsnCk8$default (Lcom/jantursky/kapow/KapowEnter$Companion;FLcom/jantursky/kapow/BlindsOrientation;ZJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
 	public final fun clock-otBZfKM (JJ)Lcom/jantursky/kapow/KapowEnter;
 	public static synthetic fun clock-otBZfKM$default (Lcom/jantursky/kapow/KapowEnter$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
+	public final fun curtain-HG0u8IE (Lcom/jantursky/kapow/BlindsOrientation;J)Lcom/jantursky/kapow/KapowEnter;
+	public static synthetic fun curtain-HG0u8IE$default (Lcom/jantursky/kapow/KapowEnter$Companion;Lcom/jantursky/kapow/BlindsOrientation;JILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
 	public final fun dissolve-M2fzYQI (FJ)Lcom/jantursky/kapow/KapowEnter;
 	public static synthetic fun dissolve-M2fzYQI$default (Lcom/jantursky/kapow/KapowEnter$Companion;FJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
 	public final fun getNone ()Lcom/jantursky/kapow/KapowEnter;
@@ -95,6 +97,8 @@ public final class com/jantursky/kapow/KapowExit$Companion {
 	public static synthetic fun blinds-kNsnCk8$default (Lcom/jantursky/kapow/KapowExit$Companion;FLcom/jantursky/kapow/BlindsOrientation;ZJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
 	public final fun clock-otBZfKM (JJ)Lcom/jantursky/kapow/KapowExit;
 	public static synthetic fun clock-otBZfKM$default (Lcom/jantursky/kapow/KapowExit$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
+	public final fun curtain-HG0u8IE (Lcom/jantursky/kapow/BlindsOrientation;J)Lcom/jantursky/kapow/KapowExit;
+	public static synthetic fun curtain-HG0u8IE$default (Lcom/jantursky/kapow/KapowExit$Companion;Lcom/jantursky/kapow/BlindsOrientation;JILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
 	public final fun dissolve-M2fzYQI (FJ)Lcom/jantursky/kapow/KapowExit;
 	public static synthetic fun dissolve-M2fzYQI$default (Lcom/jantursky/kapow/KapowExit$Companion;FJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
 	public final fun getNone ()Lcom/jantursky/kapow/KapowExit;

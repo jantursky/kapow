@@ -37,5 +37,6 @@ internal abstract class TransitionPart {
 internal fun partFor(kind: TransitionKind): TransitionPart? =
     when (kind) {
         is TransitionKind.Dissolve -> DissolveMask(kind)
+        is TransitionKind.Curtain -> CurtainMask(kind)
         else -> null
     }
