@@ -22,6 +22,16 @@ internal fun OrbitDemo() {
     ExampleScaffold(
         autoplay = Autoplay({ if (online) 5.seconds else 1.5.seconds }, startsOn = true) { online = !online },
         stage = { OrbitExample(online, count.roundToInt(), (turn * 1000).roundToInt().milliseconds) },
+        code = {
+            conditionalEffectCode(
+                call(
+                    "ConditionalEffect.orbit",
+                    "count" to count.roundToInt(),
+                    "duration" to (turn * 1000).roundToInt().milliseconds.kt(),
+                ),
+                "online",
+            )
+        },
         controls = {
             PrimaryPill("Toggle", onClick = { online = !online })
             LabeledSlider("Count", "${count.roundToInt()}", count, { count = it }, 1f..8f)

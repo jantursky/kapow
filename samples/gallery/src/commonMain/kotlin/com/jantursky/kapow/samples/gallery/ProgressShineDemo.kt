@@ -23,6 +23,15 @@ internal fun ProgressShineDemo() {
     ExampleScaffold(
         autoplay = Autoplay(1.seconds) { sweepThereAndBack { progress = it } },
         stage = { ProgressShineExample(progress, angle, Color.White) },
+        code = {
+            progressEffectCode(
+                call(
+                    "ProgressEffect.shine",
+                    "angle" to angle.kt(),
+                    "color" to "Color.White",
+                ),
+            )
+        },
         controls = {
             PrimaryPill("Play", onClick = { scope.launch { sweep { progress = it } } })
             LabeledSlider("Progress", "${(progress * 100).roundToInt()} %", progress, { progress = it }, 0f..1f)

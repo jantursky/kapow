@@ -23,6 +23,14 @@ internal fun ProgressIrisDemo() {
     ExampleScaffold(
         autoplay = Autoplay(1.seconds) { sweepThereAndBack { progress = it } },
         stage = { ProgressIrisExample(progress, origin.origin) },
+        code = {
+            progressEffectCode(
+                call(
+                    "ProgressEffect.iris",
+                    "origin" to origin.source(),
+                ),
+            )
+        },
         controls = {
             PrimaryPill("Play", onClick = { scope.launch { sweep { progress = it } } })
             LabeledSlider("Progress", "${(progress * 100).roundToInt()} %", progress, { progress = it }, 0f..1f)
@@ -30,3 +38,11 @@ internal fun ProgressIrisDemo() {
         },
     )
 }
+
+/** The origin as the code a person would write. */
+private fun Origin.source(): String =
+    when (this) {
+        Origin.Center -> "TransformOrigin.Center"
+        Origin.TopStart -> "TransformOrigin(0f, 0f)"
+        Origin.BottomEnd -> "TransformOrigin(1f, 1f)"
+    }

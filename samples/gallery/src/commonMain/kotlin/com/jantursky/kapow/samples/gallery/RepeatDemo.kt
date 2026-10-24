@@ -25,6 +25,22 @@ internal fun RepeatDemo() {
                 unread = !unread
             },
         stage = { RepeatExample(unread, duration) },
+        code = {
+            conditionalEffectCode(
+                call(
+                    "ConditionalEffect.repeat",
+                    "" to
+                        call(
+                            "ChangeEffect.pulse",
+                            "shape" to "CircleShape",
+                            "color" to Swatch.Coral.color.kt(),
+                            "style" to "PulseStyle.Fill",
+                        ),
+                    "every" to duration.kt(),
+                ),
+                "unread",
+            )
+        },
         controls = {
             PrimaryPill("Toggle", onClick = { unread = !unread })
             LabeledSlider("Every", "${seconds.oneDecimal()} s", seconds, { seconds = it }, 0.1f..3f)

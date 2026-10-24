@@ -24,6 +24,18 @@ internal fun BorderBeamDemo() {
     ExampleScaffold(
         autoplay = Autoplay({ if (recording) 5.seconds else 1.5.seconds }, startsOn = true) { recording = !recording },
         stage = { BorderBeamExample(recording, swatch.color, width.dp, (lap * 1000).roundToInt().milliseconds) },
+        code = {
+            conditionalEffectCode(
+                call(
+                    "ConditionalEffect.borderBeam",
+                    "color" to swatch.color.kt(),
+                    "width" to width.dp.kt(),
+                    "shape" to "RoundedCornerShape(20.dp)",
+                    "duration" to (lap * 1000).roundToInt().milliseconds.kt(),
+                ),
+                "recording",
+            )
+        },
         controls = {
             PrimaryPill("Toggle", onClick = { recording = !recording })
             ChoiceRow("Color", Swatch.Palette, swatch, { swatch = it }, { it.name })

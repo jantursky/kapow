@@ -25,6 +25,16 @@ internal fun ProgressTraceDemo() {
     ExampleScaffold(
         autoplay = Autoplay(1.seconds) { sweepThereAndBack { progress = it } },
         stage = { ProgressTraceExample(progress, swatch.color, width.dp) },
+        code = {
+            progressEffectCode(
+                call(
+                    "ProgressEffect.trace",
+                    "shape" to "RoundedCornerShape(24.dp)",
+                    "color" to swatch.color.kt(),
+                    "width" to width.dp.kt(),
+                ),
+            )
+        },
         controls = {
             PrimaryPill("Play", onClick = { scope.launch { sweep { progress = it } } })
             LabeledSlider("Progress", "${(progress * 100).roundToInt()} %", progress, { progress = it }, 0f..1f)
