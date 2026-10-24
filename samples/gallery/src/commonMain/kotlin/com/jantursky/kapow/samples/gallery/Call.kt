@@ -26,7 +26,7 @@ internal class Call(
         val lines =
             args.joinToString("") { (key, value) ->
                 val label = label(key)
-                "$pad$label${text(value, indent + INDENT + label.length)},\n"
+                "$pad$label${text(value, indent + INDENT)},\n"
             }
         return "$name(\n$lines${" ".repeat(indent)})"
     }
