@@ -24,14 +24,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    /** Light icons over the dark theme and dark ones over the light theme, whatever the system theme is. */
+    /**
+     * Light icons over the dark theme and dark ones over the light theme, whatever the system theme is. The
+     * system still puts its scrim behind three-button navigation, where the tiles scroll under the bar.
+     */
     private fun matchSystemBars(dark: Boolean) {
-        val style =
-            if (dark) {
-                SystemBarStyle.dark(Color.TRANSPARENT)
-            } else {
-                SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
-            }
+        val style = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) { dark }
         enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
     }
 

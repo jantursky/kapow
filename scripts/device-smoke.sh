@@ -135,7 +135,8 @@ run_android() {
         sleep "$wait_s"
         capture "$out/$id.png"
         local crash pid
-        crash="$("${adb[@]}" logcat -d -b crash 2>/dev/null | grep -m1 -E 'FATAL|Exception|Error' || true)"
+        # Only this app's crashes: other apps on the device can crash in the background meanwhile.
+        crash="$("${adb[@]}" logcat -d -b crash 2>/dev/null | grep -A1 -F "Process: $APP_ID," | tail -1 || true)"
         pid="$("${adb[@]}" shell pidof "$APP_ID" | tr -d '\r' || true)"
         if [[ -n "$crash" || -z "$pid" ]]; then
             "${adb[@]}" logcat -d >"$out/$id.log"
