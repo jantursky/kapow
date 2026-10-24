@@ -168,6 +168,7 @@ const LIVE = [
   'change-burst',
   'change-speed-lines',
   'change-sparkle',
+  'change-fireworks',
 ]
 
 for (const id of LIVE) {

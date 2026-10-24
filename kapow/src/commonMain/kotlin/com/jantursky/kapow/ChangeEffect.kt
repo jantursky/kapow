@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.effects.BurstRunner
 import com.jantursky.kapow.effects.ColorFlashRunner
+import com.jantursky.kapow.effects.FireworksRunner
 import com.jantursky.kapow.effects.GlowRunner
 import com.jantursky.kapow.effects.PulseRunner
 import com.jantursky.kapow.effects.RippleRunner
@@ -184,6 +185,23 @@ public abstract class ChangeEffect internal constructor() {
             require(count > 0) { "count must be positive" }
             return Sparkle(color, count)
         }
+
+        /**
+         * A spark that climbs 100 dp from the element's top edge, then bursts into a ring of sparks that slow down,
+         * fall and fade, about 1.6 seconds in all. With reduced motion nothing is launched and the element
+         * brightens briefly instead.
+         *
+         * @param colors the colors of the sparks, taken in turn. The rocket is the first one, lightened.
+         * @param count how many sparks the explosion throws.
+         */
+        public fun fireworks(
+            colors: List<Color> = ParticleContent.DefaultColors,
+            count: Int = 28,
+        ): ChangeEffect {
+            require(colors.isNotEmpty()) { "colors must not be empty" }
+            require(count > 0) { "count must be positive" }
+            return Fireworks(colors, count)
+        }
     }
 
     internal data class Delayed(
@@ -298,6 +316,15 @@ public abstract class ChangeEffect internal constructor() {
         override val cooldown: Duration get() = Duration.ZERO
 
         override fun createRunner(): ChangeRunner = SparkleRunner(color, count)
+    }
+
+    internal data class Fireworks(
+        val colors: List<Color>,
+        val count: Int,
+    ) : ChangeEffect() {
+        override val cooldown: Duration get() = Duration.ZERO
+
+        override fun createRunner(): ChangeRunner = FireworksRunner(colors, count)
     }
 }
 

@@ -1,0 +1,60 @@
+---
+title: "Change: fireworks"
+description: A rocket climbs from an element and bursts into a ring of falling sparks when a value changes.
+---
+
+Fireworks sends a spark up from the top of the element, leaving a short trail of embers, then bursts it into a ring of colored sparks that slow down, fall and fade. It is the biggest celebration in the set. Use it for a rare moment, such as a finished goal or a long streak, rather than for every tap.
+
+## Usage
+
+The sample sets off fireworks above a streak card each time the streak grows. It uses a particle layer so the sparks are not clipped by the screen's layout.
+
+```kotlin
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.KapowParticleLayer
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun StreakScreen(days: Int) {
+    KapowParticleLayer(Modifier.fillMaxSize()) {
+        BasicText(
+            text = "$days-day streak",
+            modifier = Modifier.changeEffect(
+                value = days,
+                effect = ChangeEffect.fireworks(
+                    colors = listOf(Color(0xFFFFB547), Color(0xFFFF6B5A)),
+                    count = 36,
+                ),
+            ),
+        )
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `colors` | `ParticleContent.DefaultColors` | Colors of the sparks, taken in turn: amber, coral, violet and cobalt by default. The rocket and its trail are the first color, lightened. Must not be empty. |
+| `count` | `28` | How many sparks the explosion throws. Must be positive. |
+
+## Reduced motion
+
+Nothing is launched. The element brightens briefly instead.
+
+## Notes
+
+- The rocket starts at the middle of the element's top edge and climbs 100 dp in 0.45 s, slowing to a stop where it bursts. Leave room above the element, or put a [particle layer](/guides/particle-layer) around the screen so the sparks can draw over other content.
+- The sparks fly out in a ring at nearly the same speed, are braked by the air and pulled down, and are gone about 1.2 s after the burst. A soft glare lights the burst point for 0.3 s.
+- Every change picks a new explosion from a fixed seed, so it is the same from run to run.
+- Particles that are in flight do not follow the element if it moves or scrolls.
+- There is no cooldown. Quick changes set off overlapping fireworks.
+
+## Live example
+
+<include example="change-fireworks">../_snippets/live-example.mdx</include>

@@ -16,6 +16,7 @@ export default defineMeta({
     'change-burst',
     'change-speed-lines',
     'change-sparkle',
+    'change-fireworks',
     'change-delay',
     'conditional-repeat',
     'conditional-glow',

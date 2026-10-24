@@ -109,6 +109,13 @@ val entries: List<Entry> =
             Example("SparkleExample.kt") { SparkleDemo() },
         ),
         Entry(
+            "change-fireworks",
+            Group.Change,
+            "Fireworks",
+            "A rocket climbs from the element and bursts into falling sparks.",
+            Example("FireworksExample.kt") { FireworksDemo() },
+        ),
+        Entry(
             "change-delay",
             Group.Change,
             "Delay",
