@@ -21,7 +21,7 @@ fun Score(score: Int) {
 }
 ```
 
-The effects are `shine`, `pulse`, `glow`, `spray`, `rise` and `spin`. The [effects overview](/effects) has one line on each.
+The effects are `shine`, `pulse`, `glow`, `spray`, `rise`, `spin` and `confettiPop`. The [effects overview](/effects) has one line on each.
 
 ## When it plays
 
@@ -86,6 +86,7 @@ Some effects ignore a change that arrives too soon after the last one they accep
 | `shine` | half of its `duration` |
 | `pulse` | 0.2 s for each pulse after the first (`count - 1`) |
 | `glow`, `spray`, `rise`, `spin` | none |
+| `confettiPop` | none |
 
 With the default 1 s `shine`, two changes 0.2 s apart play one sweep. The effects without a cooldown play on every change: `rise` floats two labels for two quick changes, `glow` gets stronger up to a limit, and `spin` adds speed.
 

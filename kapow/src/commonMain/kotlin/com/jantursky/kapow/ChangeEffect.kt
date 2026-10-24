@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.effects.ConfettiPopRunner
 import com.jantursky.kapow.effects.GlowRunner
 import com.jantursky.kapow.effects.PulseRunner
 import com.jantursky.kapow.effects.RiseRunner
@@ -101,6 +102,22 @@ public abstract class ChangeEffect internal constructor() {
             axis: SpinAxis = SpinAxis.Y,
             rate: SpinRate = SpinRate.Default,
         ): ChangeEffect = Spin(axis, rate)
+
+        /**
+         * A short pop of confetti: small rectangles and ribbons in [colors] burst up and out of the element,
+         * tumble, and fall away under gravity. With reduced motion there is no confetti; the element briefly
+         * brightens instead.
+         *
+         * @param count how many pieces a change throws.
+         */
+        public fun confettiPop(
+            colors: List<Color> = ParticleContent.DefaultColors,
+            count: Int = 28,
+        ): ChangeEffect {
+            require(colors.isNotEmpty()) { "colors must not be empty" }
+            require(count > 0) { "count must be positive" }
+            return ConfettiPop(colors, count)
+        }
     }
 
     internal data class Delayed(
@@ -168,6 +185,15 @@ public abstract class ChangeEffect internal constructor() {
         override val cooldown: Duration get() = Duration.ZERO
 
         override fun createRunner(): ChangeRunner = SpinRunner(axis, rate)
+    }
+
+    internal data class ConfettiPop(
+        val colors: List<Color>,
+        val count: Int,
+    ) : ChangeEffect() {
+        override val cooldown: Duration get() = Duration.ZERO
+
+        override fun createRunner(): ChangeRunner = ConfettiPopRunner(colors, count)
     }
 }
 

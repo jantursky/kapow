@@ -81,6 +81,13 @@ val entries: List<Entry> =
             Example("DelayExample.kt") { DelayDemo() },
         ),
         Entry(
+            "change-confetti-pop",
+            Group.Change,
+            "Confetti pop",
+            "A short pop of confetti from the element.",
+            Example("ConfettiPopExample.kt") { ConfettiPopDemo() },
+        ),
+        Entry(
             "conditional-repeat",
             Group.Conditional,
             "Repeat",
