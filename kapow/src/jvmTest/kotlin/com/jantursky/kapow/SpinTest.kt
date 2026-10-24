@@ -63,6 +63,33 @@ class SpinTest {
         }
 
     @Test
+    fun aFastXSpinStillSettles() =
+        runEffectTest {
+            scene(ChangeEffect.spin(SpinAxis.X, SpinRate.Fast))
+            value++
+            var flipped = false
+            repeat(10) {
+                mainClock.advanceTimeBy(40)
+                flipped = flipped || capture().colorAt(200, 153) == Color.White
+            }
+            assertTrue(flipped, "the top edge leaves its place while it turns")
+            mainClock.advanceTimeBy(6000)
+            assertEquals(Cobalt, capture().colorAt(200, 153))
+        }
+
+    @Test
+    fun aChangeMidSpinAddsATurnAndStillSettles() =
+        runEffectTest {
+            scene(ChangeEffect.spin(SpinAxis.Z))
+            value++
+            mainClock.advanceTimeBy(200)
+            value++
+            mainClock.advanceTimeBy(6000)
+            assertEquals(Cobalt, capture().colorAt(152, 152))
+            assertEquals(Color.White, capture().colorAt(254, 200))
+        }
+
+    @Test
     fun reducedMotionFlashesInPlace() =
         runEffectTest {
             scene(ChangeEffect.spin(SpinAxis.Z), KapowMotion.Reduced)

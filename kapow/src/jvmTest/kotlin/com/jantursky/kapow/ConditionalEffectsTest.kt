@@ -139,6 +139,33 @@ class ConditionalEffectsTest {
         }
 
     @Test
+    fun swappingTheEffectWhileOnStartsTheNewOne() =
+        runEffectTest {
+            var effect by mutableStateOf(ConditionalEffect.glow(Color.Red))
+            setEffectContent {
+                Box(Modifier.fillMaxSize().background(Color.White)) {
+                    SolidElement(Modifier.offset(150.dp, 150.dp).conditionalEffect(on, effect))
+                }
+            }
+            on = true
+            mainClock.advanceTimeBy(600)
+            effect = ConditionalEffect.pushDown()
+            mainClock.advanceTimeBy(600)
+            val image = capture()
+            assertEquals(Color.White, image.colorAt(151, 200), "pressed")
+            assertEquals(Color.White, image.colorAt(258, 200), "the halo is gone")
+        }
+
+    @Test
+    fun anEffectThatStartsOnIsOnRightAway() =
+        runEffectTest {
+            on = true
+            scene(ConditionalEffect.pushDown())
+            mainClock.advanceTimeBy(600)
+            assertEquals(Color.White, capture().colorAt(151, 200))
+        }
+
+    @Test
     fun framesDoNotRecompose() =
         runEffectTest {
             scene(ConditionalEffect.smoke())
