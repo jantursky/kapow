@@ -128,28 +128,89 @@
     copyText(event.currentTarget, install?.textContent ?? '')
   })
 
-  // Called by the Kotlin side whenever the page changes. An empty name, or a file without source, hides the panel.
+  // The source panel has two tabs: the usage with the values of the controls as they stand now, and the file that
+  // runs in the stage. The Kotlin side calls kapowShowSource when the page changes (an empty name, or a file
+  // without source, leaves only the usage) and kapowShowUsage after every change of a control.
+  const TAB_KEY = 'kapow-source-tab'
   const panel = document.getElementById('source')
-  window.kapowShowSource = (file) => {
+  let file = ''
+  let usage = ''
+  let tab = 'usage'
+  try {
+    if (localStorage.getItem(TAB_KEY) === 'file') tab = 'file'
+  } catch {}
+
+  const usageCode = () => panel?.querySelector('[data-pane="usage"] code')
+
+  const paint = () => {
     if (!panel) return
-    const code = sources[file]
-    panel.hidden = !code
-    if (!code) return
+    const hasFile = Boolean(sources[file])
+    panel.hidden = !hasFile && !usage
+    if (panel.hidden) return
+    const active = tab === 'file' && hasFile ? 'file' : hasFile && !usage ? 'file' : 'usage'
+    const tabs = []
+    if (usage || !hasFile) tabs.push(['usage', 'Usage'])
+    if (hasFile) tabs.push(['file', file])
     panel.innerHTML = `
       <div class="source-bar">
-        <span class="source-name">${escape(file)}</span>
+        <div class="source-tabs" role="tablist" aria-label="Source">
+          ${tabs
+            .map(
+              ([id, label]) =>
+                `<button type="button" role="tab" id="source-tab-${id}" aria-controls="source-pane-${id}" ` +
+                `aria-selected="${id === active}" data-tab="${id}" class="source-tab${id === 'file' ? ' source-name' : ''}">${escape(label)}</button>`,
+            )
+            .join('')}
+        </div>
         <button type="button" class="copy">Copy</button>
       </div>
-      <pre tabindex="0"><code>${render(code)}</code></pre>`
-    panel.querySelector('.copy').addEventListener('click', (event) => copyText(event.currentTarget, code))
-    panel.querySelector('code').addEventListener('click', (event) => {
-      const button = event.target.closest('.imports-toggle')
-      if (!button) return
-      const block = button.parentElement
-      const collapsed = block.dataset.collapsed !== 'true'
-      block.dataset.collapsed = String(collapsed)
-      button.setAttribute('aria-expanded', String(!collapsed))
-      button.textContent = button.textContent.replace(/^[+−]/, collapsed ? '+' : '−')
+      ${tabs
+        .map(
+          ([id]) =>
+            `<div role="tabpanel" id="source-pane-${id}" aria-labelledby="source-tab-${id}" data-pane="${id}" ${id === active ? '' : 'hidden'}>` +
+            `<pre tabindex="0"><code>${render(id === 'file' ? sources[file] : usage)}</code></pre></div>`,
+        )
+        .join('')}`
+    for (const button of panel.querySelectorAll('[data-tab]')) {
+      button.addEventListener('click', () => {
+        tab = button.dataset.tab
+        try {
+          localStorage.setItem(TAB_KEY, tab)
+        } catch {}
+        paint()
+      })
+    }
+    panel.querySelector('.copy').addEventListener('click', (event) => {
+      copyText(event.currentTarget, active === 'file' ? sources[file] : usage)
     })
   }
+
+  const toggleImports = (event) => {
+    const button = event.target.closest('.imports-toggle')
+    if (!button) return
+    const block = button.parentElement
+    const collapsed = block.dataset.collapsed !== 'true'
+    block.dataset.collapsed = String(collapsed)
+    button.setAttribute('aria-expanded', String(!collapsed))
+    button.textContent = button.textContent.replace(/^[+−]/, collapsed ? '+' : '−')
+  }
+
+  window.kapowShowSource = (name) => {
+    file = name
+    usage = ''
+    paint()
+  }
+
+  window.kapowShowUsage = (code) => {
+    const first = !usage
+    usage = code
+    if (first || !usageCode()) {
+      paint()
+      return
+    }
+    // Later changes only swap the text, so a selection, a scroll position and the focus in the panel stay put.
+    usageCode().innerHTML = render(usage)
+  }
+
+  panel?.addEventListener('click', toggleImports)
 })()

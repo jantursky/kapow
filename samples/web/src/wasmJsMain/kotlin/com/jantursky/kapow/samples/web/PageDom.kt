@@ -113,8 +113,11 @@ internal fun showPage(entry: Entry?) {
     }
 }
 
-/** site.js renders the generated source of an example file; an empty name hides the panel. */
+/** site.js renders the generated source of an example file; an empty name leaves only the usage tab. */
 private fun showSource(file: String): Unit = js("window.kapowShowSource(file)")
+
+/** Gives the page the usage snippet of the open example, as the controls have it now. */
+internal fun showUsage(code: String): Unit = js("window.kapowShowUsage(code)")
 
 /**
  * Shows the Play/Pause pills (the example's and the overview grid's) in the state autoplay is in: the label

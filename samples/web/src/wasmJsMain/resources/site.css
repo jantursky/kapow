@@ -573,6 +573,39 @@ h1 {
     border-bottom: 1px solid var(--kapow-hairline);
 }
 
+.source-tabs {
+    display: flex;
+    gap: 4px;
+    min-width: 0;
+}
+
+.source-tab {
+    border: 0;
+    border-radius: var(--kapow-radius-pill);
+    padding: 4px 12px;
+    background: transparent;
+    color: var(--kapow-slate);
+    font: 500 13px/20px var(--kapow-font);
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.source-tab.source-name {
+    font: 400 13px/20px var(--kapow-font-mono);
+}
+
+.source-tab[aria-selected='true'] {
+    background: var(--kapow-glass);
+    color: var(--kapow-title);
+}
+
+.source-tab:focus-visible {
+    outline: none;
+    box-shadow: var(--kapow-focus);
+}
+
 .source-name {
     font: 400 13px/20px var(--kapow-font-mono);
     color: var(--kapow-ash);

@@ -23,6 +23,9 @@ internal fun ShineDemo() {
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.2.seconds) { count++ },
         stage = { ShineExample(count, angle, duration) },
+        code = {
+            changeEffectCode(call("ChangeEffect.shine", "angle" to angle.kt(), "duration" to duration.kt()))
+        },
         controls = {
             PrimaryPill("Fire", onClick = { count++ })
             LabeledSlider("Angle", "${angle.roundToInt()}°", angle, { angle = it }, 0f..360f)

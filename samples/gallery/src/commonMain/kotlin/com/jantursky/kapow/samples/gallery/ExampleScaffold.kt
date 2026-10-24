@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.KeyEventType
@@ -30,24 +31,38 @@ import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * The shape of every example page: the live stage on top, its controls under it. While the host's autoplay
- * ([GalleryStage]) is on, [autoplay] plays the example over and over. Inside an [EffectTile] only the stage
- * shows, scaled to the tile, and the controls stay out.
+ * ([GalleryStage]) is on, [autoplay] plays the example over and over. [code] is the usage snippet for the
+ * values the controls hold now (built with `changeEffectCode` and friends), which the host shows to copy. Inside
+ * an [EffectTile] only the stage shows, scaled to the tile, and the controls stay out.
  */
 @Composable
 internal fun ExampleScaffold(
     autoplay: Autoplay,
     stage: @Composable () -> Unit,
     controls: @Composable ColumnScope.() -> Unit,
+    code: () -> String = { "" },
 ) {
     val onTouch = runAutoplay(autoplay, LocalGalleryAutoplay.current)
     if (LocalExamplePreview.current) {
         PreviewStage(stage)
         return
     }
+    PublishCode(code)
     EffectCard(Modifier.fillMaxSize().onTouch(onTouch)) {
         Stage(Modifier.weight(1f)) { stage() }
         Column(verticalArrangement = Arrangement.spacedBy(8.dp), content = controls)
     }
+}
+
+/**
+ * Hands the host the source of this example as it stands: [code] is read in a snapshot flow, so it follows the
+ * controls, and the host shows the latest text next to the stage.
+ */
+@Composable
+private fun PublishCode(code: () -> String) {
+    val sink = LocalExampleCodeSink.current
+    val current by rememberUpdatedState(code)
+    LaunchedEffect(sink) { snapshotFlow { current() }.collect { sink(it) } }
 }
 
 /** How long autoplay waits when the page opens or Play is pressed, so the first step is seen from the start. */

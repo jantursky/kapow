@@ -18,7 +18,7 @@ internal fun Gallery() {
             LocalKapowFeedback provides if (pageHaptics.value) haptics else null,
         ) {
             // The overview has no stage.
-            GalleryStage(pageEntry.value, autoplay = pageAutoplay.value)
+            GalleryStage(pageEntry.value, autoplay = pageAutoplay.value, onCode = ::showUsage)
         }
     }
 }

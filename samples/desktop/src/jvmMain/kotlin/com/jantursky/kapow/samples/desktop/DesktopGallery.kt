@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -22,6 +23,7 @@ import com.jantursky.kapow.LocalKapowMotion
 import com.jantursky.kapow.samples.design.KapowCaption
 import com.jantursky.kapow.samples.design.KapowText
 import com.jantursky.kapow.samples.design.KapowTheme
+import com.jantursky.kapow.samples.gallery.CodePanel
 import com.jantursky.kapow.samples.gallery.Entry
 import com.jantursky.kapow.samples.gallery.GalleryStage
 
@@ -76,6 +78,11 @@ private fun ExamplePage(
         KapowText(entry.title, style = KapowTheme.type.headingSm, color = colors.title)
         KapowText(entry.summary, color = colors.ash)
         Spacer(Modifier.height(16.dp))
-        GalleryStage(entry, autoplay, Modifier.weight(1f))
+        var code by remember(entry) { mutableStateOf("") }
+        GalleryStage(entry, autoplay, Modifier.weight(1f), onCode = { code = it })
+        if (code.isNotEmpty()) {
+            Spacer(Modifier.height(12.dp))
+            CodePanel(code, Modifier.heightIn(max = 190.dp))
+        }
     }
 }

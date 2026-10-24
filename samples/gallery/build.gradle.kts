@@ -21,5 +21,8 @@ kotlin {
             api(project(":kapow"))
             implementation(libs.compose.animation)
         }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
     }
 }

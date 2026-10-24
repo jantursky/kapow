@@ -8,11 +8,14 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runDesktopComposeUiTest
+import com.jantursky.kapow.samples.design.KapowTheme
+import com.jantursky.kapow.samples.gallery.GalleryStage
 import com.jantursky.kapow.samples.gallery.entries
 import com.jantursky.kapow.samples.gallery.entryById
 import java.io.File
 import javax.imageio.ImageIO
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalTestApi::class)
 class DesktopGalleryTest {
@@ -30,6 +33,36 @@ class DesktopGalleryTest {
             }
         }
     }
+
+    @Test
+    fun everyEntryPublishesItsUsageCode() {
+        val missing = mutableListOf<String>()
+        for (entry in entries) {
+            var code = ""
+            runDesktopComposeUiTest(width = 1200, height = 820) {
+                mainClock.autoAdvance = false
+                setContent {
+                    KapowTheme(
+                        darkTheme = true,
+                    ) { GalleryStage(entry, autoplay = false, onCode = { code = it }) }
+                }
+                mainClock.advanceTimeBy(500)
+            }
+            // A usage snippet calls something and has no leftover template markers.
+            if (!code.contains("(") || code.contains("\${")) missing += entry.id
+        }
+        assertEquals(emptyList(), missing, "entries without a usage snippet")
+    }
+
+    @Test
+    fun theUsageFollowsTheControls() =
+        runDesktopComposeUiTest(width = 1200, height = 820) {
+            mainClock.autoAdvance = false
+            setContent { DesktopGallery(initialEntry = entryById("change-shine")) }
+            mainClock.advanceTimeBy(500)
+            onNodeWithText("Copy").assertExists()
+            onNode(hasText("angle = 45f", substring = true)).assertExists()
+        }
 
     @Test
     fun overviewShowsEveryEntryAndOpensOne() =
