@@ -15,6 +15,8 @@ public abstract class com/jantursky/kapow/ChangeEffect {
 public final class com/jantursky/kapow/ChangeEffect$Companion {
 	public final fun confettiPop (Ljava/util/List;I)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun confettiPop$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Ljava/util/List;IILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun glitch-_GIBnP8 (JF)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun glitch-_GIBnP8$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JFILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun glow-5DgIosw (JFLandroidx/compose/ui/graphics/Shape;)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun glow-5DgIosw$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;ILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun pulse-RPmYEkk (Landroidx/compose/ui/graphics/Shape;JLcom/jantursky/kapow/PulseStyle;I)Lcom/jantursky/kapow/ChangeEffect;

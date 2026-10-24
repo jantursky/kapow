@@ -16,6 +16,7 @@ export default defineMeta({
     'change-trace',
     'change-strike',
     'change-stamp',
+    'change-glitch',
     'conditional-repeat',
     'conditional-glow',
     'conditional-push-down',

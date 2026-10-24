@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.effects.ConfettiPopRunner
+import com.jantursky.kapow.effects.GlitchRunner
 import com.jantursky.kapow.effects.GlowRunner
 import com.jantursky.kapow.effects.PulseRunner
 import com.jantursky.kapow.effects.RiseRunner
@@ -175,6 +176,22 @@ public abstract class ChangeEffect internal constructor() {
             require(scale >= 1f) { "scale must be at least 1" }
             return Stamp(scale, dustColor)
         }
+
+        /**
+         * A digital glitch: for [duration] the element splits into offset red, green and blue copies while
+         * horizontal slices of it jump sideways, then it snaps back. With reduced motion nothing shifts; the
+         * element briefly brightens instead.
+         *
+         * @param offset how far the color channels split apart. Slices jump up to one and a half times as far.
+         */
+        public fun glitch(
+            duration: Duration = 300.milliseconds,
+            offset: Dp = 6.dp,
+        ): ChangeEffect {
+            require(duration.isPositive()) { "duration must be positive" }
+            require(offset >= 0.dp) { "offset must not be negative" }
+            return Glitch(duration, offset)
+        }
     }
 
     internal data class Delayed(
@@ -281,6 +298,15 @@ public abstract class ChangeEffect internal constructor() {
         override val cooldown: Duration get() = Duration.ZERO
 
         override fun createRunner(): ChangeRunner = StampRunner(scale, dustColor)
+    }
+
+    internal data class Glitch(
+        val duration: Duration,
+        val offset: Dp,
+    ) : ChangeEffect() {
+        override val cooldown: Duration get() = Duration.ZERO
+
+        override fun createRunner(): ChangeRunner = GlitchRunner(duration, offset)
     }
 }
 

@@ -109,6 +109,13 @@ val entries: List<Entry> =
             Example("StampExample.kt") { StampDemo() },
         ),
         Entry(
+            "change-glitch",
+            Group.Change,
+            "Glitch",
+            "The element splits into color channels and slices, then snaps back.",
+            Example("GlitchExample.kt") { GlitchDemo() },
+        ),
+        Entry(
             "conditional-repeat",
             Group.Conditional,
             "Repeat",
