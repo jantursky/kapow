@@ -24,7 +24,7 @@ internal fun GlareDemo() {
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             LabeledSlider("Angle", "${angle.roundToInt()}°", angle, { angle = it }, 0f..360f)
-            ChoiceRow("Color", Swatch.entries, swatch, { swatch = it }, { it.name })
+            ChoiceRow("Color", Swatch.Palette, swatch, { swatch = it }, { it.name })
             LabeledSlider("Duration", "${seconds.oneDecimal()} s", seconds, { seconds = it }, 0.2f..3f)
         },
     )

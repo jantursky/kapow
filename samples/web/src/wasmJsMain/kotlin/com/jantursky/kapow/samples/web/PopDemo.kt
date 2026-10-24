@@ -16,13 +16,13 @@ import kotlin.time.Duration.Companion.milliseconds
 @Composable
 internal fun PopDemo() {
     var visible by remember { mutableStateOf(false) }
-    var swatch by remember { mutableStateOf(Swatch.Violet) }
+    var swatch by remember { mutableStateOf(Swatch.Amber) }
     var seconds by remember { mutableFloatStateOf(1.2f) }
     ExampleScaffold(
         stage = { PopExample(visible, swatch.color, (seconds * 1000).roundToInt().milliseconds) },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
-            ChoiceRow("Color", Swatch.entries, swatch, { swatch = it }, { it.name })
+            ChoiceRow("Color", Swatch.Palette, swatch, { swatch = it }, { it.name })
             LabeledSlider("Duration", "${seconds.oneDecimal()} s", seconds, { seconds = it }, 0.2f..3f)
         },
     )

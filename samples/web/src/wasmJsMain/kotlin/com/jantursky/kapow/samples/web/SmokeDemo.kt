@@ -12,12 +12,18 @@ import com.jantursky.kapow.samples.web.examples.SmokeExample
 @Composable
 internal fun SmokeDemo() {
     var hot by remember { mutableStateOf(true) }
-    var swatch by remember { mutableStateOf(Swatch.Amber) }
+    var swatch by remember { mutableStateOf(Swatch.Gray) }
     ExampleScaffold(
         stage = { SmokeExample(hot, swatch.color) },
         controls = {
             PrimaryPill("Toggle", onClick = { hot = !hot })
-            ChoiceRow("Color", Swatch.entries, swatch, { swatch = it }, { it.name })
+            ChoiceRow(
+                "Color",
+                listOf(Swatch.Gray, Swatch.Amber, Swatch.Coral, Swatch.Cobalt),
+                swatch,
+                { swatch = it },
+                { it.name },
+            )
         },
     )
 }

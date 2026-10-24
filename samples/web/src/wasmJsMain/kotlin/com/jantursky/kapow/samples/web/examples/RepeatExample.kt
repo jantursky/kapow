@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.ChangeEffect
 import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.PulseStyle
 import com.jantursky.kapow.conditionalEffect
 import com.jantursky.kapow.samples.design.KapowEffectColors
 import com.jantursky.kapow.samples.design.KapowText
@@ -25,12 +26,12 @@ fun RepeatExample(
     unread: Boolean,
     every: Duration,
 ) {
-    val pulse = ChangeEffect.pulse(shape = CircleShape, color = KapowEffectColors.coral)
+    val pulse = ChangeEffect.pulse(shape = CircleShape, color = KapowEffectColors.coral, style = PulseStyle.Fill)
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
         KapowText("Inbox", style = KapowTheme.type.subheading)
         Box(
             Modifier
-                .size(14.dp)
+                .size(18.dp)
                 .conditionalEffect(unread, ConditionalEffect.repeat(pulse, every))
                 .clip(CircleShape)
                 .background(if (unread) KapowEffectColors.coral else KapowTheme.colors.hairline),

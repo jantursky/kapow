@@ -17,7 +17,7 @@ import kotlin.math.roundToInt
 internal fun PulseDemo() {
     var items by remember { mutableIntStateOf(1) }
     var shape by remember { mutableStateOf(ShapeChoice.Rounded) }
-    var swatch by remember { mutableStateOf(Swatch.Violet) }
+    var swatch by remember { mutableStateOf(Swatch.Amber) }
     var fill by remember { mutableStateOf(false) }
     var pulses by remember { mutableFloatStateOf(1f) }
     ExampleScaffold(
@@ -25,7 +25,7 @@ internal fun PulseDemo() {
         controls = {
             PrimaryPill("Add to cart", onClick = { items++ })
             ChoiceRow("Shape", ShapeChoice.entries, shape, { shape = it }, { it.name })
-            ChoiceRow("Color", Swatch.entries, swatch, { swatch = it }, { it.name })
+            ChoiceRow("Color", Swatch.Palette, swatch, { swatch = it }, { it.name })
             ChoiceRow("Style", listOf(false, true), fill, { fill = it }, { if (it) "Fill" else "Stroke" })
             LabeledSlider("Pulses", pulses.roundToInt().toString(), pulses, { pulses = it }, 1f..4f)
         },

@@ -22,7 +22,7 @@ internal fun PoofDemo() {
         stage = { PoofExample(visible, swatch.color, (seconds * 1000).roundToInt().milliseconds) },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
-            ChoiceRow("Color", Swatch.entries, swatch, { swatch = it }, { it.name })
+            ChoiceRow("Color", Swatch.Palette, swatch, { swatch = it }, { it.name })
             LabeledSlider("Duration", "${seconds.oneDecimal()} s", seconds, { seconds = it }, 0.2f..3f)
         },
     )

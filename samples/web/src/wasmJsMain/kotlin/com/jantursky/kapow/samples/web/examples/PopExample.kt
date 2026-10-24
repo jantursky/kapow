@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.KapowAnimatedVisibility
 import com.jantursky.kapow.KapowEnter
@@ -28,12 +29,12 @@ fun PopExample(
     ) {
         Box(
             Modifier
-                .size(width = 200.dp, height = 120.dp)
+                .size(width = 140.dp, height = 84.dp)
                 .clip(KapowShapes.card)
                 .background(color),
             contentAlignment = Alignment.Center,
         ) {
-            KapowText("Achievement", color = Color.Black)
+            KapowText("Achievement", color = if (color.luminance() > 0.4f) Color.Black else Color.White)
         }
     }
 }

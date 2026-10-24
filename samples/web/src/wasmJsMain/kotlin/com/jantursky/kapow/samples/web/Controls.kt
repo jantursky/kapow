@@ -21,7 +21,7 @@ import com.jantursky.kapow.samples.design.KapowEffectColors
 import com.jantursky.kapow.samples.design.SegmentedControl
 import kotlin.math.roundToInt
 
-/** The four effect colors of the design system, as a choice. */
+/** The effect colors of the design system, as a choice. */
 internal enum class Swatch(
     val color: Color,
 ) {
@@ -29,6 +29,13 @@ internal enum class Swatch(
     Coral(KapowEffectColors.coral),
     Violet(KapowEffectColors.violet),
     Cobalt(KapowEffectColors.cobalt),
+    Gray(Color(0xFF8A8A8A)),
+    ;
+
+    companion object {
+        /** The four effect colors, without the neutral gray that only smoke uses. */
+        val Palette: List<Swatch> = listOf(Amber, Coral, Violet, Cobalt)
+    }
 }
 
 /** The shapes the shape-aware effects accept. */

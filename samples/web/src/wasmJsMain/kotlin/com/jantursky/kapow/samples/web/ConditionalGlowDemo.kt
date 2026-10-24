@@ -24,7 +24,7 @@ internal fun ConditionalGlowDemo() {
         controls = {
             PrimaryPill("Toggle", onClick = { selected = !selected })
             ChoiceRow("Shape", ShapeChoice.entries, shape, { shape = it }, { it.name })
-            ChoiceRow("Color", Swatch.entries, swatch, { swatch = it }, { it.name })
+            ChoiceRow("Color", Swatch.Palette, swatch, { swatch = it }, { it.name })
             LabeledSlider("Radius", "${radius.roundToInt()} dp", radius, { radius = it }, 4f..40f)
         },
     )
