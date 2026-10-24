@@ -18,7 +18,13 @@ The docs site and the browser tests use [Bun](https://bun.sh) 1.3+ and Node.js 2
 ./gradlew :kapow:jvmTest                              # desktop tests, quickest feedback
 ./gradlew :samples:web:wasmJsBrowserDevelopmentRun    # the effect gallery in the browser
 ./gradlew :samples:desktop:run                        # the same gallery in a desktop window (hotRunJvm for hot reload)
+./gradlew :samples:androidApp:installDebug            # the gallery app on a running emulator or device
+scripts/device-smoke.sh android                       # open every page on an emulator, screenshot it, report crashes
+scripts/device-smoke.sh ios                           # the same on the iPhone 17 Pro simulator (needs xcodegen)
 ```
+
+The iOS app is an Xcode project generated from `samples/iosApp/project.yml`: run `xcodegen` in `samples/iosApp`,
+open `GalleryApp.xcodeproj` and run it on a simulator; its build phase builds the Kotlin framework with Gradle.
 
 ## Where things live
 
@@ -28,9 +34,12 @@ The docs site and the browser tests use [Bun](https://bun.sh) 1.3+ and Node.js 2
 | `kapow/src/*Main/.../platform`       | Reduced-motion readers for Android, iOS, the browser and the JVM.                    |
 | `kapow-crease`                       | Effects driven by the hinge angle, through Crease.                                   |
 | `kapow-multihaptic`                  | A `KapowFeedback` handler backed by multihaptic.                                     |
-| `samples/gallery`                    | The gallery's examples, their controls and the catalog, shared by web and desktop.   |
+| `samples/gallery`                    | The gallery's examples, their controls and the catalog, shared by every host; `MobileGallery` is the phone layout. |
 | `samples/web`                        | The effect gallery, compiled to Kotlin/Wasm. Each example's source is shown next to it. |
 | `samples/desktop`                    | The same gallery in a desktop window (JVM).                                          |
+| `samples/app`                        | The gallery app for phones and tablets with haptics; the iOS `GalleryKit` framework. |
+| `samples/androidApp`                 | The Android app around `samples/app`.                                                |
+| `samples/iosApp`                     | The iOS app around `GalleryKit`: a SwiftUI shell, generated with xcodegen.           |
 | `samples/design`                     | Theme and widgets the gallery uses.                                                  |
 | `apps/docs`                          | The docs site. Its code samples are compiled against the library.                    |
 | `design/`                            | The design system the gallery and the docs use.                                      |
