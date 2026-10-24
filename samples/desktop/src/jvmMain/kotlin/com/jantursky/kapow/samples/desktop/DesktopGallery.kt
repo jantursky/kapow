@@ -24,15 +24,15 @@ import com.jantursky.kapow.samples.design.KapowText
 import com.jantursky.kapow.samples.design.KapowTheme
 import com.jantursky.kapow.samples.gallery.Entry
 import com.jantursky.kapow.samples.gallery.GalleryStage
-import com.jantursky.kapow.samples.gallery.entries
 
 /**
  * The whole window: the top bar with the theme, reduced-motion and autoplay settings, the sidebar of every
- * catalog entry, and the selected entry's live example. There are no haptics on desktop.
+ * catalog entry, and the selected entry's live example, or the overview of every entry while none is selected.
+ * There are no haptics on desktop.
  */
 @Composable
 fun DesktopGallery(
-    initialEntry: Entry = entries.first(),
+    initialEntry: Entry? = null,
     initialDark: Boolean = true,
 ) {
     var entry by remember { mutableStateOf(initialEntry) }
@@ -52,7 +52,11 @@ fun DesktopGallery(
                 )
                 Row(Modifier.weight(1f)) {
                     Sidebar(entry, onSelect = { entry = it }, Modifier.fillMaxHeight())
-                    ExamplePage(entry, autoplay, Modifier.weight(1f).fillMaxHeight())
+                    val page = Modifier.weight(1f).fillMaxHeight()
+                    when (val selected = entry) {
+                        null -> Overview(autoplay, onOpen = { entry = it }, page)
+                        else -> ExamplePage(selected, autoplay, page)
+                    }
                 }
             }
         }

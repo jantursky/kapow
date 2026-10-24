@@ -32,11 +32,14 @@ import com.jantursky.kapow.samples.gallery.Entry
 import com.jantursky.kapow.samples.gallery.Group
 import com.jantursky.kapow.samples.gallery.entries
 
-/** Every catalog entry under its group, as in the web sidebar. The [selected] one sits on a `glass` pill. */
+/**
+ * The overview, then every catalog entry under its group, as in the web sidebar. The [selected] one (null for
+ * the overview) sits on a `glass` pill.
+ */
 @Composable
 internal fun Sidebar(
-    selected: Entry,
-    onSelect: (Entry) -> Unit,
+    selected: Entry?,
+    onSelect: (Entry?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = KapowTheme.colors
@@ -44,14 +47,15 @@ internal fun Sidebar(
     Row(modifier.width(240.dp).background(colors.panel)) {
         Box(Modifier.weight(1f).fillMaxHeight()) {
             Column(Modifier.verticalScroll(scroll).padding(horizontal = 12.dp, vertical = 16.dp)) {
-                Group.entries.forEachIndexed { index, group ->
+                SidebarLink("Overview", selected == null, onClick = { onSelect(null) })
+                Group.entries.forEach { group ->
                     KapowCaption(
                         group.title,
-                        Modifier.padding(start = 14.dp, top = if (index == 0) 0.dp else 20.dp, bottom = 6.dp),
+                        Modifier.padding(start = 14.dp, top = 20.dp, bottom = 6.dp),
                         color = colors.slate,
                     )
                     entries.filter { it.group == group }.forEach { entry ->
-                        SidebarLink(entry, entry == selected, onClick = { onSelect(entry) })
+                        SidebarLink(entry.title, entry == selected, onClick = { onSelect(entry) })
                     }
                 }
             }
@@ -66,7 +70,7 @@ internal fun Sidebar(
 
 @Composable
 private fun SidebarLink(
-    entry: Entry,
+    title: String,
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
@@ -74,7 +78,7 @@ private fun SidebarLink(
     val source = remember { MutableInteractionSource() }
     val hovered by source.collectIsHoveredAsState()
     KapowText(
-        entry.title,
+        title,
         Modifier
             .fillMaxWidth()
             .clip(KapowShapes.pill)

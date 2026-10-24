@@ -3,6 +3,7 @@ package com.jantursky.kapow.samples.desktop
 import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
@@ -31,6 +32,22 @@ class DesktopGalleryTest {
     }
 
     @Test
+    fun overviewShowsEveryEntryAndOpensOne() =
+        runDesktopComposeUiTest(width = 1200, height = 820) {
+            mainClock.autoAdvance = false
+            setContent { DesktopGallery() }
+            mainClock.advanceTimeBy(1500)
+            // The first tiles are in view; a tile carries its title and its group.
+            val spray = entryById("change-spray")!!
+            onNode(hasText(spray.title) and hasText(spray.group.title)).performClick()
+            mainClock.advanceTimeBy(500)
+            onNodeWithText(spray.summary).assertExists()
+            onNodeWithText("Overview").performClick()
+            mainClock.advanceTimeBy(500)
+            onNodeWithText(spray.summary).assertDoesNotExist()
+        }
+
+    @Test
     fun topBarControlsWork() =
         runDesktopComposeUiTest(width = 1200, height = 820) {
             mainClock.autoAdvance = false
@@ -47,13 +64,20 @@ class DesktopGalleryTest {
             onNodeWithText("Pause").assertExists()
         }
 
-    /** With `KAPOW_SCREENSHOTS` set to a directory, saves a dark and a light screenshot of one example page there. */
+    /** With `KAPOW_SCREENSHOTS` set to a directory, saves dark and light screenshots of the overview and one example page there. */
     @Test
     fun screenshots() {
         val dir = System.getenv("KAPOW_SCREENSHOTS")?.let(::File) ?: return
         dir.mkdirs()
         val entry = entryById("change-spray")!!
         for (dark in listOf(true, false)) {
+            runDesktopComposeUiTest(width = 1200, height = 820) {
+                mainClock.autoAdvance = false
+                setContent { DesktopGallery(initialDark = dark) }
+                mainClock.advanceTimeBy(1500)
+                val image = onRoot().captureToImage().toAwtImage()
+                ImageIO.write(image, "png", dir.resolve("overview-${if (dark) "dark" else "light"}.png"))
+            }
             runDesktopComposeUiTest(width = 1200, height = 820) {
                 mainClock.autoAdvance = false
                 setContent { DesktopGallery(initialEntry = entry, initialDark = dark) }
