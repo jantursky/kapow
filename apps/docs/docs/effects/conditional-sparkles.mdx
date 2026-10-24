@@ -1,0 +1,57 @@
+---
+title: "Conditional: sparkles"
+description: Four-point stars twinkle over an element while a condition is true.
+---
+
+Sparkles keeps a few four-point stars twinkling in and out over an element and just past its edges while a condition holds. Use it for something new or special: a "New" badge, an unlocked reward, a premium feature.
+
+## Usage
+
+The sample lets a "New" badge sparkle until the person has seen the feature.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.conditionalEffect
+
+@Composable
+fun NewBadge(unseen: Boolean) {
+    BasicText(
+        text = "New",
+        modifier = Modifier
+            .conditionalEffect(unseen, ConditionalEffect.sparkles())
+            .background(Color(0xFFFFB547), CircleShape)
+            .padding(horizontal = 12.dp, vertical = 4.dp),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `colors` | pale yellow and amber | The sparkles' colors, used in turn. |
+| `size` | `18.dp` | Size of the largest sparkle. |
+| `count` | `4` | About how many sparkles are visible at once. |
+
+## Reduced motion
+
+No sparkles are shown.
+
+## Notes
+
+- Each sparkle stays where it appears, swells and turns a little, then shrinks away. Their spots, sizes and colors come from a fixed seed.
+- Sparkles are particles. They draw through a [particle layer](/guides/particle-layer) when one is above the element, so a clipping parent does not cut them off. Without one they draw around the element.
+- When the condition turns false, no new sparkles start and the ones showing finish their twinkle.
+- Sparkles do not follow the element if it moves.
+
+## Live example
+
+<include example="conditional-sparkles">../_snippets/live-example.mdx</include>

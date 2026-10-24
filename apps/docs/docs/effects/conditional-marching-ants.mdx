@@ -1,0 +1,60 @@
+---
+title: "Conditional: marching ants"
+description: A dashed outline whose dashes move around an element while a condition is true.
+---
+
+Marching ants draws a dashed outline around an element and keeps the dashes moving along it while a condition holds. It is the classic look of a selection in an editor: a selected photo, layer or region.
+
+## Usage
+
+The sample outlines a photo while it is selected.
+
+```kotlin
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.conditionalEffect
+
+@Composable
+fun SelectablePhoto(photo: Painter, selected: Boolean) {
+    Image(
+        painter = photo,
+        contentDescription = null,
+        modifier = Modifier.conditionalEffect(
+            selected,
+            ConditionalEffect.marchingAnts(shape = RoundedCornerShape(12.dp)),
+        ),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `color` | `Color.White` | Color of the dashes. |
+| `gapColor` | `Color.Black` | Color of the line under the dashes, seen in the gaps. `Color.Transparent` leaves the gaps open. |
+| `width` | `2.dp` | Stroke width. |
+| `shape` | `RectangleShape` | The outline the dashes follow. |
+| `dash` | `6.dp` | Length of one dash. |
+| `gap` | `4.dp` | Space between two dashes. |
+| `speed` | `24.dp` | How far the dashes move each second. `0.dp` keeps them still. |
+
+## Reduced motion
+
+The dashes stand still. The dashed outline is shown while the condition holds.
+
+## Notes
+
+- The dash and gap are stretched a little so a whole number of them fits around the outline. That way the dashes meet without a seam where the outline closes.
+- The outline fades in over 0.3 s and fades out when the condition turns false.
+- The stroke sits inside the element's bounds, as `Modifier.border` draws it.
+- White dashes over black gaps read on light and dark content alike.
+
+## Live example
+
+<include example="conditional-marching-ants">../_snippets/live-example.mdx</include>

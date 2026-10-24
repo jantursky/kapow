@@ -1,0 +1,59 @@
+---
+title: "Conditional: rainbow border"
+description: An outline in a turning sweep of colors while a condition is true.
+---
+
+Rainbow border strokes the outline of an element with a sweep gradient of several colors and turns it around the element while a condition holds. Use it to mark something premium or special, such as the recommended plan on a pricing page.
+
+## Usage
+
+The sample rings the Pro plan card while it is the featured plan.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.conditionalEffect
+
+@Composable
+fun ProPlanCard(featured: Boolean) {
+    val shape = RoundedCornerShape(20.dp)
+    Box(
+        Modifier
+            .size(width = 220.dp, height = 120.dp)
+            .conditionalEffect(featured, ConditionalEffect.rainbowBorder(shape = shape))
+            .background(Color.DarkGray, shape),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `colors` | `ConditionalEffect.RainbowColors` | The colors around the sweep, in order. The sweep closes back to the first. One color gives a plain outline. |
+| `width` | `3.dp` | Stroke width. |
+| `shape` | `RectangleShape` | The outline to stroke. |
+| `duration` | `3.seconds` | How long the colors take to go around once. |
+
+`RainbowColors` is amber, coral, pink, violet, cobalt and teal.
+
+## Reduced motion
+
+The gradient stands still. The outline keeps its colors while the condition holds.
+
+## Notes
+
+- The outline fades in over 0.3 s and fades out when the condition turns false.
+- The gradient turns around the element's center, clockwise. The outline itself stays where it is.
+- The stroke sits inside the element's bounds, as `Modifier.border` draws it.
+
+## Live example
+
+<include example="conditional-rainbow-border">../_snippets/live-example.mdx</include>
