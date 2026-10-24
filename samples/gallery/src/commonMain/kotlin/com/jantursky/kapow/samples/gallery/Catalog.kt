@@ -88,6 +88,13 @@ val entries: List<Entry> =
             Example("ConfettiPopExample.kt") { ConfettiPopDemo() },
         ),
         Entry(
+            "change-trace",
+            Group.Change,
+            "Trace",
+            "A comet runs once around the element's outline.",
+            Example("TraceExample.kt") { TraceDemo() },
+        ),
+        Entry(
             "conditional-repeat",
             Group.Conditional,
             "Repeat",

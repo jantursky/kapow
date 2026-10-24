@@ -26,6 +26,12 @@ public abstract class ChangeEffect {
         public fun glow(color: Color = Color(0xFF6B62F2), radius: Dp = 16.dp, shape: Shape = RectangleShape): ChangeEffect
         public fun spin(axis: SpinAxis = SpinAxis.Y, rate: SpinRate = SpinRate.Default): ChangeEffect
         public fun confettiPop(colors: List<Color> = ParticleContent.DefaultColors, count: Int = 28): ChangeEffect
+        public fun trace(
+            shape: Shape = RectangleShape,
+            color: Color = Color(0xFF6B62F2),
+            width: Dp = 3.dp,
+            duration: Duration = 1.seconds,
+        ): ChangeEffect
     }
 }
 ```
@@ -40,6 +46,7 @@ public abstract class ChangeEffect {
 | `glow(color, radius, shape)` | A colored halo in `shape` that flares up and fades. Quick repeated changes make it stronger, up to a limit. |
 | `spin(axis, rate)` | Spins the element one or more full turns and settles where it started. Changes mid-spin add speed. |
 | `confettiPop(colors, count)` | A short pop of `count` confetti pieces in `colors` that burst from the element, tumble and fall away. |
+| `trace(shape, color, width, duration)` | A comet-like stroke that runs once around the outline of `shape`, clockwise from the top, then disappears. |
 
 ### PulseStyle, SpinAxis, SpinRate
 

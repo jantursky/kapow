@@ -81,6 +81,7 @@ abstract class com.jantursky.kapow/ChangeEffect { // com.jantursky.kapow/ChangeE
         final fun shine(kotlin/Float = ..., kotlin.time/Duration = ..., androidx.compose.ui.graphics/Color = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.shine|shine(kotlin.Float;kotlin.time.Duration;androidx.compose.ui.graphics.Color){}[0]
         final fun spin(com.jantursky.kapow/SpinAxis = ..., com.jantursky.kapow/SpinRate = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.spin|spin(com.jantursky.kapow.SpinAxis;com.jantursky.kapow.SpinRate){}[0]
         final fun spray(com.jantursky.kapow/ParticleContent = ..., kotlin/Int = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.spray|spray(com.jantursky.kapow.ParticleContent;kotlin.Int){}[0]
+        final fun trace(androidx.compose.ui.graphics/Shape = ..., androidx.compose.ui.graphics/Color = ..., androidx.compose.ui.unit/Dp = ..., kotlin.time/Duration = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.trace|trace(androidx.compose.ui.graphics.Shape;androidx.compose.ui.graphics.Color;androidx.compose.ui.unit.Dp;kotlin.time.Duration){}[0]
     }
 }
 

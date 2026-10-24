@@ -13,6 +13,7 @@ export default defineMeta({
     'change-spin',
     'change-delay',
     'change-confetti-pop',
+    'change-trace',
     'conditional-repeat',
     'conditional-glow',
     'conditional-push-down',

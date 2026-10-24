@@ -164,6 +164,7 @@ const LIVE = [
   'transition-pop',
   'more-particle-layer',
   'change-confetti-pop',
+  'change-trace',
 ]
 
 for (const id of LIVE) {

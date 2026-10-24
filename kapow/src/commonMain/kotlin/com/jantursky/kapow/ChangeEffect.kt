@@ -13,6 +13,7 @@ import com.jantursky.kapow.effects.RiseRunner
 import com.jantursky.kapow.effects.ShineRunner
 import com.jantursky.kapow.effects.SpinRunner
 import com.jantursky.kapow.effects.SprayRunner
+import com.jantursky.kapow.effects.TraceRunner
 import com.jantursky.kapow.internal.ChangeRunner
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -118,6 +119,26 @@ public abstract class ChangeEffect internal constructor() {
             require(count > 0) { "count must be positive" }
             return ConfettiPop(colors, count)
         }
+
+        /**
+         * A comet-like stroke with a fading tail that runs once around the element's [shape] outline, then
+         * disappears. Rectangles and rounded shapes are traced clockwise from the middle of the top edge. The stroke
+         * sits just inside the element's bounds. With reduced motion nothing travels: the whole outline shows at
+         * once and fades.
+         *
+         * @param width the stroke's width at the comet's head.
+         * @param duration how long one lap takes.
+         */
+        public fun trace(
+            shape: Shape = RectangleShape,
+            color: Color = Color(0xFF6B62F2),
+            width: Dp = 3.dp,
+            duration: Duration = 1.seconds,
+        ): ChangeEffect {
+            require(width > 0.dp) { "width must be positive" }
+            require(duration.isPositive()) { "duration must be positive" }
+            return Trace(shape, color, width, duration)
+        }
     }
 
     internal data class Delayed(
@@ -194,6 +215,17 @@ public abstract class ChangeEffect internal constructor() {
         override val cooldown: Duration get() = Duration.ZERO
 
         override fun createRunner(): ChangeRunner = ConfettiPopRunner(colors, count)
+    }
+
+    internal data class Trace(
+        val shape: Shape,
+        val color: Color,
+        val width: Dp,
+        val duration: Duration,
+    ) : ChangeEffect() {
+        override val cooldown: Duration get() = duration / 2
+
+        override fun createRunner(): ChangeRunner = TraceRunner(shape, color, width, duration)
     }
 }
 
