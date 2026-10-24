@@ -149,6 +149,19 @@ public class KapowEnter internal constructor(
             toothSize: Dp = 12.dp,
             duration: Duration = 500.milliseconds,
         ): KapowEnter = KapowEnter(TransitionKind.Tear(angle, toothSize.checkedTooth()), duration.checked())
+
+        /**
+         * An organic blob grows from [origin] until it covers the content. Its outline is a smooth curve through a
+         * few points that each swell and shrink as it grows, so it wobbles like a drop of liquid. The wobble is
+         * seeded, the same every time. With reduced motion it fades in instead.
+         *
+         * @param origin the point the blob grows from, as a fraction of the content's size.
+         * @param duration how long the transition takes, 600 ms by default.
+         */
+        public fun blob(
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+        ): KapowEnter = KapowEnter(TransitionKind.Blob(origin), duration.checked())
     }
 }
 
@@ -274,6 +287,18 @@ public class KapowExit internal constructor(
             toothSize: Dp = 12.dp,
             duration: Duration = 500.milliseconds,
         ): KapowExit = KapowExit(TransitionKind.Tear(angle, toothSize.checkedTooth()), duration.checked())
+
+        /**
+         * A wobbling blob, like [KapowEnter.blob], that shrinks toward [origin] until nothing is left. With reduced
+         * motion it fades out instead.
+         *
+         * @param origin the point the blob shrinks toward, as a fraction of the content's size.
+         * @param duration how long the transition takes, 600 ms by default.
+         */
+        public fun blob(
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+        ): KapowExit = KapowExit(TransitionKind.Blob(origin), duration.checked())
     }
 }
 
@@ -346,5 +371,9 @@ internal sealed class TransitionKind {
     data class Tear(
         val angle: Float,
         val toothSize: Dp,
+    ) : TransitionKind()
+
+    data class Blob(
+        val origin: TransformOrigin,
     ) : TransitionKind()
 }

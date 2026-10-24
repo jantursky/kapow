@@ -228,6 +228,13 @@ val entries: List<Entry> =
             Example("TearExample.kt") { TearDemo() },
         ),
         Entry(
+            "transition-blob",
+            Group.Transitions,
+            "Blob",
+            "A wobbly blob grows over the content.",
+            Example("BlobExample.kt") { BlobDemo() },
+        ),
+        Entry(
             "more-particle-layer",
             Group.More,
             "Particle layer",
