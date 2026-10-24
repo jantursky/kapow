@@ -12,6 +12,8 @@ import com.jantursky.kapow.progressEffect
  * outside it. On devices and platforms without a hinge angle the element is left unchanged.
  *
  * The angle comes from Crease, so `ProvideFoldState` feeds a fixed or simulated angle in previews and tests.
+ * Crease reports it as a plain value, so the composable that calls this recomposes when the angle changes. Keep
+ * the call in a small composable when the rest of the screen is expensive to compose.
  *
  * ```
  * Card(Modifier.hingeEffect(ProgressEffect.shine()))

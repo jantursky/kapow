@@ -36,7 +36,10 @@ public abstract class ConditionalEffect internal constructor() {
             color: Color = Color(0xFF6B62F2),
             radius: Dp = 16.dp,
             shape: Shape = RectangleShape,
-        ): ConditionalEffect = Glow(color, radius, shape)
+        ): ConditionalEffect {
+            require(radius >= 0.dp) { "radius must not be negative" }
+            return Glow(color, radius, shape)
+        }
 
         /**
          * Scales the element down slightly, as if pressed, and springs back when the condition ends. With reduced

@@ -77,8 +77,14 @@ internal abstract class EffectNode<R : EffectRunner>(
         if (feedback != null) currentValueOf(LocalKapowFeedback)?.perform(feedback)
     }
 
+    /** A runner for the current configuration, at rest. */
+    protected abstract fun newRunner(): R
+
+    /** Called at the start of each draw. */
+    protected open fun beforeDraw() {}
+
     /** Swaps in a new runner, for when the effect's configuration changes. */
-    fun replaceRunner(runner: R) {
+    fun replaceRunner(runner: R = newRunner()) {
         this.runner.stop()
         this.runner = runner
         if (isAttached) {
@@ -92,6 +98,7 @@ internal abstract class EffectNode<R : EffectRunner>(
     }
 
     override fun ContentDrawScope.draw() {
+        beforeDraw()
         val runner = runner
         if (runner.needsLayer) {
             // The layer wraps the runner's own drawing as well as the content, so offscreen blending and transforms
@@ -126,8 +133,16 @@ internal abstract class EffectNode<R : EffectRunner>(
         runner.attach(this)
     }
 
+    // A reused node, such as a lazy list item showing another item, starts from rest.
+    override fun onReset() {
+        particles.clear()
+        replaceRunner()
+    }
+
     override fun onDetach() {
+        // A fresh runner, so an animation cut off here doesn't come back frozen mid-frame on the next attach.
         runner.stop()
+        runner = newRunner()
         particles.clear()
         coordinates = null
         layer?.let { requireGraphicsContext().releaseGraphicsLayer(it) }

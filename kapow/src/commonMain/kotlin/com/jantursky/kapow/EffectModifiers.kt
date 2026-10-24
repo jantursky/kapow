@@ -59,7 +59,7 @@ private data class ChangeEffectElement(
     val isEnabled: Boolean,
     val feedback: KapowFeedbackEvent?,
 ) : ModifierNodeElement<ChangeEffectNode>() {
-    override fun create(): ChangeEffectNode = ChangeEffectNode(value, effect, feedback)
+    override fun create(): ChangeEffectNode = ChangeEffectNode(value, effect, isEnabled, feedback)
 
     override fun update(node: ChangeEffectNode) {
         node.update(value, effect, isEnabled, feedback)
@@ -88,9 +88,25 @@ internal fun ChangeEffect.withoutDelay(): Pair<ChangeEffect, Duration> {
 internal class ChangeEffectNode(
     private var value: Any?,
     private var effect: ChangeEffect,
+    private var isEnabled: Boolean,
     private var feedback: KapowFeedbackEvent?,
 ) : EffectNode<ChangeRunner>(effect.withoutDelay().first.createRunner()) {
     private val gate = TriggerGate()
+
+    // Set when the node is reused for other content: the next value it sees belongs to that content and is no change.
+    private var isReused = false
+
+    override fun newRunner(): ChangeRunner = effect.withoutDelay().first.createRunner()
+
+    override fun onReset() {
+        super.onReset()
+        isReused = true
+        invalidateDraw()
+    }
+
+    override fun beforeDraw() {
+        isReused = false
+    }
 
     fun update(
         value: Any?,
@@ -100,11 +116,13 @@ internal class ChangeEffectNode(
     ) {
         if (effect != this.effect) {
             this.effect = effect
-            replaceRunner(effect.withoutDelay().first.createRunner())
+            replaceRunner()
         }
         this.feedback = feedback
-        val changed = value != this.value
+        this.isEnabled = isEnabled
+        val changed = value != this.value && !isReused
         this.value = value
+        isReused = false
         if (changed && isEnabled && isAttached) trigger()
     }
 
@@ -117,6 +135,8 @@ internal class ChangeEffectNode(
             val accepted = withFrameNanos { now -> gate.tryAccept(now, inner.cooldown) }
             if (!accepted) return@launch
             awaitFrameTime(delay)
+            // The effect may have been replaced or turned off while the delay ran.
+            if (runner !== this@ChangeEffectNode.runner || !isEnabled) return@launch
             perform(event)
             runner.fire(this@ChangeEffectNode)
         }
@@ -144,8 +164,15 @@ internal class ConditionalEffectNode(
     private var condition: Boolean,
     private var effect: ConditionalEffect,
 ) : EffectNode<ConditionalRunner>(effect.createRunner()) {
+    override fun newRunner(): ConditionalRunner = effect.createRunner()
+
     override fun onAttach() {
         super.onAttach()
+        if (condition) runner.setActive(this, true)
+    }
+
+    override fun onReset() {
+        super.onReset()
         if (condition) runner.setActive(this, true)
     }
 
@@ -155,7 +182,7 @@ internal class ConditionalEffectNode(
     ) {
         if (effect != this.effect) {
             this.effect = effect
-            replaceRunner(effect.createRunner())
+            replaceRunner()
             if (condition && isAttached) runner.setActive(this, true)
         } else if (condition != this.condition && isAttached) {
             runner.setActive(this, condition)
@@ -190,6 +217,8 @@ internal class ProgressEffectNode(
     private var effect: ProgressEffect,
     private var progress: () -> Float,
 ) : EffectNode<ProgressRunner>(effect.createRunner().also { it.progress = progress }) {
+    override fun newRunner(): ProgressRunner = effect.createRunner().also { it.progress = progress }
+
     fun update(
         effect: ProgressEffect,
         progress: () -> Float,
@@ -197,7 +226,7 @@ internal class ProgressEffectNode(
         if (effect != this.effect) {
             this.effect = effect
             this.progress = progress
-            replaceRunner(effect.createRunner().also { it.progress = progress })
+            replaceRunner()
         } else if (progress !== this.progress) {
             this.progress = progress
             runner.progress = progress

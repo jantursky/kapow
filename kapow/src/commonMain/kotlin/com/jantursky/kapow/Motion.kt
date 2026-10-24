@@ -3,6 +3,7 @@ package com.jantursky.kapow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.MotionDurationScale
 import com.jantursky.kapow.platform.platformReducedMotion
 import kotlin.coroutines.CoroutineContext
@@ -27,7 +28,8 @@ public val LocalKapowMotion: ProvidableCompositionLocal<KapowMotion> = compositi
  * [KapowMotion.Reduced], otherwise the platform setting.
  */
 @Composable
-public fun isReducedMotion(): Boolean = resolveReducedMotion(LocalKapowMotion.current, durationScale = 1f)
+public fun isReducedMotion(): Boolean =
+    resolveReducedMotion(LocalKapowMotion.current, rememberCoroutineScope().coroutineContext.durationScale)
 
 /**
  * Effects call this when they fire. Compose sets [MotionDurationScale] to 0 when animations are off on Android

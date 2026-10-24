@@ -65,13 +65,13 @@ public fun Modifier.kapowTransition(
             },
             label = "kapowTransition",
         ) { if (it == EnterExitState.Visible) 1f else 0f }
-    val handler = LocalKapowFeedback.current
+    val handler = rememberUpdatedState(LocalKapowFeedback.current)
     val event = rememberUpdatedState(feedback)
     LaunchedEffect(transition) {
         // Content that starts out visible has nothing to announce; after that, each new target is an enter or exit.
         snapshotFlow { transition.targetState }
             .filter { it != transition.currentState }
-            .collect { event.value?.let { handler?.perform(it) } }
+            .collect { event.value?.let { handler.value?.perform(it) } }
     }
     return this then
         TransitionElement(
@@ -152,10 +152,22 @@ private class TransitionNode(
     private var exit: TransitionKind,
     private var reduced: Boolean,
 ) : EffectNode<TransitionRunner>(createRunner(enter, exit, reduced)) {
+    private lateinit var progress: State<Float>
+    private lateinit var entering: () -> Boolean
+
+    override fun newRunner(): TransitionRunner = createRunner(enter, exit, reduced).also { connect(it) }
+
     fun bind(
         progress: State<Float>,
         entering: () -> Boolean,
     ) {
+        this.progress = progress
+        this.entering = entering
+        connect(runner)
+    }
+
+    private fun connect(runner: TransitionRunner) {
+        val progress = progress
         runner.progress = { progress.value }
         runner.entering = entering
     }
@@ -169,9 +181,6 @@ private class TransitionNode(
         this.enter = enter
         this.exit = exit
         this.reduced = reduced
-        val next = createRunner(enter, exit, reduced)
-        next.progress = runner.progress
-        next.entering = runner.entering
-        replaceRunner(next)
+        replaceRunner()
     }
 }

@@ -32,7 +32,10 @@ public abstract class ProgressEffect internal constructor() {
             color: Color = Color(0xFF6B62F2),
             radius: Dp = 16.dp,
             shape: Shape = RectangleShape,
-        ): ProgressEffect = Glow(color, radius, shape)
+        ): ProgressEffect {
+            require(radius >= 0.dp) { "radius must not be negative" }
+            return Glow(color, radius, shape)
+        }
 
         /** A circular reveal from [origin] whose radius follows the progress. */
         public fun iris(origin: TransformOrigin = TransformOrigin.Center): ProgressEffect = Iris(origin)

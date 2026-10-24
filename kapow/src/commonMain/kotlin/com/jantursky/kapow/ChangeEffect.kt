@@ -91,7 +91,10 @@ public abstract class ChangeEffect internal constructor() {
             color: Color = Color(0xFF6B62F2),
             radius: Dp = 16.dp,
             shape: Shape = RectangleShape,
-        ): ChangeEffect = Glow(color, radius, shape)
+        ): ChangeEffect {
+            require(radius >= 0.dp) { "radius must not be negative" }
+            return Glow(color, radius, shape)
+        }
 
         /** Spins the element one or more full turns and settles where it started. Changes mid-spin add speed. */
         public fun spin(
