@@ -15,12 +15,12 @@ plugins {
 
 spotless {
     kotlin {
-        target("**/src/**/*.kt")
+        target("kapow*/src/**/*.kt", "samples/*/src/**/*.kt")
         targetExclude("**/build/**", "samples/docs-check/src/**")
         ktlint(libs.versions.ktlint.get())
     }
     kotlinGradle {
-        target("**/*.gradle.kts")
+        target("*.gradle.kts", "kapow*/*.gradle.kts", "samples/*/*.gradle.kts")
         targetExclude("**/build/**")
         ktlint(libs.versions.ktlint.get())
     }
