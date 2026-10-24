@@ -12,6 +12,7 @@ import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.web.examples.ProgressIrisExample
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.seconds
 
 /** The controls around [ProgressIrisExample]. */
 @Composable
@@ -20,6 +21,7 @@ internal fun ProgressIrisDemo() {
     var origin by remember { mutableStateOf(Origin.Center) }
     val scope = rememberCoroutineScope()
     ExampleScaffold(
+        autoplay = Autoplay(1.seconds) { sweepThereAndBack { progress = it } },
         stage = { ProgressIrisExample(progress, origin.origin) },
         controls = {
             PrimaryPill("Play", onClick = { scope.launch { sweep { progress = it } } })

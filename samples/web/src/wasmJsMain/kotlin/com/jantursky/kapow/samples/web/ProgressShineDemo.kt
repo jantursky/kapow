@@ -12,6 +12,7 @@ import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.web.examples.ProgressShineExample
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.seconds
 
 /** The controls around [ProgressShineExample]. */
 @Composable
@@ -20,6 +21,7 @@ internal fun ProgressShineDemo() {
     var angle by remember { mutableFloatStateOf(45f) }
     val scope = rememberCoroutineScope()
     ExampleScaffold(
+        autoplay = Autoplay(1.seconds) { sweepThereAndBack { progress = it } },
         stage = { ProgressShineExample(progress, angle, Color.White) },
         controls = {
             PrimaryPill("Play", onClick = { scope.launch { sweep { progress = it } } })

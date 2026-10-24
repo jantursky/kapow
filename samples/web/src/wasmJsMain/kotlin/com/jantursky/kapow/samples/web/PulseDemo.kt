@@ -11,6 +11,7 @@ import com.jantursky.kapow.samples.design.LabeledSlider
 import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.web.examples.PulseExample
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.seconds
 
 /** The controls around [PulseExample]. */
 @Composable
@@ -21,6 +22,7 @@ internal fun PulseDemo() {
     var fill by remember { mutableStateOf(false) }
     var pulses by remember { mutableFloatStateOf(1f) }
     ExampleScaffold(
+        autoplay = Autoplay(2.seconds + 0.5.seconds * pulses.roundToInt()) { items++ },
         stage = { PulseExample(items, shape.shape, swatch.color, fill, pulses.roundToInt()) },
         controls = {
             PrimaryPill("Add to cart", onClick = { items++ })

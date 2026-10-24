@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import com.jantursky.kapow.samples.design.KapowCaption
 import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.web.examples.FeedbackExample
+import kotlin.time.Duration.Companion.seconds
 
 /** The controls around [FeedbackExample]. */
 @Composable
@@ -17,6 +18,7 @@ internal fun FeedbackDemo() {
     var choice by remember { mutableStateOf(FeedbackChoice.Success) }
     var last by remember { mutableStateOf("none yet") }
     ExampleScaffold(
+        autoplay = Autoplay(2.2.seconds) { count++ },
         stage = { FeedbackExample(count, choice.event, { last = it.toString() }) },
         controls = {
             PrimaryPill("Fire", onClick = { count++ })

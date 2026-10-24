@@ -11,6 +11,7 @@ import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.web.examples.WipeExample
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /** The controls around [WipeExample]. */
 @Composable
@@ -18,8 +19,10 @@ internal fun WipeDemo() {
     var visible by remember { mutableStateOf(false) }
     var angle by remember { mutableFloatStateOf(0f) }
     var seconds by remember { mutableFloatStateOf(0.5f) }
+    val duration = (seconds * 1000).roundToInt().milliseconds
     ExampleScaffold(
-        stage = { WipeExample(visible, angle, (seconds * 1000).roundToInt().milliseconds) },
+        autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
+        stage = { WipeExample(visible, angle, duration) },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             LabeledSlider("Angle", "${angle.roundToInt()}°", angle, { angle = it }, 0f..360f)

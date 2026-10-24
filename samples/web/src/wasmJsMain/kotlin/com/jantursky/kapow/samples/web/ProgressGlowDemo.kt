@@ -13,6 +13,7 @@ import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.web.examples.ProgressGlowExample
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.seconds
 
 /** The controls around [ProgressGlowExample]. */
 @Composable
@@ -23,6 +24,7 @@ internal fun ProgressGlowDemo() {
     var swatch by remember { mutableStateOf(Swatch.Violet) }
     val scope = rememberCoroutineScope()
     ExampleScaffold(
+        autoplay = Autoplay(1.seconds) { sweepThereAndBack { progress = it } },
         stage = { ProgressGlowExample(progress, swatch.color, radius.dp, shape.shape) },
         controls = {
             PrimaryPill("Play", onClick = { scope.launch { sweep { progress = it } } })

@@ -12,6 +12,7 @@ import com.jantursky.kapow.samples.design.LabeledSlider
 import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.web.examples.SprayExample
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.seconds
 
 /** The controls around [SprayExample]. */
 @Composable
@@ -20,6 +21,7 @@ internal fun SprayDemo() {
     var shape by remember { mutableStateOf(ParticleShape.Heart) }
     var particles by remember { mutableFloatStateOf(11f) }
     ExampleScaffold(
+        autoplay = Autoplay(2.seconds) { likes++ },
         stage = { SprayExample(likes, shape, particles.roundToInt()) },
         controls = {
             PrimaryPill("Like", onClick = { likes++ })

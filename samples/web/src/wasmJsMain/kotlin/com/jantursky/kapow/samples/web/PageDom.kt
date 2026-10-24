@@ -76,3 +76,11 @@ internal fun showPage(entry: Entry?) {
 
 /** site.js renders the generated source of an example file; an empty name hides the panel. */
 private fun showSource(file: String): Unit = js("window.kapowShowSource(file)")
+
+/** Shows the Play/Pause pill in the state autoplay is in: its label names what a press does. */
+internal fun showAutoplay(playing: Boolean) {
+    val button = document.getElementById("autoplay") ?: return
+    button.setAttribute("aria-label", if (playing) "Pause autoplay" else "Play autoplay")
+    button.setAttribute("data-playing", playing.toString())
+    button.querySelector(".autoplay-label")?.textContent = if (playing) "Pause" else "Play"
+}

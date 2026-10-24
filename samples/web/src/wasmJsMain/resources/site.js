@@ -1,8 +1,14 @@
-// The theme switch, the sidebar on small screens and the source panel for the Kapow gallery. sources.js is
-// generated from the example files at build time, so the panel shows the file that runs in the stage.
+// The theme switch, the sidebar on small screens, the version and install line, and the source panel for the
+// Kapow gallery. sources.js is generated at build time from the Gradle version and the example files, so the
+// page names the release it was built from and the panel shows the file that runs in the stage.
 (function () {
   const sources = window.KAPOW_SOURCES || {}
+  const version = window.KAPOW_VERSION || ''
   const root = document.documentElement
+
+  // The version beside the brand and in the install line.
+  for (const element of document.querySelectorAll('[data-version]')) element.textContent = version
+  for (const element of document.querySelectorAll('[data-version-tag]')) element.hidden = !version
 
   // Theme. index.html has already set data-theme before the first paint; the Compose viewports watch it.
   const STORAGE_KEY = 'kapow-theme'
@@ -103,6 +109,7 @@
     const label = button.dataset.label || button.textContent.trim()
     button.dataset.label = label
     try {
+      // Without a clipboard (an insecure origin, an old browser) this throws inside the try and says so.
       await navigator.clipboard.writeText(text)
       button.classList.add('copied')
       button.innerHTML = `${CHECK}<span>Copied</span>`
@@ -115,6 +122,11 @@
       button.textContent = label
     }, 1600)
   }
+
+  const install = document.getElementById('install-line')
+  document.getElementById('copy-install')?.addEventListener('click', (event) => {
+    copyText(event.currentTarget, install?.textContent ?? '')
+  })
 
   // Called by the Kotlin side whenever the page changes. An empty name, or a file without source, hides the panel.
   const panel = document.getElementById('source')

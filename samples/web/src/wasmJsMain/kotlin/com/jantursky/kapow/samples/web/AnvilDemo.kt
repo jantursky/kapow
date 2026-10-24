@@ -11,14 +11,17 @@ import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.web.examples.AnvilExample
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /** The controls around [AnvilExample]. */
 @Composable
 internal fun AnvilDemo() {
     var visible by remember { mutableStateOf(false) }
     var seconds by remember { mutableFloatStateOf(1.4f) }
+    val duration = (seconds * 1000).roundToInt().milliseconds
     ExampleScaffold(
-        stage = { AnvilExample(visible, (seconds * 1000).roundToInt().milliseconds) },
+        autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
+        stage = { AnvilExample(visible, duration) },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             LabeledSlider("Duration", "${seconds.oneDecimal()} s", seconds, { seconds = it }, 0.2f..3f)

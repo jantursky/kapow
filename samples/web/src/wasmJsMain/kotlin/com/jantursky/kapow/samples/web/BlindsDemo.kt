@@ -14,6 +14,7 @@ import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.web.examples.BlindsExample
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /** The controls around [BlindsExample]. */
 @Composable
@@ -23,14 +24,16 @@ internal fun BlindsDemo() {
     var orientation by remember { mutableStateOf(BlindsOrientation.Horizontal) }
     var staggered by remember { mutableStateOf(false) }
     var seconds by remember { mutableFloatStateOf(0.5f) }
+    val duration = (seconds * 1000).roundToInt().milliseconds
     ExampleScaffold(
+        autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
         stage = {
             BlindsExample(
                 visible,
                 width.dp,
                 orientation,
                 staggered,
-                (seconds * 1000).roundToInt().milliseconds,
+                duration,
             )
         },
         controls = {

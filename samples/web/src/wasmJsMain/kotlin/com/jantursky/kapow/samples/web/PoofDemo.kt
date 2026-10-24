@@ -11,6 +11,7 @@ import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.web.examples.PoofExample
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /** The controls around [PoofExample]. */
 @Composable
@@ -18,8 +19,10 @@ internal fun PoofDemo() {
     var visible by remember { mutableStateOf(true) }
     var swatch by remember { mutableStateOf(Swatch.Amber) }
     var seconds by remember { mutableFloatStateOf(0.4f) }
+    val duration = (seconds * 1000).roundToInt().milliseconds
     ExampleScaffold(
-        stage = { PoofExample(visible, swatch.color, (seconds * 1000).roundToInt().milliseconds) },
+        autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
+        stage = { PoofExample(visible, swatch.color, duration) },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             ChoiceRow("Color", Swatch.Palette, swatch, { swatch = it }, { it.name })

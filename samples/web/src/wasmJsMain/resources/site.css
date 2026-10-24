@@ -101,6 +101,62 @@ p code {
     color: var(--kapow-title);
 }
 
+.nav-start {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.version {
+    padding: 1px 8px;
+    border: 1px solid var(--kapow-hairline);
+    border-radius: var(--kapow-radius-pill);
+    font: 400 12px/18px var(--kapow-font-mono);
+    color: var(--kapow-slate);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 8px;
+}
+
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 10px;
+    border-radius: var(--kapow-radius-pill);
+    font: 500 14px/20px var(--kapow-font);
+    color: var(--kapow-ash);
+    white-space: nowrap;
+}
+
+.nav-link:hover {
+    color: var(--kapow-title);
+    background: var(--kapow-glass);
+}
+
+/* Wide enough for words: the links are text. Narrower, they turn into icons (see the media queries). */
+.nav-link svg {
+    display: none;
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.nav-link svg.filled {
+    fill: currentColor;
+    stroke: none;
+}
+
 .nav-tools {
     display: flex;
     align-items: center;
@@ -254,6 +310,97 @@ h1 {
     max-width: none;
 }
 
+/* The title of an example with its Play/Pause pill. */
+.example-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 16px;
+}
+
+.primary-pill,
+.ghost-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: var(--kapow-radius-pill);
+    font: 500 14px/20px var(--kapow-font);
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+/* The one filled button of a view. */
+.primary-pill {
+    padding: 8px 14px;
+    background: var(--kapow-action);
+    color: var(--kapow-on-action);
+}
+
+.ghost-pill {
+    padding: 6px 14px;
+    border: 1px solid var(--kapow-hairline);
+    background: transparent;
+    color: var(--kapow-ink);
+}
+
+.ghost-pill:hover {
+    background: var(--kapow-glass);
+}
+
+.ghost-pill svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* The icon shows what a press does. */
+#autoplay .icon-play,
+#autoplay[data-playing='false'] .icon-pause {
+    display: none;
+}
+
+#autoplay[data-playing='false'] .icon-play {
+    display: block;
+}
+
+/* Read the docs and the install line, under the overview's lede. */
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 32px;
+}
+
+.install {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    max-width: 100%;
+    padding: 4px 4px 4px 16px;
+    background: var(--kapow-panel);
+    border: 1px solid var(--kapow-hairline);
+    border-radius: var(--kapow-radius-pill);
+}
+
+.install code {
+    min-width: 0;
+    overflow-x: auto;
+    white-space: nowrap;
+    color: var(--kapow-ash);
+    scrollbar-width: none;
+}
+
+.install .copy {
+    flex: none;
+}
+
 .lede {
     max-width: 60ch;
     margin: 20px 0 0;
@@ -300,6 +447,51 @@ h1 {
 
 .stage-host {
     height: 520px;
+}
+
+/* Footer */
+.site-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 24px;
+    width: min(100% - 48px, var(--kapow-max-width) - 48px);
+    margin: 0 auto;
+    padding: 24px 0 32px;
+    border-top: 1px solid var(--kapow-hairline);
+    font: 500 13px/20px var(--kapow-font);
+    letter-spacing: 0.33px;
+    color: var(--kapow-slate);
+}
+
+.site-footer p {
+    margin: 0;
+}
+
+.site-footer ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 0;
+}
+
+.site-footer li + li::before {
+    content: '·';
+    padding: 0 8px;
+}
+
+.site-footer a {
+    color: var(--kapow-ash);
+}
+
+.site-footer p a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.site-footer a:hover {
+    color: var(--kapow-title);
+    text-decoration: underline;
 }
 
 /* Source panel */
@@ -420,6 +612,27 @@ h1 {
     }
 }
 
+/* Between the phone and a wide window the nav runs out of room for words: the links keep their icons. */
+@media (max-width: 1060px) {
+    .nav-link {
+        width: 32px;
+        padding: 0;
+        justify-content: center;
+    }
+
+    .nav-link svg {
+        display: block;
+    }
+
+    .nav-link span {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+    }
+}
+
 @media (max-width: 900px) {
     .layout {
         grid-template-columns: minmax(0, 1fr);
@@ -455,6 +668,17 @@ h1 {
     }
 }
 
+/* Just above phone width the version makes way for the links. */
+@media (max-width: 760px) {
+    .version {
+        display: none;
+    }
+
+    .nav-links {
+        margin-left: 0;
+    }
+}
+
 @media (max-width: 640px) {
     .nav {
         inset: 8px 8px auto;
@@ -465,8 +689,30 @@ h1 {
         display: none;
     }
 
-    .nav-tools {
+    /* The footer and the overview carry these; the nav keeps GitHub. */
+    .nav-docs,
+    .nav-maven {
+        display: none;
+    }
+
+    .nav-start {
+        gap: 4px;
+    }
+
+    .nav-link {
+        width: 28px;
+    }
+
+    .nav {
         gap: 8px;
+    }
+
+    .nav-tools {
+        gap: 6px;
+    }
+
+    .site-footer {
+        width: calc(100% - 32px);
     }
 
     #frame-meter {
@@ -485,11 +731,30 @@ h1 {
     .stage-host {
         height: 560px;
     }
+
+    /* The whole line stays readable: it wraps instead of scrolling. */
+    .install {
+        width: 100%;
+        border-radius: var(--kapow-radius-control);
+    }
+
+    .install code {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+}
+
+/* A small phone has room for the bar's tools only; the footer keeps the links. */
+@media (max-width: 400px) {
+    .nav-links {
+        display: none;
+    }
 }
 
 @media (prefers-reduced-motion: no-preference) {
     a,
     .copy,
+    .ghost-pill,
     .theme-toggle {
         transition: color 150ms, background-color 150ms, border-color 150ms;
     }

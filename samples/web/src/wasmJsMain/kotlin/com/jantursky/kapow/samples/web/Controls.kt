@@ -87,7 +87,17 @@ internal fun <T> ChoiceRow(
 
 internal fun Float.oneDecimal(): String = "${(this * 10).roundToInt() / 10f}"
 
-/** Sweeps a progress value from 0 to 1, for the "Play" pill of the progress pages. */
-internal suspend fun sweep(update: (Float) -> Unit) {
-    animate(0f, 1f, animationSpec = tween(1500)) { value, _ -> update(value) }
+/** Sweeps a progress value from [from] to [to], for the "Play" pill of the progress pages. */
+internal suspend fun sweep(
+    from: Float = 0f,
+    to: Float = 1f,
+    update: (Float) -> Unit,
+) {
+    animate(from, to, animationSpec = tween(1500)) { value, _ -> update(value) }
+}
+
+/** Sweeps a progress value from 0 to 1 and back, for autoplay on the progress pages. */
+internal suspend fun sweepThereAndBack(update: (Float) -> Unit) {
+    sweep(0f, 1f, update)
+    sweep(1f, 0f, update)
 }

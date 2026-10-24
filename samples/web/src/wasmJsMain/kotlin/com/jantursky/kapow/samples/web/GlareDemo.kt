@@ -11,6 +11,7 @@ import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.web.examples.GlareExample
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /** The controls around [GlareExample]. */
 @Composable
@@ -19,8 +20,10 @@ internal fun GlareDemo() {
     var angle by remember { mutableFloatStateOf(45f) }
     var swatch by remember { mutableStateOf(Swatch.Amber) }
     var seconds by remember { mutableFloatStateOf(0.5f) }
+    val duration = (seconds * 1000).roundToInt().milliseconds
     ExampleScaffold(
-        stage = { GlareExample(visible, angle, swatch.color, (seconds * 1000).roundToInt().milliseconds) },
+        autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
+        stage = { GlareExample(visible, angle, swatch.color, duration) },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             LabeledSlider("Angle", "${angle.roundToInt()}°", angle, { angle = it }, 0f..360f)

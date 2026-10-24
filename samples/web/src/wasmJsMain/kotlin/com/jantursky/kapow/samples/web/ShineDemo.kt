@@ -11,6 +11,7 @@ import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.web.examples.ShineExample
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /** The controls around [ShineExample]. */
 @Composable
@@ -18,8 +19,10 @@ internal fun ShineDemo() {
     var count by remember { mutableIntStateOf(0) }
     var angle by remember { mutableFloatStateOf(45f) }
     var seconds by remember { mutableFloatStateOf(1f) }
+    val duration = (seconds * 1000).roundToInt().milliseconds
     ExampleScaffold(
-        stage = { ShineExample(count, angle, (seconds * 1000).roundToInt().milliseconds) },
+        autoplay = Autoplay(duration + 1.2.seconds) { count++ },
+        stage = { ShineExample(count, angle, duration) },
         controls = {
             PrimaryPill("Fire", onClick = { count++ })
             LabeledSlider("Angle", "${angle.roundToInt()}°", angle, { angle = it }, 0f..360f)

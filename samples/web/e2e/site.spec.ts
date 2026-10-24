@@ -22,6 +22,14 @@ const ready = async (page: Page) => {
   await expect(page.locator('#frame-meter canvas')).toHaveCount(1)
 }
 
+// How far two screenshots of the stage are apart: the mean difference per channel, 0 to 255.
+const difference = async (a: Buffer, b: Buffer) => {
+  const [x, y] = await Promise.all([a, b].map((png) => sharp(png).raw().toBuffer()))
+  let sum = 0
+  for (let i = 0; i < x.length; i++) sum += Math.abs(x[i] - y[i])
+  return sum / x.length
+}
+
 const openSidebar = async (page: Page) => {
   const details = page.locator('#sidebar-details')
   if ((await details.getAttribute('open')) === null) await details.locator('summary').click()
@@ -174,22 +182,121 @@ for (const id of LIVE) {
   })
 }
 
-test('the page never scrolls sideways', async ({ page }) => {
-  await page.goto('/')
+for (const path of ['/', '/#transition-iris']) {
+  test(`the page never scrolls sideways (${path})`, async ({ page }) => {
+    await page.goto(path)
+    await ready(page)
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
+    expect(overflow).toBeLessThanOrEqual(0)
+  })
+}
+
+test('an example plays on its own as soon as its page opens', async ({ page }) => {
+  await page.goto('/#transition-iris')
   await ready(page)
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
-  expect(overflow).toBeLessThanOrEqual(0)
+  await expect(page.getByRole('button', { name: 'Pause autoplay' })).toBeVisible()
+  const stage = page.locator('#stage')
+  const first = await stage.screenshot()
+  // The iris opens over the content without anyone pressing Show.
+  await expect.poll(async () => difference(first, await stage.screenshot()), { timeout: 5_000 }).toBeGreaterThan(2)
 })
 
-for (const theme of ['dark', 'light'] as const) {
-  test(`no serious accessibility violations on the overview in the ${theme} theme`, async ({ page }) => {
-    await page.emulateMedia({ colorScheme: theme })
-    await page.goto('/')
-    await ready(page)
-    await openSidebar(page)
-    // The Compose canvases draw their own pixels, so axe checks the page around them.
-    const results = await new AxeBuilder({ page }).exclude('#stage').exclude('#frame-meter').analyze()
-    const serious = results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical')
-    expect(serious.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`)).toEqual([])
+test('pausing stops autoplay and playing starts it again', async ({ page }) => {
+  await page.goto('/#transition-iris')
+  await ready(page)
+  await page.getByRole('button', { name: 'Pause autoplay' }).click()
+  const play = page.getByRole('button', { name: 'Play autoplay' })
+  await expect(play).toBeVisible()
+  // Let a running transition finish, then nothing moves.
+  await page.waitForTimeout(1_200)
+  const stage = page.locator('#stage')
+  const paused = await stage.screenshot()
+  await page.waitForTimeout(3_000)
+  expect(await difference(paused, await stage.screenshot())).toBeLessThan(0.5)
+
+  await play.click()
+  await expect(page.getByRole('button', { name: 'Pause autoplay' })).toBeVisible()
+  await expect.poll(async () => difference(paused, await stage.screenshot()), { timeout: 5_000 }).toBeGreaterThan(2)
+})
+
+test('?autoplay=0 opens an example paused, and its controls still work', async ({ page }) => {
+  await page.goto('/?autoplay=0#transition-iris')
+  await ready(page)
+  await expect(page.getByRole('button', { name: 'Play autoplay' })).toBeVisible()
+  const stage = page.locator('#stage')
+  const still = await stage.screenshot()
+  await page.waitForTimeout(2_000)
+  expect(await difference(still, await stage.screenshot())).toBeLessThan(0.5)
+  // Show is the first control.
+  await page.locator('#stage canvas').focus()
+  await page.keyboard.press('Tab')
+  await page.keyboard.press('Enter')
+  await expect.poll(async () => difference(still, await stage.screenshot()), { timeout: 5_000 }).toBeGreaterThan(2)
+})
+
+const LINKS = {
+  Docs: 'https://kapow.vercel.app',
+  GitHub: 'https://github.com/jantursky/kapow',
+  'Maven Central': 'https://central.sonatype.com/artifact/io.github.jantursky/kapow',
+}
+
+test('the nav names the version and links to the docs, GitHub and Maven Central', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.locator('.version')).toHaveText(/^v\d+\.\d+\.\d+/)
+  const nav = page.getByRole('navigation', { name: 'Project' })
+  for (const [name, href] of Object.entries(LINKS)) {
+    // On a phone some of them fold away; they are still there for wider windows.
+    await expect(nav.getByRole('link', { name, includeHidden: true })).toHaveAttribute('href', href)
+  }
+})
+
+for (const path of ['/', '/#change-shine']) {
+  test(`every view has the footer with its links (${path})`, async ({ page }) => {
+    await page.goto(path)
+    const footer = page.getByRole('contentinfo')
+    await expect(footer).toContainText('Kapow · MIT licensed · Inspired by Pow')
+    await expect(footer.getByRole('link', { name: 'Pow' })).toHaveAttribute('href', 'https://github.com/EmergeTools/Pow')
+    const links = footer.getByRole('navigation', { name: 'Footer' })
+    for (const [name, href] of Object.entries({
+      ...LINKS,
+      License: 'https://github.com/jantursky/kapow/blob/main/LICENSE',
+    })) {
+      await expect(links.getByRole('link', { name })).toHaveAttribute('href', href)
+    }
   })
+}
+
+test('the overview links to the docs and copies the install line', async ({ page, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+  await page.goto('/')
+  await expect(page.getByRole('link', { name: 'Read the docs' })).toHaveAttribute('href', LINKS.Docs)
+  const line = page.locator('#install-line')
+  await expect(line).toHaveText(/^implementation\("io\.github\.jantursky:kapow:\d+\.\d+\.\d+.*"\)$/)
+  await page.locator('#copy-install').click()
+  await expect(page.locator('#copy-install')).toHaveText('Copied')
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(await line.textContent())
+})
+
+test('copying without a clipboard says so instead of throwing', async ({ page }) => {
+  const errors = collectErrors(page)
+  await page.addInitScript(() => Object.defineProperty(navigator, 'clipboard', { value: undefined }))
+  await page.goto('/')
+  await page.locator('#copy-install').click()
+  await expect(page.locator('#copy-install')).toHaveText('Copy failed')
+  expect(errors).toEqual([])
+})
+
+for (const [view, path] of [['the overview', '/'], ['an example', '/#change-shine']]) {
+  for (const theme of ['dark', 'light'] as const) {
+    test(`no serious accessibility violations on ${view} in the ${theme} theme`, async ({ page }) => {
+      await page.emulateMedia({ colorScheme: theme })
+      await page.goto(path)
+      await ready(page)
+      await openSidebar(page)
+      // The Compose canvases draw their own pixels, so axe checks the page around them.
+      const results = await new AxeBuilder({ page }).exclude('#stage').exclude('#frame-meter').analyze()
+      const serious = results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical')
+      expect(serious.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`)).toEqual([])
+    })
+  }
 }

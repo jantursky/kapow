@@ -10,6 +10,7 @@ import com.jantursky.kapow.samples.design.LabeledSlider
 import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.web.examples.PushDownExample
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.seconds
 
 /** The controls around [PushDownExample]. */
 @Composable
@@ -17,6 +18,7 @@ internal fun PushDownDemo() {
     var pressed by remember { mutableStateOf(false) }
     var scale by remember { mutableFloatStateOf(0.95f) }
     ExampleScaffold(
+        autoplay = Autoplay(1.5.seconds) { pressed = !pressed },
         stage = { PushDownExample(pressed, scale) },
         controls = {
             PrimaryPill("Toggle", onClick = { pressed = !pressed })

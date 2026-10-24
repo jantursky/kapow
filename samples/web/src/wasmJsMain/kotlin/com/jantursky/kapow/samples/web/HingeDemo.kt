@@ -11,6 +11,7 @@ import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.web.examples.HingeExample
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.seconds
 
 /** The controls around [HingeExample]. */
 @Composable
@@ -18,6 +19,7 @@ internal fun HingeDemo() {
     var angle by remember { mutableFloatStateOf(90f) }
     val scope = rememberCoroutineScope()
     ExampleScaffold(
+        autoplay = Autoplay(1.seconds) { sweepThereAndBack { angle = it * 180f } },
         stage = { HingeExample(angle) },
         controls = {
             PrimaryPill("Unfold", onClick = { scope.launch { sweep { angle = it * 180f } } })

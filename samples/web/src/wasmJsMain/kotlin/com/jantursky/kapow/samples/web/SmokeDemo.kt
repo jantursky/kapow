@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.web.examples.SmokeExample
+import kotlin.time.Duration.Companion.seconds
 
 /** The controls around [SmokeExample]. */
 @Composable
@@ -14,6 +15,7 @@ internal fun SmokeDemo() {
     var hot by remember { mutableStateOf(true) }
     var swatch by remember { mutableStateOf(Swatch.Gray) }
     ExampleScaffold(
+        autoplay = Autoplay({ if (hot) 4.seconds else 2.seconds }, startsOn = true) { hot = !hot },
         stage = { SmokeExample(hot, swatch.color) },
         controls = {
             PrimaryPill("Toggle", onClick = { hot = !hot })

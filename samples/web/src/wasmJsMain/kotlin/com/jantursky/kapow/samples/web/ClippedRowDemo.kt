@@ -10,6 +10,7 @@ import com.jantursky.kapow.samples.design.LabeledSlider
 import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.web.examples.ClippedRowExample
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.seconds
 
 /** The controls around [ClippedRowExample]. */
 @Composable
@@ -17,6 +18,7 @@ internal fun ClippedRowDemo() {
     var likes by remember { mutableIntStateOf(0) }
     var particles by remember { mutableFloatStateOf(11f) }
     ExampleScaffold(
+        autoplay = Autoplay(2.seconds) { likes++ },
         stage = { ClippedRowExample(likes, particles.roundToInt()) },
         controls = {
             PrimaryPill("Like", onClick = { likes++ })

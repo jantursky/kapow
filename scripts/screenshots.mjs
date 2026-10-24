@@ -118,7 +118,8 @@ const record = async (browser, url, gif, theme, dir) => {
     })
     const page = await context.newPage()
     await page.clock.install()
-    await page.goto(`${url}#${view.id}`)
+    // ?autoplay=0 opens the page with autoplay paused, so only the steps below play the effect.
+    await page.goto(`${url}?autoplay=0#${view.id}`)
     await settle(page)
     const stage = page.locator('#stage')
     await stage.scrollIntoViewIfNeeded()

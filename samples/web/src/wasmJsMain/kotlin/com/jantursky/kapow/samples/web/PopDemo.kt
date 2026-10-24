@@ -11,6 +11,7 @@ import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.web.examples.PopExample
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /** The controls around [PopExample]. */
 @Composable
@@ -18,8 +19,10 @@ internal fun PopDemo() {
     var visible by remember { mutableStateOf(false) }
     var swatch by remember { mutableStateOf(Swatch.Amber) }
     var seconds by remember { mutableFloatStateOf(1.2f) }
+    val duration = (seconds * 1000).roundToInt().milliseconds
     ExampleScaffold(
-        stage = { PopExample(visible, swatch.color, (seconds * 1000).roundToInt().milliseconds) },
+        autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
+        stage = { PopExample(visible, swatch.color, duration) },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             ChoiceRow("Color", Swatch.Palette, swatch, { swatch = it }, { it.name })

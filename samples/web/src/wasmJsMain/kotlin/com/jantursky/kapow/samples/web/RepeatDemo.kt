@@ -11,14 +11,20 @@ import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.web.examples.RepeatExample
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /** The controls around [RepeatExample]. */
 @Composable
 internal fun RepeatDemo() {
     var unread by remember { mutableStateOf(true) }
     var seconds by remember { mutableFloatStateOf(1f) }
+    val duration = (seconds * 1000).roundToInt().milliseconds
     ExampleScaffold(
-        stage = { RepeatExample(unread, (seconds * 1000).roundToInt().milliseconds) },
+        autoplay =
+            Autoplay({ if (unread) maxOf(4.seconds, duration * 3) else 1.5.seconds }, startsOn = true) {
+                unread = !unread
+            },
+        stage = { RepeatExample(unread, duration) },
         controls = {
             PrimaryPill("Toggle", onClick = { unread = !unread })
             LabeledSlider("Every", "${seconds.oneDecimal()} s", seconds, { seconds = it }, 0.1f..3f)

@@ -11,6 +11,7 @@ fun main() {
     renderEntryLists()
     watchPage()
     showPage(pageEntry.value)
+    showAutoplay(pageAutoplay.value)
     document.getElementById("frame-meter")?.let { element ->
         ComposeViewport(element) { KapowTheme(darkTheme = pageIsDark.value) { FrameMeter() } }
     }

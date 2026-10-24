@@ -10,6 +10,7 @@ import com.jantursky.kapow.SpinAxis
 import com.jantursky.kapow.SpinRate
 import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.web.examples.SpinExample
+import kotlin.time.Duration.Companion.seconds
 
 /** The controls around [SpinExample]. */
 @Composable
@@ -18,6 +19,7 @@ internal fun SpinDemo() {
     var axis by remember { mutableStateOf(SpinAxis.Y) }
     var rate by remember { mutableStateOf(SpinRate.Default) }
     ExampleScaffold(
+        autoplay = Autoplay(2.4.seconds) { count++ },
         stage = { SpinExample(count, axis, rate) },
         controls = {
             PrimaryPill("Collect", onClick = { count++ })

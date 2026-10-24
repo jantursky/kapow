@@ -21,6 +21,12 @@ internal val pageMotion = mutableStateOf(readPageMotion())
 /** The "Haptics" checkbox in the nav: whether effects ask the browser to vibrate. */
 internal val pageHaptics = mutableStateOf(readPageHaptics())
 
+/**
+ * Whether the examples play on their own. On by default; the Play/Pause pill in the example header flips it, and
+ * `?autoplay=0` in the URL starts the page paused (the README GIF recorder uses it to press the controls itself).
+ */
+internal val pageAutoplay = mutableStateOf(!Regex("[?&]autoplay=0(&|$)").containsMatchIn(window.location.search))
+
 /** The entry in the URL hash (`#change-shine`), or null for the overview. */
 internal val pageEntry = mutableStateOf(readPageEntry())
 
@@ -37,7 +43,7 @@ private fun readPageHaptics(): Boolean = (document.getElementById("haptics") as?
 
 private fun readPageEntry(): Entry? = entryById(window.location.hash.removePrefix("#"))
 
-/** Keeps the four states above in step with the page. */
+/** Keeps the states above in step with the page. */
 internal fun watchPage() {
     document.documentElement?.let { root ->
         MutationObserver { _, _ -> pageIsDark.value = readPageIsDark() }
@@ -51,6 +57,13 @@ internal fun watchPage() {
     }
     document.getElementById("motion")?.addEventListener("change", { pageMotion.value = readPageMotion() })
     document.getElementById("haptics")?.addEventListener("change", { pageHaptics.value = readPageHaptics() })
+    document.getElementById("autoplay")?.addEventListener(
+        "click",
+        {
+            pageAutoplay.value = !pageAutoplay.value
+            showAutoplay(pageAutoplay.value)
+        },
+    )
     window.addEventListener(
         "hashchange",
         {

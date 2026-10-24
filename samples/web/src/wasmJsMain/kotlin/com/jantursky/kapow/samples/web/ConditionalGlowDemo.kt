@@ -11,6 +11,7 @@ import com.jantursky.kapow.samples.design.LabeledSlider
 import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.web.examples.ConditionalGlowExample
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.seconds
 
 /** The controls around [ConditionalGlowExample]. */
 @Composable
@@ -20,6 +21,7 @@ internal fun ConditionalGlowDemo() {
     var shape by remember { mutableStateOf(ShapeChoice.Rounded) }
     var swatch by remember { mutableStateOf(Swatch.Violet) }
     ExampleScaffold(
+        autoplay = Autoplay({ if (selected) 2.5.seconds else 1.5.seconds }, startsOn = true) { selected = !selected },
         stage = { ConditionalGlowExample(selected, swatch.color, radius.dp, shape.shape) },
         controls = {
             PrimaryPill("Toggle", onClick = { selected = !selected })
