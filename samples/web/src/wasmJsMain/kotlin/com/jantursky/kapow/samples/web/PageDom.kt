@@ -61,7 +61,7 @@ internal fun showPage(entry: Entry?) {
         setText("example-group", entry.group.title)
         setText("example-title", entry.title)
         setText("example-summary", entry.summary)
-        showSource(entry.example?.sourceFile.orEmpty())
+        showSource(entry.example.sourceFile)
     }
     document.querySelectorAll("#sidebar a").asList().filterIsInstance<Element>().forEach {
         if (it.getAttribute("data-entry") ==

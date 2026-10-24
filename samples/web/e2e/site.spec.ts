@@ -53,9 +53,9 @@ test('the sidebar lists every group and navigates to a page', async ({ page }) =
   await expect(page.locator('#source')).toContainText('fun ShineExample(')
 
   await openSidebar(page)
-  await sidebar.getByRole('link', { name: 'Pulse' }).click()
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Pulse')
-  await expect(page.locator('#source')).toBeHidden()
+  await sidebar.getByRole('link', { name: 'Spray' }).click()
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Spray')
+  await expect(page.locator('#source')).toContainText('fun SprayExample(')
 })
 
 test('a deep link opens its page directly', async ({ page }) => {
@@ -112,6 +112,52 @@ test('the frame meter renders', async ({ page }) => {
     })
     .toBeGreaterThan(5)
 })
+
+// The pages with a live example. A page joins this list when its entry gets an Example in Catalog.kt.
+const LIVE = [
+  'change-shine',
+  'change-pulse',
+  'change-glow',
+  'change-delay',
+  'conditional-glow',
+  'progress-shine',
+  'progress-glow',
+  'more-hinge',
+  'more-feedback',
+  'change-spray',
+  'change-rise',
+  'change-spin',
+  'conditional-repeat',
+  'conditional-push-down',
+  'conditional-smoke',
+  'progress-iris',
+  'transition-iris',
+  'transition-clock',
+  'transition-wipe',
+  'transition-glare',
+  'transition-blinds',
+  'transition-poof',
+  'transition-anvil',
+  'transition-pop',
+  'more-particle-layer',
+]
+
+for (const id of LIVE) {
+  test(`${id} loads, shows its source and fires without errors`, async ({ page }) => {
+    const errors = collectErrors(page)
+    await page.goto(`/#${id}`)
+    await ready(page)
+    await expect(page.locator('#source')).toContainText('@Composable')
+    // The first control is the primary pill: Tab moves focus from the canvas into it, Enter presses it.
+    await page.locator('#stage canvas').focus()
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(700)
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(700)
+    expect(errors).toEqual([])
+  })
+}
 
 test('the page never scrolls sideways', async ({ page }) => {
   await page.goto('/')
