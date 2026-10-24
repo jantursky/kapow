@@ -17,8 +17,6 @@ import com.jantursky.kapow.particles.shapePainter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlin.math.PI
-import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -45,9 +43,6 @@ internal fun sparkleEmission(
 
 /** How long to wait between sparkles so about [count] twinkle at once. */
 internal fun sparkleInterval(count: Int): Float = (SPARKLE_LIFE_MIN + SPARKLE_LIFE_MAX) / 2 / count.coerceAtLeast(1)
-
-/** A sparkle swells to the middle of its life, then shrinks away: a twinkle. */
-internal fun twinkle(progress: Float): Float = sin(PI.toFloat() * progress.coerceIn(0f, 1f))
 
 /** A sparkle is bright for most of its twinkle, fading only as it gets small. */
 internal fun twinkleOpacity(progress: Float): Float = sqrt(twinkle(progress))
