@@ -54,5 +54,7 @@ include(
     ":samples:gallery",
     ":samples:web",
     ":samples:desktop",
+    ":samples:app",
+    ":samples:androidApp",
     ":samples:docs-check",
 )
