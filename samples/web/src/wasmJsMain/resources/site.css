@@ -1,0 +1,482 @@
+/*
+ * The Kapow gallery. Colors, radii and fonts come from tokens.css (design/tokens.css); the Compose stage uses the
+ * same values through KapowTheme.
+ */
+@font-face {
+    font-family: 'DM Sans Variable';
+    font-weight: 100 1000;
+    font-display: swap;
+    src: url('fonts/dm_sans.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Geist Variable';
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('fonts/geist.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Geist Mono Variable';
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('fonts/geist_mono.ttf') format('truetype');
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-padding-top: 88px;
+}
+
+body {
+    margin: 0;
+    background: var(--kapow-canvas);
+    color: var(--kapow-ink);
+    font: 400 16px/24px var(--kapow-font);
+    -webkit-font-smoothing: antialiased;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+:focus-visible {
+    outline: none;
+    box-shadow: var(--kapow-focus);
+}
+
+h1,
+h2 {
+    margin: 0;
+    font-weight: 500;
+    color: var(--kapow-title);
+}
+
+code {
+    font-family: var(--kapow-font-mono);
+    font-size: 13px;
+}
+
+p code {
+    padding: 1px 5px;
+    background: var(--kapow-glass);
+    border-radius: var(--kapow-radius-icon);
+}
+
+/* Floating nav */
+.nav {
+    position: fixed;
+    inset: 16px 16px auto;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    max-width: calc(var(--kapow-max-width) - 32px);
+    height: 56px;
+    margin: 0 auto;
+    padding: 0 12px 0 20px;
+    background: color-mix(in srgb, var(--kapow-panel) 80%, transparent);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid var(--kapow-hairline);
+    border-radius: var(--kapow-radius-nav);
+    box-shadow: var(--kapow-nav-shadow);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: var(--kapow-radius-pill);
+    font: 500 18px/27px var(--kapow-font);
+    color: var(--kapow-title);
+}
+
+.nav-tools {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+#frame-meter {
+    width: 168px;
+    height: 28px;
+}
+
+.motion {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font: 500 13px/20px var(--kapow-font);
+    letter-spacing: 0.33px;
+    color: var(--kapow-ash);
+}
+
+select {
+    padding: 4px 8px;
+    border: 1px solid var(--kapow-hairline);
+    border-radius: var(--kapow-radius-control);
+    background: var(--kapow-panel);
+    color: var(--kapow-ink);
+    font: 500 13px/20px var(--kapow-font);
+}
+
+.theme-toggle {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid var(--kapow-hairline);
+    border-radius: var(--kapow-radius-pill);
+    background: transparent;
+    color: var(--kapow-ink);
+    cursor: pointer;
+}
+
+.theme-toggle svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+}
+
+/* The icon shows the theme a click switches to. */
+.theme-toggle .icon-moon,
+:root[data-theme='light'] .theme-toggle .icon-sun {
+    display: none;
+}
+
+:root[data-theme='light'] .theme-toggle .icon-moon {
+    display: block;
+}
+
+/* Page */
+.layout {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 48px;
+    max-width: var(--kapow-max-width);
+    margin: 0 auto;
+    padding: 104px 24px 72px;
+}
+
+.sidebar {
+    position: sticky;
+    top: 88px;
+    align-self: start;
+    max-height: calc(100vh - 104px);
+    overflow-y: auto;
+}
+
+.sidebar summary {
+    display: none;
+}
+
+.sidebar h2,
+.groups h2 {
+    margin: 24px 0 8px;
+    font: 500 13px/20px var(--kapow-font);
+    letter-spacing: 0.33px;
+    color: var(--kapow-slate);
+}
+
+.sidebar h2:first-child {
+    margin-top: 0;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.sidebar a {
+    display: block;
+    padding: 6px 14px;
+    border-radius: var(--kapow-radius-pill);
+    color: var(--kapow-ash);
+    font-size: 15px;
+    line-height: 20px;
+}
+
+.sidebar a:hover {
+    color: var(--kapow-title);
+}
+
+.sidebar a[aria-current='page'] {
+    color: var(--kapow-title);
+    background: var(--kapow-glass);
+}
+
+main {
+    min-width: 0;
+}
+
+.eyebrow {
+    margin: 0 0 12px;
+    font: 500 13px/20px var(--kapow-font);
+    letter-spacing: 0.33px;
+    text-transform: uppercase;
+    color: var(--kapow-slate);
+}
+
+h1 {
+    max-width: 16ch;
+    font: 500 48px/48px var(--kapow-font-heading);
+}
+
+#example-title {
+    max-width: none;
+}
+
+.lede {
+    max-width: 60ch;
+    margin: 20px 0 0;
+    font: 500 18px/27px var(--kapow-font);
+    color: var(--kapow-ash);
+}
+
+.groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 48px;
+}
+
+.group {
+    padding: 8px 28px 24px;
+    background: var(--kapow-glass);
+    border-radius: var(--kapow-radius-card);
+}
+
+.group a {
+    display: block;
+    padding: 3px 0;
+    color: var(--kapow-ink);
+}
+
+.group a:hover {
+    color: var(--kapow-title);
+    text-decoration: underline;
+}
+
+/* An example page */
+.example-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    margin-top: 40px;
+}
+
+/* A page without source gives the stage the full width. */
+.example-grid:has(#source[hidden]) {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.stage-host {
+    height: 520px;
+}
+
+/* Source panel */
+.source {
+    min-width: 0;
+    background: var(--kapow-panel);
+    border: 1px solid var(--kapow-hairline);
+    border-radius: var(--kapow-radius-control);
+    overflow: hidden;
+}
+
+.source-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 8px 8px 16px;
+    border-bottom: 1px solid var(--kapow-hairline);
+}
+
+.source-name {
+    font: 400 13px/20px var(--kapow-font-mono);
+    color: var(--kapow-ash);
+}
+
+.copy,
+.imports-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--kapow-hairline);
+    border-radius: var(--kapow-radius-pill);
+    background: transparent;
+    color: var(--kapow-ink);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.copy {
+    padding: 4px 12px;
+    font: 500 13px/20px var(--kapow-font);
+}
+
+.copy .check {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: var(--kapow-success);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.copy.copied {
+    color: var(--kapow-success);
+    border-color: var(--kapow-success);
+}
+
+.source pre {
+    margin: 0;
+    max-height: 520px;
+    overflow: auto;
+    padding: 16px 20px 20px;
+    font: 400 13px/20px var(--kapow-font-mono);
+    tab-size: 4;
+    color: var(--kapow-ink);
+}
+
+.source pre:focus-visible {
+    box-shadow: inset var(--kapow-focus);
+}
+
+.imports-toggle {
+    display: flex;
+    width: fit-content;
+    padding: 0 10px;
+    font: 400 12px/18px var(--kapow-font-mono);
+    color: var(--kapow-slate);
+}
+
+.imports-body {
+    display: block;
+}
+
+.imports[data-collapsed='true'] .imports-body {
+    display: none;
+}
+
+/* Highlighting stays inside the grey scale; weight and tone tell the tokens apart. */
+.tok-keyword {
+    color: var(--kapow-title);
+    font-weight: 500;
+}
+
+.tok-type,
+.tok-call {
+    color: var(--kapow-title);
+}
+
+.tok-string,
+.tok-number {
+    color: var(--kapow-ash);
+}
+
+.tok-annotation {
+    color: var(--kapow-slate);
+}
+
+.tok-comment {
+    color: var(--kapow-slate);
+    font-style: italic;
+}
+
+@media (min-width: 1100px) {
+    .example-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        align-items: start;
+    }
+}
+
+@media (max-width: 900px) {
+    .layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 24px;
+    }
+
+    .sidebar {
+        position: static;
+        max-height: none;
+    }
+
+    .sidebar summary {
+        display: block;
+        padding: 8px 16px;
+        border: 1px solid var(--kapow-hairline);
+        border-radius: var(--kapow-radius-pill);
+        font: 500 14px/20px var(--kapow-font);
+        cursor: pointer;
+    }
+
+    .sidebar nav {
+        margin-top: 8px;
+    }
+
+    /* Hidden from sight only: the select still needs its name. */
+    .motion span {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+    }
+}
+
+@media (max-width: 640px) {
+    .nav {
+        inset: 8px 8px auto;
+        padding: 0 8px 0 14px;
+    }
+
+    .brand span {
+        display: none;
+    }
+
+    .nav-tools {
+        gap: 8px;
+    }
+
+    #frame-meter {
+        width: 150px;
+    }
+
+    .layout {
+        padding: 80px 16px 48px;
+    }
+
+    h1 {
+        font-size: 36px;
+        line-height: 40px;
+    }
+
+    .stage-host {
+        height: 560px;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    a,
+    .copy,
+    .theme-toggle {
+        transition: color 150ms, background-color 150ms, border-color 150ms;
+    }
+}
