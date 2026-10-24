@@ -3,6 +3,7 @@ package com.jantursky.kapow.samples.gallery
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Dp
+import com.jantursky.kapow.BlindsOrientation
 import kotlin.math.roundToInt
 import kotlin.time.Duration
 
@@ -102,3 +103,14 @@ internal fun Duration.kt(): String {
 
 /** `Color(0xFF6B62F2)`. */
 internal fun Color.kt(): String = "Color(0x${toArgb().toUInt().toString(16).uppercase().padStart(8, '0')})"
+
+/** `TransformOrigin.Center`, `TransformOrigin(1f, 1f)`: a gallery origin as the source a user would write. */
+internal fun Origin.kt(): String =
+    when (this) {
+        Origin.Center -> "TransformOrigin.Center"
+        Origin.TopStart -> "TransformOrigin(0f, 0f)"
+        Origin.BottomEnd -> "TransformOrigin(1f, 1f)"
+    }
+
+/** `BlindsOrientation.Vertical`. */
+internal fun BlindsOrientation.kt(): String = "BlindsOrientation.$name"

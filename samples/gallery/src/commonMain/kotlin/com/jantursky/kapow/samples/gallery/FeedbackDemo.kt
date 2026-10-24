@@ -11,6 +11,16 @@ import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.gallery.examples.FeedbackExample
 import kotlin.time.Duration.Companion.seconds
 
+/** The name of the event as a user writes it. */
+private val FeedbackChoice.sourceName: String
+    get() =
+        when (this) {
+            FeedbackChoice.Select -> "Selection"
+            FeedbackChoice.Impact -> "ImpactMedium"
+            FeedbackChoice.Success -> "Success"
+            FeedbackChoice.Error -> "Error"
+        }
+
 /** The controls around [FeedbackExample]. */
 @Composable
 internal fun FeedbackDemo() {
@@ -20,6 +30,12 @@ internal fun FeedbackDemo() {
     ExampleScaffold(
         autoplay = Autoplay(2.2.seconds) { count++ },
         stage = { FeedbackExample(count, choice.event, { last = it.toString() }) },
+        code = {
+            val feedback = "KapowFeedbackEvent.${choice.sourceName}"
+            "CompositionLocalProvider(LocalKapowFeedback provides KapowFeedback { event -> /* haptics */ }) {\n" +
+                "    Box(\n        Modifier.changeEffect(count, ChangeEffect.shine(), feedback = $feedback),\n" +
+                "    ) {\n        // your content\n    }\n}"
+        },
         controls = {
             PrimaryPill("Fire", onClick = { count++ })
             ChoiceRow("Event", FeedbackChoice.entries, choice, { choice = it }, { it.name })

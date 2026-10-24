@@ -23,6 +23,10 @@ internal fun WipeDemo() {
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
         stage = { WipeExample(visible, angle, duration) },
+        code = {
+            val args = arrayOf("angle" to angle.kt(), "duration" to duration.kt())
+            transitionCode(call("KapowEnter.wipe", *args), call("KapowExit.wipe", *args))
+        },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             LabeledSlider("Angle", "${angle.roundToInt()}°", angle, { angle = it }, 0f..360f)

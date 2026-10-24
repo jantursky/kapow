@@ -36,6 +36,16 @@ internal fun BlindsDemo() {
                 duration,
             )
         },
+        code = {
+            val args =
+                arrayOf(
+                    "slatWidth" to width.dp.kt(),
+                    "orientation" to orientation.kt(),
+                    "staggered" to staggered,
+                    "duration" to duration.kt(),
+                )
+            transitionCode(call("KapowEnter.blinds", *args), call("KapowExit.blinds", *args))
+        },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             ChoiceRow("Direction", BlindsOrientation.entries, orientation, { orientation = it }, { it.name })

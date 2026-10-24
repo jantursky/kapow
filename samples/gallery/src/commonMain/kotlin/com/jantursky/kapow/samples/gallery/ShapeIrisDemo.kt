@@ -21,11 +21,12 @@ import kotlin.time.Duration.Companion.seconds
 /** The openings the shape iris page offers. */
 private enum class Opening(
     val shape: Shape,
+    val code: String,
 ) {
-    Star(StarShape()),
-    Burst(StarShape(points = 12, innerRatio = 0.6f)),
-    Circle(CircleShape),
-    Rounded(RoundedCornerShape(24.dp)),
+    Star(StarShape(), "StarShape()"),
+    Burst(StarShape(points = 12, innerRatio = 0.6f), "StarShape(points = 12, innerRatio = 0.6f)"),
+    Circle(CircleShape, "CircleShape"),
+    Rounded(RoundedCornerShape(24.dp), "RoundedCornerShape(24.dp)"),
 }
 
 /** The controls around [ShapeIrisExample]. */
@@ -39,6 +40,10 @@ internal fun ShapeIrisDemo() {
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
         stage = { ShapeIrisExample(visible, opening.shape, origin.origin, duration) },
+        code = {
+            val args = arrayOf("shape" to opening.code, "origin" to origin.kt(), "duration" to duration.kt())
+            transitionCode(call("KapowEnter.shapeIris", *args), call("KapowExit.shapeIris", *args))
+        },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             ChoiceRow("Shape", Opening.entries, opening, { opening = it }, { it.name })

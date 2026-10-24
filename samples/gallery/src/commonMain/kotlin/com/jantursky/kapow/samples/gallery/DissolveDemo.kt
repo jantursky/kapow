@@ -24,6 +24,10 @@ internal fun DissolveDemo() {
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
         stage = { DissolveExample(visible, cell.roundToInt().dp, duration) },
+        code = {
+            val args = arrayOf("cellSize" to cell.roundToInt().dp.kt(), "duration" to duration.kt())
+            transitionCode(call("KapowEnter.dissolve", *args), call("KapowExit.dissolve", *args))
+        },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             LabeledSlider("Cell size", "${cell.roundToInt()} dp", cell, { cell = it }, 4f..32f)

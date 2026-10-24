@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.isSpecified
 import com.jantursky.kapow.samples.design.KapowEffectColors
 import com.jantursky.kapow.samples.design.LabeledSlider
 import com.jantursky.kapow.samples.design.PrimaryPill
@@ -34,6 +35,15 @@ internal fun DisintegrateDemo() {
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
         stage = { DisintegrateExample(visible, dust.color, duration) },
+        code = {
+            val exit =
+                if (dust.color.isSpecified) {
+                    call("KapowExit.disintegrate", "color" to dust.color.kt(), "duration" to duration.kt())
+                } else {
+                    call("KapowExit.disintegrate", "duration" to duration.kt())
+                }
+            transitionCode(exit = exit)
+        },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             ChoiceRow("Dust", Dust.entries, dust, { dust = it }, { it.name })

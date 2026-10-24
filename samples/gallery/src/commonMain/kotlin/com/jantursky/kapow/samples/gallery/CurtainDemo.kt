@@ -24,6 +24,10 @@ internal fun CurtainDemo() {
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
         stage = { CurtainExample(visible, orientation, duration) },
+        code = {
+            val args = arrayOf("orientation" to orientation.kt(), "duration" to duration.kt())
+            transitionCode(call("KapowEnter.curtain", *args), call("KapowExit.curtain", *args))
+        },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             ChoiceRow("Seam", BlindsOrientation.entries, orientation, { orientation = it }, { it.name })
