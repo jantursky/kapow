@@ -1,8 +1,9 @@
 package com.jantursky.kapow.internal
 
 import androidx.compose.ui.graphics.GraphicsContext
-import androidx.compose.ui.graphics.GraphicsLayerScope
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
@@ -12,13 +13,17 @@ import kotlinx.coroutines.CoroutineScope
 
 /**
  * The part of an effect that runs on an element. It keeps its animation state in snapshot state and reads it only
- * in [drawEffect] and [applyLayer], so animation frames redraw the element without recomposing anything.
+ * in [drawEffect] and [configureLayer], so animation frames redraw the element without recomposing anything.
  */
 internal abstract class EffectRunner {
-    /** Whether the element needs its own graphics layer for [applyLayer] or for offscreen blending. */
+    /**
+     * Whether [drawEffect] draws into a graphics layer of its own, set up by [configureLayer]. Effects that blend
+     * with the element's pixels or transform them need one.
+     */
     open val needsLayer: Boolean get() = false
 
-    open fun GraphicsLayerScope.applyLayer() {}
+    /** Sets the layer's transform and compositing for this frame. Called in the draw phase, before [drawEffect]. */
+    open fun DrawScope.configureLayer(layer: GraphicsLayer) {}
 
     open fun ContentDrawScope.drawEffect() {
         drawContent()

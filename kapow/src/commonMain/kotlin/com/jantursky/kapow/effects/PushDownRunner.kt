@@ -2,7 +2,8 @@ package com.jantursky.kapow.effects
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
-import androidx.compose.ui.graphics.GraphicsLayerScope
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import com.jantursky.kapow.internal.ConditionalRunner
 import com.jantursky.kapow.internal.EffectContext
 import kotlinx.coroutines.Job
@@ -18,15 +19,12 @@ internal class PushDownRunner(
 
     override val needsLayer: Boolean get() = true
 
-    override fun GraphicsLayerScope.applyLayer() {
+    override fun DrawScope.configureLayer(layer: GraphicsLayer) {
         val p = press.value
-        if (reduced) {
-            alpha = 1f - DIM * p
-        } else {
-            val s = 1f + (scale - 1f) * p
-            scaleX = s
-            scaleY = s
-        }
+        val s = if (reduced) 1f else 1f + (scale - 1f) * p
+        layer.scaleX = s
+        layer.scaleY = s
+        layer.alpha = if (reduced) 1f - DIM * p else 1f
     }
 
     override fun setActive(

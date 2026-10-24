@@ -50,6 +50,23 @@ class ProgressEffectsTest {
         }
 
     @Test
+    fun theIrisFollowsAPlainValue() =
+        runEffectTest {
+            setEffectContent {
+                Box(Modifier.fillMaxSize().background(Color.White)) {
+                    // Read here, so the lambda captures a plain Float, as a composable parameter would.
+                    val value = progress
+                    SolidElement(Modifier.offset(150.dp, 150.dp).progressEffect(ProgressEffect.iris()) { value })
+                }
+            }
+            mainClock.advanceTimeByFrame()
+            at(0.4f)
+            assertEquals(Cobalt, capture().colorAt(200, 200))
+            at(1f)
+            assertEquals(Cobalt, capture().colorAt(152, 152))
+        }
+
+    @Test
     fun theIrisCanStartFromACorner() =
         runEffectTest {
             effect = ProgressEffect.iris(TransformOrigin(0f, 0f))

@@ -10,10 +10,10 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.GraphicsLayerScope
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.layer.CompositingStrategy
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import com.jantursky.kapow.internal.ChangeRunner
 import com.jantursky.kapow.internal.EffectContext
 import com.jantursky.kapow.internal.ProgressRunner
@@ -72,9 +72,9 @@ internal class ShineRunner(
 
     override val needsLayer: Boolean get() = true
 
-    override fun GraphicsLayerScope.applyLayer() {
+    override fun DrawScope.configureLayer(layer: GraphicsLayer) {
         // SrcAtop needs the element's pixels in their own buffer; only pay for it while something is drawn.
-        compositingStrategy =
+        layer.compositingStrategy =
             if (sweep.isRunning || flash.value > 0f) CompositingStrategy.Offscreen else CompositingStrategy.Auto
     }
 
@@ -117,8 +117,8 @@ internal class ShineProgressRunner(
 
     override val needsLayer: Boolean get() = true
 
-    override fun GraphicsLayerScope.applyLayer() {
-        compositingStrategy = CompositingStrategy.Offscreen
+    override fun DrawScope.configureLayer(layer: GraphicsLayer) {
+        layer.compositingStrategy = CompositingStrategy.Offscreen
     }
 
     override fun ContentDrawScope.drawEffect() {

@@ -1,9 +1,10 @@
 package com.jantursky.kapow.effects
 
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.GraphicsLayerScope
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.layer.CompositingStrategy
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import com.jantursky.kapow.internal.ProgressRunner
 import com.jantursky.kapow.transitions.cutOutside
 import com.jantursky.kapow.transitions.irisPath
@@ -14,9 +15,9 @@ internal class IrisProgressRunner(
 ) : ProgressRunner() {
     override val needsLayer: Boolean get() = true
 
-    override fun GraphicsLayerScope.applyLayer() {
+    override fun DrawScope.configureLayer(layer: GraphicsLayer) {
         val p = progress()
-        compositingStrategy = if (p > 0f && p < 1f) CompositingStrategy.Offscreen else CompositingStrategy.Auto
+        layer.compositingStrategy = if (p > 0f && p < 1f) CompositingStrategy.Offscreen else CompositingStrategy.Auto
     }
 
     override fun ContentDrawScope.drawEffect() {

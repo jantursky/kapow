@@ -4,9 +4,10 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.GraphicsLayerScope
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.layer.CompositingStrategy
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import com.jantursky.kapow.SpinAxis
 import com.jantursky.kapow.SpinRate
 import com.jantursky.kapow.internal.ChangeRunner
@@ -57,16 +58,16 @@ internal class SpinRunner(
 
     override val needsLayer: Boolean get() = true
 
-    override fun GraphicsLayerScope.applyLayer() {
+    override fun DrawScope.configureLayer(layer: GraphicsLayer) {
         val degrees = angle.value
         when (axis) {
-            SpinAxis.X -> rotationX = degrees
-            SpinAxis.Y -> rotationY = degrees
-            SpinAxis.Z -> rotationZ = degrees
+            SpinAxis.X -> layer.rotationX = degrees
+            SpinAxis.Y -> layer.rotationY = degrees
+            SpinAxis.Z -> layer.rotationZ = degrees
         }
         // Keeps the near edge from looming too large while the element turns towards the viewer.
-        cameraDistance = 12f * density
-        compositingStrategy =
+        layer.cameraDistance = 12f * density
+        layer.compositingStrategy =
             if (shade() > 0f) CompositingStrategy.Offscreen else flash.compositingStrategy
     }
 

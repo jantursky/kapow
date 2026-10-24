@@ -5,7 +5,6 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.invalidateDraw
-import androidx.compose.ui.node.invalidateLayer
 import androidx.compose.ui.platform.InspectorInfo
 import com.jantursky.kapow.internal.ChangeRunner
 import com.jantursky.kapow.internal.ConditionalRunner
@@ -202,7 +201,6 @@ internal class ProgressEffectNode(
         } else if (progress !== this.progress) {
             this.progress = progress
             runner.progress = progress
-            invalidateLayer()
             invalidateDraw()
         }
     }

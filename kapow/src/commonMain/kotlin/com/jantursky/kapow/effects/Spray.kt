@@ -1,8 +1,9 @@
 package com.jantursky.kapow.effects
 
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.GraphicsLayerScope
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -74,8 +75,8 @@ internal abstract class ParticleChangeRunner(
 
     override val needsLayer: Boolean get() = true
 
-    override fun GraphicsLayerScope.applyLayer() {
-        compositingStrategy = flash.compositingStrategy
+    override fun DrawScope.configureLayer(layer: GraphicsLayer) {
+        layer.compositingStrategy = flash.compositingStrategy
     }
 
     override fun ContentDrawScope.drawEffect() {

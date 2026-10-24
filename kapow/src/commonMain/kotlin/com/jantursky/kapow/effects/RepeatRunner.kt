@@ -1,8 +1,9 @@
 package com.jantursky.kapow.effects
 
 import androidx.compose.runtime.withFrameNanos
-import androidx.compose.ui.graphics.GraphicsLayerScope
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import com.jantursky.kapow.ChangeEffect
 import com.jantursky.kapow.internal.ChangeRunner
 import com.jantursky.kapow.internal.ConditionalRunner
@@ -37,7 +38,7 @@ internal class RepeatRunner(
 
     override val needsLayer: Boolean get() = runner.needsLayer
 
-    override fun GraphicsLayerScope.applyLayer() = with(runner) { applyLayer() }
+    override fun DrawScope.configureLayer(layer: GraphicsLayer) = with(runner) { configureLayer(layer) }
 
     override fun ContentDrawScope.drawEffect() = with(runner) { drawEffect() }
 

@@ -5,11 +5,12 @@ package com.jantursky.kapow.transitions
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.GraphicsLayerScope
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.layer.CompositingStrategy
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.ParticleShape
@@ -66,9 +67,9 @@ private class FadeRunner(
 ) : TransitionRunner() {
     override val needsLayer: Boolean get() = true
 
-    override fun GraphicsLayerScope.applyLayer() {
+    override fun DrawScope.configureLayer(layer: GraphicsLayer) {
         val kind = if (entering()) enter else exit
-        alpha = if (kind == TransitionKind.None) 1f else progress().coerceIn(0f, 1f)
+        layer.alpha = if (kind == TransitionKind.None) 1f else progress().coerceIn(0f, 1f)
     }
 }
 
@@ -82,17 +83,17 @@ private class KindRunner(
 
     override val needsLayer: Boolean get() = true
 
-    override fun GraphicsLayerScope.applyLayer() {
+    override fun DrawScope.configureLayer(layer: GraphicsLayer) {
         val kind = kind
         val p = progress().coerceIn(0f, 1f)
-        compositingStrategy =
+        layer.compositingStrategy =
             if (kind.isMask() && p > 0f && p < 1f) CompositingStrategy.Offscreen else CompositingStrategy.Auto
-        translationX = 0f
-        translationY = 0f
+        layer.translationX = 0f
+        layer.translationY = 0f
         if (kind == TransitionKind.Anvil) {
             val shake = anvilShake(p)
-            translationX = shake.x.dp.toPx()
-            translationY = shake.y.dp.toPx() - anvilDrop(p) * max(size.height * 2f, 200.dp.toPx())
+            layer.translationX = shake.x.dp.toPx()
+            layer.translationY = shake.y.dp.toPx() - anvilDrop(p) * max(size.height * 2f, 200.dp.toPx())
         }
     }
 
