@@ -1,0 +1,61 @@
+---
+title: "Change: confetti pop"
+description: A short pop of confetti from an element when a value changes.
+---
+
+Confetti pop throws a small handful of confetti up and out of the element. The pieces tumble and fall away under gravity. Use it for a moment worth celebrating: a bill paid, a goal reached, an order placed.
+
+## Usage
+
+The sample pops confetti from a badge when an invoice is marked as paid. A particle layer near the root keeps the pieces from being clipped by the list around the badge.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun PaidBadge(paid: Boolean) {
+    Box(
+        Modifier
+            .changeEffect(paid, ChangeEffect.confettiPop(count = 30), isEnabled = paid)
+            .clip(CircleShape)
+            .background(Color(0xFFFFB547))
+            .padding(horizontal = 14.dp, vertical = 6.dp),
+    ) {
+        BasicText(if (paid) "Paid" else "Due")
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `colors` | `ParticleContent.DefaultColors` | The colors of the pieces, taken in turn. The default is amber, coral, violet and cobalt. Must not be empty. |
+| `count` | `28` | How many pieces one change throws. Must be positive. |
+
+## Reduced motion
+
+No confetti is thrown. The element brightens briefly.
+
+## Notes
+
+- Two in three pieces are small rectangles, every third one a long thin ribbon. As a piece spins its width swings between full and a thin edge, so it looks like it is tumbling.
+- The pieces start spread across the middle of the element, fly up to about 100 dp above it, then fall under gravity while drag slows them. They fade over the last third of their life and are gone within two seconds.
+- Pieces draw through a [particle layer](/guides/particle-layer) when one is above the element, so a clipping parent does not cut them off. Without one they draw around the element.
+- There is no cooldown, so quick changes start overlapping pops.
+- It is a small preset, not a confetti engine: there is no wind, no emitter shape and no continuous stream. For a full-screen celebration use a dedicated confetti library.
+
+## Live example
+
+<include example="change-confetti-pop">../_snippets/live-example.mdx</include>

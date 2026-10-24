@@ -178,6 +178,13 @@ const LIVE = [
   'change-speed-lines',
   'change-sparkle',
   'change-fireworks',
+  'change-confetti-pop',
+  'change-trace',
+  'change-strike',
+  'change-stamp',
+  'change-glitch',
+  'progress-fill',
+  'progress-trace',
 ]
 
 for (const id of LIVE) {

@@ -4,7 +4,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.layer.CompositingStrategy
 
 /**
@@ -29,7 +29,7 @@ internal class Flash(
         alpha.animateTo(0f, tween(millis))
     }
 
-    fun draw(scope: ContentDrawScope) {
+    fun draw(scope: DrawScope) {
         val a = alpha.value
         if (a > 0f) scope.drawRect(color, alpha = a, blendMode = BlendMode.SrcAtop)
     }

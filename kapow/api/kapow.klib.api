@@ -75,8 +75,10 @@ abstract class com.jantursky.kapow/ChangeEffect { // com.jantursky.kapow/ChangeE
 
     final object Companion { // com.jantursky.kapow/ChangeEffect.Companion|null[0]
         final fun burst(androidx.compose.ui.graphics/Color = ..., kotlin/Int = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.burst|burst(androidx.compose.ui.graphics.Color;kotlin.Int){}[0]
+        final fun confettiPop(kotlin.collections/List<androidx.compose.ui.graphics/Color> = ..., kotlin/Int = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.confettiPop|confettiPop(kotlin.collections.List<androidx.compose.ui.graphics.Color>;kotlin.Int){}[0]
         final fun fireworks(kotlin.collections/List<androidx.compose.ui.graphics/Color> = ..., kotlin/Int = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.fireworks|fireworks(kotlin.collections.List<androidx.compose.ui.graphics.Color>;kotlin.Int){}[0]
         final fun flash(androidx.compose.ui.graphics/Color = ..., kotlin.time/Duration = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.flash|flash(androidx.compose.ui.graphics.Color;kotlin.time.Duration){}[0]
+        final fun glitch(kotlin.time/Duration = ..., androidx.compose.ui.unit/Dp = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.glitch|glitch(kotlin.time.Duration;androidx.compose.ui.unit.Dp){}[0]
         final fun glow(androidx.compose.ui.graphics/Color = ..., androidx.compose.ui.unit/Dp = ..., androidx.compose.ui.graphics/Shape = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.glow|glow(androidx.compose.ui.graphics.Color;androidx.compose.ui.unit.Dp;androidx.compose.ui.graphics.Shape){}[0]
         final fun pulse(androidx.compose.ui.graphics/Shape = ..., androidx.compose.ui.graphics/Color = ..., com.jantursky.kapow/PulseStyle = ..., kotlin/Int = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.pulse|pulse(androidx.compose.ui.graphics.Shape;androidx.compose.ui.graphics.Color;com.jantursky.kapow.PulseStyle;kotlin.Int){}[0]
         final fun ripple(androidx.compose.ui.graphics/Color = ..., androidx.compose.ui.graphics/Shape = ..., androidx.compose.ui.graphics/TransformOrigin = ..., kotlin.time/Duration = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.ripple|ripple(androidx.compose.ui.graphics.Color;androidx.compose.ui.graphics.Shape;androidx.compose.ui.graphics.TransformOrigin;kotlin.time.Duration){}[0]
@@ -86,6 +88,9 @@ abstract class com.jantursky.kapow/ChangeEffect { // com.jantursky.kapow/ChangeE
         final fun speedLines(androidx.compose.ui.graphics/Color = ..., kotlin/Int = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.speedLines|speedLines(androidx.compose.ui.graphics.Color;kotlin.Int){}[0]
         final fun spin(com.jantursky.kapow/SpinAxis = ..., com.jantursky.kapow/SpinRate = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.spin|spin(com.jantursky.kapow.SpinAxis;com.jantursky.kapow.SpinRate){}[0]
         final fun spray(com.jantursky.kapow/ParticleContent = ..., kotlin/Int = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.spray|spray(com.jantursky.kapow.ParticleContent;kotlin.Int){}[0]
+        final fun stamp(kotlin/Float = ..., androidx.compose.ui.graphics/Color = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.stamp|stamp(kotlin.Float;androidx.compose.ui.graphics.Color){}[0]
+        final fun strike(androidx.compose.ui.graphics/Color = ..., androidx.compose.ui.unit/Dp = ..., kotlin.time/Duration = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.strike|strike(androidx.compose.ui.graphics.Color;androidx.compose.ui.unit.Dp;kotlin.time.Duration){}[0]
+        final fun trace(androidx.compose.ui.graphics/Shape = ..., androidx.compose.ui.graphics/Color = ..., androidx.compose.ui.unit/Dp = ..., kotlin.time/Duration = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.trace|trace(androidx.compose.ui.graphics.Shape;androidx.compose.ui.graphics.Color;androidx.compose.ui.unit.Dp;kotlin.time.Duration){}[0]
     }
 }
 
@@ -116,9 +121,11 @@ abstract class com.jantursky.kapow/ConditionalEffect { // com.jantursky.kapow/Co
 
 abstract class com.jantursky.kapow/ProgressEffect { // com.jantursky.kapow/ProgressEffect|null[0]
     final object Companion { // com.jantursky.kapow/ProgressEffect.Companion|null[0]
+        final fun fill(androidx.compose.ui.graphics/Color = ..., androidx.compose.ui.unit/Dp = ...): com.jantursky.kapow/ProgressEffect // com.jantursky.kapow/ProgressEffect.Companion.fill|fill(androidx.compose.ui.graphics.Color;androidx.compose.ui.unit.Dp){}[0]
         final fun glow(androidx.compose.ui.graphics/Color = ..., androidx.compose.ui.unit/Dp = ..., androidx.compose.ui.graphics/Shape = ...): com.jantursky.kapow/ProgressEffect // com.jantursky.kapow/ProgressEffect.Companion.glow|glow(androidx.compose.ui.graphics.Color;androidx.compose.ui.unit.Dp;androidx.compose.ui.graphics.Shape){}[0]
         final fun iris(androidx.compose.ui.graphics/TransformOrigin = ...): com.jantursky.kapow/ProgressEffect // com.jantursky.kapow/ProgressEffect.Companion.iris|iris(androidx.compose.ui.graphics.TransformOrigin){}[0]
         final fun shine(kotlin/Float = ..., androidx.compose.ui.graphics/Color = ...): com.jantursky.kapow/ProgressEffect // com.jantursky.kapow/ProgressEffect.Companion.shine|shine(kotlin.Float;androidx.compose.ui.graphics.Color){}[0]
+        final fun trace(androidx.compose.ui.graphics/Shape = ..., androidx.compose.ui.graphics/Color = ..., androidx.compose.ui.unit/Dp = ...): com.jantursky.kapow/ProgressEffect // com.jantursky.kapow/ProgressEffect.Companion.trace|trace(androidx.compose.ui.graphics.Shape;androidx.compose.ui.graphics.Color;androidx.compose.ui.unit.Dp){}[0]
     }
 }
 

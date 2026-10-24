@@ -1,0 +1,60 @@
+---
+title: "Progress: trace"
+description: An element's outline drawn as a stroke up to a progress value.
+---
+
+Progress trace draws the element's outline as a stroke that grows with a value you control: nothing at 0, the closed outline at 1. Use it as a progress ring around a card, an avatar or a button, for an upload or a countdown.
+
+## Usage
+
+The sample draws the outline of a rounded upload card as `progress` goes from 0 to 1. Pass the shape the card is clipped to.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ProgressEffect
+import com.jantursky.kapow.progressEffect
+
+@Composable
+fun UploadCard(progress: () -> Float) {
+    val shape = RoundedCornerShape(24.dp)
+    Box(
+        Modifier
+            .size(240.dp, 140.dp)
+            .progressEffect(ProgressEffect.trace(shape, Color(0xFF6B62F2), width = 4.dp), progress)
+            .clip(shape)
+            .background(Color(0xFF161616)),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `shape` | `RectangleShape` | The outline the stroke follows. Use the shape the element is clipped to. |
+| `color` | `Color(0xFF6B62F2)` | Color of the stroke. |
+| `width` | `3.dp` | Width of the stroke. Must be positive. |
+
+## Reduced motion
+
+Progress effects do not animate on their own. The outline is drawn as far as the progress says.
+
+## Notes
+
+- For rectangles and rounded shapes, including `CircleShape`, the stroke starts at the middle of the top edge and runs clockwise, like a clock hand. Other shapes start where their path starts.
+- The growing end is rounded. At progress 1 the outline closes without a seam.
+- The stroke sits just inside the element's bounds, half its width in from the edge.
+- The outline is measured once per size, so a progress that changes every frame only cuts a new piece of the same path.
+- [Change trace](/effects/change-trace) runs a comet along the same outline once when a value changes.
+
+## Live example
+
+<include example="progress-trace">../_snippets/live-example.mdx</include>

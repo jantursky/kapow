@@ -1,0 +1,58 @@
+---
+title: "Progress: fill"
+description: A liquid fills an element from the bottom up to a progress value.
+---
+
+Progress fill tints the element from the bottom up, like a glass filling with liquid. The surface has a gentle wave that rolls as the progress changes. Use it for a download, a battery level, a daily goal or anything else that fills up.
+
+## Usage
+
+The sample fills a download card as `progress` goes from 0 to 1. Pass a function that reads state, such as the download's progress flow collected into state, so the card does not recompose on every step.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ProgressEffect
+import com.jantursky.kapow.progressEffect
+
+@Composable
+fun DownloadCard(progress: () -> Float) {
+    Box(
+        Modifier
+            .size(240.dp, 140.dp)
+            .progressEffect(ProgressEffect.fill(Color(0x993D7BFF), wave = 6.dp), progress)
+            .clip(RoundedCornerShape(24.dp))
+            .background(Color(0xFF161616)),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `color` | `Color(0x993D7BFF)` | Tint of the liquid. Its alpha sets how much of the element shows through; the default is cobalt at 60 %. |
+| `wave` | `4.dp` | Height of the surface wave. 0 gives a flat surface. Must not be negative. |
+
+## Reduced motion
+
+Progress effects do not animate on their own. The liquid is drawn at whatever level the progress says, and the wave only moves when the progress does.
+
+## Notes
+
+- At progress 0 nothing is drawn. At progress 1 the whole element is tinted. The wave flattens out near both ends, so the fill starts from nothing and ends without gaps.
+- The liquid is drawn only over the element's own pixels, like the [shine](/effects/progress-shine) band. Transparent parts of the content stay transparent, and the element's clip shape is kept.
+- A second, paler wave behind the first, out of step with it, gives the surface some depth.
+- The wave has no clock of its own: the surface shows one and a half wave lengths and rolls by three over the whole progress. A progress that stands still shows a still surface.
+- While the progress is above 0 the element is drawn into an offscreen layer.
+
+## Live example
+
+<include example="progress-fill">../_snippets/live-example.mdx</include>

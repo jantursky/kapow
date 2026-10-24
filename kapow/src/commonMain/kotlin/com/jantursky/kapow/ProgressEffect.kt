@@ -7,9 +7,11 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.effects.FillProgressRunner
 import com.jantursky.kapow.effects.GlowProgressRunner
 import com.jantursky.kapow.effects.IrisProgressRunner
 import com.jantursky.kapow.effects.ShineProgressRunner
+import com.jantursky.kapow.effects.TraceProgressRunner
 import com.jantursky.kapow.internal.ProgressRunner
 
 /**
@@ -39,6 +41,37 @@ public abstract class ProgressEffect internal constructor() {
 
         /** A circular reveal from [origin] whose radius follows the progress. */
         public fun iris(origin: TransformOrigin = TransformOrigin.Center): ProgressEffect = Iris(origin)
+
+        /**
+         * A liquid in [color] that fills the element's own pixels from the bottom up to the progress, with a wave on
+         * its surface that rolls as the progress changes. Empty at 0, full at 1. Like every progress effect it is
+         * drawn at whatever progress you pass, also with reduced motion.
+         *
+         * @param color the liquid's tint. Its alpha sets how much of the element shows through.
+         * @param wave the height of the surface wave. 0 gives a flat surface.
+         */
+        public fun fill(
+            color: Color = Color(0x993D7BFF),
+            wave: Dp = 4.dp,
+        ): ProgressEffect {
+            require(wave >= 0.dp) { "wave must not be negative" }
+            return Fill(color, wave)
+        }
+
+        /**
+         * The element's [shape] outline drawn as a stroke up to the progress: nothing at 0, the closed outline at 1.
+         * Rectangles and rounded shapes are traced clockwise from the middle of the top edge. The stroke sits just
+         * inside the element's bounds. Like every progress effect it is drawn at whatever progress you pass, also
+         * with reduced motion.
+         */
+        public fun trace(
+            shape: Shape = RectangleShape,
+            color: Color = Color(0xFF6B62F2),
+            width: Dp = 3.dp,
+        ): ProgressEffect {
+            require(width > 0.dp) { "width must be positive" }
+            return Trace(shape, color, width)
+        }
     }
 
     internal data class Shine(
@@ -60,5 +93,20 @@ public abstract class ProgressEffect internal constructor() {
         val origin: TransformOrigin,
     ) : ProgressEffect() {
         override fun createRunner(): ProgressRunner = IrisProgressRunner(origin)
+    }
+
+    internal data class Fill(
+        val color: Color,
+        val wave: Dp,
+    ) : ProgressEffect() {
+        override fun createRunner(): ProgressRunner = FillProgressRunner(color, wave)
+    }
+
+    internal data class Trace(
+        val shape: Shape,
+        val color: Color,
+        val width: Dp,
+    ) : ProgressEffect() {
+        override fun createRunner(): ProgressRunner = TraceProgressRunner(shape, color, width)
     }
 }

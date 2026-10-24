@@ -1,0 +1,62 @@
+---
+title: "Change: trace"
+description: A comet-like stroke runs once around an element's outline when a value changes.
+---
+
+Trace sends a short, bright stroke with a fading tail once around the element's outline, then lets it disappear. Use it to confirm that something finished in place, such as a sync, a save or a successful scan, without covering the content.
+
+## Usage
+
+The sample traces a rounded card each time a backup finishes. Pass the same shape the card is clipped to, so the stroke follows its corners.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+import kotlin.time.Duration.Companion.milliseconds
+
+@Composable
+fun BackupCard(backups: Int) {
+    val shape = RoundedCornerShape(16.dp)
+    Box(
+        Modifier
+            .size(240.dp, 110.dp)
+            .changeEffect(backups, ChangeEffect.trace(shape, Color(0xFF6B62F2), duration = 900.milliseconds))
+            .clip(shape)
+            .background(Color(0xFF161616)),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `shape` | `RectangleShape` | The outline the stroke follows. Use the shape the element is clipped to. |
+| `color` | `Color(0xFF6B62F2)` | Color of the stroke. The head has a lighter core and a soft glow in the same color. |
+| `width` | `3.dp` | Width of the stroke at the head. The tail thins out towards its end. Must be positive. |
+| `duration` | `1.seconds` | How long one lap takes. Must be positive. |
+
+## Reduced motion
+
+Nothing travels. The whole outline appears at once and fades out over 0.4 s.
+
+## Notes
+
+- For rectangles and rounded shapes, including `CircleShape`, the stroke starts at the middle of the top edge and runs clockwise. Other shapes start where their path starts.
+- The stroke sits just inside the element's bounds, half its width in from the edge, so a parent that clips to the bounds does not cut it.
+- The tail is 40 % of the outline long. The head runs on past the starting point until the tail has caught up, so nothing is left behind.
+- The effect has a cooldown of half its `duration`. A change that arrives sooner after the last accepted one is ignored.
+- [Progress trace](/effects/progress-trace) draws the same outline up to a progress you control.
+
+## Live example
+
+<include example="change-trace">../_snippets/live-example.mdx</include>

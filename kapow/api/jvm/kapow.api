@@ -15,10 +15,14 @@ public abstract class com/jantursky/kapow/ChangeEffect {
 public final class com/jantursky/kapow/ChangeEffect$Companion {
 	public final fun burst-DxMtmZc (JI)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun burst-DxMtmZc$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JIILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun confettiPop (Ljava/util/List;I)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun confettiPop$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Ljava/util/List;IILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun fireworks (Ljava/util/List;I)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun fireworks$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Ljava/util/List;IILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun flash-pYXP5xo (JJ)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun flash-pYXP5xo$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun glitch-_GIBnP8 (JF)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun glitch-_GIBnP8$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JFILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun glow-5DgIosw (JFLandroidx/compose/ui/graphics/Shape;)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun glow-5DgIosw$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;ILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun pulse-RPmYEkk (Landroidx/compose/ui/graphics/Shape;JLcom/jantursky/kapow/PulseStyle;I)Lcom/jantursky/kapow/ChangeEffect;
@@ -37,6 +41,12 @@ public final class com/jantursky/kapow/ChangeEffect$Companion {
 	public static synthetic fun spin$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Lcom/jantursky/kapow/SpinAxis;Lcom/jantursky/kapow/SpinRate;ILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun spray (Lcom/jantursky/kapow/ParticleContent;I)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun spray$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Lcom/jantursky/kapow/ParticleContent;IILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun stamp-4WTKRHQ (FJ)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun stamp-4WTKRHQ$default (Lcom/jantursky/kapow/ChangeEffect$Companion;FJILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun strike-MiwwBNA (JFJ)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun strike-MiwwBNA$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JFJILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun trace-m-5BtWQ (Landroidx/compose/ui/graphics/Shape;JFJ)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun trace-m-5BtWQ$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Landroidx/compose/ui/graphics/Shape;JFJILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 }
 
 public abstract class com/jantursky/kapow/ConditionalEffect {
@@ -262,12 +272,16 @@ public abstract class com/jantursky/kapow/ProgressEffect {
 }
 
 public final class com/jantursky/kapow/ProgressEffect$Companion {
+	public final fun fill-l07J4OM (JF)Lcom/jantursky/kapow/ProgressEffect;
+	public static synthetic fun fill-l07J4OM$default (Lcom/jantursky/kapow/ProgressEffect$Companion;JFILjava/lang/Object;)Lcom/jantursky/kapow/ProgressEffect;
 	public final fun glow-5DgIosw (JFLandroidx/compose/ui/graphics/Shape;)Lcom/jantursky/kapow/ProgressEffect;
 	public static synthetic fun glow-5DgIosw$default (Lcom/jantursky/kapow/ProgressEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;ILjava/lang/Object;)Lcom/jantursky/kapow/ProgressEffect;
 	public final fun iris-__ExYCQ (J)Lcom/jantursky/kapow/ProgressEffect;
 	public static synthetic fun iris-__ExYCQ$default (Lcom/jantursky/kapow/ProgressEffect$Companion;JILjava/lang/Object;)Lcom/jantursky/kapow/ProgressEffect;
 	public final fun shine-4WTKRHQ (FJ)Lcom/jantursky/kapow/ProgressEffect;
 	public static synthetic fun shine-4WTKRHQ$default (Lcom/jantursky/kapow/ProgressEffect$Companion;FJILjava/lang/Object;)Lcom/jantursky/kapow/ProgressEffect;
+	public final fun trace-Hht5A8o (Landroidx/compose/ui/graphics/Shape;JF)Lcom/jantursky/kapow/ProgressEffect;
+	public static synthetic fun trace-Hht5A8o$default (Lcom/jantursky/kapow/ProgressEffect$Companion;Landroidx/compose/ui/graphics/Shape;JFILjava/lang/Object;)Lcom/jantursky/kapow/ProgressEffect;
 }
 
 public abstract class com/jantursky/kapow/PulseStyle {

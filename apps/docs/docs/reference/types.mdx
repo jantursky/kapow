@@ -25,6 +25,16 @@ public abstract class ChangeEffect {
         ): ChangeEffect
         public fun glow(color: Color = Color(0xFF6B62F2), radius: Dp = 16.dp, shape: Shape = RectangleShape): ChangeEffect
         public fun spin(axis: SpinAxis = SpinAxis.Y, rate: SpinRate = SpinRate.Default): ChangeEffect
+        public fun confettiPop(colors: List<Color> = ParticleContent.DefaultColors, count: Int = 28): ChangeEffect
+        public fun trace(
+            shape: Shape = RectangleShape,
+            color: Color = Color(0xFF6B62F2),
+            width: Dp = 3.dp,
+            duration: Duration = 1.seconds,
+        ): ChangeEffect
+        public fun strike(color: Color = Color(0xFF6B62F2), width: Dp = 2.dp, hold: Duration = 600.milliseconds): ChangeEffect
+        public fun stamp(scale: Float = 1.3f, dustColor: Color = Color(0xFFB0B0B0)): ChangeEffect
+        public fun glitch(duration: Duration = 300.milliseconds, offset: Dp = 6.dp): ChangeEffect
     }
 }
 ```
@@ -38,6 +48,11 @@ public abstract class ChangeEffect {
 | `pulse(shape, color, style, count)` | Rings or fills in `shape` that grow outward behind the element and fade. A change sends `count` pulses, 0.2 s apart. |
 | `glow(color, radius, shape)` | A colored halo in `shape` that flares up and fades. Quick repeated changes make it stronger, up to a limit. |
 | `spin(axis, rate)` | Spins the element one or more full turns and settles where it started. Changes mid-spin add speed. |
+| `confettiPop(colors, count)` | A short pop of `count` confetti pieces in `colors` that burst from the element, tumble and fall away. |
+| `trace(shape, color, width, duration)` | A comet-like stroke that runs once around the outline of `shape`, clockwise from the top, then disappears. |
+| `strike(color, width, hold)` | A line that draws across the middle of the element, stays for `hold`, then fades out. |
+| `stamp(scale, dustColor)` | Drops the element from `scale` times its size like a rubber stamp, with a squash on impact and dust at its base. `scale` must be at least 1. |
+| `glitch(duration, offset)` | Splits the element into offset color channels and shifts horizontal slices of it for `duration`, then snaps back. |
 
 ### PulseStyle, SpinAxis, SpinRate
 
@@ -89,6 +104,8 @@ public abstract class ProgressEffect {
         public fun shine(angle: Float = 45f, color: Color = Color.White): ProgressEffect
         public fun glow(color: Color = Color(0xFF6B62F2), radius: Dp = 16.dp, shape: Shape = RectangleShape): ProgressEffect
         public fun iris(origin: TransformOrigin = TransformOrigin.Center): ProgressEffect
+        public fun fill(color: Color = Color(0x993D7BFF), wave: Dp = 4.dp): ProgressEffect
+        public fun trace(shape: Shape = RectangleShape, color: Color = Color(0xFF6B62F2), width: Dp = 3.dp): ProgressEffect
     }
 }
 ```
@@ -98,6 +115,8 @@ public abstract class ProgressEffect {
 | `shine(angle, color)` | A band of light whose position across the element follows the progress. |
 | `glow(color, radius, shape)` | A halo whose strength follows the progress. |
 | `iris(origin)` | A circular reveal from `origin` whose radius follows the progress. |
+| `fill(color, wave)` | A liquid in `color` that fills the element's pixels from the bottom up to the progress, with a wave `wave` high on its surface. |
+| `trace(shape, color, width)` | The outline of `shape` drawn as a stroke, clockwise from the top, up to the progress. |
 
 ## KapowEnter
 
