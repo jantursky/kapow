@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.effects.PulseRunner
 import com.jantursky.kapow.effects.ShineRunner
 import com.jantursky.kapow.internal.ChangeRunner
 import kotlin.time.Duration
@@ -140,7 +141,7 @@ public abstract class ChangeEffect internal constructor() {
     ) : ChangeEffect() {
         override val cooldown: Duration get() = 200.milliseconds * (count - 1)
 
-        override fun createRunner(): ChangeRunner = TODO()
+        override fun createRunner(): ChangeRunner = PulseRunner(shape, color, style, count)
     }
 
     internal data class Glow(
