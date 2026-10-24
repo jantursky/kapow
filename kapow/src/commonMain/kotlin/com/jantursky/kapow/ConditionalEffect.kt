@@ -18,6 +18,7 @@ import com.jantursky.kapow.effects.RainbowBorderRunner
 import com.jantursky.kapow.effects.RepeatRunner
 import com.jantursky.kapow.effects.SmokeRunner
 import com.jantursky.kapow.effects.SparklesRunner
+import com.jantursky.kapow.effects.SpotlightRunner
 import com.jantursky.kapow.internal.ConditionalRunner
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -249,6 +250,32 @@ public abstract class ConditionalEffect internal constructor() {
             require(amount in 0f..1f) { "amount must be between 0 and 1" }
             return Grayscale(amount)
         }
+
+        /**
+         * Dims everything around the element and leaves its [shape] clear, with a soft edge, to point at it, as an
+         * onboarding tip does.
+         *
+         * The scrim is drawn by the element itself, far past its bounds. It covers what is drawn before the element,
+         * but anything drawn after it, such as later siblings or later siblings of its parents, stays on top; give
+         * the element a higher `zIndex` among its siblings where that matters. A parent that clips its children
+         * cuts the scrim off at its own bounds.
+         *
+         * With reduced motion the dim comes and goes without a fade.
+         *
+         * @param color the scrim. Its alpha is how dark the surroundings get.
+         * @param padding how far past the shape the clear area reaches.
+         * @param softness how wide the soft edge between the clear area and the full dim is.
+         */
+        public fun spotlight(
+            color: Color = Color(0x99000000),
+            shape: Shape = RectangleShape,
+            padding: Dp = 8.dp,
+            softness: Dp = 24.dp,
+        ): ConditionalEffect {
+            require(padding >= 0.dp) { "padding must not be negative" }
+            require(softness >= 0.dp) { "softness must not be negative" }
+            return Spotlight(color, shape, padding, softness)
+        }
     }
 
     internal data class Repeat(
@@ -345,5 +372,14 @@ public abstract class ConditionalEffect internal constructor() {
         val amount: Float,
     ) : ConditionalEffect() {
         override fun createRunner(): ConditionalRunner = GrayscaleRunner(amount)
+    }
+
+    internal data class Spotlight(
+        val color: Color,
+        val shape: Shape,
+        val padding: Dp,
+        val softness: Dp,
+    ) : ConditionalEffect() {
+        override fun createRunner(): ConditionalRunner = SpotlightRunner(color, shape, padding, softness)
     }
 }

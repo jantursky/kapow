@@ -1,0 +1,66 @@
+---
+title: "Conditional: spotlight"
+description: Everything around an element dims while a condition is true.
+---
+
+Spotlight dims everything around an element and leaves the element clear, with a soft edge, while a condition holds. Use it to point at one control, as an onboarding tip or a "new here" hint does.
+
+## Usage
+
+The sample spotlights an add button on the first launch. The row that holds the button gets a higher `zIndex`, so the list below it is dimmed too (see the notes).
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.conditionalEffect
+
+@Composable
+fun TaskScreen(firstLaunch: Boolean, list: @Composable () -> Unit) {
+    Column {
+        Row(Modifier.zIndex(1f)) {
+            Box(
+                Modifier
+                    .size(40.dp)
+                    .conditionalEffect(firstLaunch, ConditionalEffect.spotlight(shape = CircleShape))
+                    .background(Color(0xFF3D7BFF), CircleShape),
+            )
+        }
+        list()
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `color` | `Color(0x99000000)` | The scrim. Its alpha is how dark the surroundings get. |
+| `shape` | `RectangleShape` | The shape left clear. |
+| `padding` | `8.dp` | How far past the shape the clear area reaches. |
+| `softness` | `24.dp` | How wide the soft edge between the clear area and the full dim is. `0.dp` gives a hard edge. |
+
+## Reduced motion
+
+The dim comes and goes at once, without the fade.
+
+## Notes
+
+- The dim fades in and out over 0.3 s.
+- The scrim is drawn by the element itself, far past its bounds. It covers what was drawn before the element. Anything drawn after it stays on top: later siblings, and later siblings of its parents. Give the element, or the parent that holds it, a higher `Modifier.zIndex` where that matters. A tooltip that should stay readable can sit above it the same way.
+- A parent that clips its children, such as a card with `clip`, a scrolling list or a dialog, cuts the scrim off at its own bounds. For a full-screen dim, keep the path from the element to the screen free of clipping, or draw your own scrim.
+- Near the element, the soft edge is a blurred cut-out where the platform can blur (all Skia targets and Android 12 and later). On Android below 12 it is 16 stacked rings, which can show faint steps on a wide soft edge.
+- The spotlight does not block input. Taps on dimmed content still reach it.
+
+## Live example
+
+<include example="conditional-spotlight">../_snippets/live-example.mdx</include>

@@ -24,6 +24,7 @@ export default defineMeta({
     'conditional-bubbles',
     'conditional-flame',
     'conditional-grayscale',
+    'conditional-spotlight',
     'progress-shine',
     'progress-glow',
     'progress-iris',

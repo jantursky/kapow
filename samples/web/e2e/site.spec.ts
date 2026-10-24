@@ -161,6 +161,7 @@ const LIVE = [
   'conditional-bubbles',
   'conditional-flame',
   'conditional-grayscale',
+  'conditional-spotlight',
   'progress-iris',
   'transition-iris',
   'transition-clock',

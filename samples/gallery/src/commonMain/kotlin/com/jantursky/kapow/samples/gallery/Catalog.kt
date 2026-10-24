@@ -165,6 +165,13 @@ val entries: List<Entry> =
             Example("GrayscaleExample.kt") { GrayscaleDemo() },
         ),
         Entry(
+            "conditional-spotlight",
+            Group.Conditional,
+            "Spotlight",
+            "Dims everything around the element while a condition holds.",
+            Example("SpotlightExample.kt") { SpotlightDemo() },
+        ),
+        Entry(
             "progress-shine",
             Group.Progress,
             "Shine",
