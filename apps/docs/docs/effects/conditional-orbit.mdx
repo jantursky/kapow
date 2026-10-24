@@ -1,0 +1,56 @@
+---
+title: "Conditional: orbit"
+description: A few particles circle an element, passing behind and in front of it, while a condition is true.
+---
+
+Orbit sends a few glowing particles around an element on a tipped ellipse, like a ring around a planet, while a condition holds. They pass behind the element smaller and fainter and come round in front of it at full size. Use it for something live: an avatar while its person is online, a device that is syncing.
+
+## Usage
+
+The sample circles particles around an avatar while the contact is online.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.conditionalEffect
+
+@Composable
+fun Avatar(online: Boolean) {
+    Box(
+        Modifier
+            .size(72.dp)
+            .conditionalEffect(online, ConditionalEffect.orbit())
+            .background(Color(0xFF6B62F2), CircleShape),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `colors` | `ParticleContent.DefaultColors` | The particles' colors, used in turn. The first also tints the faint track. |
+| `count` | `3` | How many particles circle, evenly spaced. |
+| `size` | `8.dp` | Diameter of a particle in front of the element. |
+| `duration` | `2.5.seconds` | How long one turn takes. |
+
+## Reduced motion
+
+No particles are shown.
+
+## Notes
+
+- The orbit reaches past the element's sides by about 60 % of its half width. Particles and their faint track are drawn by the element, outside its bounds, so a clipping parent cuts them off.
+- The far half of the orbit is drawn before the element and the near half after it, which is what puts the particles behind and in front of it.
+- The particles fade in over 0.3 s and fade out when the condition turns false.
+
+## Live example
+
+<include example="conditional-orbit">../_snippets/live-example.mdx</include>

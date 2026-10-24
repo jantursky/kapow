@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.effects.BorderBeamRunner
 import com.jantursky.kapow.effects.ConditionalGlowRunner
 import com.jantursky.kapow.effects.MarchingAntsRunner
+import com.jantursky.kapow.effects.OrbitRunner
 import com.jantursky.kapow.effects.PushDownRunner
 import com.jantursky.kapow.effects.RainbowBorderRunner
 import com.jantursky.kapow.effects.RepeatRunner
@@ -166,6 +167,31 @@ public abstract class ConditionalEffect internal constructor() {
             require(count > 0) { "count must be positive" }
             return Sparkles(colors, size, count)
         }
+
+        /**
+         * A few glowing particles that circle the element on a tipped ellipse, like a ring around a planet. They
+         * pass behind the element smaller and fainter, and in front of it at full size, for something live, such
+         * as an avatar while its person is online. They are drawn by the element, outside its bounds.
+         *
+         * With reduced motion there are no particles.
+         *
+         * @param colors the particles' colors, used in turn.
+         * @param count how many particles circle, spaced evenly.
+         * @param size the diameter of a particle in front.
+         * @param duration how long one turn takes.
+         */
+        public fun orbit(
+            colors: List<Color> = ParticleContent.DefaultColors,
+            count: Int = 3,
+            size: Dp = 8.dp,
+            duration: Duration = 2.5.seconds,
+        ): ConditionalEffect {
+            require(colors.isNotEmpty()) { "colors must not be empty" }
+            require(count > 0) { "count must be positive" }
+            require(size > 0.dp) { "size must be positive" }
+            require(duration.isPositive()) { "duration must be positive" }
+            return Orbit(colors, count, size, duration)
+        }
     }
 
     internal data class Repeat(
@@ -233,5 +259,14 @@ public abstract class ConditionalEffect internal constructor() {
         val count: Int,
     ) : ConditionalEffect() {
         override fun createRunner(): ConditionalRunner = SparklesRunner(colors, size, count)
+    }
+
+    internal data class Orbit(
+        val colors: List<Color>,
+        val count: Int,
+        val size: Dp,
+        val duration: Duration,
+    ) : ConditionalEffect() {
+        override fun createRunner(): ConditionalRunner = OrbitRunner(colors, count, size, duration)
     }
 }

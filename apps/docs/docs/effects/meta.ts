@@ -20,6 +20,7 @@ export default defineMeta({
     'conditional-marching-ants',
     'conditional-rainbow-border',
     'conditional-sparkles',
+    'conditional-orbit',
     'progress-shine',
     'progress-glow',
     'progress-iris',

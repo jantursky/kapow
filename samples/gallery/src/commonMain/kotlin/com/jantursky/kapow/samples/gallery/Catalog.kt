@@ -137,6 +137,13 @@ val entries: List<Entry> =
             Example("ConditionalSparklesExample.kt") { ConditionalSparklesDemo() },
         ),
         Entry(
+            "conditional-orbit",
+            Group.Conditional,
+            "Orbit",
+            "Circles particles around the element while a condition holds.",
+            Example("OrbitExample.kt") { OrbitDemo() },
+        ),
+        Entry(
             "progress-shine",
             Group.Progress,
             "Shine",
