@@ -1,0 +1,295 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <kapow:kapow>
+final enum class com.jantursky.kapow/BlindsOrientation : kotlin/Enum<com.jantursky.kapow/BlindsOrientation> { // com.jantursky.kapow/BlindsOrientation|null[0]
+    enum entry Horizontal // com.jantursky.kapow/BlindsOrientation.Horizontal|null[0]
+    enum entry Vertical // com.jantursky.kapow/BlindsOrientation.Vertical|null[0]
+
+    final val entries // com.jantursky.kapow/BlindsOrientation.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.jantursky.kapow/BlindsOrientation> // com.jantursky.kapow/BlindsOrientation.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.jantursky.kapow/BlindsOrientation // com.jantursky.kapow/BlindsOrientation.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.jantursky.kapow/BlindsOrientation> // com.jantursky.kapow/BlindsOrientation.values|values#static(){}[0]
+}
+
+final enum class com.jantursky.kapow/KapowMotion : kotlin/Enum<com.jantursky.kapow/KapowMotion> { // com.jantursky.kapow/KapowMotion|null[0]
+    enum entry Full // com.jantursky.kapow/KapowMotion.Full|null[0]
+    enum entry Reduced // com.jantursky.kapow/KapowMotion.Reduced|null[0]
+    enum entry System // com.jantursky.kapow/KapowMotion.System|null[0]
+
+    final val entries // com.jantursky.kapow/KapowMotion.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.jantursky.kapow/KapowMotion> // com.jantursky.kapow/KapowMotion.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.jantursky.kapow/KapowMotion // com.jantursky.kapow/KapowMotion.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.jantursky.kapow/KapowMotion> // com.jantursky.kapow/KapowMotion.values|values#static(){}[0]
+}
+
+final enum class com.jantursky.kapow/ParticleShape : kotlin/Enum<com.jantursky.kapow/ParticleShape> { // com.jantursky.kapow/ParticleShape|null[0]
+    enum entry Circle // com.jantursky.kapow/ParticleShape.Circle|null[0]
+    enum entry Heart // com.jantursky.kapow/ParticleShape.Heart|null[0]
+    enum entry Sparkle // com.jantursky.kapow/ParticleShape.Sparkle|null[0]
+    enum entry Square // com.jantursky.kapow/ParticleShape.Square|null[0]
+    enum entry Star // com.jantursky.kapow/ParticleShape.Star|null[0]
+
+    final val entries // com.jantursky.kapow/ParticleShape.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.jantursky.kapow/ParticleShape> // com.jantursky.kapow/ParticleShape.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.jantursky.kapow/ParticleShape // com.jantursky.kapow/ParticleShape.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.jantursky.kapow/ParticleShape> // com.jantursky.kapow/ParticleShape.values|values#static(){}[0]
+}
+
+final enum class com.jantursky.kapow/SpinAxis : kotlin/Enum<com.jantursky.kapow/SpinAxis> { // com.jantursky.kapow/SpinAxis|null[0]
+    enum entry X // com.jantursky.kapow/SpinAxis.X|null[0]
+    enum entry Y // com.jantursky.kapow/SpinAxis.Y|null[0]
+    enum entry Z // com.jantursky.kapow/SpinAxis.Z|null[0]
+
+    final val entries // com.jantursky.kapow/SpinAxis.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.jantursky.kapow/SpinAxis> // com.jantursky.kapow/SpinAxis.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.jantursky.kapow/SpinAxis // com.jantursky.kapow/SpinAxis.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.jantursky.kapow/SpinAxis> // com.jantursky.kapow/SpinAxis.values|values#static(){}[0]
+}
+
+final enum class com.jantursky.kapow/SpinRate : kotlin/Enum<com.jantursky.kapow/SpinRate> { // com.jantursky.kapow/SpinRate|null[0]
+    enum entry Default // com.jantursky.kapow/SpinRate.Default|null[0]
+    enum entry Fast // com.jantursky.kapow/SpinRate.Fast|null[0]
+
+    final val entries // com.jantursky.kapow/SpinRate.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.jantursky.kapow/SpinRate> // com.jantursky.kapow/SpinRate.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.jantursky.kapow/SpinRate // com.jantursky.kapow/SpinRate.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.jantursky.kapow/SpinRate> // com.jantursky.kapow/SpinRate.values|values#static(){}[0]
+}
+
+abstract fun interface com.jantursky.kapow/KapowFeedback { // com.jantursky.kapow/KapowFeedback|null[0]
+    abstract fun perform(com.jantursky.kapow/KapowFeedbackEvent) // com.jantursky.kapow/KapowFeedback.perform|perform(com.jantursky.kapow.KapowFeedbackEvent){}[0]
+}
+
+abstract class com.jantursky.kapow/ChangeEffect { // com.jantursky.kapow/ChangeEffect|null[0]
+    final fun delay(kotlin.time/Duration): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.delay|delay(kotlin.time.Duration){}[0]
+
+    final object Companion { // com.jantursky.kapow/ChangeEffect.Companion|null[0]
+        final fun glow(androidx.compose.ui.graphics/Color = ..., androidx.compose.ui.unit/Dp = ..., androidx.compose.ui.graphics/Shape = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.glow|glow(androidx.compose.ui.graphics.Color;androidx.compose.ui.unit.Dp;androidx.compose.ui.graphics.Shape){}[0]
+        final fun pulse(androidx.compose.ui.graphics/Shape = ..., androidx.compose.ui.graphics/Color = ..., com.jantursky.kapow/PulseStyle = ..., kotlin/Int = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.pulse|pulse(androidx.compose.ui.graphics.Shape;androidx.compose.ui.graphics.Color;com.jantursky.kapow.PulseStyle;kotlin.Int){}[0]
+        final fun rise(com.jantursky.kapow/ParticleContent = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.rise|rise(com.jantursky.kapow.ParticleContent){}[0]
+        final fun shine(kotlin/Float = ..., kotlin.time/Duration = ..., androidx.compose.ui.graphics/Color = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.shine|shine(kotlin.Float;kotlin.time.Duration;androidx.compose.ui.graphics.Color){}[0]
+        final fun spin(com.jantursky.kapow/SpinAxis = ..., com.jantursky.kapow/SpinRate = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.spin|spin(com.jantursky.kapow.SpinAxis;com.jantursky.kapow.SpinRate){}[0]
+        final fun spray(com.jantursky.kapow/ParticleContent = ..., kotlin/Int = ...): com.jantursky.kapow/ChangeEffect // com.jantursky.kapow/ChangeEffect.Companion.spray|spray(com.jantursky.kapow.ParticleContent;kotlin.Int){}[0]
+    }
+}
+
+abstract class com.jantursky.kapow/ConditionalEffect { // com.jantursky.kapow/ConditionalEffect|null[0]
+    final object Companion { // com.jantursky.kapow/ConditionalEffect.Companion|null[0]
+        final val MinRepeatInterval // com.jantursky.kapow/ConditionalEffect.Companion.MinRepeatInterval|{}MinRepeatInterval[0]
+            final fun <get-MinRepeatInterval>(): kotlin.time/Duration // com.jantursky.kapow/ConditionalEffect.Companion.MinRepeatInterval.<get-MinRepeatInterval>|<get-MinRepeatInterval>(){}[0]
+
+        final fun glow(androidx.compose.ui.graphics/Color = ..., androidx.compose.ui.unit/Dp = ..., androidx.compose.ui.graphics/Shape = ...): com.jantursky.kapow/ConditionalEffect // com.jantursky.kapow/ConditionalEffect.Companion.glow|glow(androidx.compose.ui.graphics.Color;androidx.compose.ui.unit.Dp;androidx.compose.ui.graphics.Shape){}[0]
+        final fun pushDown(kotlin/Float = ...): com.jantursky.kapow/ConditionalEffect // com.jantursky.kapow/ConditionalEffect.Companion.pushDown|pushDown(kotlin.Float){}[0]
+        final fun repeat(com.jantursky.kapow/ChangeEffect, kotlin.time/Duration): com.jantursky.kapow/ConditionalEffect // com.jantursky.kapow/ConditionalEffect.Companion.repeat|repeat(com.jantursky.kapow.ChangeEffect;kotlin.time.Duration){}[0]
+        final fun smoke(androidx.compose.ui.graphics/Color = ...): com.jantursky.kapow/ConditionalEffect // com.jantursky.kapow/ConditionalEffect.Companion.smoke|smoke(androidx.compose.ui.graphics.Color){}[0]
+    }
+}
+
+abstract class com.jantursky.kapow/ProgressEffect { // com.jantursky.kapow/ProgressEffect|null[0]
+    final object Companion { // com.jantursky.kapow/ProgressEffect.Companion|null[0]
+        final fun glow(androidx.compose.ui.graphics/Color = ..., androidx.compose.ui.unit/Dp = ..., androidx.compose.ui.graphics/Shape = ...): com.jantursky.kapow/ProgressEffect // com.jantursky.kapow/ProgressEffect.Companion.glow|glow(androidx.compose.ui.graphics.Color;androidx.compose.ui.unit.Dp;androidx.compose.ui.graphics.Shape){}[0]
+        final fun iris(androidx.compose.ui.graphics/TransformOrigin = ...): com.jantursky.kapow/ProgressEffect // com.jantursky.kapow/ProgressEffect.Companion.iris|iris(androidx.compose.ui.graphics.TransformOrigin){}[0]
+        final fun shine(kotlin/Float = ..., androidx.compose.ui.graphics/Color = ...): com.jantursky.kapow/ProgressEffect // com.jantursky.kapow/ProgressEffect.Companion.shine|shine(kotlin.Float;androidx.compose.ui.graphics.Color){}[0]
+    }
+}
+
+final class com.jantursky.kapow/KapowEnter { // com.jantursky.kapow/KapowEnter|null[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.jantursky.kapow/KapowEnter.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.jantursky.kapow/KapowEnter.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.jantursky.kapow/KapowEnter.toString|toString(){}[0]
+
+    final object Companion { // com.jantursky.kapow/KapowEnter.Companion|null[0]
+        final val None // com.jantursky.kapow/KapowEnter.Companion.None|{}None[0]
+            final fun <get-None>(): com.jantursky.kapow/KapowEnter // com.jantursky.kapow/KapowEnter.Companion.None.<get-None>|<get-None>(){}[0]
+
+        final fun anvil(kotlin.time/Duration = ...): com.jantursky.kapow/KapowEnter // com.jantursky.kapow/KapowEnter.Companion.anvil|anvil(kotlin.time.Duration){}[0]
+        final fun blinds(androidx.compose.ui.unit/Dp = ..., com.jantursky.kapow/BlindsOrientation = ..., kotlin/Boolean = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowEnter // com.jantursky.kapow/KapowEnter.Companion.blinds|blinds(androidx.compose.ui.unit.Dp;com.jantursky.kapow.BlindsOrientation;kotlin.Boolean;kotlin.time.Duration){}[0]
+        final fun clock(androidx.compose.ui.graphics/TransformOrigin = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowEnter // com.jantursky.kapow/KapowEnter.Companion.clock|clock(androidx.compose.ui.graphics.TransformOrigin;kotlin.time.Duration){}[0]
+        final fun glare(kotlin/Float = ..., androidx.compose.ui.graphics/Color = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowEnter // com.jantursky.kapow/KapowEnter.Companion.glare|glare(kotlin.Float;androidx.compose.ui.graphics.Color;kotlin.time.Duration){}[0]
+        final fun iris(androidx.compose.ui.graphics/TransformOrigin = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowEnter // com.jantursky.kapow/KapowEnter.Companion.iris|iris(androidx.compose.ui.graphics.TransformOrigin;kotlin.time.Duration){}[0]
+        final fun pop(androidx.compose.ui.graphics/Color = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowEnter // com.jantursky.kapow/KapowEnter.Companion.pop|pop(androidx.compose.ui.graphics.Color;kotlin.time.Duration){}[0]
+        final fun wipe(kotlin/Float = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowEnter // com.jantursky.kapow/KapowEnter.Companion.wipe|wipe(kotlin.Float;kotlin.time.Duration){}[0]
+    }
+}
+
+final class com.jantursky.kapow/KapowExit { // com.jantursky.kapow/KapowExit|null[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.jantursky.kapow/KapowExit.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.jantursky.kapow/KapowExit.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.jantursky.kapow/KapowExit.toString|toString(){}[0]
+
+    final object Companion { // com.jantursky.kapow/KapowExit.Companion|null[0]
+        final val None // com.jantursky.kapow/KapowExit.Companion.None|{}None[0]
+            final fun <get-None>(): com.jantursky.kapow/KapowExit // com.jantursky.kapow/KapowExit.Companion.None.<get-None>|<get-None>(){}[0]
+
+        final fun blinds(androidx.compose.ui.unit/Dp = ..., com.jantursky.kapow/BlindsOrientation = ..., kotlin/Boolean = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowExit // com.jantursky.kapow/KapowExit.Companion.blinds|blinds(androidx.compose.ui.unit.Dp;com.jantursky.kapow.BlindsOrientation;kotlin.Boolean;kotlin.time.Duration){}[0]
+        final fun clock(androidx.compose.ui.graphics/TransformOrigin = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowExit // com.jantursky.kapow/KapowExit.Companion.clock|clock(androidx.compose.ui.graphics.TransformOrigin;kotlin.time.Duration){}[0]
+        final fun glare(kotlin/Float = ..., androidx.compose.ui.graphics/Color = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowExit // com.jantursky.kapow/KapowExit.Companion.glare|glare(kotlin.Float;androidx.compose.ui.graphics.Color;kotlin.time.Duration){}[0]
+        final fun iris(androidx.compose.ui.graphics/TransformOrigin = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowExit // com.jantursky.kapow/KapowExit.Companion.iris|iris(androidx.compose.ui.graphics.TransformOrigin;kotlin.time.Duration){}[0]
+        final fun poof(androidx.compose.ui.graphics/Color = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowExit // com.jantursky.kapow/KapowExit.Companion.poof|poof(androidx.compose.ui.graphics.Color;kotlin.time.Duration){}[0]
+        final fun wipe(kotlin/Float = ..., kotlin.time/Duration = ...): com.jantursky.kapow/KapowExit // com.jantursky.kapow/KapowExit.Companion.wipe|wipe(kotlin.Float;kotlin.time.Duration){}[0]
+    }
+}
+
+sealed class com.jantursky.kapow/KapowFeedbackEvent { // com.jantursky.kapow/KapowFeedbackEvent|null[0]
+    final class Custom : com.jantursky.kapow/KapowFeedbackEvent { // com.jantursky.kapow/KapowFeedbackEvent.Custom|null[0]
+        constructor <init>(kotlin/String) // com.jantursky.kapow/KapowFeedbackEvent.Custom.<init>|<init>(kotlin.String){}[0]
+
+        final val name // com.jantursky.kapow/KapowFeedbackEvent.Custom.name|{}name[0]
+            final fun <get-name>(): kotlin/String // com.jantursky.kapow/KapowFeedbackEvent.Custom.name.<get-name>|<get-name>(){}[0]
+
+        final fun component1(): kotlin/String // com.jantursky.kapow/KapowFeedbackEvent.Custom.component1|component1(){}[0]
+        final fun copy(kotlin/String = ...): com.jantursky.kapow/KapowFeedbackEvent.Custom // com.jantursky.kapow/KapowFeedbackEvent.Custom.copy|copy(kotlin.String){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.jantursky.kapow/KapowFeedbackEvent.Custom.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.jantursky.kapow/KapowFeedbackEvent.Custom.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.jantursky.kapow/KapowFeedbackEvent.Custom.toString|toString(){}[0]
+    }
+
+    final object Error : com.jantursky.kapow/KapowFeedbackEvent { // com.jantursky.kapow/KapowFeedbackEvent.Error|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.jantursky.kapow/KapowFeedbackEvent.Error.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.jantursky.kapow/KapowFeedbackEvent.Error.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.jantursky.kapow/KapowFeedbackEvent.Error.toString|toString(){}[0]
+    }
+
+    final object ImpactHeavy : com.jantursky.kapow/KapowFeedbackEvent { // com.jantursky.kapow/KapowFeedbackEvent.ImpactHeavy|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.jantursky.kapow/KapowFeedbackEvent.ImpactHeavy.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.jantursky.kapow/KapowFeedbackEvent.ImpactHeavy.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.jantursky.kapow/KapowFeedbackEvent.ImpactHeavy.toString|toString(){}[0]
+    }
+
+    final object ImpactLight : com.jantursky.kapow/KapowFeedbackEvent { // com.jantursky.kapow/KapowFeedbackEvent.ImpactLight|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.jantursky.kapow/KapowFeedbackEvent.ImpactLight.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.jantursky.kapow/KapowFeedbackEvent.ImpactLight.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.jantursky.kapow/KapowFeedbackEvent.ImpactLight.toString|toString(){}[0]
+    }
+
+    final object ImpactMedium : com.jantursky.kapow/KapowFeedbackEvent { // com.jantursky.kapow/KapowFeedbackEvent.ImpactMedium|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.jantursky.kapow/KapowFeedbackEvent.ImpactMedium.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.jantursky.kapow/KapowFeedbackEvent.ImpactMedium.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.jantursky.kapow/KapowFeedbackEvent.ImpactMedium.toString|toString(){}[0]
+    }
+
+    final object Selection : com.jantursky.kapow/KapowFeedbackEvent { // com.jantursky.kapow/KapowFeedbackEvent.Selection|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.jantursky.kapow/KapowFeedbackEvent.Selection.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.jantursky.kapow/KapowFeedbackEvent.Selection.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.jantursky.kapow/KapowFeedbackEvent.Selection.toString|toString(){}[0]
+    }
+
+    final object Success : com.jantursky.kapow/KapowFeedbackEvent { // com.jantursky.kapow/KapowFeedbackEvent.Success|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.jantursky.kapow/KapowFeedbackEvent.Success.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.jantursky.kapow/KapowFeedbackEvent.Success.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.jantursky.kapow/KapowFeedbackEvent.Success.toString|toString(){}[0]
+    }
+
+    final object Warning : com.jantursky.kapow/KapowFeedbackEvent { // com.jantursky.kapow/KapowFeedbackEvent.Warning|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.jantursky.kapow/KapowFeedbackEvent.Warning.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.jantursky.kapow/KapowFeedbackEvent.Warning.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.jantursky.kapow/KapowFeedbackEvent.Warning.toString|toString(){}[0]
+    }
+}
+
+sealed class com.jantursky.kapow/ParticleContent { // com.jantursky.kapow/ParticleContent|null[0]
+    final object Companion { // com.jantursky.kapow/ParticleContent.Companion|null[0]
+        final val DefaultColors // com.jantursky.kapow/ParticleContent.Companion.DefaultColors|{}DefaultColors[0]
+            final fun <get-DefaultColors>(): kotlin.collections/List<androidx.compose.ui.graphics/Color> // com.jantursky.kapow/ParticleContent.Companion.DefaultColors.<get-DefaultColors>|<get-DefaultColors>(){}[0]
+
+        final fun painter(androidx.compose.ui.graphics.painter/Painter, androidx.compose.ui.unit/Dp = ..., androidx.compose.ui.graphics/Color? = ...): com.jantursky.kapow/ParticleContent // com.jantursky.kapow/ParticleContent.Companion.painter|painter(androidx.compose.ui.graphics.painter.Painter;androidx.compose.ui.unit.Dp;androidx.compose.ui.graphics.Color?){}[0]
+        final fun shape(com.jantursky.kapow/ParticleShape = ..., kotlin.collections/List<androidx.compose.ui.graphics/Color> = ..., androidx.compose.ui.unit/Dp = ...): com.jantursky.kapow/ParticleContent // com.jantursky.kapow/ParticleContent.Companion.shape|shape(com.jantursky.kapow.ParticleShape;kotlin.collections.List<androidx.compose.ui.graphics.Color>;androidx.compose.ui.unit.Dp){}[0]
+        final fun text(kotlin/String, androidx.compose.ui.text/TextStyle = ...): com.jantursky.kapow/ParticleContent // com.jantursky.kapow/ParticleContent.Companion.text|text(kotlin.String;androidx.compose.ui.text.TextStyle){}[0]
+    }
+}
+
+sealed class com.jantursky.kapow/PulseStyle { // com.jantursky.kapow/PulseStyle|null[0]
+    final class Stroke : com.jantursky.kapow/PulseStyle { // com.jantursky.kapow/PulseStyle.Stroke|null[0]
+        constructor <init>(androidx.compose.ui.unit/Dp = ...) // com.jantursky.kapow/PulseStyle.Stroke.<init>|<init>(androidx.compose.ui.unit.Dp){}[0]
+
+        final val width // com.jantursky.kapow/PulseStyle.Stroke.width|{}width[0]
+            final fun <get-width>(): androidx.compose.ui.unit/Dp // com.jantursky.kapow/PulseStyle.Stroke.width.<get-width>|<get-width>(){}[0]
+
+        final fun component1(): androidx.compose.ui.unit/Dp // com.jantursky.kapow/PulseStyle.Stroke.component1|component1(){}[0]
+        final fun copy(androidx.compose.ui.unit/Dp = ...): com.jantursky.kapow/PulseStyle.Stroke // com.jantursky.kapow/PulseStyle.Stroke.copy|copy(androidx.compose.ui.unit.Dp){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.jantursky.kapow/PulseStyle.Stroke.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.jantursky.kapow/PulseStyle.Stroke.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.jantursky.kapow/PulseStyle.Stroke.toString|toString(){}[0]
+    }
+
+    final object Fill : com.jantursky.kapow/PulseStyle { // com.jantursky.kapow/PulseStyle.Fill|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.jantursky.kapow/PulseStyle.Fill.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.jantursky.kapow/PulseStyle.Fill.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.jantursky.kapow/PulseStyle.Fill.toString|toString(){}[0]
+    }
+}
+
+final val com.jantursky.kapow/LocalKapowFeedback // com.jantursky.kapow/LocalKapowFeedback|{}LocalKapowFeedback[0]
+    final fun <get-LocalKapowFeedback>(): androidx.compose.runtime/ProvidableCompositionLocal<com.jantursky.kapow/KapowFeedback?> // com.jantursky.kapow/LocalKapowFeedback.<get-LocalKapowFeedback>|<get-LocalKapowFeedback>(){}[0]
+final val com.jantursky.kapow/LocalKapowMotion // com.jantursky.kapow/LocalKapowMotion|{}LocalKapowMotion[0]
+    final fun <get-LocalKapowMotion>(): androidx.compose.runtime/ProvidableCompositionLocal<com.jantursky.kapow/KapowMotion> // com.jantursky.kapow/LocalKapowMotion.<get-LocalKapowMotion>|<get-LocalKapowMotion>(){}[0]
+final val com.jantursky.kapow/com_jantursky_kapow_ChangeEffect$stableprop // com.jantursky.kapow/com_jantursky_kapow_ChangeEffect$stableprop|#static{}com_jantursky_kapow_ChangeEffect$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_ConditionalEffect$stableprop // com.jantursky.kapow/com_jantursky_kapow_ConditionalEffect$stableprop|#static{}com_jantursky_kapow_ConditionalEffect$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_KapowEnter$stableprop // com.jantursky.kapow/com_jantursky_kapow_KapowEnter$stableprop|#static{}com_jantursky_kapow_KapowEnter$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_KapowExit$stableprop // com.jantursky.kapow/com_jantursky_kapow_KapowExit$stableprop|#static{}com_jantursky_kapow_KapowExit$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent$stableprop // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent$stableprop|#static{}com_jantursky_kapow_KapowFeedbackEvent$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Custom$stableprop // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Custom$stableprop|#static{}com_jantursky_kapow_KapowFeedbackEvent_Custom$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Error$stableprop // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Error$stableprop|#static{}com_jantursky_kapow_KapowFeedbackEvent_Error$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_ImpactHeavy$stableprop // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_ImpactHeavy$stableprop|#static{}com_jantursky_kapow_KapowFeedbackEvent_ImpactHeavy$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_ImpactLight$stableprop // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_ImpactLight$stableprop|#static{}com_jantursky_kapow_KapowFeedbackEvent_ImpactLight$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_ImpactMedium$stableprop // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_ImpactMedium$stableprop|#static{}com_jantursky_kapow_KapowFeedbackEvent_ImpactMedium$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Selection$stableprop // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Selection$stableprop|#static{}com_jantursky_kapow_KapowFeedbackEvent_Selection$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Success$stableprop // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Success$stableprop|#static{}com_jantursky_kapow_KapowFeedbackEvent_Success$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Warning$stableprop // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Warning$stableprop|#static{}com_jantursky_kapow_KapowFeedbackEvent_Warning$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_ParticleContent$stableprop // com.jantursky.kapow/com_jantursky_kapow_ParticleContent$stableprop|#static{}com_jantursky_kapow_ParticleContent$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_ProgressEffect$stableprop // com.jantursky.kapow/com_jantursky_kapow_ProgressEffect$stableprop|#static{}com_jantursky_kapow_ProgressEffect$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_PulseStyle$stableprop // com.jantursky.kapow/com_jantursky_kapow_PulseStyle$stableprop|#static{}com_jantursky_kapow_PulseStyle$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_PulseStyle_Fill$stableprop // com.jantursky.kapow/com_jantursky_kapow_PulseStyle_Fill$stableprop|#static{}com_jantursky_kapow_PulseStyle_Fill$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_PulseStyle_Stroke$stableprop // com.jantursky.kapow/com_jantursky_kapow_PulseStyle_Stroke$stableprop|#static{}com_jantursky_kapow_PulseStyle_Stroke$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Anvil$stableprop // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Anvil$stableprop|#static{}com_jantursky_kapow_TransitionKind_Anvil$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Blinds$stableprop // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Blinds$stableprop|#static{}com_jantursky_kapow_TransitionKind_Blinds$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Clock$stableprop // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Clock$stableprop|#static{}com_jantursky_kapow_TransitionKind_Clock$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Iris$stableprop // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Iris$stableprop|#static{}com_jantursky_kapow_TransitionKind_Iris$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_TransitionKind_None$stableprop // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_None$stableprop|#static{}com_jantursky_kapow_TransitionKind_None$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Poof$stableprop // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Poof$stableprop|#static{}com_jantursky_kapow_TransitionKind_Poof$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Pop$stableprop // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Pop$stableprop|#static{}com_jantursky_kapow_TransitionKind_Pop$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Wipe$stableprop // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Wipe$stableprop|#static{}com_jantursky_kapow_TransitionKind_Wipe$stableprop[0]
+
+final fun (androidx.compose.ui/Modifier).com.jantursky.kapow/changeEffect(kotlin/Any?, com.jantursky.kapow/ChangeEffect, kotlin/Boolean = ..., com.jantursky.kapow/KapowFeedbackEvent? = ...): androidx.compose.ui/Modifier // com.jantursky.kapow/changeEffect|changeEffect@androidx.compose.ui.Modifier(kotlin.Any?;com.jantursky.kapow.ChangeEffect;kotlin.Boolean;com.jantursky.kapow.KapowFeedbackEvent?){}[0]
+final fun (androidx.compose.ui/Modifier).com.jantursky.kapow/conditionalEffect(kotlin/Boolean, com.jantursky.kapow/ConditionalEffect): androidx.compose.ui/Modifier // com.jantursky.kapow/conditionalEffect|conditionalEffect@androidx.compose.ui.Modifier(kotlin.Boolean;com.jantursky.kapow.ConditionalEffect){}[0]
+final fun (androidx.compose.ui/Modifier).com.jantursky.kapow/kapowTransition(androidx.compose.animation/AnimatedVisibilityScope, com.jantursky.kapow/KapowEnter?, com.jantursky.kapow/KapowExit?, com.jantursky.kapow/KapowFeedbackEvent?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): androidx.compose.ui/Modifier // com.jantursky.kapow/kapowTransition|kapowTransition@androidx.compose.ui.Modifier(androidx.compose.animation.AnimatedVisibilityScope;com.jantursky.kapow.KapowEnter?;com.jantursky.kapow.KapowExit?;com.jantursky.kapow.KapowFeedbackEvent?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun (androidx.compose.ui/Modifier).com.jantursky.kapow/progressEffect(com.jantursky.kapow/ProgressEffect, kotlin/Function0<kotlin/Float>): androidx.compose.ui/Modifier // com.jantursky.kapow/progressEffect|progressEffect@androidx.compose.ui.Modifier(com.jantursky.kapow.ProgressEffect;kotlin.Function0<kotlin.Float>){}[0]
+final fun com.jantursky.kapow/KapowAnimatedVisibility(kotlin/Boolean, androidx.compose.ui/Modifier?, com.jantursky.kapow/KapowEnter?, com.jantursky.kapow/KapowExit?, androidx.compose.animation/EnterTransition?, androidx.compose.animation/ExitTransition?, com.jantursky.kapow/KapowFeedbackEvent?, kotlin/Function3<androidx.compose.animation/AnimatedVisibilityScope, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.jantursky.kapow/KapowAnimatedVisibility|KapowAnimatedVisibility(kotlin.Boolean;androidx.compose.ui.Modifier?;com.jantursky.kapow.KapowEnter?;com.jantursky.kapow.KapowExit?;androidx.compose.animation.EnterTransition?;androidx.compose.animation.ExitTransition?;com.jantursky.kapow.KapowFeedbackEvent?;kotlin.Function3<androidx.compose.animation.AnimatedVisibilityScope,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.jantursky.kapow/KapowParticleLayer(androidx.compose.ui/Modifier?, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.jantursky.kapow/KapowParticleLayer|KapowParticleLayer(androidx.compose.ui.Modifier?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_ChangeEffect$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_ChangeEffect$stableprop_getter|com_jantursky_kapow_ChangeEffect$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_ConditionalEffect$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_ConditionalEffect$stableprop_getter|com_jantursky_kapow_ConditionalEffect$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_KapowEnter$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_KapowEnter$stableprop_getter|com_jantursky_kapow_KapowEnter$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_KapowExit$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_KapowExit$stableprop_getter|com_jantursky_kapow_KapowExit$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent$stableprop_getter|com_jantursky_kapow_KapowFeedbackEvent$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Custom$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Custom$stableprop_getter|com_jantursky_kapow_KapowFeedbackEvent_Custom$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Error$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Error$stableprop_getter|com_jantursky_kapow_KapowFeedbackEvent_Error$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_ImpactHeavy$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_ImpactHeavy$stableprop_getter|com_jantursky_kapow_KapowFeedbackEvent_ImpactHeavy$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_ImpactLight$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_ImpactLight$stableprop_getter|com_jantursky_kapow_KapowFeedbackEvent_ImpactLight$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_ImpactMedium$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_ImpactMedium$stableprop_getter|com_jantursky_kapow_KapowFeedbackEvent_ImpactMedium$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Selection$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Selection$stableprop_getter|com_jantursky_kapow_KapowFeedbackEvent_Selection$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Success$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Success$stableprop_getter|com_jantursky_kapow_KapowFeedbackEvent_Success$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Warning$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Warning$stableprop_getter|com_jantursky_kapow_KapowFeedbackEvent_Warning$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_ParticleContent$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_ParticleContent$stableprop_getter|com_jantursky_kapow_ParticleContent$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_ProgressEffect$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_ProgressEffect$stableprop_getter|com_jantursky_kapow_ProgressEffect$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_PulseStyle$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_PulseStyle$stableprop_getter|com_jantursky_kapow_PulseStyle$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_PulseStyle_Fill$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_PulseStyle_Fill$stableprop_getter|com_jantursky_kapow_PulseStyle_Fill$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_PulseStyle_Stroke$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_PulseStyle_Stroke$stableprop_getter|com_jantursky_kapow_PulseStyle_Stroke$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Anvil$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Anvil$stableprop_getter|com_jantursky_kapow_TransitionKind_Anvil$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Blinds$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Blinds$stableprop_getter|com_jantursky_kapow_TransitionKind_Blinds$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Clock$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Clock$stableprop_getter|com_jantursky_kapow_TransitionKind_Clock$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Iris$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Iris$stableprop_getter|com_jantursky_kapow_TransitionKind_Iris$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_TransitionKind_None$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_None$stableprop_getter|com_jantursky_kapow_TransitionKind_None$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Poof$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Poof$stableprop_getter|com_jantursky_kapow_TransitionKind_Poof$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Pop$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Pop$stableprop_getter|com_jantursky_kapow_TransitionKind_Pop$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Wipe$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Wipe$stableprop_getter|com_jantursky_kapow_TransitionKind_Wipe$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/isReducedMotion(androidx.compose.runtime/Composer?, kotlin/Int): kotlin/Boolean // com.jantursky.kapow/isReducedMotion|isReducedMotion(androidx.compose.runtime.Composer?;kotlin.Int){}[0]

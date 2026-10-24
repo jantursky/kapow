@@ -1,0 +1,9 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <kapow:kapow-multihaptic>
+final fun com.jantursky.kapow.multihaptic/rememberMultihapticFeedback(androidx.compose.runtime/Composer?, kotlin/Int): com.jantursky.kapow/KapowFeedback // com.jantursky.kapow.multihaptic/rememberMultihapticFeedback|rememberMultihapticFeedback(androidx.compose.runtime.Composer?;kotlin.Int){}[0]

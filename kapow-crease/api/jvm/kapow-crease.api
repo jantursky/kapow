@@ -1,0 +1,4 @@
+public final class com/jantursky/kapow/crease/HingeEffectKt {
+	public static final fun hingeEffect (Landroidx/compose/ui/Modifier;Lcom/jantursky/kapow/ProgressEffect;Lkotlin/ranges/ClosedFloatingPointRange;Landroidx/compose/runtime/Composer;II)Landroidx/compose/ui/Modifier;
+}
+

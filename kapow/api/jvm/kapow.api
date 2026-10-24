@@ -1,0 +1,288 @@
+public final class com/jantursky/kapow/BlindsOrientation : java/lang/Enum {
+	public static final field Horizontal Lcom/jantursky/kapow/BlindsOrientation;
+	public static final field Vertical Lcom/jantursky/kapow/BlindsOrientation;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/jantursky/kapow/BlindsOrientation;
+	public static fun values ()[Lcom/jantursky/kapow/BlindsOrientation;
+}
+
+public abstract class com/jantursky/kapow/ChangeEffect {
+	public static final field $stable I
+	public static final field Companion Lcom/jantursky/kapow/ChangeEffect$Companion;
+	public final fun delay-LRDsOJo (J)Lcom/jantursky/kapow/ChangeEffect;
+}
+
+public final class com/jantursky/kapow/ChangeEffect$Companion {
+	public final fun glow-5DgIosw (JFLandroidx/compose/ui/graphics/Shape;)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun glow-5DgIosw$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;ILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun pulse-RPmYEkk (Landroidx/compose/ui/graphics/Shape;JLcom/jantursky/kapow/PulseStyle;I)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun pulse-RPmYEkk$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Landroidx/compose/ui/graphics/Shape;JLcom/jantursky/kapow/PulseStyle;IILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun rise (Lcom/jantursky/kapow/ParticleContent;)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun rise$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Lcom/jantursky/kapow/ParticleContent;ILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun shine-O7O2-qc (FJJ)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun shine-O7O2-qc$default (Lcom/jantursky/kapow/ChangeEffect$Companion;FJJILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun spin (Lcom/jantursky/kapow/SpinAxis;Lcom/jantursky/kapow/SpinRate;)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun spin$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Lcom/jantursky/kapow/SpinAxis;Lcom/jantursky/kapow/SpinRate;ILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun spray (Lcom/jantursky/kapow/ParticleContent;I)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun spray$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Lcom/jantursky/kapow/ParticleContent;IILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+}
+
+public abstract class com/jantursky/kapow/ConditionalEffect {
+	public static final field $stable I
+	public static final field Companion Lcom/jantursky/kapow/ConditionalEffect$Companion;
+}
+
+public final class com/jantursky/kapow/ConditionalEffect$Companion {
+	public final fun getMinRepeatInterval-UwyO8pc ()J
+	public final fun glow-5DgIosw (JFLandroidx/compose/ui/graphics/Shape;)Lcom/jantursky/kapow/ConditionalEffect;
+	public static synthetic fun glow-5DgIosw$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;ILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
+	public final fun pushDown (F)Lcom/jantursky/kapow/ConditionalEffect;
+	public static synthetic fun pushDown$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;FILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
+	public final fun repeat-HG0u8IE (Lcom/jantursky/kapow/ChangeEffect;J)Lcom/jantursky/kapow/ConditionalEffect;
+	public final fun smoke-8_81llA (J)Lcom/jantursky/kapow/ConditionalEffect;
+	public static synthetic fun smoke-8_81llA$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;JILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
+}
+
+public final class com/jantursky/kapow/EffectModifiersKt {
+	public static final fun changeEffect (Landroidx/compose/ui/Modifier;Ljava/lang/Object;Lcom/jantursky/kapow/ChangeEffect;ZLcom/jantursky/kapow/KapowFeedbackEvent;)Landroidx/compose/ui/Modifier;
+	public static synthetic fun changeEffect$default (Landroidx/compose/ui/Modifier;Ljava/lang/Object;Lcom/jantursky/kapow/ChangeEffect;ZLcom/jantursky/kapow/KapowFeedbackEvent;ILjava/lang/Object;)Landroidx/compose/ui/Modifier;
+	public static final fun conditionalEffect (Landroidx/compose/ui/Modifier;ZLcom/jantursky/kapow/ConditionalEffect;)Landroidx/compose/ui/Modifier;
+	public static final fun progressEffect (Landroidx/compose/ui/Modifier;Lcom/jantursky/kapow/ProgressEffect;Lkotlin/jvm/functions/Function0;)Landroidx/compose/ui/Modifier;
+}
+
+public final class com/jantursky/kapow/FeedbackKt {
+	public static final fun getLocalKapowFeedback ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+}
+
+public final class com/jantursky/kapow/KapowEnter {
+	public static final field $stable I
+	public static final field Companion Lcom/jantursky/kapow/KapowEnter$Companion;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/jantursky/kapow/KapowEnter$Companion {
+	public final fun anvil-LRDsOJo (J)Lcom/jantursky/kapow/KapowEnter;
+	public static synthetic fun anvil-LRDsOJo$default (Lcom/jantursky/kapow/KapowEnter$Companion;JILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
+	public final fun blinds-kNsnCk8 (FLcom/jantursky/kapow/BlindsOrientation;ZJ)Lcom/jantursky/kapow/KapowEnter;
+	public static synthetic fun blinds-kNsnCk8$default (Lcom/jantursky/kapow/KapowEnter$Companion;FLcom/jantursky/kapow/BlindsOrientation;ZJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
+	public final fun clock-otBZfKM (JJ)Lcom/jantursky/kapow/KapowEnter;
+	public static synthetic fun clock-otBZfKM$default (Lcom/jantursky/kapow/KapowEnter$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
+	public final fun getNone ()Lcom/jantursky/kapow/KapowEnter;
+	public final fun glare-ZnrAass (FJJ)Lcom/jantursky/kapow/KapowEnter;
+	public static synthetic fun glare-ZnrAass$default (Lcom/jantursky/kapow/KapowEnter$Companion;FJJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
+	public final fun iris-otBZfKM (JJ)Lcom/jantursky/kapow/KapowEnter;
+	public static synthetic fun iris-otBZfKM$default (Lcom/jantursky/kapow/KapowEnter$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
+	public final fun pop-pYXP5xo (JJ)Lcom/jantursky/kapow/KapowEnter;
+	public static synthetic fun pop-pYXP5xo$default (Lcom/jantursky/kapow/KapowEnter$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
+	public final fun wipe-HG0u8IE (FJ)Lcom/jantursky/kapow/KapowEnter;
+	public static synthetic fun wipe-HG0u8IE$default (Lcom/jantursky/kapow/KapowEnter$Companion;FJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
+}
+
+public final class com/jantursky/kapow/KapowExit {
+	public static final field $stable I
+	public static final field Companion Lcom/jantursky/kapow/KapowExit$Companion;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/jantursky/kapow/KapowExit$Companion {
+	public final fun blinds-kNsnCk8 (FLcom/jantursky/kapow/BlindsOrientation;ZJ)Lcom/jantursky/kapow/KapowExit;
+	public static synthetic fun blinds-kNsnCk8$default (Lcom/jantursky/kapow/KapowExit$Companion;FLcom/jantursky/kapow/BlindsOrientation;ZJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
+	public final fun clock-otBZfKM (JJ)Lcom/jantursky/kapow/KapowExit;
+	public static synthetic fun clock-otBZfKM$default (Lcom/jantursky/kapow/KapowExit$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
+	public final fun getNone ()Lcom/jantursky/kapow/KapowExit;
+	public final fun glare-ZnrAass (FJJ)Lcom/jantursky/kapow/KapowExit;
+	public static synthetic fun glare-ZnrAass$default (Lcom/jantursky/kapow/KapowExit$Companion;FJJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
+	public final fun iris-otBZfKM (JJ)Lcom/jantursky/kapow/KapowExit;
+	public static synthetic fun iris-otBZfKM$default (Lcom/jantursky/kapow/KapowExit$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
+	public final fun poof-pYXP5xo (JJ)Lcom/jantursky/kapow/KapowExit;
+	public static synthetic fun poof-pYXP5xo$default (Lcom/jantursky/kapow/KapowExit$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
+	public final fun wipe-HG0u8IE (FJ)Lcom/jantursky/kapow/KapowExit;
+	public static synthetic fun wipe-HG0u8IE$default (Lcom/jantursky/kapow/KapowExit$Companion;FJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
+}
+
+public abstract interface class com/jantursky/kapow/KapowFeedback {
+	public abstract fun perform (Lcom/jantursky/kapow/KapowFeedbackEvent;)V
+}
+
+public abstract class com/jantursky/kapow/KapowFeedbackEvent {
+	public static final field $stable I
+}
+
+public final class com/jantursky/kapow/KapowFeedbackEvent$Custom : com/jantursky/kapow/KapowFeedbackEvent {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lcom/jantursky/kapow/KapowFeedbackEvent$Custom;
+	public static synthetic fun copy$default (Lcom/jantursky/kapow/KapowFeedbackEvent$Custom;Ljava/lang/String;ILjava/lang/Object;)Lcom/jantursky/kapow/KapowFeedbackEvent$Custom;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/jantursky/kapow/KapowFeedbackEvent$Error : com/jantursky/kapow/KapowFeedbackEvent {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/jantursky/kapow/KapowFeedbackEvent$Error;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/jantursky/kapow/KapowFeedbackEvent$ImpactHeavy : com/jantursky/kapow/KapowFeedbackEvent {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/jantursky/kapow/KapowFeedbackEvent$ImpactHeavy;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/jantursky/kapow/KapowFeedbackEvent$ImpactLight : com/jantursky/kapow/KapowFeedbackEvent {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/jantursky/kapow/KapowFeedbackEvent$ImpactLight;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/jantursky/kapow/KapowFeedbackEvent$ImpactMedium : com/jantursky/kapow/KapowFeedbackEvent {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/jantursky/kapow/KapowFeedbackEvent$ImpactMedium;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/jantursky/kapow/KapowFeedbackEvent$Selection : com/jantursky/kapow/KapowFeedbackEvent {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/jantursky/kapow/KapowFeedbackEvent$Selection;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/jantursky/kapow/KapowFeedbackEvent$Success : com/jantursky/kapow/KapowFeedbackEvent {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/jantursky/kapow/KapowFeedbackEvent$Success;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/jantursky/kapow/KapowFeedbackEvent$Warning : com/jantursky/kapow/KapowFeedbackEvent {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/jantursky/kapow/KapowFeedbackEvent$Warning;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/jantursky/kapow/KapowMotion : java/lang/Enum {
+	public static final field Full Lcom/jantursky/kapow/KapowMotion;
+	public static final field Reduced Lcom/jantursky/kapow/KapowMotion;
+	public static final field System Lcom/jantursky/kapow/KapowMotion;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/jantursky/kapow/KapowMotion;
+	public static fun values ()[Lcom/jantursky/kapow/KapowMotion;
+}
+
+public final class com/jantursky/kapow/KapowParticleLayerKt {
+	public static final fun KapowParticleLayer (Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class com/jantursky/kapow/MotionKt {
+	public static final fun getLocalKapowMotion ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+	public static final fun isReducedMotion (Landroidx/compose/runtime/Composer;I)Z
+}
+
+public abstract class com/jantursky/kapow/ParticleContent {
+	public static final field $stable I
+	public static final field Companion Lcom/jantursky/kapow/ParticleContent$Companion;
+}
+
+public final class com/jantursky/kapow/ParticleContent$Companion {
+	public final fun getDefaultColors ()Ljava/util/List;
+	public final fun painter-V5MJSes (Landroidx/compose/ui/graphics/painter/Painter;FLandroidx/compose/ui/graphics/Color;)Lcom/jantursky/kapow/ParticleContent;
+	public static synthetic fun painter-V5MJSes$default (Lcom/jantursky/kapow/ParticleContent$Companion;Landroidx/compose/ui/graphics/painter/Painter;FLandroidx/compose/ui/graphics/Color;ILjava/lang/Object;)Lcom/jantursky/kapow/ParticleContent;
+	public final fun shape-wH6b6FI (Lcom/jantursky/kapow/ParticleShape;Ljava/util/List;F)Lcom/jantursky/kapow/ParticleContent;
+	public static synthetic fun shape-wH6b6FI$default (Lcom/jantursky/kapow/ParticleContent$Companion;Lcom/jantursky/kapow/ParticleShape;Ljava/util/List;FILjava/lang/Object;)Lcom/jantursky/kapow/ParticleContent;
+	public final fun text (Ljava/lang/String;Landroidx/compose/ui/text/TextStyle;)Lcom/jantursky/kapow/ParticleContent;
+	public static synthetic fun text$default (Lcom/jantursky/kapow/ParticleContent$Companion;Ljava/lang/String;Landroidx/compose/ui/text/TextStyle;ILjava/lang/Object;)Lcom/jantursky/kapow/ParticleContent;
+}
+
+public final class com/jantursky/kapow/ParticleShape : java/lang/Enum {
+	public static final field Circle Lcom/jantursky/kapow/ParticleShape;
+	public static final field Heart Lcom/jantursky/kapow/ParticleShape;
+	public static final field Sparkle Lcom/jantursky/kapow/ParticleShape;
+	public static final field Square Lcom/jantursky/kapow/ParticleShape;
+	public static final field Star Lcom/jantursky/kapow/ParticleShape;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/jantursky/kapow/ParticleShape;
+	public static fun values ()[Lcom/jantursky/kapow/ParticleShape;
+}
+
+public abstract class com/jantursky/kapow/ProgressEffect {
+	public static final field $stable I
+	public static final field Companion Lcom/jantursky/kapow/ProgressEffect$Companion;
+}
+
+public final class com/jantursky/kapow/ProgressEffect$Companion {
+	public final fun glow-5DgIosw (JFLandroidx/compose/ui/graphics/Shape;)Lcom/jantursky/kapow/ProgressEffect;
+	public static synthetic fun glow-5DgIosw$default (Lcom/jantursky/kapow/ProgressEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;ILjava/lang/Object;)Lcom/jantursky/kapow/ProgressEffect;
+	public final fun iris-__ExYCQ (J)Lcom/jantursky/kapow/ProgressEffect;
+	public static synthetic fun iris-__ExYCQ$default (Lcom/jantursky/kapow/ProgressEffect$Companion;JILjava/lang/Object;)Lcom/jantursky/kapow/ProgressEffect;
+	public final fun shine-4WTKRHQ (FJ)Lcom/jantursky/kapow/ProgressEffect;
+	public static synthetic fun shine-4WTKRHQ$default (Lcom/jantursky/kapow/ProgressEffect$Companion;FJILjava/lang/Object;)Lcom/jantursky/kapow/ProgressEffect;
+}
+
+public abstract class com/jantursky/kapow/PulseStyle {
+	public static final field $stable I
+}
+
+public final class com/jantursky/kapow/PulseStyle$Fill : com/jantursky/kapow/PulseStyle {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/jantursky/kapow/PulseStyle$Fill;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/jantursky/kapow/PulseStyle$Stroke : com/jantursky/kapow/PulseStyle {
+	public static final field $stable I
+	public fun <init> ()V
+	public synthetic fun <init> (FILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (FLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-D9Ej5fM ()F
+	public final fun copy-0680j_4 (F)Lcom/jantursky/kapow/PulseStyle$Stroke;
+	public static synthetic fun copy-0680j_4$default (Lcom/jantursky/kapow/PulseStyle$Stroke;FILjava/lang/Object;)Lcom/jantursky/kapow/PulseStyle$Stroke;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getWidth-D9Ej5fM ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/jantursky/kapow/SpinAxis : java/lang/Enum {
+	public static final field X Lcom/jantursky/kapow/SpinAxis;
+	public static final field Y Lcom/jantursky/kapow/SpinAxis;
+	public static final field Z Lcom/jantursky/kapow/SpinAxis;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/jantursky/kapow/SpinAxis;
+	public static fun values ()[Lcom/jantursky/kapow/SpinAxis;
+}
+
+public final class com/jantursky/kapow/SpinRate : java/lang/Enum {
+	public static final field Default Lcom/jantursky/kapow/SpinRate;
+	public static final field Fast Lcom/jantursky/kapow/SpinRate;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/jantursky/kapow/SpinRate;
+	public static fun values ()[Lcom/jantursky/kapow/SpinRate;
+}
+
+public final class com/jantursky/kapow/TransitionsKt {
+	public static final fun KapowAnimatedVisibility (ZLandroidx/compose/ui/Modifier;Lcom/jantursky/kapow/KapowEnter;Lcom/jantursky/kapow/KapowExit;Landroidx/compose/animation/EnterTransition;Landroidx/compose/animation/ExitTransition;Lcom/jantursky/kapow/KapowFeedbackEvent;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+	public static final fun kapowTransition (Landroidx/compose/ui/Modifier;Landroidx/compose/animation/AnimatedVisibilityScope;Lcom/jantursky/kapow/KapowEnter;Lcom/jantursky/kapow/KapowExit;Lcom/jantursky/kapow/KapowFeedbackEvent;Landroidx/compose/runtime/Composer;II)Landroidx/compose/ui/Modifier;
+}
+

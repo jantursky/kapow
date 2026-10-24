@@ -1,0 +1,9 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <kapow:kapow-crease>
+final fun (androidx.compose.ui/Modifier).com.jantursky.kapow.crease/hingeEffect(com.jantursky.kapow/ProgressEffect, kotlin.ranges/ClosedFloatingPointRange<kotlin/Float>?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): androidx.compose.ui/Modifier // com.jantursky.kapow.crease/hingeEffect|hingeEffect@androidx.compose.ui.Modifier(com.jantursky.kapow.ProgressEffect;kotlin.ranges.ClosedFloatingPointRange<kotlin.Float>?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]

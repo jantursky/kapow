@@ -1,0 +1,4 @@
+public final class com/jantursky/kapow/multihaptic/MultihapticFeedbackKt {
+	public static final fun rememberMultihapticFeedback (Landroidx/compose/runtime/Composer;I)Lcom/jantursky/kapow/KapowFeedback;
+}
+
