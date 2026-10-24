@@ -2,6 +2,7 @@ package com.jantursky.kapow.internal
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.GraphicsContext
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.layer.GraphicsLayer
@@ -72,6 +73,8 @@ internal abstract class EffectNode<R : EffectRunner>(
         if (emitter != null && host != null && host.add(batch, emitter)) return
         particles.add(batch, coroutineScope)
     }
+
+    override suspend fun snapshot(): ImageBitmap? = layer?.toImageBitmap()
 
     fun perform(feedback: KapowFeedbackEvent?) {
         if (feedback != null) currentValueOf(LocalKapowFeedback)?.perform(feedback)

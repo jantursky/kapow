@@ -78,6 +78,8 @@ private class KindRunner(
     private val exit: TransitionKind,
 ) : TransitionRunner() {
     private var watcher: Job? = null
+    private val enterPart = partFor(enter)
+    private val exitPart = partFor(exit)
 
     private val kind: TransitionKind get() = if (entering()) enter else exit
 
@@ -90,11 +92,14 @@ private class KindRunner(
             if (kind.isMask() && p > 0f && p < 1f) CompositingStrategy.Offscreen else CompositingStrategy.Auto
         layer.translationX = 0f
         layer.translationY = 0f
+        layer.alpha = 1f
         if (kind == TransitionKind.Anvil) {
             val shake = anvilShake(p)
             layer.translationX = shake.x.dp.toPx()
             layer.translationY = shake.y.dp.toPx() - anvilDrop(p) * max(size.height * 2f, 200.dp.toPx())
         }
+        val part = if (entering()) enterPart else exitPart
+        if (part != null && p > 0f && p < 1f) part.configureLayer(layer, p)
     }
 
     override fun ContentDrawScope.drawEffect() {
@@ -138,6 +143,10 @@ private class KindRunner(
             TransitionKind.None, TransitionKind.Anvil -> {
                 drawContent()
             }
+
+            else -> {
+                with(checkNotNull(if (entering()) enterPart else exitPart)) { draw(p) }
+            }
         }
     }
 
@@ -153,6 +162,8 @@ private class KindRunner(
     }
 
     override fun attach(context: EffectContext) {
+        enterPart?.attach(context, { entering() }, { progress() })
+        exitPart?.attach(context, { entering() }, { progress() })
         watcher?.cancel()
         if (enter !is TransitionKind.Pop && enter != TransitionKind.Anvil && exit !is TransitionKind.Poof) return
         watcher =
@@ -184,6 +195,8 @@ private class KindRunner(
 
     override fun stop() {
         watcher?.cancel()
+        enterPart?.stop()
+        exitPart?.stop()
     }
 }
 

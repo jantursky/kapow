@@ -49,5 +49,13 @@ export default defineMeta({
     'transition-poof',
     'transition-anvil',
     'transition-pop',
+    'transition-dissolve',
+    'transition-curtain',
+    'transition-shape-iris',
+    'transition-checker',
+    'transition-tear',
+    'transition-blob',
+    'transition-shatter',
+    'transition-disintegrate',
   ],
 })

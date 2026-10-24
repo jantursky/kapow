@@ -2,13 +2,17 @@ package com.jantursky.kapow
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-/** The direction of the slats in [KapowEnter.blinds] and [KapowExit.blinds]. */
+/**
+ * The direction of the slats in [KapowEnter.blinds] and [KapowExit.blinds], and of the seam in [KapowEnter.curtain]
+ * and [KapowExit.curtain].
+ */
 public enum class BlindsOrientation { Horizontal, Vertical }
 
 /**
@@ -73,6 +77,91 @@ public class KapowEnter internal constructor(
             color: Color = Color(0xFF6B62F2),
             duration: Duration = 1200.milliseconds,
         ): KapowEnter = KapowEnter(TransitionKind.Pop(color), duration.checked())
+
+        /**
+         * The content appears as a grid of small squares that turn on one by one in a random order. The order is
+         * seeded, so it is the same every time and on every target. With reduced motion it fades in instead.
+         *
+         * @param cellSize the side of one square, at least 2 dp. Large elements get bigger squares so a frame never
+         *   draws more than a few thousand.
+         * @param duration how long the transition takes, 600 ms by default.
+         */
+        public fun dissolve(
+            cellSize: Dp = 12.dp,
+            duration: Duration = 600.milliseconds,
+        ): KapowEnter = KapowEnter(TransitionKind.Dissolve(cellSize.checkedCell()), duration.checked())
+
+        /**
+         * Two halves part from the middle to reveal the content, like a stage curtain. With reduced motion it fades
+         * in instead.
+         *
+         * @param orientation the direction of the seam between the halves, as in [blinds]: with
+         *   [BlindsOrientation.Vertical] they slide apart to the left and right, with [BlindsOrientation.Horizontal]
+         *   up and down.
+         * @param duration how long the transition takes, 450 ms by default.
+         */
+        public fun curtain(
+            orientation: BlindsOrientation = BlindsOrientation.Vertical,
+            duration: Duration = DefaultMaskDuration,
+        ): KapowEnter = KapowEnter(TransitionKind.Curtain(orientation), duration.checked())
+
+        /**
+         * Like [iris], but the opening is [shape] instead of a circle: it grows from [origin] until it covers the
+         * content. Pointed shapes such as a [StarShape] grow past the content's corners, so their inner corners
+         * reach them too. With reduced motion it fades in instead.
+         *
+         * @param shape the opening, drawn in a square box that grows around [origin]. `CircleShape`,
+         *   `RoundedCornerShape` or a [StarShape] all work. The shape should hold its own center. Keep a
+         *   `GenericShape` in a `remember` or a top-level value, since a new one is a new transition.
+         * @param origin the point the shape grows from, as a fraction of the content's size.
+         * @param duration how long the transition takes, 600 ms by default.
+         */
+        public fun shapeIris(
+            shape: Shape = StarShape(),
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+        ): KapowEnter = KapowEnter(TransitionKind.ShapeIris(shape, origin), duration.checked())
+
+        /**
+         * A checkerboard of squares grows over the content in two waves: the squares of one color open from their
+         * middles, then the others. With reduced motion it fades in instead.
+         *
+         * @param cellSize the side of one square of the board, at least 2 dp. Large elements get bigger squares
+         *   so a frame never draws more than a few thousand.
+         * @param duration how long the transition takes, 600 ms by default.
+         */
+        public fun checker(
+            cellSize: Dp = 24.dp,
+            duration: Duration = 600.milliseconds,
+        ): KapowEnter = KapowEnter(TransitionKind.Checker(cellSize.checkedCell()), duration.checked())
+
+        /**
+         * A [wipe] whose leading edge is torn like paper: an irregular zigzag with a light rim along it, moving
+         * across the content in the direction of [angle]. With reduced motion it fades in instead.
+         *
+         * @param angle the direction the edge moves in, in degrees: 0 is rightward, 90 downward.
+         * @param toothSize how far the tear strays off a straight line, at least 2 dp. Its jags come at under
+         *   half of that apart. They are irregular, but the same every time.
+         * @param duration how long the transition takes, 500 ms by default.
+         */
+        public fun tear(
+            angle: Float = 0f,
+            toothSize: Dp = 12.dp,
+            duration: Duration = 500.milliseconds,
+        ): KapowEnter = KapowEnter(TransitionKind.Tear(angle, toothSize.checkedTooth()), duration.checked())
+
+        /**
+         * An organic blob grows from [origin] until it covers the content. Its outline is a smooth curve through a
+         * few points that each swell and shrink as it grows, so it wobbles like a drop of liquid. The wobble is
+         * seeded, the same every time. With reduced motion it fades in instead.
+         *
+         * @param origin the point the blob grows from, as a fraction of the content's size.
+         * @param duration how long the transition takes, 600 ms by default.
+         */
+        public fun blob(
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+        ): KapowEnter = KapowEnter(TransitionKind.Blob(origin), duration.checked())
     }
 }
 
@@ -134,6 +223,115 @@ public class KapowExit internal constructor(
             color: Color = Color(0xFFC2C2C2),
             duration: Duration = 400.milliseconds,
         ): KapowExit = KapowExit(TransitionKind.Poof(color), duration.checked())
+
+        /**
+         * The content vanishes as a grid of small squares that turn off one by one, in the reverse of
+         * [KapowEnter.dissolve]'s order. With reduced motion it fades out instead.
+         *
+         * @param cellSize the side of one square, at least 2 dp.
+         * @param duration how long the transition takes, 600 ms by default.
+         */
+        public fun dissolve(
+            cellSize: Dp = 12.dp,
+            duration: Duration = 600.milliseconds,
+        ): KapowExit = KapowExit(TransitionKind.Dissolve(cellSize.checkedCell()), duration.checked())
+
+        /**
+         * Two halves close in from the sides and meet in the middle, hiding the content. With reduced motion it fades
+         * out instead.
+         *
+         * @param orientation the direction of the seam where the halves meet, as in [KapowEnter.curtain].
+         * @param duration how long the transition takes, 450 ms by default.
+         */
+        public fun curtain(
+            orientation: BlindsOrientation = BlindsOrientation.Vertical,
+            duration: Duration = DefaultMaskDuration,
+        ): KapowExit = KapowExit(TransitionKind.Curtain(orientation), duration.checked())
+
+        /**
+         * Like [iris], but the opening is [shape]: it shrinks toward [origin] until nothing is left. With reduced
+         * motion it fades out instead.
+         *
+         * @param shape the opening, as in [KapowEnter.shapeIris].
+         * @param origin the point the shape shrinks toward, as a fraction of the content's size.
+         * @param duration how long the transition takes, 600 ms by default.
+         */
+        public fun shapeIris(
+            shape: Shape = StarShape(),
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+        ): KapowExit = KapowExit(TransitionKind.ShapeIris(shape, origin), duration.checked())
+
+        /**
+         * A checkerboard of squares shrinks away in two waves, the reverse of [KapowEnter.checker]. With reduced
+         * motion it fades out instead.
+         *
+         * @param cellSize the side of one square of the board, at least 2 dp.
+         * @param duration how long the transition takes, 600 ms by default.
+         */
+        public fun checker(
+            cellSize: Dp = 24.dp,
+            duration: Duration = 600.milliseconds,
+        ): KapowExit = KapowExit(TransitionKind.Checker(cellSize.checkedCell()), duration.checked())
+
+        /**
+         * A torn edge, like [KapowEnter.tear], that covers the content moving against [angle]. With reduced motion
+         * it fades out instead.
+         *
+         * @param angle the direction the edge moved in on enter, in degrees; the exit runs it backward.
+         * @param toothSize how far the tear strays off a straight line, at least 2 dp.
+         * @param duration how long the transition takes, 500 ms by default.
+         */
+        public fun tear(
+            angle: Float = 0f,
+            toothSize: Dp = 12.dp,
+            duration: Duration = 500.milliseconds,
+        ): KapowExit = KapowExit(TransitionKind.Tear(angle, toothSize.checkedTooth()), duration.checked())
+
+        /**
+         * A wobbling blob, like [KapowEnter.blob], that shrinks toward [origin] until nothing is left. With reduced
+         * motion it fades out instead.
+         *
+         * @param origin the point the blob shrinks toward, as a fraction of the content's size.
+         * @param duration how long the transition takes, 600 ms by default.
+         */
+        public fun blob(
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+        ): KapowExit = KapowExit(TransitionKind.Blob(origin), duration.checked())
+
+        /**
+         * The content breaks like glass: it cracks into triangular shards that part, then fall with gravity,
+         * turning and fading as they go. The shards carry the content's own pixels and may fall below its bounds.
+         * The pattern is seeded, the same every time. With reduced motion it fades out instead.
+         *
+         * @param shards about how many pieces, from 2 to 200. The content is cut into a grid of cells that fits its
+         *   shape, two triangles per cell, so the actual count can differ a little.
+         * @param duration how long the transition takes, 900 ms by default.
+         */
+        public fun shatter(
+            shards: Int = 24,
+            duration: Duration = 900.milliseconds,
+        ): KapowExit {
+            require(shards in 2..200) { "shards must be from 2 to 200" }
+            return KapowExit(TransitionKind.Shatter(shards), duration.checked())
+        }
+
+        /**
+         * The content turns to dust: a ragged band sweeps across it from left to right, grain by grain, and as it
+         * passes, small square particles drift up and away. The band crosses in the first half or so of
+         * [duration] and the dust settles in the rest, so a particle layer is not needed for it to finish. With
+         * reduced motion it fades out instead, with no particles.
+         *
+         * @param color the color of the dust. Left unspecified, the dust takes the content's own colors, read once
+         *   from a snapshot of the content as the exit starts: a few pixels per column. Where that snapshot can't
+         *   be read, or reads only transparent pixels, the dust is light gray.
+         * @param duration how long the transition takes, 1500 ms by default.
+         */
+        public fun disintegrate(
+            color: Color = Color.Unspecified,
+            duration: Duration = 1500.milliseconds,
+        ): KapowExit = KapowExit(TransitionKind.Disintegrate(color, duration.checked()), duration)
     }
 }
 
@@ -141,6 +339,16 @@ private val DefaultMaskDuration: Duration = 450.milliseconds
 
 private fun Duration.checked(): Duration {
     require(isPositive()) { "duration must be positive" }
+    return this
+}
+
+private fun Dp.checkedCell(): Dp {
+    require(this >= 2.dp) { "cellSize must be at least 2 dp" }
+    return this
+}
+
+private fun Dp.checkedTooth(): Dp {
+    require(this >= 2.dp) { "toothSize must be at least 2 dp" }
     return this
 }
 
@@ -174,5 +382,40 @@ internal sealed class TransitionKind {
 
     data class Poof(
         val color: Color,
+    ) : TransitionKind()
+
+    data class Dissolve(
+        val cellSize: Dp,
+    ) : TransitionKind()
+
+    data class Curtain(
+        val orientation: BlindsOrientation,
+    ) : TransitionKind()
+
+    data class ShapeIris(
+        val shape: Shape,
+        val origin: TransformOrigin,
+    ) : TransitionKind()
+
+    data class Checker(
+        val cellSize: Dp,
+    ) : TransitionKind()
+
+    data class Tear(
+        val angle: Float,
+        val toothSize: Dp,
+    ) : TransitionKind()
+
+    data class Blob(
+        val origin: TransformOrigin,
+    ) : TransitionKind()
+
+    data class Shatter(
+        val shards: Int,
+    ) : TransitionKind()
+
+    data class Disintegrate(
+        val color: Color,
+        val duration: Duration,
     ) : TransitionKind()
 }

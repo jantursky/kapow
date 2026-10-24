@@ -185,6 +185,14 @@ const LIVE = [
   'change-glitch',
   'progress-fill',
   'progress-trace',
+  'transition-dissolve',
+  'transition-curtain',
+  'transition-shape-iris',
+  'transition-checker',
+  'transition-tear',
+  'transition-blob',
+  'transition-shatter',
+  'transition-disintegrate',
 ]
 
 for (const id of LIVE) {

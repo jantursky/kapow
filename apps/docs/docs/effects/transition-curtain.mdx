@@ -1,0 +1,56 @@
+---
+title: "Transition: curtain"
+description: Two halves part from the middle to reveal content, and close to hide it.
+---
+
+Curtain opens content like a stage curtain: two halves slide apart from the middle, and slide back to close. Use it for a reveal, such as a prize, a result or a new feature.
+
+## Usage
+
+The sample opens a prize card left and right, and closes it the same way.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.BlindsOrientation
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+
+@Composable
+fun Prize(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        enter = KapowEnter.curtain(orientation = BlindsOrientation.Vertical),
+        exit = KapowExit.curtain(orientation = BlindsOrientation.Vertical),
+    ) {
+        Box(Modifier.size(240.dp, 160.dp).background(Color.DarkGray))
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `orientation` | `BlindsOrientation.Vertical` | The direction of the seam, as in `blinds`. `Vertical` parts the halves left and right, `Horizontal` up and down. |
+| `duration` | `450.milliseconds` | How long the transition takes. Must be positive. |
+
+## Reduced motion
+
+The transition becomes a fade over the same duration or shorter. There is no mask.
+
+## Notes
+
+- Available as `KapowEnter.curtain()` and `KapowExit.curtain()`. The exit closes the halves from the sides to the middle.
+- The halves are a mask, not drawn cloth: what shows between them is the content, and what they cover is transparent. Their edges carry soft folds a few dp deep.
+- The mask is drawn with an offscreen layer and a blend mode, so it works on all targets, including Android API 23.
+
+## Live example
+
+<include example="transition-curtain">../_snippets/live-example.mdx</include>

@@ -109,8 +109,16 @@ public final class com/jantursky/kapow/KapowEnter$Companion {
 	public static synthetic fun anvil-LRDsOJo$default (Lcom/jantursky/kapow/KapowEnter$Companion;JILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
 	public final fun blinds-kNsnCk8 (FLcom/jantursky/kapow/BlindsOrientation;ZJ)Lcom/jantursky/kapow/KapowEnter;
 	public static synthetic fun blinds-kNsnCk8$default (Lcom/jantursky/kapow/KapowEnter$Companion;FLcom/jantursky/kapow/BlindsOrientation;ZJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
+	public final fun blob-otBZfKM (JJ)Lcom/jantursky/kapow/KapowEnter;
+	public static synthetic fun blob-otBZfKM$default (Lcom/jantursky/kapow/KapowEnter$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
+	public final fun checker-M2fzYQI (FJ)Lcom/jantursky/kapow/KapowEnter;
+	public static synthetic fun checker-M2fzYQI$default (Lcom/jantursky/kapow/KapowEnter$Companion;FJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
 	public final fun clock-otBZfKM (JJ)Lcom/jantursky/kapow/KapowEnter;
 	public static synthetic fun clock-otBZfKM$default (Lcom/jantursky/kapow/KapowEnter$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
+	public final fun curtain-HG0u8IE (Lcom/jantursky/kapow/BlindsOrientation;J)Lcom/jantursky/kapow/KapowEnter;
+	public static synthetic fun curtain-HG0u8IE$default (Lcom/jantursky/kapow/KapowEnter$Companion;Lcom/jantursky/kapow/BlindsOrientation;JILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
+	public final fun dissolve-M2fzYQI (FJ)Lcom/jantursky/kapow/KapowEnter;
+	public static synthetic fun dissolve-M2fzYQI$default (Lcom/jantursky/kapow/KapowEnter$Companion;FJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
 	public final fun getNone ()Lcom/jantursky/kapow/KapowEnter;
 	public final fun glare-ZnrAass (FJJ)Lcom/jantursky/kapow/KapowEnter;
 	public static synthetic fun glare-ZnrAass$default (Lcom/jantursky/kapow/KapowEnter$Companion;FJJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
@@ -118,6 +126,10 @@ public final class com/jantursky/kapow/KapowEnter$Companion {
 	public static synthetic fun iris-otBZfKM$default (Lcom/jantursky/kapow/KapowEnter$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
 	public final fun pop-pYXP5xo (JJ)Lcom/jantursky/kapow/KapowEnter;
 	public static synthetic fun pop-pYXP5xo$default (Lcom/jantursky/kapow/KapowEnter$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
+	public final fun shapeIris-hol-kqg (Landroidx/compose/ui/graphics/Shape;JJ)Lcom/jantursky/kapow/KapowEnter;
+	public static synthetic fun shapeIris-hol-kqg$default (Lcom/jantursky/kapow/KapowEnter$Companion;Landroidx/compose/ui/graphics/Shape;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
+	public final fun tear-9qg-1WU (FFJ)Lcom/jantursky/kapow/KapowEnter;
+	public static synthetic fun tear-9qg-1WU$default (Lcom/jantursky/kapow/KapowEnter$Companion;FFJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
 	public final fun wipe-HG0u8IE (FJ)Lcom/jantursky/kapow/KapowEnter;
 	public static synthetic fun wipe-HG0u8IE$default (Lcom/jantursky/kapow/KapowEnter$Companion;FJILjava/lang/Object;)Lcom/jantursky/kapow/KapowEnter;
 }
@@ -133,8 +145,18 @@ public final class com/jantursky/kapow/KapowExit {
 public final class com/jantursky/kapow/KapowExit$Companion {
 	public final fun blinds-kNsnCk8 (FLcom/jantursky/kapow/BlindsOrientation;ZJ)Lcom/jantursky/kapow/KapowExit;
 	public static synthetic fun blinds-kNsnCk8$default (Lcom/jantursky/kapow/KapowExit$Companion;FLcom/jantursky/kapow/BlindsOrientation;ZJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
+	public final fun blob-otBZfKM (JJ)Lcom/jantursky/kapow/KapowExit;
+	public static synthetic fun blob-otBZfKM$default (Lcom/jantursky/kapow/KapowExit$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
+	public final fun checker-M2fzYQI (FJ)Lcom/jantursky/kapow/KapowExit;
+	public static synthetic fun checker-M2fzYQI$default (Lcom/jantursky/kapow/KapowExit$Companion;FJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
 	public final fun clock-otBZfKM (JJ)Lcom/jantursky/kapow/KapowExit;
 	public static synthetic fun clock-otBZfKM$default (Lcom/jantursky/kapow/KapowExit$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
+	public final fun curtain-HG0u8IE (Lcom/jantursky/kapow/BlindsOrientation;J)Lcom/jantursky/kapow/KapowExit;
+	public static synthetic fun curtain-HG0u8IE$default (Lcom/jantursky/kapow/KapowExit$Companion;Lcom/jantursky/kapow/BlindsOrientation;JILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
+	public final fun disintegrate-pYXP5xo (JJ)Lcom/jantursky/kapow/KapowExit;
+	public static synthetic fun disintegrate-pYXP5xo$default (Lcom/jantursky/kapow/KapowExit$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
+	public final fun dissolve-M2fzYQI (FJ)Lcom/jantursky/kapow/KapowExit;
+	public static synthetic fun dissolve-M2fzYQI$default (Lcom/jantursky/kapow/KapowExit$Companion;FJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
 	public final fun getNone ()Lcom/jantursky/kapow/KapowExit;
 	public final fun glare-ZnrAass (FJJ)Lcom/jantursky/kapow/KapowExit;
 	public static synthetic fun glare-ZnrAass$default (Lcom/jantursky/kapow/KapowExit$Companion;FJJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
@@ -142,6 +164,12 @@ public final class com/jantursky/kapow/KapowExit$Companion {
 	public static synthetic fun iris-otBZfKM$default (Lcom/jantursky/kapow/KapowExit$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
 	public final fun poof-pYXP5xo (JJ)Lcom/jantursky/kapow/KapowExit;
 	public static synthetic fun poof-pYXP5xo$default (Lcom/jantursky/kapow/KapowExit$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
+	public final fun shapeIris-hol-kqg (Landroidx/compose/ui/graphics/Shape;JJ)Lcom/jantursky/kapow/KapowExit;
+	public static synthetic fun shapeIris-hol-kqg$default (Lcom/jantursky/kapow/KapowExit$Companion;Landroidx/compose/ui/graphics/Shape;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
+	public final fun shatter-HG0u8IE (IJ)Lcom/jantursky/kapow/KapowExit;
+	public static synthetic fun shatter-HG0u8IE$default (Lcom/jantursky/kapow/KapowExit$Companion;IJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
+	public final fun tear-9qg-1WU (FFJ)Lcom/jantursky/kapow/KapowExit;
+	public static synthetic fun tear-9qg-1WU$default (Lcom/jantursky/kapow/KapowExit$Companion;FFJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
 	public final fun wipe-HG0u8IE (FJ)Lcom/jantursky/kapow/KapowExit;
 	public static synthetic fun wipe-HG0u8IE$default (Lcom/jantursky/kapow/KapowExit$Companion;FJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
 }
@@ -325,6 +353,19 @@ public final class com/jantursky/kapow/SpinRate : java/lang/Enum {
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/jantursky/kapow/SpinRate;
 	public static fun values ()[Lcom/jantursky/kapow/SpinRate;
+}
+
+public final class com/jantursky/kapow/StarShape : androidx/compose/ui/graphics/Shape {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun <init> (IF)V
+	public synthetic fun <init> (IFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun createOutline-Pq9zytI (JLandroidx/compose/ui/unit/LayoutDirection;Landroidx/compose/ui/unit/Density;)Landroidx/compose/ui/graphics/Outline;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getInnerRatio ()F
+	public final fun getPoints ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class com/jantursky/kapow/TransitionsKt {

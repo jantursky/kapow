@@ -1,6 +1,7 @@
 package com.jantursky.kapow.internal
 
 import androidx.compose.ui.graphics.GraphicsContext
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.layer.GraphicsLayer
@@ -52,6 +53,9 @@ internal interface EffectContext {
 
     /** Hands particles to the nearest particle layer, or draws them around the element without one. */
     fun emit(batch: ParticleBatch)
+
+    /** The element as last drawn by a runner that [EffectRunner.needsLayer], or null without a layer. */
+    suspend fun snapshot(): ImageBitmap? = null
 }
 
 /** A runner that plays once each time its effect fires. */

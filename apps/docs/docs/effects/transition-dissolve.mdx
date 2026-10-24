@@ -1,0 +1,56 @@
+---
+title: "Transition: dissolve"
+description: Content appears or vanishes as a random grid of small squares.
+---
+
+Dissolve turns content on one small square at a time, in a scattered order. Use it for a photo that loads in, or a picture that fades out in a retro, pixelated way.
+
+## Usage
+
+The sample dissolves a photo in with 8 dp squares and out the same way.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+
+@Composable
+fun Photo(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        enter = KapowEnter.dissolve(cellSize = 8.dp),
+        exit = KapowExit.dissolve(cellSize = 8.dp),
+    ) {
+        Box(Modifier.size(240.dp, 160.dp).background(Color.DarkGray))
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `cellSize` | `12.dp` | The side of one square. Must be at least 2 dp. |
+| `duration` | `600.milliseconds` | How long the transition takes. Must be positive. |
+
+## Reduced motion
+
+The transition becomes a fade over the same duration or shorter. There are no squares.
+
+## Notes
+
+- Available as `KapowEnter.dissolve()` and `KapowExit.dissolve()`. The exit turns the squares off in the reverse order.
+- The order is seeded, so it is the same on every run and on every target.
+- The squares are stretched slightly so a whole number of them fits the content. On a large element they grow, so a frame never draws more than about 4,000 of them.
+- The mask is drawn with an offscreen layer and a blend mode, so it works on all targets, including Android API 23.
+
+## Live example
+
+<include example="transition-dissolve">../_snippets/live-example.mdx</include>

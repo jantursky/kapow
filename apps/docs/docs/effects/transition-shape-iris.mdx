@@ -1,0 +1,61 @@
+---
+title: "Transition: shape iris"
+description: Any shape, such as a star, grows from a point to reveal content, and shrinks to hide it.
+---
+
+Shape iris is [iris](/effects/transition-iris) with an opening of your choice. Use a star for an achievement or a reward, a comic burst for something loud, or a rounded square to echo an app icon.
+
+## Usage
+
+The sample opens a badge through a five-pointed star and closes it the same way.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+import com.jantursky.kapow.StarShape
+
+@Composable
+fun Badge(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        enter = KapowEnter.shapeIris(shape = StarShape(points = 5)),
+        exit = KapowExit.shapeIris(shape = StarShape(points = 5)),
+    ) {
+        Box(Modifier.size(200.dp, 140.dp).background(Color.DarkGray))
+    }
+}
+```
+
+`StarShape(points, innerRatio)` is a `Shape` that ships with Kapow. `innerRatio` places the inner corners as a share of the tips' distance from the center: `0.5f` is a classic star, lower values a spikier burst. Any other `Shape` works too, for example `CircleShape` or `RoundedCornerShape(24.dp)` from Compose foundation.
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `shape` | `StarShape()` | The opening. It is drawn in a square box that grows around `origin`. |
+| `origin` | `TransformOrigin.Center` | The point the shape grows from or shrinks to, as a fraction of the content's size. |
+| `duration` | `600.milliseconds` | How long the transition takes. Must be positive. |
+
+## Reduced motion
+
+The transition becomes a fade over the same duration or shorter. There is no mask.
+
+## Notes
+
+- Available as `KapowEnter.shapeIris()` and `KapowExit.shapeIris()`. The exit runs the enter in reverse.
+- The shape grows until the largest circle it holds around its center reaches the farthest corner, so it covers the content at the end. A pointed shape grows well past the content before its inner corners get there, so most of its outline is seen in the first half.
+- The shape should hold its own center. One that doesn't, such as a ring, can leave gaps until the last frame, which always shows the whole content.
+- Pass a shape that compares equal from one composition to the next. Compose's shapes and `StarShape` do; keep a `GenericShape` in a `remember` or a top-level value.
+- The mask is drawn with an offscreen layer and a blend mode, so it works on all targets, including Android API 23.
+
+## Live example
+
+<include example="transition-shape-iris">../_snippets/live-example.mdx</include>

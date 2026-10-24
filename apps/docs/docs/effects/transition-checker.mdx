@@ -1,0 +1,56 @@
+---
+title: "Transition: checker"
+description: A checkerboard reveal where the squares of one color open first, then the others.
+---
+
+Checker opens content through a checkerboard. The squares of one color grow from their middles first, then the squares of the other color follow, so the reveal comes in two waves. Use it for tiles on a game board, a level that unlocks, or any grid-shaped content.
+
+## Usage
+
+The sample opens a level tile through 32 dp squares and closes it the same way.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+
+@Composable
+fun LevelTile(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        enter = KapowEnter.checker(cellSize = 32.dp),
+        exit = KapowExit.checker(cellSize = 32.dp),
+    ) {
+        Box(Modifier.size(160.dp).background(Color.DarkGray))
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `cellSize` | `24.dp` | The side of one square of the board. Must be at least 2 dp. |
+| `duration` | `600.milliseconds` | How long the transition takes. Must be positive. |
+
+## Reduced motion
+
+The transition becomes a fade over the same duration or shorter. There is no mask.
+
+## Notes
+
+- Available as `KapowEnter.checker()` and `KapowExit.checker()`. The exit runs the enter in reverse: the second color closes first.
+- Each wave takes 60 % of the duration, so the second starts before the first has finished.
+- The squares are stretched slightly so a whole number of them fits the content. On a large element they grow, so a frame never draws more than about 4,000 of them.
+- The mask is drawn with an offscreen layer and a blend mode, so it works on all targets, including Android API 23.
+
+## Live example
+
+<include example="transition-checker">../_snippets/live-example.mdx</include>
