@@ -20,6 +20,15 @@ internal fun GrayscaleDemo() {
     ExampleScaffold(
         autoplay = Autoplay({ if (disabled) 3.seconds else 1.5.seconds }, startsOn = true) { disabled = !disabled },
         stage = { GrayscaleExample(disabled, amount) },
+        code = {
+            conditionalEffectCode(
+                call(
+                    "ConditionalEffect.grayscale",
+                    "amount" to amount.kt(),
+                ),
+                "disabled",
+            )
+        },
         controls = {
             PrimaryPill("Toggle", onClick = { disabled = !disabled })
             LabeledSlider("Amount", "${(amount * 100).roundToInt()} %", amount, { amount = it }, 0f..1f)

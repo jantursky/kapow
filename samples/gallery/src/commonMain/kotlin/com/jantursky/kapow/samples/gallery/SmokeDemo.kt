@@ -17,6 +17,15 @@ internal fun SmokeDemo() {
     ExampleScaffold(
         autoplay = Autoplay({ if (hot) 4.seconds else 2.seconds }, startsOn = true) { hot = !hot },
         stage = { SmokeExample(hot, swatch.color) },
+        code = {
+            conditionalEffectCode(
+                call(
+                    "ConditionalEffect.smoke",
+                    "color" to swatch.color.kt(),
+                ),
+                "hot",
+            )
+        },
         controls = {
             PrimaryPill("Toggle", onClick = { hot = !hot })
             ChoiceRow(

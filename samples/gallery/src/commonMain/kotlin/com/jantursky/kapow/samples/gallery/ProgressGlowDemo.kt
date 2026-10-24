@@ -26,6 +26,16 @@ internal fun ProgressGlowDemo() {
     ExampleScaffold(
         autoplay = Autoplay(1.seconds) { sweepThereAndBack { progress = it } },
         stage = { ProgressGlowExample(progress, swatch.color, radius.dp, shape.shape) },
+        code = {
+            progressEffectCode(
+                call(
+                    "ProgressEffect.glow",
+                    "color" to swatch.color.kt(),
+                    "radius" to radius.dp.kt(),
+                    "shape" to shape.source(),
+                ),
+            )
+        },
         controls = {
             PrimaryPill("Play", onClick = { scope.launch { sweep { progress = it } } })
             LabeledSlider("Progress", "${(progress * 100).roundToInt()} %", progress, { progress = it }, 0f..1f)
@@ -35,3 +45,11 @@ internal fun ProgressGlowDemo() {
         },
     )
 }
+
+/** The shape as the code a person would write. */
+private fun ShapeChoice.source(): String =
+    when (this) {
+        ShapeChoice.Rectangle -> "RectangleShape"
+        ShapeChoice.Rounded -> "RoundedCornerShape(16.dp)"
+        ShapeChoice.Circle -> "CircleShape"
+    }

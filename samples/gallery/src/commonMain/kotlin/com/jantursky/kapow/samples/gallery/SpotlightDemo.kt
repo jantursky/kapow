@@ -22,6 +22,17 @@ internal fun SpotlightDemo() {
     ExampleScaffold(
         autoplay = Autoplay({ if (showTip) 3.5.seconds else 1.5.seconds }, startsOn = true) { showTip = !showTip },
         stage = { SpotlightExample(showTip, dim, softness.dp) },
+        code = {
+            conditionalEffectCode(
+                call(
+                    "ConditionalEffect.spotlight",
+                    "color" to "Color.Black.copy(alpha = ${dim.kt()})",
+                    "shape" to "CircleShape",
+                    "softness" to softness.dp.kt(),
+                ),
+                "showTip",
+            )
+        },
         controls = {
             PrimaryPill("Toggle", onClick = { showTip = !showTip })
             LabeledSlider("Dim", "${(dim * 100).roundToInt()} %", dim, { dim = it }, 0.2f..0.9f)

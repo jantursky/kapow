@@ -22,6 +22,17 @@ internal fun MarchingAntsDemo() {
     ExampleScaffold(
         autoplay = Autoplay({ if (selected) 4.seconds else 1.5.seconds }, startsOn = true) { selected = !selected },
         stage = { MarchingAntsExample(selected, dash.dp, speed.dp) },
+        code = {
+            conditionalEffectCode(
+                call(
+                    "ConditionalEffect.marchingAnts",
+                    "shape" to "RoundedCornerShape(12.dp)",
+                    "dash" to dash.dp.kt(),
+                    "speed" to speed.dp.kt(),
+                ),
+                "selected",
+            )
+        },
         controls = {
             PrimaryPill("Toggle", onClick = { selected = !selected })
             LabeledSlider("Dash", "${dash.roundToInt()} dp", dash, { dash = it }, 2f..16f)

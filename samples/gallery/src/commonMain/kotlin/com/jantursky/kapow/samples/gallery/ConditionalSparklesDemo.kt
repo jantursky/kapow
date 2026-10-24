@@ -22,6 +22,16 @@ internal fun ConditionalSparklesDemo() {
     ExampleScaffold(
         autoplay = Autoplay({ if (isNew) 4.seconds else 1.5.seconds }, startsOn = true) { isNew = !isNew },
         stage = { ConditionalSparklesExample(isNew, count.roundToInt(), size.dp) },
+        code = {
+            conditionalEffectCode(
+                call(
+                    "ConditionalEffect.sparkles",
+                    "size" to size.dp.kt(),
+                    "count" to count.roundToInt(),
+                ),
+                "isNew",
+            )
+        },
         controls = {
             PrimaryPill("Toggle", onClick = { isNew = !isNew })
             LabeledSlider("Count", "${count.roundToInt()}", count, { count = it }, 1f..12f)

@@ -23,6 +23,17 @@ internal fun RainbowBorderDemo() {
     ExampleScaffold(
         autoplay = Autoplay({ if (featured) 5.seconds else 1.5.seconds }, startsOn = true) { featured = !featured },
         stage = { RainbowBorderExample(featured, width.dp, (turn * 1000).roundToInt().milliseconds) },
+        code = {
+            conditionalEffectCode(
+                call(
+                    "ConditionalEffect.rainbowBorder",
+                    "width" to width.dp.kt(),
+                    "shape" to "RoundedCornerShape(20.dp)",
+                    "duration" to (turn * 1000).roundToInt().milliseconds.kt(),
+                ),
+                "featured",
+            )
+        },
         controls = {
             PrimaryPill("Toggle", onClick = { featured = !featured })
             LabeledSlider("Width", "${width.oneDecimal()} dp", width, { width = it }, 1f..8f)

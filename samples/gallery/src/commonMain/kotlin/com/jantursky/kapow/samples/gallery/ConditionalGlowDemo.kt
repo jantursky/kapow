@@ -23,6 +23,17 @@ internal fun ConditionalGlowDemo() {
     ExampleScaffold(
         autoplay = Autoplay({ if (selected) 2.5.seconds else 1.5.seconds }, startsOn = true) { selected = !selected },
         stage = { ConditionalGlowExample(selected, swatch.color, radius.dp, shape.shape) },
+        code = {
+            conditionalEffectCode(
+                call(
+                    "ConditionalEffect.glow",
+                    "color" to swatch.color.kt(),
+                    "radius" to radius.dp.kt(),
+                    "shape" to shape.source(),
+                ),
+                "selected",
+            )
+        },
         controls = {
             PrimaryPill("Toggle", onClick = { selected = !selected })
             ChoiceRow("Shape", ShapeChoice.entries, shape, { shape = it }, { it.name })
@@ -31,3 +42,11 @@ internal fun ConditionalGlowDemo() {
         },
     )
 }
+
+/** The shape as the code a person would write. */
+private fun ShapeChoice.source(): String =
+    when (this) {
+        ShapeChoice.Rectangle -> "RectangleShape"
+        ShapeChoice.Rounded -> "RoundedCornerShape(16.dp)"
+        ShapeChoice.Circle -> "CircleShape"
+    }

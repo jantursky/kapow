@@ -21,6 +21,15 @@ internal fun FlameDemo() {
     ExampleScaffold(
         autoplay = Autoplay({ if (onFire) 4.seconds else 1.5.seconds }, startsOn = true) { onFire = !onFire },
         stage = { FlameExample(onFire, if (onFire) 12 else 0, height.dp) },
+        code = {
+            conditionalEffectCode(
+                call(
+                    "ConditionalEffect.flame",
+                    "height" to height.dp.kt(),
+                ),
+                "onFire",
+            )
+        },
         controls = {
             PrimaryPill("Toggle", onClick = { onFire = !onFire })
             LabeledSlider("Height", "${height.roundToInt()} dp", height, { height = it }, 16f..80f)

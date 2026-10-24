@@ -33,6 +33,16 @@ internal fun BubblesDemo() {
     ExampleScaffold(
         autoplay = Autoplay({ if (fresh) 4.seconds else 2.seconds }, startsOn = true) { fresh = !fresh },
         stage = { BubblesExample(fresh, color.color, size.dp) },
+        code = {
+            conditionalEffectCode(
+                call(
+                    "ConditionalEffect.bubbles",
+                    "color" to color.color.kt(),
+                    "size" to size.dp.kt(),
+                ),
+                "fresh",
+            )
+        },
         controls = {
             PrimaryPill("Toggle", onClick = { fresh = !fresh })
             ChoiceRow("Color", BubbleColor.entries, color, { color = it }, { it.name })

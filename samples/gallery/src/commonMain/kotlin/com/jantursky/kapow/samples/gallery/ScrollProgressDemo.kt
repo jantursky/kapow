@@ -24,6 +24,19 @@ internal fun ScrollProgressDemo() {
     ExampleScaffold(
         autoplay = Autoplay(1.seconds, scroll),
         stage = { ScrollProgressExample(scrollState, glow) },
+        code = {
+            val effect =
+                if (glow) {
+                    call(
+                        "ProgressEffect.glow",
+                        "color" to Swatch.Violet.color.kt(),
+                        "shape" to "RoundedCornerShape(10.dp)",
+                    )
+                } else {
+                    call("ProgressEffect.shine")
+                }
+            progressEffectCode(effect, "scrollState.value.toFloat() / scrollState.maxValue.coerceAtLeast(1)")
+        },
         controls = {
             PrimaryPill("Scroll", onClick = { scope.launch { scroll() } })
             ChoiceRow("Effect", listOf(false, true), glow, { glow = it }, { if (it) "Glow" else "Shine" })

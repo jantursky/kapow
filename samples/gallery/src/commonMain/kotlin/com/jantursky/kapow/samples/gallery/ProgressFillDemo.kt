@@ -25,6 +25,15 @@ internal fun ProgressFillDemo() {
     ExampleScaffold(
         autoplay = Autoplay(1.seconds) { sweepThereAndBack { progress = it } },
         stage = { ProgressFillExample(progress, swatch.color, wave.dp) },
+        code = {
+            progressEffectCode(
+                call(
+                    "ProgressEffect.fill",
+                    "color" to "${swatch.color.kt()}.copy(alpha = 0.6f)",
+                    "wave" to wave.dp.kt(),
+                ),
+            )
+        },
         controls = {
             PrimaryPill("Play", onClick = { scope.launch { sweep { progress = it } } })
             LabeledSlider("Progress", "${(progress * 100).roundToInt()} %", progress, { progress = it }, 0f..1f)

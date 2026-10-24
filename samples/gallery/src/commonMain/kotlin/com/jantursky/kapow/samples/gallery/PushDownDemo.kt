@@ -20,6 +20,15 @@ internal fun PushDownDemo() {
     ExampleScaffold(
         autoplay = Autoplay(1.5.seconds) { pressed = !pressed },
         stage = { PushDownExample(pressed, scale) },
+        code = {
+            conditionalEffectCode(
+                call(
+                    "ConditionalEffect.pushDown",
+                    "scale" to scale.kt(),
+                ),
+                "pressed",
+            )
+        },
         controls = {
             PrimaryPill("Toggle", onClick = { pressed = !pressed })
             LabeledSlider("Scale", "${(scale * 100).roundToInt()} %", scale, { scale = it }, 0.5f..1f)
