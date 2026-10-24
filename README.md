@@ -154,7 +154,7 @@ Built with Kotlin 2.4 and Compose Multiplatform 1.12.
 
 ## Development
 
-Needs JDK 17+, the Android SDK, Xcode for the iOS simulator, and [Bun](https://bun.sh) 1.3+ with Node 22+ for the docs, the browser tests and the screenshots.
+Needs JDK 17+, the Android SDK, Xcode for the iOS simulator, and [Bun](https://bun.sh) 1.3+ with Node 22.19+ for the docs, the browser tests and the screenshots.
 
 ```sh
 ./gradlew :kapow:check :kapow:koverVerify     # tests on JVM, Android (Robolectric), iOS simulator and wasm, plus coverage
