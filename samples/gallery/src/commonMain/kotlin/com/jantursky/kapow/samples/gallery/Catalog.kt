@@ -95,6 +95,13 @@ val entries: List<Entry> =
             Example("BurstExample.kt") { BurstDemo() },
         ),
         Entry(
+            "change-speed-lines",
+            Group.Change,
+            "Speed lines",
+            "Comic action lines fly out from the element's edges.",
+            Example("SpeedLinesExample.kt") { SpeedLinesDemo() },
+        ),
+        Entry(
             "change-delay",
             Group.Change,
             "Delay",

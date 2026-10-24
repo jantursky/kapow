@@ -166,6 +166,7 @@ const LIVE = [
   'change-ripple',
   'change-flash',
   'change-burst',
+  'change-speed-lines',
 ]
 
 for (const id of LIVE) {

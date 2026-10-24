@@ -27,6 +27,8 @@ public final class com/jantursky/kapow/ChangeEffect$Companion {
 	public static synthetic fun rise$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Lcom/jantursky/kapow/ParticleContent;ILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun shine-O7O2-qc (FJJ)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun shine-O7O2-qc$default (Lcom/jantursky/kapow/ChangeEffect$Companion;FJJILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun speedLines-DxMtmZc (JI)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun speedLines-DxMtmZc$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JIILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun spin (Lcom/jantursky/kapow/SpinAxis;Lcom/jantursky/kapow/SpinRate;)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun spin$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Lcom/jantursky/kapow/SpinAxis;Lcom/jantursky/kapow/SpinRate;ILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun spray (Lcom/jantursky/kapow/ParticleContent;I)Lcom/jantursky/kapow/ChangeEffect;

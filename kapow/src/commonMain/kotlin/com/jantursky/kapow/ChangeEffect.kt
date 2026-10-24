@@ -14,6 +14,7 @@ import com.jantursky.kapow.effects.PulseRunner
 import com.jantursky.kapow.effects.RippleRunner
 import com.jantursky.kapow.effects.RiseRunner
 import com.jantursky.kapow.effects.ShineRunner
+import com.jantursky.kapow.effects.SpeedLinesRunner
 import com.jantursky.kapow.effects.SpinRunner
 import com.jantursky.kapow.effects.SprayRunner
 import com.jantursky.kapow.internal.ChangeRunner
@@ -153,6 +154,20 @@ public abstract class ChangeEffect internal constructor() {
             require(spikes >= 3) { "spikes must be at least 3" }
             return Burst(color, spikes)
         }
+
+        /**
+         * Comic action lines that fly outward from all of the element's edges and vanish, as if it had just moved
+         * or been hit. With reduced motion no lines appear and the element brightens briefly instead.
+         *
+         * @param count how many lines go around the element.
+         */
+        public fun speedLines(
+            color: Color = Color(0xFF6B62F2),
+            count: Int = 12,
+        ): ChangeEffect {
+            require(count > 0) { "count must be positive" }
+            return SpeedLines(color, count)
+        }
     }
 
     internal data class Delayed(
@@ -249,6 +264,15 @@ public abstract class ChangeEffect internal constructor() {
         override val cooldown: Duration get() = Duration.ZERO
 
         override fun createRunner(): ChangeRunner = BurstRunner(color, spikes)
+    }
+
+    internal data class SpeedLines(
+        val color: Color,
+        val count: Int,
+    ) : ChangeEffect() {
+        override val cooldown: Duration get() = Duration.ZERO
+
+        override fun createRunner(): ChangeRunner = SpeedLinesRunner(color, count)
     }
 }
 
