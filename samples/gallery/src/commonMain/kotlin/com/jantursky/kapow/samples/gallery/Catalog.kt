@@ -172,6 +172,13 @@ val entries: List<Entry> =
             Example("ProgressIrisExample.kt") { ProgressIrisDemo() },
         ),
         Entry(
+            "progress-fill",
+            Group.Progress,
+            "Fill",
+            "A liquid that rises inside the element with a progress value.",
+            Example("ProgressFillExample.kt") { ProgressFillDemo() },
+        ),
+        Entry(
             "transition-iris",
             Group.Transitions,
             "Iris",

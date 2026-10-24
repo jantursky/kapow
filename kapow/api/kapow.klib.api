@@ -102,6 +102,7 @@ abstract class com.jantursky.kapow/ConditionalEffect { // com.jantursky.kapow/Co
 
 abstract class com.jantursky.kapow/ProgressEffect { // com.jantursky.kapow/ProgressEffect|null[0]
     final object Companion { // com.jantursky.kapow/ProgressEffect.Companion|null[0]
+        final fun fill(androidx.compose.ui.graphics/Color = ..., androidx.compose.ui.unit/Dp = ...): com.jantursky.kapow/ProgressEffect // com.jantursky.kapow/ProgressEffect.Companion.fill|fill(androidx.compose.ui.graphics.Color;androidx.compose.ui.unit.Dp){}[0]
         final fun glow(androidx.compose.ui.graphics/Color = ..., androidx.compose.ui.unit/Dp = ..., androidx.compose.ui.graphics/Shape = ...): com.jantursky.kapow/ProgressEffect // com.jantursky.kapow/ProgressEffect.Companion.glow|glow(androidx.compose.ui.graphics.Color;androidx.compose.ui.unit.Dp;androidx.compose.ui.graphics.Shape){}[0]
         final fun iris(androidx.compose.ui.graphics/TransformOrigin = ...): com.jantursky.kapow/ProgressEffect // com.jantursky.kapow/ProgressEffect.Companion.iris|iris(androidx.compose.ui.graphics.TransformOrigin){}[0]
         final fun shine(kotlin/Float = ..., androidx.compose.ui.graphics/Color = ...): com.jantursky.kapow/ProgressEffect // com.jantursky.kapow/ProgressEffect.Companion.shine|shine(kotlin.Float;androidx.compose.ui.graphics.Color){}[0]

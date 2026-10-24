@@ -104,6 +104,7 @@ public abstract class ProgressEffect {
         public fun shine(angle: Float = 45f, color: Color = Color.White): ProgressEffect
         public fun glow(color: Color = Color(0xFF6B62F2), radius: Dp = 16.dp, shape: Shape = RectangleShape): ProgressEffect
         public fun iris(origin: TransformOrigin = TransformOrigin.Center): ProgressEffect
+        public fun fill(color: Color = Color(0x993D7BFF), wave: Dp = 4.dp): ProgressEffect
     }
 }
 ```
@@ -113,6 +114,7 @@ public abstract class ProgressEffect {
 | `shine(angle, color)` | A band of light whose position across the element follows the progress. |
 | `glow(color, radius, shape)` | A halo whose strength follows the progress. |
 | `iris(origin)` | A circular reveal from `origin` whose radius follows the progress. |
+| `fill(color, wave)` | A liquid in `color` that fills the element's pixels from the bottom up to the progress, with a wave `wave` high on its surface. |
 
 ## KapowEnter
 

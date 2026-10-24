@@ -168,6 +168,7 @@ const LIVE = [
   'change-strike',
   'change-stamp',
   'change-glitch',
+  'progress-fill',
 ]
 
 for (const id of LIVE) {

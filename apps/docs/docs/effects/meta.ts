@@ -24,6 +24,7 @@ export default defineMeta({
     'progress-shine',
     'progress-glow',
     'progress-iris',
+    'progress-fill',
     'transition-iris',
     'transition-clock',
     'transition-wipe',

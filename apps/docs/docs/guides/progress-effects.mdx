@@ -5,13 +5,14 @@ description: Draw an effect at a progress you control, such as a scroll position
 
 A progress effect has no clock of its own. You give it a progress from 0 to 1 and it draws that moment of the effect. `Modifier.progressEffect(effect) { progress }` takes the effect and a lambda that returns the progress. Values outside 0 to 1 are clamped.
 
-The effects are `shine`, `glow` and `iris`:
+The effects are `shine`, `glow`, `iris` and `fill`:
 
 | Effect | At 0 | At 1 |
 | --- | --- | --- |
 | `ProgressEffect.shine()` | the band is before the element | the band is past the element |
 | `ProgressEffect.glow()` | no halo | full halo |
 | `ProgressEffect.iris()` | nothing is revealed | the whole element is revealed |
+| `ProgressEffect.fill()` | no liquid | the whole element is tinted |
 
 ## Driven by scroll
 

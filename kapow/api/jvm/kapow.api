@@ -240,6 +240,8 @@ public abstract class com/jantursky/kapow/ProgressEffect {
 }
 
 public final class com/jantursky/kapow/ProgressEffect$Companion {
+	public final fun fill-l07J4OM (JF)Lcom/jantursky/kapow/ProgressEffect;
+	public static synthetic fun fill-l07J4OM$default (Lcom/jantursky/kapow/ProgressEffect$Companion;JFILjava/lang/Object;)Lcom/jantursky/kapow/ProgressEffect;
 	public final fun glow-5DgIosw (JFLandroidx/compose/ui/graphics/Shape;)Lcom/jantursky/kapow/ProgressEffect;
 	public static synthetic fun glow-5DgIosw$default (Lcom/jantursky/kapow/ProgressEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;ILjava/lang/Object;)Lcom/jantursky/kapow/ProgressEffect;
 	public final fun iris-__ExYCQ (J)Lcom/jantursky/kapow/ProgressEffect;
