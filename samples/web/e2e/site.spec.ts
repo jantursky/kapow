@@ -166,6 +166,7 @@ const LIVE = [
   'change-confetti-pop',
   'change-trace',
   'change-strike',
+  'change-stamp',
 ]
 
 for (const id of LIVE) {

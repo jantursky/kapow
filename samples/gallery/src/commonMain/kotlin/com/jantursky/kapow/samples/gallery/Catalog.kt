@@ -102,6 +102,13 @@ val entries: List<Entry> =
             Example("StrikeExample.kt") { StrikeDemo() },
         ),
         Entry(
+            "change-stamp",
+            Group.Change,
+            "Stamp",
+            "The element lands like a rubber stamp, with dust.",
+            Example("StampExample.kt") { StampDemo() },
+        ),
+        Entry(
             "conditional-repeat",
             Group.Conditional,
             "Repeat",

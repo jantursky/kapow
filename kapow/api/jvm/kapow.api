@@ -27,6 +27,8 @@ public final class com/jantursky/kapow/ChangeEffect$Companion {
 	public static synthetic fun spin$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Lcom/jantursky/kapow/SpinAxis;Lcom/jantursky/kapow/SpinRate;ILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun spray (Lcom/jantursky/kapow/ParticleContent;I)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun spray$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Lcom/jantursky/kapow/ParticleContent;IILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun stamp-4WTKRHQ (FJ)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun stamp-4WTKRHQ$default (Lcom/jantursky/kapow/ChangeEffect$Companion;FJILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun strike-MiwwBNA (JFJ)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun strike-MiwwBNA$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JFJILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun trace-m-5BtWQ (Landroidx/compose/ui/graphics/Shape;JFJ)Lcom/jantursky/kapow/ChangeEffect;

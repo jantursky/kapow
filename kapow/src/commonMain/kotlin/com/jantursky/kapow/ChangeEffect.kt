@@ -13,6 +13,7 @@ import com.jantursky.kapow.effects.RiseRunner
 import com.jantursky.kapow.effects.ShineRunner
 import com.jantursky.kapow.effects.SpinRunner
 import com.jantursky.kapow.effects.SprayRunner
+import com.jantursky.kapow.effects.StampRunner
 import com.jantursky.kapow.effects.StrikeRunner
 import com.jantursky.kapow.effects.TraceRunner
 import com.jantursky.kapow.internal.ChangeRunner
@@ -158,6 +159,22 @@ public abstract class ChangeEffect internal constructor() {
             require(!hold.isNegative()) { "hold must not be negative" }
             return Strike(color, width, hold)
         }
+
+        /**
+         * Brings the element down like a rubber stamp: it drops from [scale] times its size, lands with a squash
+         * and a small rebound, and puffs dust at its base. With reduced motion it neither moves nor puffs; it
+         * briefly brightens instead.
+         *
+         * @param scale how much larger the element starts, 1 or more.
+         * @param dustColor the color of the dust puffs.
+         */
+        public fun stamp(
+            scale: Float = 1.3f,
+            dustColor: Color = Color(0xFFB0B0B0),
+        ): ChangeEffect {
+            require(scale >= 1f) { "scale must be at least 1" }
+            return Stamp(scale, dustColor)
+        }
     }
 
     internal data class Delayed(
@@ -255,6 +272,15 @@ public abstract class ChangeEffect internal constructor() {
         override val cooldown: Duration get() = Duration.ZERO
 
         override fun createRunner(): ChangeRunner = StrikeRunner(color, width, hold)
+    }
+
+    internal data class Stamp(
+        val scale: Float,
+        val dustColor: Color,
+    ) : ChangeEffect() {
+        override val cooldown: Duration get() = Duration.ZERO
+
+        override fun createRunner(): ChangeRunner = StampRunner(scale, dustColor)
     }
 }
 

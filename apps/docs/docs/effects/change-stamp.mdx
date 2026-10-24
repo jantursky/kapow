@@ -1,0 +1,62 @@
+---
+title: "Change: stamp"
+description: An element comes down like a rubber stamp, squashes on impact and puffs dust when a value changes.
+---
+
+Stamp brings the element down from slightly larger than its size, as if it were pressed onto the page. It lands with a squash, settles with one small rebound and puffs dust out at its base. Use it for a verdict: approved, rejected, verified, sold.
+
+## Usage
+
+The sample stamps an "Approved" label when a report's status changes.
+
+```kotlin
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun StatusStamp(status: String) {
+    val coral = Color(0xFFFF6B5A)
+    BasicText(
+        text = status.uppercase(),
+        style = TextStyle(color = coral),
+        modifier = Modifier
+            .changeEffect(status, ChangeEffect.stamp(scale = 1.4f))
+            .rotate(-8f)
+            .border(2.dp, coral, RoundedCornerShape(6.dp))
+            .padding(horizontal = 10.dp, vertical = 4.dp),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `scale` | `1.3f` | How much larger the element starts. Must be at least 1. |
+| `dustColor` | `Color(0xFFB0B0B0)` | Color of the dust puffs at the base. |
+
+## Reduced motion
+
+The element does not move or scale and no dust is puffed. It brightens briefly.
+
+## Notes
+
+- The drop takes 0.14 s and speeds up as it comes down, starting faint and turning fully opaque as it lands. The squash and the settle take another 0.42 s.
+- The squash flattens the element by up to 10 % and widens it by 7 %, with its base kept on the ground. There is one small rebound and no shake.
+- The dust runs out sideways from both bottom corners. It draws through a [particle layer](/guides/particle-layer) when there is one above the element.
+- Scaling happens in the element's own graphics layer, so the layout around it does not move.
+- There is no cooldown. A change during a stamp starts it again from the top.
+
+## Live example
+
+<include example="change-stamp">../_snippets/live-example.mdx</include>

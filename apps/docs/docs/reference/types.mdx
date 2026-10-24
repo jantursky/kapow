@@ -33,6 +33,7 @@ public abstract class ChangeEffect {
             duration: Duration = 1.seconds,
         ): ChangeEffect
         public fun strike(color: Color = Color(0xFF6B62F2), width: Dp = 2.dp, hold: Duration = 600.milliseconds): ChangeEffect
+        public fun stamp(scale: Float = 1.3f, dustColor: Color = Color(0xFFB0B0B0)): ChangeEffect
     }
 }
 ```
@@ -49,6 +50,7 @@ public abstract class ChangeEffect {
 | `confettiPop(colors, count)` | A short pop of `count` confetti pieces in `colors` that burst from the element, tumble and fall away. |
 | `trace(shape, color, width, duration)` | A comet-like stroke that runs once around the outline of `shape`, clockwise from the top, then disappears. |
 | `strike(color, width, hold)` | A line that draws across the middle of the element, stays for `hold`, then fades out. |
+| `stamp(scale, dustColor)` | Drops the element from `scale` times its size like a rubber stamp, with a squash on impact and dust at its base. `scale` must be at least 1. |
 
 ### PulseStyle, SpinAxis, SpinRate
 
