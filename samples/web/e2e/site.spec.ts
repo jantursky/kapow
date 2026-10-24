@@ -75,6 +75,11 @@ test('the stage has a size when a page opens from the overview', async ({ page }
   await expect
     .poll(async () => (await page.locator('#stage canvas').evaluate((c: HTMLCanvasElement) => c.width)) > 0)
     .toBe(true)
+  await page.getByRole('link', { name: 'Kapow overview' }).click()
+  await expect(page.locator('#overview')).toBeVisible()
+  await expect
+    .poll(async () => (await page.locator('#grid-canvas canvas').evaluate((c: HTMLCanvasElement) => c.width)) > 0)
+    .toBe(true)
 })
 
 test('a deep link opens its page directly', async ({ page }) => {

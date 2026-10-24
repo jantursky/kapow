@@ -111,14 +111,14 @@ internal fun showPage(entry: Entry?) {
             it.removeAttribute("aria-current")
         }
     }
-    if (entry != null) remeasureStage()
+    remeasureCanvases()
 }
 
 /**
- * The stage is mounted while the overview is showing and its page is hidden, so the canvas was measured at zero size.
- * Compose resizes on a window resize, so one after the page is visible makes it fit.
+ * The stage and the overview grid each sit in a page that is hidden while the other shows, so their canvases are
+ * measured at zero size. Compose resizes on a window resize, so one after the page is visible makes them fit.
  */
-private fun remeasureStage(): Unit =
+private fun remeasureCanvases(): Unit =
     js("requestAnimationFrame(function () { window.dispatchEvent(new Event('resize')) })")
 
 /** site.js renders the generated source of an example file; an empty name leaves only the usage tab. */
