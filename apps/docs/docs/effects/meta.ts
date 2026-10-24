@@ -30,5 +30,6 @@ export default defineMeta({
     'transition-dissolve',
     'transition-curtain',
     'transition-shape-iris',
+    'transition-checker',
   ],
 })

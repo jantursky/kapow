@@ -121,6 +121,19 @@ public class KapowEnter internal constructor(
             origin: TransformOrigin = TransformOrigin.Center,
             duration: Duration = 600.milliseconds,
         ): KapowEnter = KapowEnter(TransitionKind.ShapeIris(shape, origin), duration.checked())
+
+        /**
+         * A checkerboard of squares grows over the content in two waves: the squares of one color open from their
+         * middles, then the others. With reduced motion it fades in instead.
+         *
+         * @param cellSize the side of one square of the board, at least 2 dp. Large elements get bigger squares
+         *   so a frame never draws more than a few thousand.
+         * @param duration how long the transition takes, 600 ms by default.
+         */
+        public fun checker(
+            cellSize: Dp = 24.dp,
+            duration: Duration = 600.milliseconds,
+        ): KapowEnter = KapowEnter(TransitionKind.Checker(cellSize.checkedCell()), duration.checked())
     }
 }
 
@@ -220,6 +233,18 @@ public class KapowExit internal constructor(
             origin: TransformOrigin = TransformOrigin.Center,
             duration: Duration = 600.milliseconds,
         ): KapowExit = KapowExit(TransitionKind.ShapeIris(shape, origin), duration.checked())
+
+        /**
+         * A checkerboard of squares shrinks away in two waves, the reverse of [KapowEnter.checker]. With reduced
+         * motion it fades out instead.
+         *
+         * @param cellSize the side of one square of the board, at least 2 dp.
+         * @param duration how long the transition takes, 600 ms by default.
+         */
+        public fun checker(
+            cellSize: Dp = 24.dp,
+            duration: Duration = 600.milliseconds,
+        ): KapowExit = KapowExit(TransitionKind.Checker(cellSize.checkedCell()), duration.checked())
     }
 }
 
@@ -278,5 +303,9 @@ internal sealed class TransitionKind {
     data class ShapeIris(
         val shape: Shape,
         val origin: TransformOrigin,
+    ) : TransitionKind()
+
+    data class Checker(
+        val cellSize: Dp,
     ) : TransitionKind()
 }

@@ -39,5 +39,6 @@ internal fun partFor(kind: TransitionKind): TransitionPart? =
         is TransitionKind.Dissolve -> DissolveMask(kind)
         is TransitionKind.Curtain -> CurtainMask(kind)
         is TransitionKind.ShapeIris -> ShapeIrisMask(kind)
+        is TransitionKind.Checker -> CheckerMask(kind)
         else -> null
     }

@@ -214,6 +214,13 @@ val entries: List<Entry> =
             Example("ShapeIrisExample.kt") { ShapeIrisDemo() },
         ),
         Entry(
+            "transition-checker",
+            Group.Transitions,
+            "Checker",
+            "A checkerboard opens over the content in two waves.",
+            Example("CheckerExample.kt") { CheckerDemo() },
+        ),
+        Entry(
             "more-particle-layer",
             Group.More,
             "Particle layer",
