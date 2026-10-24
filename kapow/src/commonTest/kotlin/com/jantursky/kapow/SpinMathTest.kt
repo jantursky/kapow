@@ -1,6 +1,7 @@
 package com.jantursky.kapow
 
 import com.jantursky.kapow.effects.spinImpulse
+import com.jantursky.kapow.effects.spinShade
 import com.jantursky.kapow.effects.spinTarget
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -27,5 +28,13 @@ class SpinMathTest {
     @Test
     fun fastSpinsKickHarder() {
         assertTrue(spinImpulse(SpinRate.Fast) > spinImpulse(SpinRate.Default))
+    }
+
+    @Test
+    fun theElementDarkensAsItTurnsEdgeOn() {
+        assertEquals(0f, spinShade(0f))
+        assertEquals(0f, spinShade(360f), 1e-5f)
+        assertEquals(0.35f, spinShade(90f), 1e-5f)
+        assertTrue(spinShade(45f) in 0.05f..0.2f)
     }
 }
