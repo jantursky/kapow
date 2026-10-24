@@ -22,7 +22,7 @@ import androidx.compose.ui.platform.InspectorInfo
 import com.jantursky.kapow.internal.EffectNode
 import com.jantursky.kapow.internal.TransitionRunner
 import com.jantursky.kapow.transitions.createRunner
-import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
 import kotlin.time.Duration
 
 /**
@@ -68,7 +68,10 @@ public fun Modifier.kapowTransition(
     val handler = LocalKapowFeedback.current
     val event = rememberUpdatedState(feedback)
     LaunchedEffect(transition) {
-        snapshotFlow { transition.targetState }.drop(1).collect { event.value?.let { handler?.perform(it) } }
+        // Content that starts out visible has nothing to announce; after that, each new target is an enter or exit.
+        snapshotFlow { transition.targetState }
+            .filter { it != transition.currentState }
+            .collect { event.value?.let { handler?.perform(it) } }
     }
     return this then
         TransitionElement(
