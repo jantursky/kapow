@@ -23,6 +23,10 @@ internal fun IrisDemo() {
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
         stage = { IrisExample(visible, origin.origin, duration) },
+        code = {
+            val args = arrayOf("origin" to origin.kt(), "duration" to duration.kt())
+            transitionCode(call("KapowEnter.iris", *args), call("KapowExit.iris", *args))
+        },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             ChoiceRow("Origin", Origin.entries, origin, { origin = it }, { it.name })

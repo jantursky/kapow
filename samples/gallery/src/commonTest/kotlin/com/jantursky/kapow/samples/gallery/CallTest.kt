@@ -2,6 +2,7 @@ package com.jantursky.kapow.samples.gallery
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.BlindsOrientation
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.milliseconds
@@ -105,5 +106,13 @@ class CallTest {
             "KapowAnimatedVisibility(visible, enter = KapowEnter.pop()) {\n    // your content\n}",
             transitionCode(enter = call("KapowEnter.pop")),
         )
+    }
+
+    @Test
+    fun originAndOrientationPrintAsSource() {
+        assertEquals("TransformOrigin.Center", Origin.Center.kt())
+        assertEquals("TransformOrigin(0f, 0f)", Origin.TopStart.kt())
+        assertEquals("TransformOrigin(1f, 1f)", Origin.BottomEnd.kt())
+        assertEquals("BlindsOrientation.Vertical", BlindsOrientation.Vertical.kt())
     }
 }

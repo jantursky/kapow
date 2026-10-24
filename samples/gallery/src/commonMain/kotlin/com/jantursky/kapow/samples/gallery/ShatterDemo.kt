@@ -23,6 +23,10 @@ internal fun ShatterDemo() {
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
         stage = { ShatterExample(visible, shards.roundToInt(), duration) },
+        code = {
+            val exit = call("KapowExit.shatter", "shards" to shards.roundToInt(), "duration" to duration.kt())
+            transitionCode(exit = exit)
+        },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             LabeledSlider("Shards", "${shards.roundToInt()}", shards, { shards = it }, 6f..80f)

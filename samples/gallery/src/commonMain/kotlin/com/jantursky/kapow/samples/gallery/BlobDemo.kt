@@ -23,6 +23,10 @@ internal fun BlobDemo() {
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
         stage = { BlobExample(visible, origin.origin, duration) },
+        code = {
+            val args = arrayOf("origin" to origin.kt(), "duration" to duration.kt())
+            transitionCode(call("KapowEnter.blob", *args), call("KapowExit.blob", *args))
+        },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             ChoiceRow("Origin", Origin.entries, origin, { origin = it }, { it.name })

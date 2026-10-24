@@ -23,6 +23,9 @@ internal fun PoofDemo() {
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
         stage = { PoofExample(visible, swatch.color, duration) },
+        code = {
+            transitionCode(exit = call("KapowExit.poof", "color" to swatch.color.kt(), "duration" to duration.kt()))
+        },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             ChoiceRow("Color", Swatch.Palette, swatch, { swatch = it }, { it.name })

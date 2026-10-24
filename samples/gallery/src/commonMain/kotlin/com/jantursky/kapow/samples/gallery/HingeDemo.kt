@@ -21,6 +21,13 @@ internal fun HingeDemo() {
     ExampleScaffold(
         autoplay = Autoplay(1.seconds) { sweepThereAndBack { angle = it * 180f } },
         stage = { HingeExample(angle) },
+        code = {
+            call(
+                "Modifier.hingeEffect",
+                "" to "ProgressEffect.shine()",
+                "angleRange" to "0f..180f",
+            ).render()
+        },
         controls = {
             PrimaryPill("Unfold", onClick = { scope.launch { sweep { angle = it * 180f } } })
             LabeledSlider("Hinge angle", "${angle.roundToInt()}°", angle, { angle = it }, 0f..180f)

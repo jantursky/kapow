@@ -24,6 +24,10 @@ internal fun GlareDemo() {
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
         stage = { GlareExample(visible, angle, swatch.color, duration) },
+        code = {
+            val args = arrayOf("angle" to angle.kt(), "color" to swatch.color.kt(), "duration" to duration.kt())
+            transitionCode(call("KapowEnter.glare", *args), call("KapowExit.glare", *args))
+        },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             LabeledSlider("Angle", "${angle.roundToInt()}°", angle, { angle = it }, 0f..360f)

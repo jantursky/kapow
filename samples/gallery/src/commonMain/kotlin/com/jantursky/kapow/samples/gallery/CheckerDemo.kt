@@ -24,6 +24,10 @@ internal fun CheckerDemo() {
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
         stage = { CheckerExample(visible, cell.roundToInt().dp, duration) },
+        code = {
+            val args = arrayOf("cellSize" to cell.roundToInt().dp.kt(), "duration" to duration.kt())
+            transitionCode(call("KapowEnter.checker", *args), call("KapowExit.checker", *args))
+        },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             LabeledSlider("Cell size", "${cell.roundToInt()} dp", cell, { cell = it }, 8f..80f)

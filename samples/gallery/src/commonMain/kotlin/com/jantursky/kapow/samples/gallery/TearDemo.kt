@@ -25,6 +25,11 @@ internal fun TearDemo() {
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
         stage = { TearExample(visible, angle, tooth.roundToInt().dp, duration) },
+        code = {
+            val args =
+                arrayOf("angle" to angle.kt(), "toothSize" to tooth.roundToInt().dp.kt(), "duration" to duration.kt())
+            transitionCode(call("KapowEnter.tear", *args), call("KapowExit.tear", *args))
+        },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             LabeledSlider("Angle", "${angle.roundToInt()}°", angle, { angle = it }, 0f..360f)

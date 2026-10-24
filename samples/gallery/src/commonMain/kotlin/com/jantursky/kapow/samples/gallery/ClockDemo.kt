@@ -23,6 +23,10 @@ internal fun ClockDemo() {
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
         stage = { ClockExample(visible, origin.origin, duration) },
+        code = {
+            val args = arrayOf("origin" to origin.kt(), "duration" to duration.kt())
+            transitionCode(call("KapowEnter.clock", *args), call("KapowExit.clock", *args))
+        },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             ChoiceRow("Origin", Origin.entries, origin, { origin = it }, { it.name })

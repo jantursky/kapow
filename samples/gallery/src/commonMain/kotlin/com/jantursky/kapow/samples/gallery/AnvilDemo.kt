@@ -22,6 +22,7 @@ internal fun AnvilDemo() {
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
         stage = { AnvilExample(visible, duration) },
+        code = { transitionCode(enter = call("KapowEnter.anvil", "duration" to duration.kt())) },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             LabeledSlider("Duration", "${seconds.oneDecimal()} s", seconds, { seconds = it }, 0.2f..3f)

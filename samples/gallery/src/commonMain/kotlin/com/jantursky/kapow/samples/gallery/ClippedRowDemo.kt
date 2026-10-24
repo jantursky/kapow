@@ -20,6 +20,16 @@ internal fun ClippedRowDemo() {
     ExampleScaffold(
         autoplay = Autoplay(2.seconds) { likes++ },
         stage = { ClippedRowExample(likes, particles.roundToInt()) },
+        code = {
+            val spray =
+                call(
+                    "ChangeEffect.spray",
+                    "particles" to "ParticleContent.shape(ParticleShape.Heart)",
+                    "count" to particles.roundToInt(),
+                )
+            "val spray = $spray\n\nKapowParticleLayer {\n    Box(Modifier.changeEffect(likes, spray)) {\n" +
+                "        // your content\n    }\n}"
+        },
         controls = {
             PrimaryPill("Like", onClick = { likes++ })
             LabeledSlider("Count", particles.roundToInt().toString(), particles, { particles = it }, 1f..40f)
