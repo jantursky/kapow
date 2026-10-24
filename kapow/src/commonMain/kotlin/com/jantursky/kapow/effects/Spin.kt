@@ -94,7 +94,7 @@ internal class SpinRunner(
         job?.cancel()
         job =
             context.scope.launch {
-                angle.animateTo(goal, spring(dampingRatio = 0.7f, stiffness = 40f), initialVelocity = velocity)
+                angle.animateTo(goal, spring(dampingRatio = 0.65f, stiffness = 10f), initialVelocity = velocity)
                 // Whole turns look the same as none; starting from 0 keeps the numbers small.
                 angle.snapTo(0f)
                 target = null
