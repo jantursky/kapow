@@ -1,0 +1,53 @@
+---
+title: Particle layer
+description: Draw particles above parents that clip their children, and what the layer does when no layer is present.
+---
+
+Particle effects (`spray`, `rise`, `smoke`, and the `poof`, `anvil` and `pop` transitions) draw particles that fly outside the element that started them. Many parents clip their children: a `LazyColumn` row, a card with rounded corners, a scrolling container. Without help, those parents cut the particles off at their edge.
+
+`KapowParticleLayer` fixes that. It is a host you place high in the tree. Any Kapow effect inside it hands its particles to the layer, and the layer draws them on top of its whole content.
+
+```kotlin
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.KapowParticleLayer
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun Inbox(unread: List<Int>) {
+    KapowParticleLayer(Modifier.fillMaxSize()) {
+        LazyColumn {
+            items(unread) { count ->
+                BasicText(
+                    text = "Unread: $count",
+                    modifier = Modifier.clipToBounds().changeEffect(count, ChangeEffect.rise()),
+                )
+            }
+        }
+    }
+}
+```
+
+Put one layer around a screen or the whole app. You do not need one per effect. Nested layers work, and an effect uses the nearest one above it.
+
+## Without a layer
+
+If there is no `KapowParticleLayer` above an element, it draws its own particles around itself. Nothing breaks, but any ancestor that clips will clip the particles too. For effects on elements that sit in the open, such as a button in the middle of a screen, you can skip the layer.
+
+## Particles do not follow
+
+Particles start where the element was when the effect fired. If the element moves or scrolls afterwards, particles already in flight stay on their path. This is on purpose: it is what you see when a burst leaves a list row that scrolls away, and it avoids tracking positions every frame.
+
+## Idle cost
+
+When the last particle has expired the layer stops asking for animation frames. It starts again with the next emission. A screen with a layer and no active effects costs nothing per frame.
+
+## Reduced motion
+
+With reduced motion, effects do not emit particles at all. See [Reduced motion](/guides/reduced-motion).

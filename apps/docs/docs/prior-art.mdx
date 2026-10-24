@@ -1,0 +1,44 @@
+---
+title: Prior art
+description: The libraries Kapow was compared with, what they do, and where Kapow overlaps with them or leaves them alone.
+sidebar:
+  order: 6
+---
+
+Compose Multiplatform has good libraries for animation, particles and shaders. None of them fires a one-shot effect when a value changes, keeps an effect on while a condition holds, or adds masked and particle transitions to `AnimatedVisibility`. This page lists what exists so you can pick the right tool. The facts are from the repositories as of October 2026.
+
+## Pow
+
+[Pow](https://github.com/EmergeTools/Pow) by Emerge Tools is a SwiftUI library (MIT, copyright 2023 Emerge Tools, Inc.) with change effects, conditional effects and transitions. It is the inspiration for Kapow's three groups of effects.
+
+Kapow is an independent project. It is not affiliated with Emerge Tools and does not claim to look the same as Pow. Some timings, spring settings and geometry are derived from Pow, which the repository's `NOTICE` file credits, together with Pow's license text. A search of the web and GitHub in October 2026 found no port of Pow to Compose.
+
+## Transform and animation presets
+
+- [nomanr/animate-compose](https://github.com/nomanr/animate-compose) is a Kotlin Multiplatform library for Android, iOS, JVM and wasm (Apache-2.0). It has more than 90 animate.css-style presets: attention seekers such as Bounce, Flash, HeadShake, Jello, Pulse, RubberBand, Shake, Swing, Tada and Wobble, entrances and exits such as Back, Bounce, Fade, Flip, LightSpeed, Rotate, Slide and Zoom, and Hinge, JackInTheBox and Roll. They change transforms and alpha, and you start them by calling `animate()`. The latest release is 0.0.1 from June 2025, with no activity since. Kapow deliberately does not repeat these.
+- [w2sv/Composed](https://github.com/w2sv/Composed) is a Compose Multiplatform utility kit (Apache-2.0, 0.7.0 in October 2026). Its `composed-animation` module has a shake controller (`Modifier.shakenBy`) and a staggered grid entrance.
+- [taewooyo/shaker](https://github.com/taewooyo/shaker) is an Android-only spring shake. Its release 1.0.0 is from 2023.
+
+## Particles and confetti
+
+- [DanielMartinus/Konfetti](https://github.com/DanielMartinus/Konfetti) is a confetti particle system. Its `konfetti-compose` module is Android-only.
+- [vinceglb/ConfettiKit](https://github.com/vinceglb/ConfettiKit) is a Kotlin Multiplatform port of Konfetti (MIT, all targets including wasm). If you want confetti, use it. Kapow has no confetti.
+- [PiotrPrus/ParticleEmitter](https://github.com/PiotrPrus/ParticleEmitter) is a general particle engine for Compose Multiplatform on Android, iOS, desktop and web. Kapow's particles are a few presets tied to an element and a trigger. It is not an engine.
+- [omkar-tenkale/ExplodingComposable](https://github.com/omkar-tenkale/ExplodingComposable) turns a composable into a dust explosion on Android only. Its release 1.0.1 is from 2023.
+
+## Shimmer and reveals
+
+- [valentinilk/compose-shimmer](https://github.com/valentinilk/compose-shimmer) is a Compose Multiplatform shimmer that loops, meant for placeholders (`Modifier.shimmer`). Kapow's `shine` is a one-shot sweep played on a change.
+- [mofeejegi/compose-theme-reveal](https://github.com/mofeejegi/compose-theme-reveal) reveals a new theme with an iris, curtain, shutters, slash and similar shapes. It is for theme switches, not for arbitrary content. Kapow's iris, clock, wipe, glare and blinds run on any content you show or hide.
+
+## Shaders
+
+Kapow v1 uses no shaders, because Compose Multiplatform has no common shader API. For effects that need them, these libraries show what is possible on Compose Multiplatform:
+
+- [chrisbanes/haze](https://github.com/chrisbanes/haze) for blur.
+- [FletchMcKee/liquid](https://github.com/FletchMcKee/liquid) for glass effects with `RuntimeShader` and `RuntimeEffect`.
+- [Debanshu777/ShaderX](https://github.com/Debanshu777/ShaderX) for shader modifiers.
+
+## Where Kapow sits
+
+Kapow is small on purpose. It adds effects that react to state (a changed value, a true condition, a visibility change) and run on all four Compose Multiplatform targets. If you need something from the lists above, such as confetti or a looping shimmer, use that library next to Kapow.

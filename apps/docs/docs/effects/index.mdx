@@ -1,0 +1,61 @@
+---
+title: Effects
+description: Every Kapow effect in one table, with a one-line description of each.
+---
+
+Every effect is a factory on one class. Change effects are `ChangeEffect.<name>()`, conditional effects `ConditionalEffect.<name>()`, progress effects `ProgressEffect.<name>()`, and transitions `KapowEnter.<name>()` or `KapowExit.<name>()`. The [guides](/guides/change-effects) explain how each kind is attached. The [live demo]({{demo}}) shows all of them running.
+
+Particle and movement effects fall back to a short fade with [reduced motion](/guides/reduced-motion).
+
+## Change effects
+
+Attach with `Modifier.changeEffect(value, effect)`. They play once each time `value` changes.
+
+| Effect | What it does |
+| --- | --- |
+| `shine` | A soft band of light sweeps across the element's drawn pixels. |
+| `pulse` | Rings or fills in the element's shape grow outward behind it and fade. |
+| `glow` | A colored halo flares up and fades. Quick repeats make it stronger, up to a limit. |
+| `spray` | A burst of particles fans upward from the element, grows, then fades. |
+| `rise` | One particle per change, such as "+1", floats up from the element and fades. |
+| `spin` | The element turns one or more full turns and settles where it started. |
+
+## Conditional effects
+
+Attach with `Modifier.conditionalEffect(condition, effect)`. They stay on while `condition` is true.
+
+| Effect | What it does |
+| --- | --- |
+| `repeat` | Plays a change effect when the condition turns true, then every interval while it stays true. |
+| `glow` | A steady halo in the element's shape that fades in and out with the condition. |
+| `pushDown` | The element scales down slightly, as if pressed, and springs back. |
+| `smoke` | Soft particles rise from the top of the element. |
+
+## Progress effects
+
+Attach with `Modifier.progressEffect(effect) { progress }`. You control the progress from 0 to 1.
+
+| Effect | What it does |
+| --- | --- |
+| `shine` | A band of light whose position across the element follows the progress. |
+| `glow` | A halo whose strength follows the progress. |
+| `iris` | A circular reveal from an origin whose radius follows the progress. |
+
+## Transitions
+
+Attach with `Modifier.kapowTransition(scope, enter, exit)` inside `AnimatedVisibility` or `AnimatedContent`, or use `KapowAnimatedVisibility`.
+
+| Transition | Enter | Exit | What it does |
+| --- | --- | --- | --- |
+| `iris` | yes | yes | A circle grows from an origin until it covers the content, or shrinks back. |
+| `clock` | yes | yes | A sweep around an origin, clockwise from 12 o'clock, like a clock hand. |
+| `wipe` | yes | yes | A straight edge moves across the content at an angle. |
+| `glare` | yes | yes | A wipe with a bright streak along its edge. |
+| `blinds` | yes | yes | Slats open or close like venetian blinds, optionally staggered. |
+| `pop` | yes | no | The content scales in with an overshoot while a ring and a burst of particles go off behind it. |
+| `anvil` | yes | no | The content drops in from above, lands with a shake and kicks up dust. |
+| `poof` | no | yes | The content vanishes at once in a puff of smoke. |
+
+## Per-effect pages
+
+Each effect gets its own page with usage, parameters, reduced-motion behavior, fallback notes and a live example. They are being added one at a time.

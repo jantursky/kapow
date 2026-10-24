@@ -1,0 +1,95 @@
+---
+title: Introduction
+description: Particle, light and mask effects for Compose Multiplatform, fired by value changes and conditions, plus enter and exit transitions.
+sidebar:
+  order: 1
+---
+
+Kapow adds small visual effects to Compose Multiplatform elements. A like count sprays particles when it goes up. A badge pulses while there are unread messages. A card opens with an iris when it appears and leaves in a puff of smoke. The effects run on Android, iOS, JVM desktop and wasmJs from one `commonMain` source set.
+
+There are four kinds:
+
+- **Change effects** play once each time a value changes: `shine`, `pulse`, `glow`, `spray`, `rise`, `spin`.
+- **Conditional effects** stay on while a Boolean is true: `repeat`, `glow`, `pushDown`, `smoke`.
+- **Progress effects** are drawn at a progress you control, such as a scroll position or a hinge angle: `shine`, `glow`, `iris`.
+- **Transitions** enter and exit content inside `AnimatedVisibility` and `AnimatedContent`: `iris`, `clock`, `wipe`, `glare`, `blinds`, `pop`, `anvil` and `poof`.
+
+The current version is {{version}}. See the [changelog](/changelog) for what each release changed.
+
+## Install
+
+```kotlin
+// shared/build.gradle.kts
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation("io.github.jantursky:kapow:{{version}}")
+        }
+    }
+}
+```
+
+Two optional artifacts add integrations. Neither is needed for the effects themselves.
+
+```kotlin
+// shared/build.gradle.kts
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            // Effects driven by the hinge angle of a foldable, through Crease.
+            implementation("io.github.jantursky:kapow-crease:{{version}}")
+            // Haptic feedback when an effect fires, through multihaptic.
+            implementation("io.github.jantursky:kapow-multihaptic:{{version}}")
+        }
+    }
+}
+```
+
+## A minimal example
+
+```kotlin
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun LikeButton() {
+    var likes by remember { mutableIntStateOf(0) }
+    BasicText(
+        text = "Likes: $likes",
+        modifier = Modifier
+            .clickable { likes++ }
+            .changeEffect(likes, ChangeEffect.spray()),
+    )
+}
+```
+
+Each tap changes `likes`, and the spray plays. Nothing plays when the button first appears.
+
+## What Kapow is not
+
+It is not a particle engine, a confetti library or a set of transform animations such as shake and bounce. Other libraries cover those, and the [prior art](/prior-art) page links them. Kapow v1 uses no shaders: every effect is clipping, brushes and canvas drawing.
+
+<CardGroup cols={2}>
+  <Card title="Getting started" href="/getting-started" icon="rocket">
+    Add the dependency and fire a first effect.
+  </Card>
+  <Card title="Guides" href="/guides/change-effects" icon="book-open">
+    Triggering, particles, transitions, reduced motion and feedback.
+  </Card>
+  <Card title="Effects" href="/effects" icon="sparkles">
+    Every effect in one table.
+  </Card>
+  <Card title="Live demo" href="{{demo}}" icon="play">
+    Try every effect in your browser.
+  </Card>
+</CardGroup>
+
+Kapow is on [GitHub](https://github.com/jantursky/kapow). It is inspired by [Pow](https://github.com/EmergeTools/Pow) for SwiftUI and is not affiliated with it.

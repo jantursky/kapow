@@ -1,0 +1,169 @@
+---
+title: Getting started
+description: Add Kapow to a Compose Multiplatform project and fire a first effect.
+sidebar:
+  order: 2
+---
+
+## Install
+
+Add the library to `commonMain`:
+
+```kotlin
+// shared/build.gradle.kts
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation("io.github.jantursky:kapow:{{version}}")
+        }
+    }
+}
+```
+
+Or through a version catalog:
+
+```toml
+# gradle/libs.versions.toml
+[versions]
+kapow = "{{version}}"
+
+[libraries]
+kapow = { module = "io.github.jantursky:kapow", version.ref = "kapow" }
+```
+
+The core artifact depends on Compose runtime, foundation, ui and animation only. The [hinge](/guides/hinge) and [feedback](/guides/feedback) integrations are separate artifacts.
+
+## Your first change effect
+
+`Modifier.changeEffect` takes the value to watch and the effect to play. When the value changes to something not equal to the old value, the effect plays once.
+
+```kotlin
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun Counter() {
+    var count by remember { mutableIntStateOf(0) }
+    BasicText(
+        text = "Count: $count",
+        modifier = Modifier
+            .clickable { count++ }
+            .changeEffect(count, ChangeEffect.shine()),
+    )
+}
+```
+
+The first composition is silent. Read [Change effects](/guides/change-effects) for equality, `isEnabled`, cooldown and `.delay()`.
+
+## Let particles leave their parents
+
+Particle effects such as `spray` and `rise` draw around the element that fires them. If a parent clips its children, as a list row or a card does, the particles are cut off. Wrap a screen in `KapowParticleLayer` and the layer draws them instead, on top of everything inside it.
+
+```kotlin
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.KapowParticleLayer
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun Feed(likes: List<Int>) {
+    KapowParticleLayer(Modifier.fillMaxSize()) {
+        LazyColumn {
+            items(likes) { count ->
+                BasicText(
+                    text = "Likes: $count",
+                    modifier = Modifier.clipToBounds().changeEffect(count, ChangeEffect.spray()),
+                )
+            }
+        }
+    }
+}
+```
+
+See [Particle layer](/guides/particle-layer) for what the layer does and does not do.
+
+## An effect that stays on
+
+`Modifier.conditionalEffect` keeps an effect running while a Boolean is true.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.conditionalEffect
+import kotlin.time.Duration.Companion.seconds
+
+@Composable
+fun UnreadBadge(hasUnread: Boolean) {
+    Box(
+        Modifier
+            .size(12.dp)
+            .background(Color.Red, CircleShape)
+            .conditionalEffect(
+                condition = hasUnread,
+                effect = ConditionalEffect.repeat(ChangeEffect.pulse(shape = CircleShape), every = 2.seconds),
+            ),
+    )
+}
+```
+
+More in [Conditional effects](/guides/conditional-effects).
+
+## A transition
+
+Kapow transitions run inside `AnimatedVisibility` or `AnimatedContent`. Compose's `EnterTransition` cannot be extended, so you set the stock transitions to `None` and add Kapow's with `Modifier.kapowTransition`. `KapowAnimatedVisibility` does both in one call.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+
+@Composable
+fun Panel(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        enter = KapowEnter.iris(),
+        exit = KapowExit.poof(),
+    ) {
+        Box(Modifier.size(160.dp).background(Color.DarkGray))
+    }
+}
+```
+
+The [Transitions](/guides/transitions) guide explains why this shape is needed and how to combine Kapow with `fadeIn()`.
+
+## Reduced motion
+
+Kapow reads the platform setting and plays a quieter version of each effect when motion is reduced. You do not need to do anything for that to work. [Reduced motion](/guides/reduced-motion) lists what each effect does instead, and how to override the setting, which matters on JVM desktop.
+
+## Run the demo
+
+The [live demo]({{demo}}) has a page per effect with controls and the source. It is a wasm app in `samples/web` in the repository.

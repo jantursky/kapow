@@ -1,0 +1,59 @@
+---
+title: Progress effects
+description: Draw an effect at a progress you control, such as a scroll position, a slider or a hinge angle.
+---
+
+A progress effect has no clock of its own. You give it a progress from 0 to 1 and it draws that moment of the effect. `Modifier.progressEffect(effect) { progress }` takes the effect and a lambda that returns the progress. Values outside 0 to 1 are clamped.
+
+The effects are `shine`, `glow` and `iris`:
+
+| Effect | At 0 | At 1 |
+| --- | --- | --- |
+| `ProgressEffect.shine()` | the band is before the element | the band is past the element |
+| `ProgressEffect.glow()` | no halo | full halo |
+| `ProgressEffect.iris()` | nothing is revealed | the whole element is revealed |
+
+## Driven by scroll
+
+```kotlin
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ProgressEffect
+import com.jantursky.kapow.progressEffect
+
+@Composable
+fun ScrollShine() {
+    val scroll = rememberScrollState()
+    Column(Modifier.fillMaxSize().verticalScroll(scroll)) {
+        Box(
+            Modifier
+                .height(120.dp)
+                .progressEffect(ProgressEffect.shine()) {
+                    if (scroll.maxValue == 0) 0f else scroll.value / scroll.maxValue.toFloat()
+                },
+        )
+        Box(Modifier.height(2000.dp))
+    }
+}
+```
+
+## The lambda is read while drawing
+
+Kapow calls your lambda in the draw phase. If it reads Compose state, such as `scroll.value` above or an `Animatable`, the effect redraws when the state changes and nothing recomposes. Do not compute the progress in the composable body and pass a captured `Float`: that would recompose on every change and the effect would lag a frame behind.
+
+The lambda is not part of the modifier's equality, so passing a new lambda on each recomposition does not rebuild the effect.
+
+## Hinge
+
+The `kapow-crease` artifact builds on this: `Modifier.hingeEffect` feeds the hinge angle of a foldable into a progress effect. See [Hinge effects](/guides/hinge).
+
+## Reduced motion
+
+Progress effects follow the progress you give them, so Kapow does not animate them on its own. If the progress itself moves a lot (a fast scroll, say), check `isReducedMotion()` and decide what to show. See [Reduced motion](/guides/reduced-motion).

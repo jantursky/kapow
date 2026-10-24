@@ -1,0 +1,76 @@
+---
+title: Reduced motion
+description: How Kapow reads the platform's reduced-motion setting on each target, what every effect does instead, and how to override it.
+---
+
+Some people turn motion off because it makes them ill or because they find it distracting. Kapow follows that setting on every platform and swaps each effect for a quiet version: a short fade or highlight, with no particles and no movement.
+
+You do not have to call anything. Effects check the setting when they fire.
+
+## Where the setting comes from
+
+| Target | Source |
+| --- | --- |
+| Android | `ValueAnimator.areAnimatorsEnabled()` on API 26 and later. Below API 26, the animator duration scale in system settings, watched for changes. Compose's `MotionDurationScale` is read on all versions. |
+| iOS | Reduce Motion in Accessibility settings. Compose also reports it as a motion duration scale of 0. |
+| wasmJs | The `prefers-reduced-motion: reduce` media query, watched for changes. |
+| JVM desktop | No system source. Motion is full unless you override it. |
+
+On Android, both checks matter. Turning "Remove animations" on sets the animator duration scale to 0, and Compose passes that scale to coroutines as `MotionDurationScale`. Kapow treats a scale of 0 as reduced motion even on versions where the platform call is not available.
+
+## What each effect does instead
+
+| Effect | With reduced motion |
+| --- | --- |
+| `spray`, `rise`, `smoke` | No particles. The element briefly brightens. |
+| `spin`, `pulse` | No rotation and no expanding rings. The element briefly brightens. |
+| `shine`, `glow` | A brief fade of a highlight, with no sweep. |
+| Mask transitions: `iris`, `clock`, `wipe`, `glare`, `blinds` | A crossfade over the same duration or shorter, with no mask. |
+| `poof`, `anvil`, `pop` | A fade over the same duration or shorter. No particles, no drop, no scale. |
+
+Feedback calls are not affected. A haptic you asked for still fires under reduced motion.
+
+The conditional `glow`, `pushDown` and `repeat`, and the progress effects, are not in this table yet. Their pages in the [effects section](/effects) say what they do.
+
+## Overriding the setting
+
+`LocalKapowMotion` overrides the platform for a part of the tree. It has three values:
+
+- `KapowMotion.System`, the default, follows the platform.
+- `KapowMotion.Full` always plays full effects.
+- `KapowMotion.Reduced` always plays the reduced version.
+
+```kotlin
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import com.jantursky.kapow.KapowMotion
+import com.jantursky.kapow.LocalKapowMotion
+
+@Composable
+fun MotionSettings(reduceMotion: Boolean, content: @Composable () -> Unit) {
+    CompositionLocalProvider(
+        LocalKapowMotion provides if (reduceMotion) KapowMotion.Reduced else KapowMotion.System,
+        content = content,
+    )
+}
+```
+
+On JVM desktop there is nothing to follow, so this is the way to offer an in-app switch. Use `Reduced` in tests to check the quiet path.
+
+If you override to `Full`, you are playing motion for a user who asked for none. Do it for a preview or a demo, not for the app.
+
+## Reading it yourself
+
+`isReducedMotion()` is a composable that returns the value effects here would use. It resolves `LocalKapowMotion` first, then the platform. Use it to match your own animations to Kapow's.
+
+```kotlin
+import androidx.compose.runtime.Composable
+import com.jantursky.kapow.isReducedMotion
+
+@Composable
+fun rememberCardDuration(): Int = if (isReducedMotion()) 0 else 300
+```
+
+## Not verified on a device yet
+
+The Android, iOS and browser detection is covered by tests and by running the demo. Reading the Reduce Motion setting on a real iPhone has not been checked, and neither has wasm in Safari.

@@ -1,0 +1,115 @@
+---
+title: Feedback
+description: Ask for a haptic or a sound when an effect fires, through any library, with an adapter for multihaptic.
+---
+
+Kapow does not make haptics or sound itself. Effects can ask for one, and you decide how it plays by providing a handler for the part of the tree you care about.
+
+## Events
+
+`KapowFeedbackEvent` is a small vocabulary:
+
+| Event | Meant for |
+| --- | --- |
+| `Selection` | a light tick, such as a picker changing |
+| `ImpactLight`, `ImpactMedium`, `ImpactHeavy` | a physical bump of increasing strength |
+| `Success`, `Warning`, `Error` | an outcome |
+| `Custom(name)` | anything your handler understands, such as a sound named `"coin"` |
+
+Pass one to an effect with its `feedback` parameter. It is sent each time the effect plays, and also when motion is reduced.
+
+```kotlin
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.KapowFeedbackEvent
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun Likes(likes: Int) {
+    BasicText(
+        text = "$likes",
+        modifier = Modifier.changeEffect(
+            value = likes,
+            effect = ChangeEffect.spray(),
+            feedback = KapowFeedbackEvent.ImpactLight,
+        ),
+    )
+}
+```
+
+`kapowTransition` and `KapowAnimatedVisibility` take the same parameter and send it when the content starts to enter or exit.
+
+## Providing a handler
+
+`KapowFeedback` is a functional interface with one method. `LocalKapowFeedback` holds the handler for a subtree. Its default is `null`, which plays nothing and is not an error.
+
+## Writing an adapter for any library
+
+Map the events to whatever your haptics or audio library offers. Ignore the events you do not support.
+
+```kotlin
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import com.jantursky.kapow.KapowFeedback
+import com.jantursky.kapow.KapowFeedbackEvent
+import com.jantursky.kapow.LocalKapowFeedback
+
+interface Haptics {
+    fun tick()
+    fun bump(strength: Float)
+    fun play(sound: String)
+}
+
+@Composable
+fun ProvideKapowHaptics(haptics: Haptics, content: @Composable () -> Unit) {
+    val feedback = remember(haptics) {
+        KapowFeedback { event ->
+            when (event) {
+                KapowFeedbackEvent.Selection -> haptics.tick()
+                KapowFeedbackEvent.ImpactLight -> haptics.bump(0.3f)
+                KapowFeedbackEvent.ImpactMedium -> haptics.bump(0.6f)
+                KapowFeedbackEvent.ImpactHeavy -> haptics.bump(1f)
+                is KapowFeedbackEvent.Custom -> haptics.play(event.name)
+                else -> Unit
+            }
+        }
+    }
+    CompositionLocalProvider(LocalKapowFeedback provides feedback, content = content)
+}
+```
+
+`Haptics` stands for your own wrapper. Nothing in Kapow depends on it.
+
+## kapow-multihaptic
+
+The `kapow-multihaptic` artifact is a ready adapter for [multihaptic](https://github.com/xfqwdsj/multihaptic) (a Compose Multiplatform haptics library, pre-1.0). `rememberMultihapticFeedback()` returns a `KapowFeedback` that plays a matching multihaptic effect for each built-in event and ignores custom events it does not know. Targets without haptic hardware do nothing and do not throw.
+
+```kotlin
+// shared/build.gradle.kts
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation("io.github.jantursky:kapow-multihaptic:{{version}}")
+        }
+    }
+}
+```
+
+```kotlin
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import com.jantursky.kapow.LocalKapowFeedback
+import com.jantursky.kapow.multihaptic.rememberMultihapticFeedback
+
+@Composable
+fun AppFeedback(content: @Composable () -> Unit) {
+    CompositionLocalProvider(LocalKapowFeedback provides rememberMultihapticFeedback(), content = content)
+}
+```
+
+multihaptic is at version 0.4.0, so its API may change. The adapter is small and kept in its own artifact for that reason.
+
+Not verified on a device yet: how the mapped haptics feel on iOS and on a range of Android phones.

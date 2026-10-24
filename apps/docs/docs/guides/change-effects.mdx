@@ -1,0 +1,119 @@
+---
+title: Change effects
+description: How a change effect decides to play, and what equality, isEnabled, cooldown and delay do.
+---
+
+A change effect plays once each time a value you watch changes. You attach it with `Modifier.changeEffect(value, effect)`.
+
+```kotlin
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun Score(score: Int) {
+    BasicText(
+        text = "$score",
+        modifier = Modifier.changeEffect(score, ChangeEffect.pulse()),
+    )
+}
+```
+
+The effects are `shine`, `pulse`, `glow`, `spray`, `rise` and `spin`. The [effects overview](/effects) has one line on each.
+
+## When it plays
+
+Kapow keeps the last value it saw on the element. Each time the modifier is applied with a new value:
+
+- **First composition is silent.** The value you start with is only recorded.
+- **Equal values do nothing.** The comparison is `!=`. Replacing `3` with `3`, or a list with another list that is equal, plays nothing.
+- **A different value plays the effect once.**
+
+The value can be anything: an `Int`, a `Boolean`, an enum, a data class. If you want to replay for the same data, for example a "ping" button, watch a counter that you increase on each tap instead.
+
+```kotlin
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun PingButton() {
+    var pings by remember { mutableIntStateOf(0) }
+    BasicText(
+        text = "Ping",
+        modifier = Modifier
+            .clickable { pings++ }
+            .changeEffect(pings, ChangeEffect.glow()),
+    )
+}
+```
+
+## isEnabled
+
+`isEnabled` defaults to `true`. While it is `false`, changes are recorded but play nothing. Turning it back on does not replay old changes. Use it to stay quiet during a bulk update or while the screen is not visible.
+
+```kotlin
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun Total(total: Int, isLoading: Boolean) {
+    BasicText(
+        text = "$total",
+        modifier = Modifier.changeEffect(total, ChangeEffect.shine(), isEnabled = !isLoading),
+    )
+}
+```
+
+## Cooldown
+
+Some effects ignore a change that arrives too soon after the last one they accepted. The cooldown is part of the effect, not a parameter:
+
+| Effect | Cooldown |
+| --- | --- |
+| `shine` | half of its `duration` |
+| `pulse` | 0.2 s for each pulse after the first (`count - 1`) |
+| `glow`, `spray`, `rise`, `spin` | none |
+
+With the default 1 s `shine`, two changes 0.2 s apart play one sweep. The effects without a cooldown play on every change: `rise` floats two labels for two quick changes, `glow` gets stronger up to a limit, and `spin` adds speed.
+
+## Delaying an effect
+
+`.delay()` wraps any change effect so it starts a fixed time after the change is accepted. Delays add up if you nest them. The cooldown of the wrapped effect still applies.
+
+```kotlin
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+import kotlin.time.Duration.Companion.milliseconds
+
+@Composable
+fun Reward(coins: Int) {
+    BasicText(
+        text = "Coins: $coins",
+        modifier = Modifier.changeEffect(coins, ChangeEffect.spray().delay(300.milliseconds)),
+    )
+}
+```
+
+## Feedback
+
+Pass `feedback = KapowFeedbackEvent.ImpactLight` to ask for a haptic or a sound when the effect plays. It is also called under reduced motion. See [Feedback](/guides/feedback).
+
+## No recomposition per frame
+
+Only the value change recomposes. The animation runs inside the modifier node and invalidates drawing, not composition. [Performance](/guides/performance) has the details.

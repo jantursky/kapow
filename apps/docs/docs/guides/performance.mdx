@@ -1,0 +1,39 @@
+---
+title: Performance
+description: How Kapow keeps per-frame work out of composition, and what is and is not measured yet.
+---
+
+Kapow is built so that an effect costs nothing until it plays, and costs drawing, not recomposition, while it plays.
+
+## Modifier.Node, not composition
+
+Every effect modifier is a `ModifierNodeElement`. There is no `remember`, no `LaunchedEffect` and no animation state in your composable.
+
+- When the watched value changes, the node's `update` sees it and starts the effect. That is the only recomposition: the one your own state change caused.
+- The animation runs in the node's coroutine scope, on the frame clock.
+- Frame values live in snapshot state that is read only in the draw phase, or in a layer block for effects that move or scale the element. A new frame invalidates drawing, not composition or layout.
+
+A test in the library counts recompositions over 60 frames of a running effect to keep this true.
+
+## Particles
+
+Particles are simulated in flat `FloatArray`s with a fixed capacity per emission, so a burst allocates once, not per particle. They are drawn as circles, puffs, your painter or short text measured once per emission.
+
+The loop that steps and draws particles stops when no particle is alive. A [particle layer](/guides/particle-layer) or an element with nothing in flight asks for no frames.
+
+## No shaders
+
+Kapow v1 uses no SkSL or AGSL. Masks are drawn with an offscreen layer and a blend mode, which works on every target including Android API 23. Blurred halos use the platform blur where it exists (all Skia targets, Android 12 and later) and stacked strokes elsewhere.
+
+## Tips
+
+- Prefer one `KapowParticleLayer` per screen over many local fallbacks.
+- Pass a stable `Painter` to `ParticleContent.painter`. Remember it so it is not recreated.
+- Keep a progress lambda cheap: it is called on every draw.
+- Do not put a changing value into a modifier's `value` parameter just to retrigger on every frame. Watch a counter that changes when something happens.
+
+## What is measured
+
+The demo has a frame-time meter for each effect. Numbers from it are on the effect pages as they are checked.
+
+Not verified on a device yet: performance on low-end Android phones, on a real iPhone, and in Safari. Until then, treat particle counts and glow radii as something to test on your slowest target.

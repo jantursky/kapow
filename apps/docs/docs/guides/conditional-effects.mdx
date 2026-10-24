@@ -1,0 +1,99 @@
+---
+title: Conditional effects
+description: Effects that stay on while a Boolean is true, and how repeat plays a change effect on a timer.
+---
+
+A conditional effect runs while a condition is true. `Modifier.conditionalEffect(condition, effect)` starts the effect when the condition becomes true, including on first composition, and winds it down when the condition becomes false. The element then returns to its normal look.
+
+The effects are `repeat`, `glow`, `pushDown` and `smoke`.
+
+## Glow
+
+A steady halo in the element's shape. It fades in while the condition holds and fades out when it ends.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.conditionalEffect
+
+@Composable
+fun SelectedCard(selected: Boolean) {
+    val shape = RoundedCornerShape(16.dp)
+    Box(
+        Modifier
+            .size(160.dp)
+            .background(Color.DarkGray, shape)
+            .conditionalEffect(selected, ConditionalEffect.glow(shape = shape)),
+    )
+}
+```
+
+The halo follows the `shape` you pass, not the alpha of the content. Where the platform has no blur (Android below API 31) it is drawn from stacked strokes instead.
+
+## Push down
+
+Scales the element to 95 % while the condition is true and springs back when it ends. Pass `scale` for another amount.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.conditionalEffect
+
+@Composable
+fun HoldButton(pressed: Boolean) {
+    Box(
+        Modifier
+            .size(96.dp)
+            .background(Color.Gray)
+            .conditionalEffect(pressed, ConditionalEffect.pushDown()),
+    )
+}
+```
+
+## Smoke
+
+Soft particles rise from the top of the element while the condition is true. When it turns false, no new particles start and the ones in flight finish their life. Smoke is a particle effect, so a [particle layer](/guides/particle-layer) keeps a clipping parent from cutting it off.
+
+## Repeat
+
+`ConditionalEffect.repeat(effect, every)` plays a [change effect](/guides/change-effects) as soon as the condition becomes true and then once every `every` while it stays true. It is how you make a badge pulse or a button shine every few seconds.
+
+```kotlin
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.conditionalEffect
+import kotlin.time.Duration.Companion.seconds
+
+@Composable
+fun UpdateAvailable(available: Boolean) {
+    BasicText(
+        text = "Update available",
+        modifier = Modifier.conditionalEffect(
+            condition = available,
+            effect = ConditionalEffect.repeat(ChangeEffect.shine(), every = 4.seconds),
+        ),
+    )
+}
+```
+
+Things to know:
+
+- Intervals shorter than 1/15 s are raised to 1/15 s. The floor is `ConditionalEffect.MinRepeatInterval`.
+- When the condition turns false no further repetitions are scheduled. A repetition that is already playing finishes.
+- The wrapped change effect keeps its own cooldown. A `shine` with a 1 s duration has a 0.5 s cooldown, so repeating it every 0.2 s still plays it about every 0.5 s.

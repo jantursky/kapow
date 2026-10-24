@@ -1,0 +1,158 @@
+---
+title: Transitions
+description: Masked and particle enter and exit transitions for AnimatedVisibility and AnimatedContent, and why they are applied with a modifier.
+---
+
+Kapow has eight transitions. Five are masks that work in both directions: `iris`, `clock`, `wipe`, `glare` and `blinds`. `pop` and `anvil` are enter-only. `poof` is exit-only.
+
+## Why not `enter = KapowEnter.iris()`?
+
+You would expect to write `AnimatedVisibility(visible, enter = iris())`. That is not possible. `EnterTransition` and `ExitTransition` are sealed classes in Compose, and their contents are internal data the animation system reads. No library can add a new kind.
+
+Compose does expose one public hook. Inside `AnimatedVisibility` or `AnimatedContent`, the scope has a `transition: Transition<EnterExitState>`, and anything animated on that transition is waited for before the content leaves composition. Kapow animates its own progress on that transition. So the transition is a modifier on the content, not an argument of the container.
+
+## Modifier.kapowTransition
+
+Pass the scope as the first argument, and set the stock transitions to `None`.
+
+```kotlin
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+import com.jantursky.kapow.kapowTransition
+
+@Composable
+fun Toast(visible: Boolean) {
+    AnimatedVisibility(visible, enter = EnterTransition.None, exit = ExitTransition.None) {
+        Box(
+            Modifier
+                .kapowTransition(this, enter = KapowEnter.iris(), exit = KapowExit.poof())
+                .size(160.dp, 56.dp)
+                .background(Color.DarkGray),
+        )
+    }
+}
+```
+
+Both `enter` and `exit` are optional and default to `None`. Because the animation lives on the scope's transition, the container keeps the content in composition until your exit has finished. A 400 ms `poof` keeps the content for 400 ms.
+
+Mask transitions run the same motion in reverse on exit: an iris that grew on enter shrinks on exit. `KapowExit.iris()` and `KapowEnter.iris()` take the same parameters.
+
+## KapowAnimatedVisibility
+
+For the common case, `KapowAnimatedVisibility` wraps `AnimatedVisibility` and applies the modifier for you.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+
+@Composable
+fun Dialog(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        enter = KapowEnter.pop(),
+        exit = KapowExit.poof(),
+    ) {
+        Box(Modifier.size(200.dp).background(Color.DarkGray))
+    }
+}
+```
+
+## AnimatedContent
+
+`AnimatedContentScope` is an `AnimatedVisibilityScope`, so the modifier works there too. Use `EnterTransition.None togetherWith ExitTransition.None` and let Kapow do the work.
+
+```kotlin
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+import com.jantursky.kapow.kapowTransition
+
+@Composable
+fun Pager(page: Int) {
+    AnimatedContent(
+        targetState = page,
+        transitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
+    ) { target ->
+        BasicText(
+            text = "Page $target",
+            modifier = Modifier.kapowTransition(this, enter = KapowEnter.wipe(), exit = KapowExit.wipe()),
+        )
+    }
+}
+```
+
+## Combining with stock transitions
+
+Kapow runs next to Compose's own transitions. Give the container a stock transition and add Kapow's on the content, or use the `stockEnter` and `stockExit` parameters of `KapowAnimatedVisibility`.
+
+```kotlin
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+
+@Composable
+fun Banner(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        enter = KapowEnter.glare(),
+        exit = KapowExit.glare(),
+        stockEnter = fadeIn() + expandVertically(),
+        stockExit = fadeOut() + shrinkVertically(),
+    ) {
+        Box(Modifier.size(280.dp, 64.dp).background(Color.DarkGray))
+    }
+}
+```
+
+The stock transitions and Kapow's keep their own durations. The container waits for the longest one.
+
+## Durations
+
+Each factory has a `duration`. Masks default to 450 ms, `poof` to 400 ms, `pop` to 1200 ms and `anvil` to 1400 ms. `pop` and `anvil` include their particles, so they run longer.
+
+## Feedback
+
+Both `kapowTransition` and `KapowAnimatedVisibility` take `feedback = KapowFeedbackEvent...`. The event is sent when the content starts to enter or exit. See [Feedback](/guides/feedback).
+
+## Reduced motion
+
+With reduced motion every Kapow transition becomes a fade over the same duration or shorter. See [Reduced motion](/guides/reduced-motion).
+
+## Particles in transitions
+
+`poof`, `anvil` and `pop` emit particles. They draw through a [`KapowParticleLayer`](/guides/particle-layer) when there is one above the content. Without one, they draw around the content, and the container's own bounds can clip them.

@@ -1,0 +1,120 @@
+---
+title: Composables and modifiers
+description: changeEffect, conditionalEffect, progressEffect, kapowTransition, KapowAnimatedVisibility, KapowParticleLayer, isReducedMotion, hingeEffect and rememberMultihapticFeedback.
+---
+
+Everything is in the package `com.jantursky.kapow`, except `hingeEffect` (`com.jantursky.kapow.crease`) and `rememberMultihapticFeedback` (`com.jantursky.kapow.multihaptic`).
+
+## changeEffect
+
+```kotlin
+@Stable
+public fun Modifier.changeEffect(
+    value: Any?,
+    effect: ChangeEffect,
+    isEnabled: Boolean = true,
+    feedback: KapowFeedbackEvent? = null,
+): Modifier
+```
+
+Plays `effect` each time `value` changes to a value not equal to the previous one. Nothing plays on the first composition. While `isEnabled` is false, changes are recorded but play nothing. `feedback` is sent to `LocalKapowFeedback` each time the effect plays, also with reduced motion. See [Change effects](/guides/change-effects).
+
+## conditionalEffect
+
+```kotlin
+@Stable
+public fun Modifier.conditionalEffect(
+    condition: Boolean,
+    effect: ConditionalEffect,
+): Modifier
+```
+
+Keeps `effect` on while `condition` is true, starting on the first composition if it already is. When the condition turns false the effect winds down and the element returns to its normal look. See [Conditional effects](/guides/conditional-effects).
+
+## progressEffect
+
+```kotlin
+@Stable
+public fun Modifier.progressEffect(
+    effect: ProgressEffect,
+    progress: () -> Float,
+): Modifier
+```
+
+Draws `effect` at `progress`, a value from 0 to 1 (clamped). The lambda is read while drawing, so a progress backed by state updates the effect without recomposition. See [Progress effects](/guides/progress-effects).
+
+## kapowTransition
+
+```kotlin
+@Composable
+public fun Modifier.kapowTransition(
+    scope: AnimatedVisibilityScope,
+    enter: KapowEnter = KapowEnter.None,
+    exit: KapowExit = KapowExit.None,
+    feedback: KapowFeedbackEvent? = null,
+): Modifier
+```
+
+Applies Kapow transitions to content inside an `AnimatedVisibility` or `AnimatedContent`. The transition animates on the scope's own transition, so the container keeps the content until the exit has finished. Set the stock transitions to `EnterTransition.None` and `ExitTransition.None`, or combine them. `feedback` is sent when the content starts to enter or exit. See [Transitions](/guides/transitions).
+
+## KapowAnimatedVisibility
+
+```kotlin
+@Composable
+public fun KapowAnimatedVisibility(
+    visible: Boolean,
+    modifier: Modifier = Modifier,
+    enter: KapowEnter = KapowEnter.None,
+    exit: KapowExit = KapowExit.None,
+    stockEnter: EnterTransition = EnterTransition.None,
+    stockExit: ExitTransition = ExitTransition.None,
+    feedback: KapowFeedbackEvent? = null,
+    content: @Composable AnimatedVisibilityScope.() -> Unit,
+)
+```
+
+`AnimatedVisibility` with Kapow transitions. `stockEnter` and `stockExit` add Compose transitions on top, such as `fadeIn()` or `expandVertically()`.
+
+## KapowParticleLayer
+
+```kotlin
+@Composable
+public fun KapowParticleLayer(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+)
+```
+
+Draws the particles of every Kapow effect inside `content` on top of it, so parents that clip their children do not cut them off. Put it high in the tree. Without one, particles draw around the element that emits them. Particles start where the element was when the effect fired and do not follow it afterwards. See [Particle layer](/guides/particle-layer).
+
+## isReducedMotion
+
+```kotlin
+@Composable
+public fun isReducedMotion(): Boolean
+```
+
+Whether effects here play their reduced version: `LocalKapowMotion` when it is `Full` or `Reduced`, otherwise the platform setting. See [Reduced motion](/guides/reduced-motion).
+
+## hingeEffect
+
+```kotlin
+// kapow-crease
+@Composable
+public fun Modifier.hingeEffect(
+    effect: ProgressEffect,
+    angleRange: ClosedFloatingPointRange<Float> = 0f..180f,
+): Modifier
+```
+
+Draws `effect` at a progress that follows the hinge angle: 0 at the start of `angleRange`, 1 at its end, clamped outside it. On devices and platforms without a hinge angle the element is left unchanged. The angle comes from Crease, so `ProvideFoldState` feeds a fixed or simulated angle in previews and tests. See [Hinge effects](/guides/hinge).
+
+## rememberMultihapticFeedback
+
+```kotlin
+// kapow-multihaptic
+@Composable
+public fun rememberMultihapticFeedback(): KapowFeedback
+```
+
+A `KapowFeedback` that plays each built-in event through multihaptic. Custom events are ignored. See [Feedback](/guides/feedback).
