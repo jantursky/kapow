@@ -164,6 +164,7 @@ const LIVE = [
   'transition-pop',
   'more-particle-layer',
   'change-ripple',
+  'change-flash',
 ]
 
 for (const id of LIVE) {

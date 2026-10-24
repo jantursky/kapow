@@ -81,6 +81,13 @@ val entries: List<Entry> =
             Example("RippleExample.kt") { RippleDemo() },
         ),
         Entry(
+            "change-flash",
+            Group.Change,
+            "Flash",
+            "The element's own pixels flash a color and fade back.",
+            Example("FlashExample.kt") { FlashDemo() },
+        ),
+        Entry(
             "change-delay",
             Group.Change,
             "Delay",

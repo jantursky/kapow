@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.effects.ColorFlashRunner
 import com.jantursky.kapow.effects.GlowRunner
 import com.jantursky.kapow.effects.PulseRunner
 import com.jantursky.kapow.effects.RippleRunner
@@ -122,6 +123,20 @@ public abstract class ChangeEffect internal constructor() {
             require(duration.isPositive()) { "duration must be positive" }
             return Ripple(color, shape, origin, duration)
         }
+
+        /**
+         * The element's own pixels flash in [color] and fade back, like a hit in a game. Transparent parts of the
+         * element stay clear. With reduced motion the flash is less than half as strong.
+         *
+         * @param duration how long the flash takes to rise and fade back.
+         */
+        public fun flash(
+            color: Color = Color.White,
+            duration: Duration = 400.milliseconds,
+        ): ChangeEffect {
+            require(duration.isPositive()) { "duration must be positive" }
+            return Flash(color, duration)
+        }
     }
 
     internal data class Delayed(
@@ -200,6 +215,15 @@ public abstract class ChangeEffect internal constructor() {
         override val cooldown: Duration get() = Duration.ZERO
 
         override fun createRunner(): ChangeRunner = RippleRunner(color, shape, origin, duration)
+    }
+
+    internal data class Flash(
+        val color: Color,
+        val duration: Duration,
+    ) : ChangeEffect() {
+        override val cooldown: Duration get() = Duration.ZERO
+
+        override fun createRunner(): ChangeRunner = ColorFlashRunner(color, duration)
     }
 }
 

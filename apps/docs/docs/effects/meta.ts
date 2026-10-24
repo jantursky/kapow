@@ -12,6 +12,7 @@ export default defineMeta({
     'change-rise',
     'change-spin',
     'change-ripple',
+    'change-flash',
     'change-delay',
     'conditional-repeat',
     'conditional-glow',
