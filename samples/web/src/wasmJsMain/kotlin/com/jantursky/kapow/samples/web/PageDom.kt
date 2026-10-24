@@ -111,7 +111,15 @@ internal fun showPage(entry: Entry?) {
             it.removeAttribute("aria-current")
         }
     }
+    if (entry != null) remeasureStage()
 }
+
+/**
+ * The stage is mounted while the overview is showing and its page is hidden, so the canvas was measured at zero size.
+ * Compose resizes on a window resize, so one after the page is visible makes it fit.
+ */
+private fun remeasureStage(): Unit =
+    js("requestAnimationFrame(function () { window.dispatchEvent(new Event('resize')) })")
 
 /** site.js renders the generated source of an example file; an empty name leaves only the usage tab. */
 private fun showSource(file: String): Unit = js("window.kapowShowSource(file)")

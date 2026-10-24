@@ -66,6 +66,17 @@ test('the sidebar lists every group and navigates to a page', async ({ page }) =
   await expect(page.locator('#source')).toContainText('fun SprayExample(')
 })
 
+test('the stage has a size when a page opens from the overview', async ({ page }) => {
+  await page.goto('/')
+  await ready(page)
+  await openSidebar(page)
+  await page.getByRole('navigation', { name: 'Effects' }).getByRole('link', { name: 'Shine' }).first().click()
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Shine')
+  await expect
+    .poll(async () => (await page.locator('#stage canvas').evaluate((c: HTMLCanvasElement) => c.width)) > 0)
+    .toBe(true)
+})
+
 test('a deep link opens its page directly', async ({ page }) => {
   await page.goto('/#transition-iris')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Iris')
