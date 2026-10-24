@@ -4,6 +4,8 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.node.invalidateDraw
+import androidx.compose.ui.node.invalidateLayer
 import androidx.compose.ui.platform.InspectorInfo
 import com.jantursky.kapow.internal.ChangeRunner
 import com.jantursky.kapow.internal.ConditionalRunner
@@ -178,15 +180,16 @@ private class ProgressEffectElement(
         properties["effect"] = effect
     }
 
-    // The lambda is usually recreated on each recomposition; comparing it would rebuild the node every time.
-    override fun equals(other: Any?): Boolean = other is ProgressEffectElement && other.effect == effect
+    // A new lambda only updates the node. It matters when the lambda captures a plain value instead of reading state.
+    override fun equals(other: Any?): Boolean =
+        other is ProgressEffectElement && other.effect == effect && other.progress === progress
 
-    override fun hashCode(): Int = effect.hashCode()
+    override fun hashCode(): Int = 31 * effect.hashCode() + progress.hashCode()
 }
 
 internal class ProgressEffectNode(
     private var effect: ProgressEffect,
-    progress: () -> Float,
+    private var progress: () -> Float,
 ) : EffectNode<ProgressRunner>(effect.createRunner().also { it.progress = progress }) {
     fun update(
         effect: ProgressEffect,
@@ -194,8 +197,13 @@ internal class ProgressEffectNode(
     ) {
         if (effect != this.effect) {
             this.effect = effect
-            replaceRunner(effect.createRunner())
+            this.progress = progress
+            replaceRunner(effect.createRunner().also { it.progress = progress })
+        } else if (progress !== this.progress) {
+            this.progress = progress
+            runner.progress = progress
+            invalidateLayer()
+            invalidateDraw()
         }
-        runner.progress = progress
     }
 }

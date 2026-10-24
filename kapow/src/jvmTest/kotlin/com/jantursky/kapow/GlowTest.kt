@@ -126,6 +126,26 @@ class GlowTest {
         }
 
     @Test
+    fun aProgressLambdaThatCapturesAPlainValueStillUpdates() =
+        runEffectTest {
+            var progress by mutableFloatStateOf(0f)
+            setEffectContent {
+                Box(Modifier.fillMaxSize().background(Color.White)) {
+                    // Read here, so the lambda below captures a plain Float, as a parameter would be.
+                    val value = progress
+                    SolidElement(
+                        Modifier.offset(150.dp, 150.dp).progressEffect(ProgressEffect.glow(Color.Red)) { value },
+                    )
+                }
+            }
+            mainClock.advanceTimeByFrame()
+            assertEquals(Color.White, capture().colorAt(haloX, haloY))
+            progress = 1f
+            mainClock.advanceTimeByFrame()
+            assertNotEquals(Color.White, capture().colorAt(haloX, haloY))
+        }
+
+    @Test
     fun framesDoNotRecompose() =
         runEffectTest {
             scene { Modifier.changeEffect(value, ChangeEffect.glow()) }
