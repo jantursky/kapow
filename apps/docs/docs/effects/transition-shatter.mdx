@@ -1,0 +1,54 @@
+---
+title: "Transition: shatter"
+description: Content breaks like glass into shards that fall, turn and fade.
+---
+
+Shatter is an exit only. The content cracks into triangular shards, which part along the cracks, then fall with gravity, turning and fading as they go. Use it for something destroyed rather than just removed: a deleted file, a broken streak, a dismissed error.
+
+## Usage
+
+The sample shatters a file row when it is deleted.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowExit
+
+@Composable
+fun FileRow(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        exit = KapowExit.shatter(shards = 24),
+    ) {
+        Box(Modifier.size(280.dp, 76.dp).background(Color.DarkGray))
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `shards` | `24` | About how many pieces, from 2 to 200. The content is cut into a grid that fits its shape, two triangles per cell, so the count can differ a little. |
+| `duration` | `900.milliseconds` | How long the transition takes. Must be positive. |
+
+## Reduced motion
+
+The transition becomes a fade over the same duration or shorter. There are no shards and no movement.
+
+## Notes
+
+- The shards carry the content's own pixels: each one draws the content clipped to its triangle.
+- The pieces fall below the content's bounds, by one and a half times its height or 160 dp, whichever is more. A parent that clips, such as a scrolling list, cuts them off at its edge. The shards are not particles, so a [particle layer](/guides/particle-layer) does not lift them out.
+- The crack pattern and the way each piece flies are seeded, so they are the same on every run.
+- There is no enter version. Pair it with another enter, such as `KapowEnter.pop()`.
+
+## Live example
+
+<include example="transition-shatter">../_snippets/live-example.mdx</include>

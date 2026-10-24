@@ -299,6 +299,23 @@ public class KapowExit internal constructor(
             origin: TransformOrigin = TransformOrigin.Center,
             duration: Duration = 600.milliseconds,
         ): KapowExit = KapowExit(TransitionKind.Blob(origin), duration.checked())
+
+        /**
+         * The content breaks like glass: it cracks into triangular shards that part, then fall with gravity,
+         * turning and fading as they go. The shards carry the content's own pixels and may fall below its bounds.
+         * The pattern is seeded, the same every time. With reduced motion it fades out instead.
+         *
+         * @param shards about how many pieces, from 2 to 200. The content is cut into a grid of cells that fits its
+         *   shape, two triangles per cell, so the actual count can differ a little.
+         * @param duration how long the transition takes, 900 ms by default.
+         */
+        public fun shatter(
+            shards: Int = 24,
+            duration: Duration = 900.milliseconds,
+        ): KapowExit {
+            require(shards in 2..200) { "shards must be from 2 to 200" }
+            return KapowExit(TransitionKind.Shatter(shards), duration.checked())
+        }
     }
 }
 
@@ -375,5 +392,9 @@ internal sealed class TransitionKind {
 
     data class Blob(
         val origin: TransformOrigin,
+    ) : TransitionKind()
+
+    data class Shatter(
+        val shards: Int,
     ) : TransitionKind()
 }

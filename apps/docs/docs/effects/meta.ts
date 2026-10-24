@@ -33,5 +33,6 @@ export default defineMeta({
     'transition-checker',
     'transition-tear',
     'transition-blob',
+    'transition-shatter',
   ],
 })

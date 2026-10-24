@@ -137,6 +137,20 @@ class TransitionScene(
         assertEquals(0f, shown())
     }
 
+    /** Checks that with reduced motion an exit-only [exit] fades the whole element out instead. */
+    fun checkReducedExitFades(exit: KapowExit) {
+        hideFromShown(exit, KapowMotion.Reduced)
+        advance(150)
+        val image = capture()
+        for ((x, y) in listOf(151 to 151, 200 to 200, 248 to 248)) {
+            assertNotEquals(Color.White, image.colorAt(x, y), "($x, $y) is still there")
+            assertNotEquals(Cobalt, image.colorAt(x, y), "($x, $y) is faded")
+        }
+        assertEquals(100 * 100, others(image), "the whole element is faded and nothing else is drawn")
+        advance(3000)
+        assertEquals(0f, shown())
+    }
+
     /** Checks that animation frames of [enter] and [exit] redraw without recomposing the content. */
     fun checkFramesDoNotRecompose(
         enter: KapowEnter,

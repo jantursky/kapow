@@ -42,5 +42,6 @@ internal fun partFor(kind: TransitionKind): TransitionPart? =
         is TransitionKind.Checker -> CheckerMask(kind)
         is TransitionKind.Tear -> TearMask(kind)
         is TransitionKind.Blob -> BlobMask(kind)
+        is TransitionKind.Shatter -> ShatterPart(kind)
         else -> null
     }

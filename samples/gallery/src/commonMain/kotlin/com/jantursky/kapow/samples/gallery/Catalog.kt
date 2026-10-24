@@ -235,6 +235,13 @@ val entries: List<Entry> =
             Example("BlobExample.kt") { BlobDemo() },
         ),
         Entry(
+            "transition-shatter",
+            Group.Transitions,
+            "Shatter",
+            "The content breaks into falling shards.",
+            Example("ShatterExample.kt") { ShatterDemo() },
+        ),
+        Entry(
             "more-particle-layer",
             Group.More,
             "Particle layer",

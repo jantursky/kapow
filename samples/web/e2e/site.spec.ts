@@ -169,6 +169,7 @@ const LIVE = [
   'transition-checker',
   'transition-tear',
   'transition-blob',
+  'transition-shatter',
 ]
 
 for (const id of LIVE) {

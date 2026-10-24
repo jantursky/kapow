@@ -122,6 +122,8 @@ public final class com/jantursky/kapow/KapowExit$Companion {
 	public static synthetic fun poof-pYXP5xo$default (Lcom/jantursky/kapow/KapowExit$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
 	public final fun shapeIris-hol-kqg (Landroidx/compose/ui/graphics/Shape;JJ)Lcom/jantursky/kapow/KapowExit;
 	public static synthetic fun shapeIris-hol-kqg$default (Lcom/jantursky/kapow/KapowExit$Companion;Landroidx/compose/ui/graphics/Shape;JJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
+	public final fun shatter-HG0u8IE (IJ)Lcom/jantursky/kapow/KapowExit;
+	public static synthetic fun shatter-HG0u8IE$default (Lcom/jantursky/kapow/KapowExit$Companion;IJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
 	public final fun tear-9qg-1WU (FFJ)Lcom/jantursky/kapow/KapowExit;
 	public static synthetic fun tear-9qg-1WU$default (Lcom/jantursky/kapow/KapowExit$Companion;FFJILjava/lang/Object;)Lcom/jantursky/kapow/KapowExit;
 	public final fun wipe-HG0u8IE (FJ)Lcom/jantursky/kapow/KapowExit;
