@@ -11,6 +11,7 @@ import com.jantursky.kapow.effects.FillProgressRunner
 import com.jantursky.kapow.effects.GlowProgressRunner
 import com.jantursky.kapow.effects.IrisProgressRunner
 import com.jantursky.kapow.effects.ShineProgressRunner
+import com.jantursky.kapow.effects.TraceProgressRunner
 import com.jantursky.kapow.internal.ProgressRunner
 
 /**
@@ -56,6 +57,21 @@ public abstract class ProgressEffect internal constructor() {
             require(wave >= 0.dp) { "wave must not be negative" }
             return Fill(color, wave)
         }
+
+        /**
+         * The element's [shape] outline drawn as a stroke up to the progress: nothing at 0, the closed outline at 1.
+         * Rectangles and rounded shapes are traced clockwise from the middle of the top edge. The stroke sits just
+         * inside the element's bounds. Like every progress effect it is drawn at whatever progress you pass, also
+         * with reduced motion.
+         */
+        public fun trace(
+            shape: Shape = RectangleShape,
+            color: Color = Color(0xFF6B62F2),
+            width: Dp = 3.dp,
+        ): ProgressEffect {
+            require(width > 0.dp) { "width must be positive" }
+            return Trace(shape, color, width)
+        }
     }
 
     internal data class Shine(
@@ -84,5 +100,13 @@ public abstract class ProgressEffect internal constructor() {
         val wave: Dp,
     ) : ProgressEffect() {
         override fun createRunner(): ProgressRunner = FillProgressRunner(color, wave)
+    }
+
+    internal data class Trace(
+        val shape: Shape,
+        val color: Color,
+        val width: Dp,
+    ) : ProgressEffect() {
+        override fun createRunner(): ProgressRunner = TraceProgressRunner(shape, color, width)
     }
 }

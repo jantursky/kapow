@@ -248,6 +248,8 @@ public final class com/jantursky/kapow/ProgressEffect$Companion {
 	public static synthetic fun iris-__ExYCQ$default (Lcom/jantursky/kapow/ProgressEffect$Companion;JILjava/lang/Object;)Lcom/jantursky/kapow/ProgressEffect;
 	public final fun shine-4WTKRHQ (FJ)Lcom/jantursky/kapow/ProgressEffect;
 	public static synthetic fun shine-4WTKRHQ$default (Lcom/jantursky/kapow/ProgressEffect$Companion;FJILjava/lang/Object;)Lcom/jantursky/kapow/ProgressEffect;
+	public final fun trace-Hht5A8o (Landroidx/compose/ui/graphics/Shape;JF)Lcom/jantursky/kapow/ProgressEffect;
+	public static synthetic fun trace-Hht5A8o$default (Lcom/jantursky/kapow/ProgressEffect$Companion;Landroidx/compose/ui/graphics/Shape;JFILjava/lang/Object;)Lcom/jantursky/kapow/ProgressEffect;
 }
 
 public abstract class com/jantursky/kapow/PulseStyle {
