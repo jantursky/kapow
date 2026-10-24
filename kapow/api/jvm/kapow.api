@@ -38,6 +38,8 @@ public final class com/jantursky/kapow/ConditionalEffect$Companion {
 	public final fun getMinRepeatInterval-UwyO8pc ()J
 	public final fun glow-5DgIosw (JFLandroidx/compose/ui/graphics/Shape;)Lcom/jantursky/kapow/ConditionalEffect;
 	public static synthetic fun glow-5DgIosw$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;ILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
+	public final fun marchingAnts-4GoNBhs (JJFLandroidx/compose/ui/graphics/Shape;FFF)Lcom/jantursky/kapow/ConditionalEffect;
+	public static synthetic fun marchingAnts-4GoNBhs$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;JJFLandroidx/compose/ui/graphics/Shape;FFFILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
 	public final fun pushDown (F)Lcom/jantursky/kapow/ConditionalEffect;
 	public static synthetic fun pushDown$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;FILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
 	public final fun repeat-HG0u8IE (Lcom/jantursky/kapow/ChangeEffect;J)Lcom/jantursky/kapow/ConditionalEffect;

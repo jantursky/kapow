@@ -154,6 +154,7 @@ const LIVE = [
   'conditional-push-down',
   'conditional-smoke',
   'conditional-border-beam',
+  'conditional-marching-ants',
   'progress-iris',
   'transition-iris',
   'transition-clock',

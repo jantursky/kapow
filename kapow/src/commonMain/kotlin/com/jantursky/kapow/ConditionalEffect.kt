@@ -8,6 +8,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.effects.BorderBeamRunner
 import com.jantursky.kapow.effects.ConditionalGlowRunner
+import com.jantursky.kapow.effects.MarchingAntsRunner
 import com.jantursky.kapow.effects.PushDownRunner
 import com.jantursky.kapow.effects.RepeatRunner
 import com.jantursky.kapow.effects.SmokeRunner
@@ -78,6 +79,36 @@ public abstract class ConditionalEffect internal constructor() {
             require(duration.isPositive()) { "duration must be positive" }
             return BorderBeam(color, width, shape, length, duration)
         }
+
+        /**
+         * A dashed outline of [shape] whose dashes keep moving along it, the classic look of a selection. The
+         * pattern is stretched a little so the dashes meet without a seam. The stroke sits inside the element's
+         * bounds.
+         *
+         * With reduced motion the dashes stand still.
+         *
+         * @param color the dashes.
+         * @param gapColor the line under the dashes, which shows in the gaps. Transparent for gaps you can see
+         *   through.
+         * @param dash the length of one dash.
+         * @param gap the space between two dashes.
+         * @param speed how far the dashes move each second.
+         */
+        public fun marchingAnts(
+            color: Color = Color.White,
+            gapColor: Color = Color.Black,
+            width: Dp = 2.dp,
+            shape: Shape = RectangleShape,
+            dash: Dp = 6.dp,
+            gap: Dp = 4.dp,
+            speed: Dp = 24.dp,
+        ): ConditionalEffect {
+            require(width > 0.dp) { "width must be positive" }
+            require(dash > 0.dp) { "dash must be positive" }
+            require(gap >= 0.dp) { "gap must not be negative" }
+            require(speed >= 0.dp) { "speed must not be negative" }
+            return MarchingAnts(color, gapColor, width, shape, dash, gap, speed)
+        }
     }
 
     internal data class Repeat(
@@ -115,5 +146,18 @@ public abstract class ConditionalEffect internal constructor() {
         val duration: Duration,
     ) : ConditionalEffect() {
         override fun createRunner(): ConditionalRunner = BorderBeamRunner(color, width, shape, length, duration)
+    }
+
+    internal data class MarchingAnts(
+        val color: Color,
+        val gapColor: Color,
+        val width: Dp,
+        val shape: Shape,
+        val dash: Dp,
+        val gap: Dp,
+        val speed: Dp,
+    ) : ConditionalEffect() {
+        override fun createRunner(): ConditionalRunner =
+            MarchingAntsRunner(color, gapColor, width, shape, dash, gap, speed)
     }
 }
