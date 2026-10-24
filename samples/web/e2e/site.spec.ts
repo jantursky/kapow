@@ -358,14 +358,14 @@ test('the overview grid has a tile for every catalog entry', async ({ page }) =>
     await expect(grid.getByRole('heading', { name: group })).toBeAttached()
   }
   // Each tile is a link named after its effect and group.
-  await expect(grid.getByRole('link', { name: 'Iris, Transitions' })).toHaveAttribute('href', '#transition-iris')
+  await expect(grid.getByRole('link', { name: 'Iris, Transitions', exact: true })).toHaveAttribute('href', '#transition-iris')
 })
 
 test('a tile opens its example, by pointer and by keyboard', async ({ page }) => {
   await page.goto('/')
   await gridReady(page)
   await scrollToGrid(page)
-  await page.getByRole('link', { name: 'Iris, Transitions' }).click()
+  await page.getByRole('link', { name: 'Iris, Transitions', exact: true }).click()
   await expect(page).toHaveURL(/#transition-iris$/)
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Iris')
 
@@ -382,7 +382,7 @@ test('the tiles in view play on their own', async ({ page }) => {
   await page.goto('/')
   await gridReady(page)
   // Iris shows and hides its card on its own; the canvas behind the link draws it.
-  const tile = page.getByRole('link', { name: 'Iris, Transitions' })
+  const tile = page.getByRole('link', { name: 'Iris, Transitions', exact: true })
   await tile.scrollIntoViewIfNeeded()
   await expect(tile).toBeInViewport()
   const first = await tile.screenshot()
@@ -396,7 +396,7 @@ test('the grid pill pauses every example and shares the state with the example p
   await gridReady(page)
   await page.getByRole('button', { name: 'Pause autoplay' }).click()
   await expect(page.getByRole('button', { name: 'Play autoplay' })).toBeVisible()
-  await page.getByRole('link', { name: 'Iris, Transitions' }).click()
+  await page.getByRole('link', { name: 'Iris, Transitions', exact: true }).click()
   await expect(page.getByRole('button', { name: 'Play autoplay' })).toBeVisible()
 })
 
