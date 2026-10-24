@@ -21,6 +21,7 @@ export default defineMeta({
     'conditional-rainbow-border',
     'conditional-sparkles',
     'conditional-orbit',
+    'conditional-bubbles',
     'progress-shine',
     'progress-glow',
     'progress-iris',

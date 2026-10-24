@@ -144,6 +144,13 @@ val entries: List<Entry> =
             Example("OrbitExample.kt") { OrbitDemo() },
         ),
         Entry(
+            "conditional-bubbles",
+            Group.Conditional,
+            "Bubbles",
+            "Lets bubbles rise off the element while a condition holds.",
+            Example("BubblesExample.kt") { BubblesDemo() },
+        ),
+        Entry(
             "progress-shine",
             Group.Progress,
             "Shine",

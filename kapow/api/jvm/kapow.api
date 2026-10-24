@@ -35,6 +35,8 @@ public abstract class com/jantursky/kapow/ConditionalEffect {
 public final class com/jantursky/kapow/ConditionalEffect$Companion {
 	public final fun borderBeam-vqZ8o5o (JFLandroidx/compose/ui/graphics/Shape;FJ)Lcom/jantursky/kapow/ConditionalEffect;
 	public static synthetic fun borderBeam-vqZ8o5o$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;FJILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
+	public final fun bubbles-l07J4OM (JF)Lcom/jantursky/kapow/ConditionalEffect;
+	public static synthetic fun bubbles-l07J4OM$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;JFILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
 	public final fun getMinRepeatInterval-UwyO8pc ()J
 	public final fun getRainbowColors ()Ljava/util/List;
 	public final fun glow-5DgIosw (JFLandroidx/compose/ui/graphics/Shape;)Lcom/jantursky/kapow/ConditionalEffect;

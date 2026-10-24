@@ -1,0 +1,55 @@
+---
+title: "Conditional: bubbles"
+description: Small bubbles rise from an element and pop while a condition is true.
+---
+
+Bubbles lets small, see-through bubbles rise from the top edge of an element while a condition holds. They wobble a little on the way up, then swell and pop. Use it for something fizzy, brewing or underwater: a fresh drink, a fish tank, a task that is bubbling along.
+
+## Usage
+
+The sample lets a drink fizz while it is fresh.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.conditionalEffect
+
+@Composable
+fun SodaTile(fresh: Boolean) {
+    Box(
+        Modifier
+            .size(width = 160.dp, height = 110.dp)
+            .conditionalEffect(fresh, ConditionalEffect.bubbles())
+            .background(Color(0xFF3D7BFF), RoundedCornerShape(10.dp)),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `color` | `Color(0xFF9ED8FF)` | Color of the bubbles' rim and their faint fill. |
+| `size` | `10.dp` | Diameter of the largest bubble. |
+
+## Reduced motion
+
+No bubbles are emitted.
+
+## Notes
+
+- Bubbles are particles. They draw through a [particle layer](/guides/particle-layer) when one is above the element, so a clipping parent does not cut them off. Without one they draw around the element.
+- A bubble starts every 0.16 s from somewhere along the top edge and rises for 0.9 to 1.5 s.
+- When the condition turns false, no new bubbles start and the ones in flight rise and pop.
+- Bubbles do not follow the element if it moves.
+
+## Live example
+
+<include example="conditional-bubbles">../_snippets/live-example.mdx</include>

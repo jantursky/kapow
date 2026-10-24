@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.effects.BorderBeamRunner
+import com.jantursky.kapow.effects.BubblesRunner
 import com.jantursky.kapow.effects.ConditionalGlowRunner
 import com.jantursky.kapow.effects.MarchingAntsRunner
 import com.jantursky.kapow.effects.OrbitRunner
@@ -192,6 +193,23 @@ public abstract class ConditionalEffect internal constructor() {
             require(duration.isPositive()) { "duration must be positive" }
             return Orbit(colors, count, size, duration)
         }
+
+        /**
+         * Small bubbles that keep rising from the element's top edge, wobbling a little, then pop, for something
+         * fizzy, bubbling or underwater.
+         *
+         * Bubbles are particles: a [KapowParticleLayer] above the element keeps clipping parents from cutting them
+         * off. With reduced motion there are none.
+         *
+         * @param size the diameter of the largest bubble.
+         */
+        public fun bubbles(
+            color: Color = Color(0xFF9ED8FF),
+            size: Dp = 10.dp,
+        ): ConditionalEffect {
+            require(size > 0.dp) { "size must be positive" }
+            return Bubbles(color, size)
+        }
     }
 
     internal data class Repeat(
@@ -268,5 +286,12 @@ public abstract class ConditionalEffect internal constructor() {
         val duration: Duration,
     ) : ConditionalEffect() {
         override fun createRunner(): ConditionalRunner = OrbitRunner(colors, count, size, duration)
+    }
+
+    internal data class Bubbles(
+        val color: Color,
+        val size: Dp,
+    ) : ConditionalEffect() {
+        override fun createRunner(): ConditionalRunner = BubblesRunner(color, size)
     }
 }

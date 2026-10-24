@@ -5,7 +5,7 @@ description: Effects that stay on while a Boolean is true, and how repeat plays 
 
 A conditional effect runs while a condition is true. `Modifier.conditionalEffect(condition, effect)` starts the effect when the condition becomes true, including on first composition, and winds it down when the condition becomes false. The element then returns to its normal look.
 
-The effects are `repeat`, `glow`, `pushDown`, `smoke`, `borderBeam`, `marchingAnts`, `rainbowBorder`, `sparkles` and `orbit`.
+The effects are `repeat`, `glow`, `pushDown`, `smoke`, `borderBeam`, `marchingAnts`, `rainbowBorder`, `sparkles`, `orbit` and `bubbles`.
 
 ## Glow
 
@@ -86,6 +86,10 @@ Four-point stars twinkle in and out over the element and just past its edges, a 
 ## Orbit
 
 A few glowing particles circle the element on a tipped ellipse, passing behind it smaller and fainter and in front of it at full size. The element draws them itself, outside its bounds. See [orbit](/effects/conditional-orbit).
+
+## Bubbles
+
+Small, see-through bubbles rise from the top edge, wobble and pop. Like smoke, they are particles: when the condition turns false the ones in flight finish rising. See [bubbles](/effects/conditional-bubbles).
 
 ## Repeat
 
