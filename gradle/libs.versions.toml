@@ -5,6 +5,8 @@ compose = "1.12.2"
 crease = "1.1.0"
 multihaptic = "0.4.0"
 coroutines = "1.11.0"
+activity-compose = "1.13.0"
+navigationevent = "1.1.0"
 junit = "4.13.2"
 robolectric = "4.17"
 roborazzi = "1.77.0"
@@ -16,6 +18,7 @@ spotless = "8.10.4"
 ktlint = "1.8.0"
 android-compileSdk = "37"
 android-minSdk = "23"
+android-targetSdk = "37"
 
 [libraries]
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose" }
@@ -27,6 +30,8 @@ compose-components-resources = { module = "org.jetbrains.compose.components:comp
 crease = { module = "io.github.jantursky:crease", version.ref = "crease" }
 multihaptic-core = { module = "top.ltfan.multihaptic:multihaptic-core", version.ref = "multihaptic" }
 multihaptic-compose = { module = "top.ltfan.multihaptic:multihaptic-compose", version.ref = "multihaptic" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
+navigationevent-compose = { module = "org.jetbrains.androidx.navigationevent:navigationevent-compose", version.ref = "navigationevent" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 junit = { module = "junit:junit", version.ref = "junit" }
@@ -37,6 +42,7 @@ roborazzi-compose-desktop = { module = "io.github.takahirom.roborazzi:roborazzi-
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose" }
+android-application = { id = "com.android.application", version.ref = "agp" }
 android-kmp-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
