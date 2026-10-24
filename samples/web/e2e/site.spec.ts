@@ -294,9 +294,101 @@ for (const [view, path] of [['the overview', '/'], ['an example', '/#change-shin
       await ready(page)
       await openSidebar(page)
       // The Compose canvases draw their own pixels, so axe checks the page around them.
-      const results = await new AxeBuilder({ page }).exclude('#stage').exclude('#frame-meter').analyze()
+      const results = await new AxeBuilder({ page })
+        .exclude('#stage')
+        .exclude('#frame-meter')
+        .exclude('#grid-canvas')
+        .analyze()
       const serious = results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical')
       expect(serious.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`)).toEqual([])
     })
   }
 }
+
+// The overview grid: a link per catalog entry laid out by the page, and one canvas behind them drawing the tiles.
+const gridReady = async (page: Page) => {
+  await expect(page.locator('#grid-canvas canvas')).toHaveCount(1, { timeout: 30_000 })
+}
+
+const scrollToGrid = async (page: Page) => {
+  await page.evaluate(() => {
+    const grid = document.getElementById('effect-grid')!
+    window.scrollTo(0, grid.getBoundingClientRect().top + window.scrollY - 100)
+  })
+}
+
+test('the overview grid has a tile for every catalog entry', async ({ page }) => {
+  await page.goto('/')
+  await gridReady(page)
+  const sidebarLinks = await page.locator('#sidebar a').evaluateAll((links) => links.map((a) => a.getAttribute('href')))
+  const tiles = page.locator('#effect-grid a.tile')
+  expect(await tiles.evaluateAll((links) => links.map((a) => a.getAttribute('href')))).toEqual(sidebarLinks)
+  const grid = page.getByRole('region', { name: 'Every effect, live' })
+  for (const group of ['Change effects', 'Conditional effects', 'Progress effects', 'Transitions', 'More']) {
+    await expect(grid.getByRole('heading', { name: group })).toBeAttached()
+  }
+  // Each tile is a link named after its effect and group.
+  await expect(grid.getByRole('link', { name: 'Iris, Transitions' })).toHaveAttribute('href', '#transition-iris')
+})
+
+test('a tile opens its example, by pointer and by keyboard', async ({ page }) => {
+  await page.goto('/')
+  await gridReady(page)
+  await scrollToGrid(page)
+  await page.getByRole('link', { name: 'Iris, Transitions' }).click()
+  await expect(page).toHaveURL(/#transition-iris$/)
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Iris')
+
+  await page.goto('/')
+  await gridReady(page)
+  await page.getByRole('link', { name: 'Spray, Change effects' }).focus()
+  await page.keyboard.press('Enter')
+  await expect(page).toHaveURL(/#change-spray$/)
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Spray')
+})
+
+test('the tiles in view play on their own', async ({ page }) => {
+  const errors = collectErrors(page)
+  await page.goto('/')
+  await gridReady(page)
+  // Iris shows and hides its card on its own; the canvas behind the link draws it.
+  const tile = page.getByRole('link', { name: 'Iris, Transitions' })
+  await tile.scrollIntoViewIfNeeded()
+  await expect(tile).toBeInViewport()
+  const first = await tile.screenshot()
+  expect((await sharp(first).stats()).channels.some((channel) => channel.stdev > 5)).toBe(true)
+  await expect.poll(async () => difference(first, await tile.screenshot()), { timeout: 8_000 }).toBeGreaterThan(1)
+  expect(errors).toEqual([])
+})
+
+test('the grid pill pauses every example and shares the state with the example pages', async ({ page }) => {
+  await page.goto('/')
+  await gridReady(page)
+  await page.getByRole('button', { name: 'Pause autoplay' }).click()
+  await expect(page.getByRole('button', { name: 'Play autoplay' })).toBeVisible()
+  await page.getByRole('link', { name: 'Iris, Transitions' }).click()
+  await expect(page.getByRole('button', { name: 'Play autoplay' })).toBeVisible()
+})
+
+test('scrolling over the grid scrolls the page, all the way to the footer', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'The mouse wheel is a desktop gesture')
+  await page.goto('/')
+  await gridReady(page)
+  await scrollToGrid(page)
+  const tile = page.getByRole('link', { name: 'Shine, Change effects' })
+  const box = (await tile.boundingBox())!
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+  const before = await page.evaluate(() => window.scrollY)
+  for (let i = 0; i < 60; i++) await page.mouse.wheel(0, 400)
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(before + 2000)
+  await expect(page.getByRole('contentinfo')).toBeInViewport()
+})
+
+test('the overview grid never scrolls sideways', async ({ page }) => {
+  await page.goto('/')
+  await gridReady(page)
+  await scrollToGrid(page)
+  await page.waitForTimeout(500)
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
+  expect(overflow).toBeLessThanOrEqual(0)
+})

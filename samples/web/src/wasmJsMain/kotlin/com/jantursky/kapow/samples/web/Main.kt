@@ -5,7 +5,10 @@ import androidx.compose.ui.window.ComposeViewport
 import com.jantursky.kapow.samples.design.KapowTheme
 import kotlinx.browser.document
 
-/** Mounts the frame meter and the stage into the elements index.html sets aside, and fills in the page around them. */
+/**
+ * Mounts the frame meter, the stage and the overview grid into the elements index.html sets aside, and fills in
+ * the page around them.
+ */
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
     renderEntryLists()
@@ -17,5 +20,9 @@ fun main() {
     }
     document.getElementById("stage")?.let { element ->
         ComposeViewport(element) { Gallery() }
+    }
+    document.getElementById("grid-canvas")?.let { element ->
+        ComposeViewport(element) { OverviewGrid() }
+        watchGrid()
     }
 }

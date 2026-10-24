@@ -10,6 +10,7 @@ import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLSelectElement
 import org.w3c.dom.MutationObserver
 import org.w3c.dom.MutationObserverInit
+import org.w3c.dom.asList
 
 /**
  * Whether the page is dark: `data-theme` on the root element, which site.js sets from the saved choice or the
@@ -24,8 +25,9 @@ internal val pageMotion = mutableStateOf(readPageMotion())
 internal val pageHaptics = mutableStateOf(readPageHaptics())
 
 /**
- * Whether the examples play on their own. On by default; the Play/Pause pill in the example header flips it, and
- * `?autoplay=0` in the URL starts the page paused (the README GIF recorder uses it to press the controls itself).
+ * Whether the examples play on their own. On by default; the Play/Pause pills over an example and over the
+ * overview grid flip it, and `?autoplay=0` in the URL starts the page paused (the README GIF recorder uses it to
+ * press the controls itself).
  */
 internal val pageAutoplay = mutableStateOf(!Regex("[?&]autoplay=0(&|$)").containsMatchIn(window.location.search))
 
@@ -59,13 +61,15 @@ internal fun watchPage() {
     }
     document.getElementById("motion")?.addEventListener("change", { pageMotion.value = readPageMotion() })
     document.getElementById("haptics")?.addEventListener("change", { pageHaptics.value = readPageHaptics() })
-    document.getElementById("autoplay")?.addEventListener(
-        "click",
-        {
-            pageAutoplay.value = !pageAutoplay.value
-            showAutoplay(pageAutoplay.value)
-        },
-    )
+    document.querySelectorAll(".autoplay").asList().forEach { button ->
+        button.addEventListener(
+            "click",
+            {
+                pageAutoplay.value = !pageAutoplay.value
+                showAutoplay(pageAutoplay.value)
+            },
+        )
+    }
     window.addEventListener(
         "hashchange",
         {

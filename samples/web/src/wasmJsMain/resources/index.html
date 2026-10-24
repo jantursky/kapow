@@ -77,7 +77,8 @@
                 web, and every frame is drawn without recomposing.
             </p>
             <p class="lede">
-                Pick an effect in the list to see it run, change its parameters and read the code that makes it.
+                Every effect plays below. Pick one to see it large, change its parameters and read the code that
+                makes it.
                 The meter in the bar shows what the page costs, and the motion switch shows how each effect reduces
                 itself.
             </p>
@@ -88,14 +89,27 @@
                     <button type="button" class="copy" id="copy-install">Copy</button>
                 </div>
             </div>
-            <div id="overview-groups" class="groups"></div>
+            <div class="grid-head">
+                <h2 id="grid-title">Every effect, live</h2>
+                <button type="button" id="grid-autoplay" class="ghost-pill autoplay" aria-label="Pause autoplay" data-playing="true">
+                    <svg class="icon-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5v9M11 3.5v9"/></svg>
+                    <svg class="icon-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.2v9.6L12.5 8 5 3.2Z"/></svg>
+                    <span class="autoplay-label">Pause</span>
+                </button>
+            </div>
+            <!-- The links are laid out here; one canvas behind them draws the live tiles of the ones in view. -->
+            <section id="effect-grid" class="effect-grid" aria-labelledby="grid-title">
+                <div class="grid-canvas-track" aria-hidden="true" inert>
+                    <div id="grid-canvas"></div>
+                </div>
+            </section>
         </section>
 
         <section id="example" hidden>
             <p class="eyebrow" id="example-group"></p>
             <div class="example-head">
                 <h1 id="example-title"></h1>
-                <button type="button" id="autoplay" class="ghost-pill" aria-label="Pause autoplay" data-playing="true">
+                <button type="button" id="autoplay" class="ghost-pill autoplay" aria-label="Pause autoplay" data-playing="true">
                     <svg class="icon-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5v9M11 3.5v9"/></svg>
                     <svg class="icon-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.2v9.6L12.5 8 5 3.2Z"/></svg>
                     <span class="autoplay-label">Pause</span>

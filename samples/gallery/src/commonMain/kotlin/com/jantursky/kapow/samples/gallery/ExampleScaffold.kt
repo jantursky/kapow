@@ -30,7 +30,8 @@ import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * The shape of every example page: the live stage on top, its controls under it. While the host's autoplay
- * ([GalleryStage]) is on, [autoplay] plays the example over and over.
+ * ([GalleryStage]) is on, [autoplay] plays the example over and over. Inside an [EffectTile] only the stage
+ * shows, scaled to the tile, and the controls stay out.
  */
 @Composable
 internal fun ExampleScaffold(
@@ -39,6 +40,10 @@ internal fun ExampleScaffold(
     controls: @Composable ColumnScope.() -> Unit,
 ) {
     val onTouch = runAutoplay(autoplay, LocalGalleryAutoplay.current)
+    if (LocalExamplePreview.current) {
+        PreviewStage(stage)
+        return
+    }
     EffectCard(Modifier.fillMaxSize().onTouch(onTouch)) {
         Stage(Modifier.weight(1f)) { stage() }
         Column(verticalArrangement = Arrangement.spacedBy(8.dp), content = controls)
