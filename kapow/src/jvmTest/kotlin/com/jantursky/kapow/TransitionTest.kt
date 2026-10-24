@@ -1,5 +1,12 @@
 package com.jantursky.kapow
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -226,11 +233,111 @@ class TransitionTest {
         }
 
     @Test
-    fun keyFrames() =
+    fun animatedContentKeepsTheOldPageWhileItLeaves() =
+        runEffectTest {
+            var page by mutableStateOf(0)
+            setEffectContent {
+                Box(Modifier.fillMaxSize().background(Color.White)) {
+                    AnimatedContent(
+                        page,
+                        Modifier.offset(150.dp, 150.dp),
+                        transitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
+                    ) { shown ->
+                        SolidElement(
+                            Modifier.kapowTransition(this, KapowEnter.iris(), KapowExit.iris()),
+                            if (shown == 0) Color.Red else Cobalt,
+                        )
+                    }
+                }
+            }
+            mainClock.advanceTimeBy(100)
+            page = 1
+            mainClock.advanceTimeByFrame()
+            mainClock.advanceTimeBy(100)
+            val image = capture()
+            assertEquals(Cobalt, image.colorAt(200, 200), "the new page grows in the middle")
+            assertEquals(Color.Red, image.colorAt(160, 200), "the old page is still shrinking around it")
+            mainClock.advanceTimeBy(600)
+            assertEquals(Cobalt, capture().colorAt(160, 200))
+        }
+
+    @Test
+    fun stockTransitionsCombineWithKapowOnes() =
+        runEffectTest {
+            setEffectContent {
+                Box(Modifier.fillMaxSize().background(Color.White)) {
+                    KapowAnimatedVisibility(
+                        visible,
+                        Modifier.offset(150.dp, 150.dp),
+                        enter = KapowEnter.iris(),
+                        stockEnter = fadeIn(tween(450, easing = LinearEasing)),
+                    ) {
+                        SolidElement(Modifier)
+                    }
+                }
+            }
+            show()
+            mainClock.advanceTimeBy(200)
+            val center = capture().colorAt(200, 200)
+            assertNotEquals(Cobalt, center, "still fading in")
+            assertNotEquals(Color.White, center, "inside the iris")
+            mainClock.advanceTimeBy(600)
+            assertEquals(Cobalt, capture().colorAt(152, 152))
+        }
+
+    @Test
+    fun theSecondShowPlaysTheTransitionAgain() =
         runEffectTest {
             scene(enter = KapowEnter.iris())
-            show()
-            mainClock.advanceTimeBy(150)
-            onRoot().captureRoboImage("src/jvmTest/screenshots/iris_enter_150.png")
+            repeat(2) { round ->
+                show()
+                mainClock.advanceTimeBy(100)
+                assertEquals(Color.White, capture().colorAt(152, 152), "masked in round $round")
+                mainClock.advanceTimeBy(600)
+                visible = false
+                mainClock.advanceTimeBy(200)
+            }
         }
+
+    @Test
+    fun aNewEnterKindIsUsedOnTheNextShow() =
+        runEffectTest {
+            var enter by mutableStateOf(KapowEnter.iris())
+            setEffectContent {
+                Box(Modifier.fillMaxSize().background(Color.White)) {
+                    KapowAnimatedVisibility(visible, Modifier.offset(150.dp, 150.dp), enter) { SolidElement(Modifier) }
+                }
+            }
+            show()
+            mainClock.advanceTimeBy(700)
+            visible = false
+            mainClock.advanceTimeBy(200)
+            enter = KapowEnter.clock()
+            show()
+            mainClock.advanceTimeBy(100)
+            val image = capture()
+            assertEquals(Cobalt, image.colorAt(230, 165), "top right first")
+            assertEquals(Color.White, image.colorAt(170, 165), "top left last")
+        }
+
+    @Test
+    fun keyFrames() {
+        val masks =
+            mapOf(
+                "iris" to KapowEnter.iris(),
+                "clock" to KapowEnter.clock(),
+                "wipe" to KapowEnter.wipe(),
+                "glare" to KapowEnter.glare(color = Color.Yellow),
+                "blinds" to KapowEnter.blinds(slatWidth = 16.dp, staggered = true),
+            )
+        for ((name, mask) in masks) {
+            visible = false
+            runEffectTest {
+                scene(enter = mask)
+                show()
+                mainClock.advanceTimeBy(150)
+                onRoot().captureRoboImage("src/jvmTest/screenshots/${name}_enter_150.png")
+            }
+        }
+    }
 }

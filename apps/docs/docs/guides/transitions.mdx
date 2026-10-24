@@ -145,6 +145,8 @@ The stock transitions and Kapow's keep their own durations. The container waits 
 
 Each factory has a `duration`. Masks default to 450 ms, `poof` to 400 ms, `pop` to 1200 ms and `anvil` to 1400 ms. `pop` and `anvil` include their particles, so they run longer.
 
+If visibility flips back before a transition has finished, Compose interrupts it with a short spring instead of the transition's own timing, as it does for stock transitions. The mask or movement then completes quickly from where it was.
+
 ## Feedback
 
 Both `kapowTransition` and `KapowAnimatedVisibility` take `feedback = KapowFeedbackEvent...`. The event is sent when the content starts to enter or exit. See [Feedback](/guides/feedback).
