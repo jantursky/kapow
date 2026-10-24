@@ -1,6 +1,7 @@
 package com.jantursky.kapow.internal
 
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.GraphicsContext
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.Measurable
@@ -14,6 +15,7 @@ import androidx.compose.ui.node.currentValueOf
 import androidx.compose.ui.node.invalidateDraw
 import androidx.compose.ui.node.invalidatePlacement
 import androidx.compose.ui.node.requireDensity
+import androidx.compose.ui.node.requireGraphicsContext
 import androidx.compose.ui.node.requireLayoutDirection
 import androidx.compose.ui.platform.LocalFontFamilyResolver
 import androidx.compose.ui.text.font.FontFamily
@@ -58,6 +60,7 @@ internal abstract class EffectNode<R : EffectRunner>(
     override val density: Density get() = requireDensity()
     override val layoutDirection: LayoutDirection get() = requireLayoutDirection()
     override val fontFamilyResolver: FontFamily.Resolver get() = currentValueOf(LocalFontFamilyResolver)
+    override val graphicsContext: GraphicsContext get() = requireGraphicsContext()
 
     override fun isReducedMotion(): Boolean =
         resolveReducedMotion(currentValueOf(LocalKapowMotion), coroutineScope.coroutineContext.durationScale)
@@ -78,6 +81,7 @@ internal abstract class EffectNode<R : EffectRunner>(
         this.runner.stop()
         this.runner = runner
         if (isAttached) {
+            runner.attach(this)
             invalidatePlacement()
             invalidateDraw()
         }
@@ -106,6 +110,10 @@ internal abstract class EffectNode<R : EffectRunner>(
 
     override fun onGloballyPositioned(coordinates: LayoutCoordinates) {
         this.coordinates = coordinates
+    }
+
+    override fun onAttach() {
+        runner.attach(this)
     }
 
     override fun onDetach() {

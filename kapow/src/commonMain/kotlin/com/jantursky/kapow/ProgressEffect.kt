@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.effects.GlowProgressRunner
 import com.jantursky.kapow.effects.ShineProgressRunner
 import com.jantursky.kapow.internal.ProgressRunner
 
@@ -48,7 +49,7 @@ public abstract class ProgressEffect internal constructor() {
         val radius: Dp,
         val shape: Shape,
     ) : ProgressEffect() {
-        override fun createRunner(): ProgressRunner = TODO()
+        override fun createRunner(): ProgressRunner = GlowProgressRunner(color, radius, shape)
     }
 
     internal data class Iris(

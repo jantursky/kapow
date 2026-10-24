@@ -144,6 +144,7 @@ internal class ConditionalEffectNode(
     private var effect: ConditionalEffect,
 ) : EffectNode<ConditionalRunner>(effect.createRunner()) {
     override fun onAttach() {
+        super.onAttach()
         if (condition) runner.setActive(this, true)
     }
 

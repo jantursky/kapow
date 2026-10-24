@@ -1,5 +1,6 @@
 package com.jantursky.kapow.internal
 
+import androidx.compose.ui.graphics.GraphicsContext
 import androidx.compose.ui.graphics.GraphicsLayerScope
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.text.font.FontFamily
@@ -23,6 +24,9 @@ internal abstract class EffectRunner {
         drawContent()
     }
 
+    /** Called when the node attaches, or when this runner replaces another on an attached node. */
+    open fun attach(context: EffectContext) {}
+
     /** Stops running work. Called when the element leaves the tree or the effect is replaced. */
     open fun stop() {}
 }
@@ -33,6 +37,7 @@ internal interface EffectContext {
     val density: Density
     val layoutDirection: LayoutDirection
     val fontFamilyResolver: FontFamily.Resolver
+    val graphicsContext: GraphicsContext
 
     /** The element's size. Zero until it is measured. */
     val size: IntSize
@@ -70,7 +75,4 @@ internal abstract class ProgressRunner : EffectRunner() {
 internal abstract class TransitionRunner : EffectRunner() {
     lateinit var progress: () -> Float
     lateinit var entering: () -> Boolean
-
-    /** Called when the node attaches, to start watchers such as particle emission at a given progress. */
-    open fun start(context: EffectContext) {}
 }

@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.effects.GlowRunner
 import com.jantursky.kapow.effects.PulseRunner
 import com.jantursky.kapow.effects.ShineRunner
 import com.jantursky.kapow.internal.ChangeRunner
@@ -151,7 +152,7 @@ public abstract class ChangeEffect internal constructor() {
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
 
-        override fun createRunner(): ChangeRunner = TODO()
+        override fun createRunner(): ChangeRunner = GlowRunner(color, radius, shape)
     }
 
     internal data class Spin(

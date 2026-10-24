@@ -149,10 +149,6 @@ private class TransitionNode(
     private var exit: TransitionKind,
     private var reduced: Boolean,
 ) : EffectNode<TransitionRunner>(createRunner(enter, exit, reduced)) {
-    override fun onAttach() {
-        runner.start(this)
-    }
-
     fun bind(
         progress: State<Float>,
         entering: () -> Boolean,
@@ -170,10 +166,9 @@ private class TransitionNode(
         this.enter = enter
         this.exit = exit
         this.reduced = reduced
-        val old = runner
-        replaceRunner(createRunner(enter, exit, reduced))
-        runner.progress = old.progress
-        runner.entering = old.entering
-        if (isAttached) runner.start(this)
+        val next = createRunner(enter, exit, reduced)
+        next.progress = runner.progress
+        next.entering = runner.entering
+        replaceRunner(next)
     }
 }

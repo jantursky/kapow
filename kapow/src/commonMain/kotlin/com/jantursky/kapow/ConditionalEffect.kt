@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.effects.ConditionalGlowRunner
 import com.jantursky.kapow.internal.ConditionalRunner
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -56,7 +57,7 @@ public abstract class ConditionalEffect internal constructor() {
         val radius: Dp,
         val shape: Shape,
     ) : ConditionalEffect() {
-        override fun createRunner(): ConditionalRunner = TODO()
+        override fun createRunner(): ConditionalRunner = ConditionalGlowRunner(color, radius, shape)
     }
 
     internal data class PushDown(
