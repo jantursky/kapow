@@ -4,10 +4,12 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.effects.GlowRunner
 import com.jantursky.kapow.effects.PulseRunner
+import com.jantursky.kapow.effects.RippleRunner
 import com.jantursky.kapow.effects.RiseRunner
 import com.jantursky.kapow.effects.ShineRunner
 import com.jantursky.kapow.effects.SpinRunner
@@ -101,6 +103,25 @@ public abstract class ChangeEffect internal constructor() {
             axis: SpinAxis = SpinAxis.Y,
             rate: SpinRate = SpinRate.Default,
         ): ChangeEffect = Spin(axis, rate)
+
+        /**
+         * An ink ripple that spreads from [origin] until it covers the element, clipped to the element's [shape],
+         * and fades out. With reduced motion the shape tints in [color] for a moment instead, without spreading.
+         *
+         * @param color the ink. Its alpha sets how strong the ripple is.
+         * @param shape the element's shape. The ripple never draws outside it.
+         * @param origin where the ripple starts, as fractions of the element's width and height.
+         * @param duration how long the ripple takes to spread and fade.
+         */
+        public fun ripple(
+            color: Color = Color(0x66FFFFFF),
+            shape: Shape = RectangleShape,
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+        ): ChangeEffect {
+            require(duration.isPositive()) { "duration must be positive" }
+            return Ripple(color, shape, origin, duration)
+        }
     }
 
     internal data class Delayed(
@@ -168,6 +189,17 @@ public abstract class ChangeEffect internal constructor() {
         override val cooldown: Duration get() = Duration.ZERO
 
         override fun createRunner(): ChangeRunner = SpinRunner(axis, rate)
+    }
+
+    internal data class Ripple(
+        val color: Color,
+        val shape: Shape,
+        val origin: TransformOrigin,
+        val duration: Duration,
+    ) : ChangeEffect() {
+        override val cooldown: Duration get() = Duration.ZERO
+
+        override fun createRunner(): ChangeRunner = RippleRunner(color, shape, origin, duration)
     }
 }
 

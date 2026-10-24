@@ -11,6 +11,7 @@ export default defineMeta({
     'change-spray',
     'change-rise',
     'change-spin',
+    'change-ripple',
     'change-delay',
     'conditional-repeat',
     'conditional-glow',

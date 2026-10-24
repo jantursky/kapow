@@ -17,6 +17,8 @@ public final class com/jantursky/kapow/ChangeEffect$Companion {
 	public static synthetic fun glow-5DgIosw$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;ILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun pulse-RPmYEkk (Landroidx/compose/ui/graphics/Shape;JLcom/jantursky/kapow/PulseStyle;I)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun pulse-RPmYEkk$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Landroidx/compose/ui/graphics/Shape;JLcom/jantursky/kapow/PulseStyle;IILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun ripple-hjFrPpg (JLandroidx/compose/ui/graphics/Shape;JJ)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun ripple-hjFrPpg$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JLandroidx/compose/ui/graphics/Shape;JJILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun rise (Lcom/jantursky/kapow/ParticleContent;)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun rise$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Lcom/jantursky/kapow/ParticleContent;ILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun shine-O7O2-qc (FJJ)Lcom/jantursky/kapow/ChangeEffect;

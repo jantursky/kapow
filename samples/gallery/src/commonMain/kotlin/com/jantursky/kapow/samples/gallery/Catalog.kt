@@ -74,6 +74,13 @@ val entries: List<Entry> =
             Example("SpinExample.kt") { SpinDemo() },
         ),
         Entry(
+            "change-ripple",
+            Group.Change,
+            "Ripple",
+            "An ink ripple spreads across the element and fades.",
+            Example("RippleExample.kt") { RippleDemo() },
+        ),
+        Entry(
             "change-delay",
             Group.Change,
             "Delay",
