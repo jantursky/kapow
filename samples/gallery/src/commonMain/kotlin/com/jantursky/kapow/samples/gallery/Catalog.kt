@@ -102,6 +102,13 @@ val entries: List<Entry> =
             Example("SpeedLinesExample.kt") { SpeedLinesDemo() },
         ),
         Entry(
+            "change-sparkle",
+            Group.Change,
+            "Sparkle",
+            "Stars twinkle in and out over the element.",
+            Example("SparkleExample.kt") { SparkleDemo() },
+        ),
+        Entry(
             "change-delay",
             Group.Change,
             "Delay",

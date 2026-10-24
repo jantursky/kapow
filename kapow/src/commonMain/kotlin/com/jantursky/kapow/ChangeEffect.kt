@@ -14,6 +14,7 @@ import com.jantursky.kapow.effects.PulseRunner
 import com.jantursky.kapow.effects.RippleRunner
 import com.jantursky.kapow.effects.RiseRunner
 import com.jantursky.kapow.effects.ShineRunner
+import com.jantursky.kapow.effects.SparkleRunner
 import com.jantursky.kapow.effects.SpeedLinesRunner
 import com.jantursky.kapow.effects.SpinRunner
 import com.jantursky.kapow.effects.SprayRunner
@@ -168,6 +169,21 @@ public abstract class ChangeEffect internal constructor() {
             require(count > 0) { "count must be positive" }
             return SpeedLines(color, count)
         }
+
+        /**
+         * Four-point stars that twinkle in and out one after another over the element, for about 0.8 seconds. Each
+         * star swells, turns a little and dies away where it appeared. With reduced motion no stars appear and the
+         * element brightens briefly instead.
+         *
+         * @param count how many stars a change lights up.
+         */
+        public fun sparkle(
+            color: Color = Color.White,
+            count: Int = 6,
+        ): ChangeEffect {
+            require(count > 0) { "count must be positive" }
+            return Sparkle(color, count)
+        }
     }
 
     internal data class Delayed(
@@ -273,6 +289,15 @@ public abstract class ChangeEffect internal constructor() {
         override val cooldown: Duration get() = Duration.ZERO
 
         override fun createRunner(): ChangeRunner = SpeedLinesRunner(color, count)
+    }
+
+    internal data class Sparkle(
+        val color: Color,
+        val count: Int,
+    ) : ChangeEffect() {
+        override val cooldown: Duration get() = Duration.ZERO
+
+        override fun createRunner(): ChangeRunner = SparkleRunner(color, count)
     }
 }
 

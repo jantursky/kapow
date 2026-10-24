@@ -1,0 +1,58 @@
+---
+title: "Change: sparkle"
+description: Four-point stars twinkle in and out over an element when a value changes.
+---
+
+Sparkle lights up a handful of small four-point stars over the element, one after another, each swelling and dying away where it appeared. It is quieter than a spray: nothing flies off. Use it for something that just got a little better, such as points added to a card or an item that became premium.
+
+## Usage
+
+The sample twinkles white stars over a loyalty card each time its points go up.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun LoyaltyCard(points: Int) {
+    Box(
+        Modifier
+            .size(width = 240.dp, height = 140.dp)
+            .changeEffect(points, ChangeEffect.sparkle(color = Color.White, count = 8))
+            .background(Color(0xFF6B62F2)),
+    ) {
+        BasicText("$points pts")
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `color` | `Color.White` | Color of the stars. |
+| `count` | `6` | How many stars one change lights up. Must be positive. |
+
+## Reduced motion
+
+No stars appear. The element brightens briefly instead.
+
+## Notes
+
+- The stars are spread over the element on a grid of about `count` cells, one star per cell, so they don't clump. Every change picks new spots from a fixed seed, so the pattern is the same from run to run.
+- A star is a third of the element's shorter side, kept between 10 dp and 22 dp, and some are smaller than that.
+- The stars light up one by one over 0.35 s, so `count = 8` starts one every 50 ms. Each lives about 0.45 s, and the last is gone about 0.8 s after the change.
+- Stars draw through a [particle layer](/guides/particle-layer) when one is above the element, and around the element without one. Stars that are twinkling do not follow the element if it moves or scrolls.
+- There is no cooldown. A change while stars are twinkling starts a new set.
+
+## Live example
+
+<include example="change-sparkle">../_snippets/live-example.mdx</include>
