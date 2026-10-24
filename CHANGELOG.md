@@ -4,6 +4,8 @@ All notable changes to `io.github.jantursky:kapow` and its companion artifacts a
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-24
+
 ### Added
 
 - Change effects that play once when a value changes: `Modifier.changeEffect(value, effect)` with `ChangeEffect.spray` (particles in a `ParticleShape`, as text or from a painter), `rise` (a label that floats up), `shine`, `pulse` (a ring or fill in the element's `Shape`), `glow`, `spin` (around the X, Y or Z axis), `ripple`, `flash`, `burst` (a comic star burst), `speedLines`, `sparkle`, `fireworks`, `confettiPop`, `trace` (a stroke around the outline), `strike`, `stamp` and `glitch`. `.delay(…)` starts any of them later. Shine, and a pulse with more than one ring, ignore changes that arrive while they still play, so quick changes don't stack up. The first composition plays nothing.
@@ -17,4 +19,5 @@ All notable changes to `io.github.jantursky:kapow` and its companion artifacts a
 - `kapow-multihaptic` (`io.github.jantursky:kapow-multihaptic`): `rememberMultihapticFeedback()` plays feedback events as haptics through multihaptic.
 - Targets: Android (minSdk 23), iOS, JVM and wasmJs. The core needs only Compose runtime, foundation, UI and animation. Not yet checked on an Android or iOS device, or in Firefox and Safari.
 
-[Unreleased]: https://github.com/jantursky/kapow/commits/main
+[Unreleased]: https://github.com/jantursky/kapow/compare/1.0.0...HEAD
+[1.0.0]: https://github.com/jantursky/kapow/releases/tag/1.0.0
