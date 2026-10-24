@@ -96,6 +96,20 @@ test('the reduced motion switch offers system, off and on', async ({ page }) => 
   await expect(motion).toHaveValue('reduced')
 })
 
+test('haptics are off by default and firing with them on raises no errors', async ({ page }) => {
+  const errors = collectErrors(page)
+  await page.goto('/#change-shine')
+  await ready(page)
+  const haptics = page.getByLabel('Haptics')
+  await expect(haptics).not.toBeChecked()
+  await haptics.check()
+  await page.locator('#stage canvas').focus()
+  await page.keyboard.press('Tab')
+  await page.keyboard.press('Enter')
+  await page.waitForTimeout(700)
+  expect(errors).toEqual([])
+})
+
 test('the frame meter renders', async ({ page }) => {
   await page.goto('/')
   await ready(page)
@@ -122,6 +136,7 @@ const LIVE = [
   'conditional-glow',
   'progress-shine',
   'progress-glow',
+  'progress-scroll',
   'more-hinge',
   'more-feedback',
   'change-spray',

@@ -121,6 +121,19 @@ p code {
     color: var(--kapow-ash);
 }
 
+.haptics {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font: 500 13px/20px var(--kapow-font);
+    letter-spacing: 0.33px;
+    color: var(--kapow-ash);
+}
+
+.haptics input {
+    accent-color: var(--kapow-action);
+}
+
 select {
     padding: 4px 8px;
     border: 1px solid var(--kapow-hairline);
@@ -432,7 +445,8 @@ h1 {
     }
 
     /* Hidden from sight only: the select still needs its name. */
-    .motion span {
+    .motion span,
+    .haptics span {
         position: absolute;
         width: 1px;
         height: 1px;

@@ -122,6 +122,13 @@ internal val entries: List<Entry> =
             Example("ProgressGlowExample.kt") { ProgressGlowDemo() },
         ),
         Entry(
+            "progress-scroll",
+            Group.Progress,
+            "Scroll",
+            "An effect that follows how far a list has scrolled.",
+            Example("ScrollProgressExample.kt") { ScrollProgressDemo() },
+        ),
+        Entry(
             "progress-iris",
             Group.Progress,
             "Iris",

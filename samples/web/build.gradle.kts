@@ -75,6 +75,7 @@ kotlin {
             dependencies {
                 implementation(project(":samples:design"))
                 implementation(project(":kapow"))
+                implementation(project(":kapow-multihaptic"))
             }
         }
     }

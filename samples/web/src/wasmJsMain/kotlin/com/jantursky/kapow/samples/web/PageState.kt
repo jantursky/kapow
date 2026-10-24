@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.jantursky.kapow.KapowMotion
 import kotlinx.browser.document
 import kotlinx.browser.window
+import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLSelectElement
 import org.w3c.dom.MutationObserver
 import org.w3c.dom.MutationObserverInit
@@ -17,6 +18,9 @@ internal val pageIsDark = mutableStateOf(readPageIsDark())
 /** The reduced-motion select in the nav, as `LocalKapowMotion` wants it. */
 internal val pageMotion = mutableStateOf(readPageMotion())
 
+/** The "Haptics" checkbox in the nav: whether effects ask the browser to vibrate. */
+internal val pageHaptics = mutableStateOf(readPageHaptics())
+
 /** The entry in the URL hash (`#change-shine`), or null for the overview. */
 internal val pageEntry = mutableStateOf(readPageEntry())
 
@@ -29,9 +33,11 @@ private fun readPageMotion(): KapowMotion =
         else -> KapowMotion.System
     }
 
+private fun readPageHaptics(): Boolean = (document.getElementById("haptics") as? HTMLInputElement)?.checked == true
+
 private fun readPageEntry(): Entry? = entryById(window.location.hash.removePrefix("#"))
 
-/** Keeps the three states above in step with the page. */
+/** Keeps the four states above in step with the page. */
 internal fun watchPage() {
     document.documentElement?.let { root ->
         MutationObserver { _, _ -> pageIsDark.value = readPageIsDark() }
@@ -44,6 +50,7 @@ internal fun watchPage() {
             )
     }
     document.getElementById("motion")?.addEventListener("change", { pageMotion.value = readPageMotion() })
+    document.getElementById("haptics")?.addEventListener("change", { pageHaptics.value = readPageHaptics() })
     window.addEventListener(
         "hashchange",
         {
