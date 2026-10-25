@@ -58,5 +58,6 @@ export default defineMeta({
     'transition-shatter',
     'transition-disintegrate',
     'text-typewriter',
+    'text-counter',
   ],
 })

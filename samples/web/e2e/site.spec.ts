@@ -210,6 +210,7 @@ const LIVE = [
   'transition-shatter',
   'transition-disintegrate',
   'text-typewriter',
+  'text-counter',
 ]
 
 for (const id of LIVE) {

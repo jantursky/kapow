@@ -430,6 +430,13 @@ val entries: List<Entry> =
             "Text that types itself, with a cursor, and keeps its size.",
             Example("TypewriterExample.kt") { TypewriterDemo() },
         ),
+        Entry(
+            "text-counter",
+            Group.More,
+            "Counter",
+            "A number that counts or rolls to its new value.",
+            Example("CounterExample.kt") { CounterDemo() },
+        ),
     )
 
 /** The entry with [id], the part of a link after `#`, or null. */

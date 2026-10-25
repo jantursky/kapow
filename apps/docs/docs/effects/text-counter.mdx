@@ -1,0 +1,60 @@
+---
+title: "Text: counter"
+description: A number that counts through the values in between and settles exactly on the new one.
+---
+
+`KapowCounter` shows a whole number. The first composition shows it as it is. When the value changes, the number moves to the new one over a short time and ends exactly on it.
+
+## Usage
+
+The sample shows a score that counts up when it changes. The `format` function runs for every in-between value, so it can add separators or units.
+
+```kotlin
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.sp
+import com.jantursky.kapow.CounterMode
+import com.jantursky.kapow.KapowCounter
+import kotlin.time.Duration.Companion.milliseconds
+
+@Composable
+fun Score(score: Long) {
+    KapowCounter(
+        value = score,
+        style = TextStyle(fontSize = 40.sp),
+        mode = CounterMode.Count,
+        format = { "$it pts" },
+        duration = 800.milliseconds,
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `value` | | The value to show. |
+| `modifier` | `Modifier` | Modifier for the counter. |
+| `style` | `TextStyle.Default` | Text style. |
+| `mode` | `CounterMode.Count` | `Count` counts through the values in between. |
+| `format` | `{ it.toString() }` | Turns a value into the text to show. Called for every in-between value. |
+| `duration` | `600.milliseconds` | How long the move takes. Must not be negative. |
+| `easing` | `FastOutSlowInEasing` | The curve of the move. |
+
+## Reduced motion
+
+The new value appears at once.
+
+## Notes
+
+- The first composition shows the value without animating. Only changes after that move.
+- While the number moves, the counter is as wide as the wider of the old and the new text, aligned to the end, so its neighbors stay put. When the move ends, it takes the width of the new text.
+- Screen readers read the new value as soon as it is set, never a value in between.
+- The move is monotonic and ends exactly on the new value, also for values near the limits of `Long`.
+- A change during a move continues from the value currently shown.
+- Frames do not recompose anything. A value change recomposes the caller once.
+- A font with tabular figures, or a monospaced font, keeps the digits from shifting while they change.
+
+## Live example
+
+<include example="text-counter">../_snippets/live-example.mdx</include>
