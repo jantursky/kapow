@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.ChangeEffect
 import com.jantursky.kapow.changeEffect
@@ -26,6 +27,8 @@ import com.jantursky.kapow.samples.design.KapowTheme
 fun ConfettiPopExample(
     payments: Int,
     pieces: Int,
+    ribbonRatio: Float = 1f / 3f,
+    pieceSize: Dp = 7.dp,
 ) {
     Row(
         Modifier
@@ -42,8 +45,10 @@ fun ConfettiPopExample(
         }
         Box(
             Modifier
-                .changeEffect(payments, ChangeEffect.confettiPop(count = pieces))
-                .clip(KapowShapes.pill)
+                .changeEffect(
+                    payments,
+                    ChangeEffect.confettiPop(count = pieces, ribbonRatio = ribbonRatio, pieceSize = pieceSize),
+                ).clip(KapowShapes.pill)
                 .background(KapowEffectColors.amber)
                 .padding(horizontal = 14.dp, vertical = 6.dp),
         ) {

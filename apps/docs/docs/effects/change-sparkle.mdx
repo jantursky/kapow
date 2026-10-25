@@ -40,10 +40,16 @@ fun LoyaltyCard(points: Int) {
 | --- | --- | --- |
 | `color` | `Color.White` | Color of the stars. |
 | `count` | `6` | How many stars one change lights up. Must be positive. |
+| `size` | `Dp.Unspecified` | How big each star is. Unspecified uses a third of the element's shorter side, between 10 and 22 dp. Must be positive. |
+| `duration` | `800.milliseconds` | How long the whole twinkle takes, from the first star appearing to the last going out. Must be positive. |
+| `spread` | `1f` | How much of the element the stars cover, as a factor on its size around its center. Above 1 stars also land outside the element. Must be positive. |
+| `spin` | `-90f..90f` | The range each star's turning speed is picked from, in degrees per second. |
+| `shape` | `ParticleShape.Sparkle` | What each star looks like. |
+| `seed` | `0` | The first seed. Each change takes the next ones, so the same seed gives the same pattern. |
 
 ## Reduced motion
 
-No stars appear. The element brightens briefly instead.
+No stars appear. The element brightens briefly instead. With `reducedMotion(ReducedMotionMode.EndState)` nothing shows at all, since the effect ends at rest.
 
 ## Notes
 

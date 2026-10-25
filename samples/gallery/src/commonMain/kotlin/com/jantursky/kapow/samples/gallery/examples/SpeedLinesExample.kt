@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.SpeedLineDirections
 import com.jantursky.kapow.changeEffect
 import com.jantursky.kapow.samples.design.KapowCaption
 import com.jantursky.kapow.samples.design.KapowText
@@ -23,12 +24,14 @@ fun SpeedLinesExample(
     rings: Int,
     color: Color,
     count: Int,
+    directions: SpeedLineDirections = SpeedLineDirections.All,
+    taper: Float = 0f,
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(40.dp)) {
         Box(
             Modifier
                 .size(64.dp)
-                .changeEffect(rings, ChangeEffect.speedLines(color, count))
+                .changeEffect(rings, ChangeEffect.speedLines(color, count, directions = directions, taper = taper))
                 .background(color, CircleShape),
             contentAlignment = Alignment.Center,
         ) {

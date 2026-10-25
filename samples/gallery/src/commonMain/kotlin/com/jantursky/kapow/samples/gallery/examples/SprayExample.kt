@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.ChangeEffect
 import com.jantursky.kapow.ParticleContent
+import com.jantursky.kapow.ParticlePhysics
 import com.jantursky.kapow.ParticleShape
 import com.jantursky.kapow.changeEffect
 import com.jantursky.kapow.samples.design.KapowEffectColors
@@ -25,8 +26,9 @@ fun SprayExample(
     likes: Int,
     shape: ParticleShape,
     count: Int,
+    physics: ParticlePhysics = ParticlePhysics.Default,
 ) {
-    val spray = ChangeEffect.spray(ParticleContent.shape(shape), count)
+    val spray = ChangeEffect.spray(ParticleContent.shape(shape), count, physics)
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
         Box(
             Modifier

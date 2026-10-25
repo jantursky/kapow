@@ -3,23 +3,31 @@ package com.jantursky.kapow.effects
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ParticlePhysics
 import com.jantursky.kapow.internal.ChangeRunner
 import com.jantursky.kapow.internal.EffectContext
+import com.jantursky.kapow.internal.applyTo
+import com.jantursky.kapow.internal.growthCurve
+import com.jantursky.kapow.internal.opacityCurve
 import com.jantursky.kapow.particles.Emission
 import com.jantursky.kapow.particles.ParticleBatch
 import com.jantursky.kapow.particles.ParticlePainter
 import com.jantursky.kapow.particles.ParticleSystem
 import com.jantursky.kapow.particles.Spread
+import com.jantursky.kapow.particles.pickColors
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos
+import kotlin.math.floor
 
 /**
  * [count] pieces of confetti thrown up and out from across the middle of an element [width] px wide, then pulled
@@ -59,11 +67,21 @@ internal fun confettiFlip(
 /** Pieces stay opaque for most of their life and fade over the last third. */
 internal fun confettiOpacity(progress: Float): Float = if (progress < 0.66f) 1f else (1f - progress) / 0.34f
 
-/** The size of piece [index]: every third one is a long thin ribbon, the rest small rectangles. */
+/** The size of piece [index]: by default every third one is a long thin ribbon, the rest small rectangles. */
 internal fun confettiPiece(
     index: Int,
     unit: Float,
-): Size = if (index % 3 == 2) Size(unit * 0.5f, unit * 2.2f) else Size(unit, unit * 1.4f)
+    ribbonRatio: Float = RIBBON_RATIO,
+): Size = if (isRibbon(index, ribbonRatio)) Size(unit * 0.5f, unit * 2.2f) else Size(unit, unit * 1.4f)
+
+/** Whether piece [index] is a ribbon when about [ratio] of all pieces are: 1/3 makes every third one. */
+internal fun isRibbon(
+    index: Int,
+    ratio: Float,
+): Boolean = floor((index + 1) * ratio + RIBBON_EPSILON) > floor(index * ratio + RIBBON_EPSILON)
+
+private const val RIBBON_RATIO = 1f / 3f
+private const val RIBBON_EPSILON = 1e-4f
 
 private const val FLIP_RATE = 2.5f
 
@@ -71,10 +89,15 @@ private const val FLIP_RATE = 2.5f
 internal class ConfettiPopRunner(
     private val colors: List<Color>,
     private val count: Int,
+    private val physics: ParticlePhysics = ParticlePhysics.Default,
+    private val ribbonRatio: Float = RIBBON_RATIO,
+    private val pieceSize: Dp = 7.dp,
+    private val origin: TransformOrigin = TransformOrigin.Center,
+    firstSeed: Int = 0,
 ) : ChangeRunner() {
     private val flash = Flash()
     private var flashJob: Job? = null
-    private var seed = 0
+    private var seed = firstSeed
 
     override val needsLayer: Boolean get() = true
 
@@ -90,20 +113,42 @@ internal class ConfettiPopRunner(
     override fun fire(context: EffectContext) {
         if (context.isReducedMotion()) {
             flashJob?.cancel()
-            flashJob = context.scope.launch { flash.play() }
+            if (context.showsReducedStandIn()) flashJob = context.scope.launch { flash.play(context) }
             return
         }
         val width = context.size.width.toFloat()
-        val system = ParticleSystem(confettiEmission(count, width, context.density), seed++)
-        val unit = with(context.density) { 7.dp.toPx() }
+        val height = context.size.height.toFloat()
+        val emission =
+            physics.applyTo(
+                confettiEmission(count, width, context.density),
+                context.density.density,
+                Size(width, height),
+                context.layoutDirection,
+            )
+        val pieceColors = pickColors(colors, physics.colorPick, count, seed)
+        val system = ParticleSystem(emission, seed++)
+        val unit = with(context.density) { pieceSize.toPx() }
         val painter =
             ParticlePainter { i, alpha ->
-                val piece = confettiPiece(i, unit)
+                val piece = confettiPiece(i, unit, ribbonRatio)
                 val w = piece.width * confettiFlip(system.rotation[i], i * 1.7f)
-                drawRect(colors[i % colors.size], Offset(-w / 2, -piece.height / 2), Size(w, piece.height), alpha)
+                drawRect(
+                    pieceColors[i % pieceColors.size],
+                    Offset(-w / 2, -piece.height / 2),
+                    Size(w, piece.height),
+                    alpha,
+                )
             }
-        val batch = ParticleBatch(system, painter, opacity = ::confettiOpacity)
-        batch.origin = Offset(width / 2f, context.size.height / 2f)
+        val batch =
+            ParticleBatch(
+                system,
+                painter,
+                opacity = physics.opacityCurve(::confettiOpacity),
+                growth = physics.growthCurve { 1f },
+            )
+        batch.origin = Offset(width * origin.pivotFractionX, height * origin.pivotFractionY)
+        batch.timeScale = context.speed
+        batch.blendMode = physics.blendMode
         context.emit(batch)
     }
 

@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.ParticleShape
 import com.jantursky.kapow.changeEffect
 import com.jantursky.kapow.samples.design.KapowEffectColors
 import com.jantursky.kapow.samples.design.KapowText
@@ -24,11 +25,13 @@ fun SparkleExample(
     points: Int,
     color: Color,
     count: Int,
+    spread: Float = 1f,
+    shape: ParticleShape = ParticleShape.Sparkle,
 ) {
     Column(
         Modifier
             .size(width = 240.dp, height = 140.dp)
-            .changeEffect(points, ChangeEffect.sparkle(color, count))
+            .changeEffect(points, ChangeEffect.sparkle(color, count, spread = spread, shape = shape))
             .clip(RoundedCornerShape(20.dp))
             .background(Brush.linearGradient(listOf(KapowEffectColors.violet, KapowEffectColors.cobalt)))
             .padding(20.dp),

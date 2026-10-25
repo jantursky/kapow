@@ -43,10 +43,20 @@ fun CartCount(items: Int) {
 | Parameter | Default | Description |
 | --- | --- | --- |
 | `particles` | `ParticleContent.text("+1")` | What floats up. `ParticleContent.text(text, style)` draws a label, and the default style is 16 sp semibold amber. `ParticleContent.painter(...)` draws an icon. `ParticleContent.shape(...)` also works. |
+| `distance` | `Dp.Unspecified` | About how far the particle floats before it expires. Unspecified keeps the standard 44 dp. Must be positive. |
+| `duration` | `1200.milliseconds` | How long the particle lives. Must be positive. |
+| `drift` | `0f` | The heading in degrees away from straight up. Positive leans right. |
+| `wobble` | `4.dp` | How far the particle sways from side to side. Must not be negative. |
+| `startOffset` | `DpOffset.Zero` | Where the particle starts, measured from `anchor`. |
+| `scaleIn` | `0.4f` | The size the particle is born at, as a fraction of its full size. It grows to full size over the first 15 % of its life. From 0 to 1. |
+| `scaleOut` | `1f` | The size factor at the end of its life: 1 stays full size, 0.5 shrinks to half. |
+| `fade` | `null` | An `Easing` that maps life progress to how faded the particle is. Null keeps it opaque for the first half of its life, then fades it out. |
+| `label` | `null` | Builds the text for each change from the value that changed, for example `{ "+$it" }`. It applies when `particles` is `ParticleContent.text`. Remember the lambda: a new instance makes the effect unequal. |
+| `anchor` | `TransformOrigin(0.5f, 0f)` | Where the particle starts, as fractions of the element's width and height. The default is the middle of the top edge. |
 
 ## Reduced motion
 
-No label floats. The element brightens briefly.
+No label floats. The element brightens briefly. With `reducedMotion(ReducedMotionMode.EndState)` nothing shows at all, since the effect ends at rest.
 
 ## Notes
 
@@ -54,7 +64,7 @@ No label floats. The element brightens briefly.
 - Each change emits one particle. Two quick changes float two labels, each on its own.
 - The label drifts up with a slight horizontal wobble and fades out.
 - The label is measured once per emission.
-- The label is a fixed string. If you want the number to differ per change, put it in a `ParticleContent.text` built from your state, for example `"+$delta"`.
+- To show a different text for each change, pass `label`, for example `label = { "+$it" }`. It receives the value that changed.
 
 ## Live example
 

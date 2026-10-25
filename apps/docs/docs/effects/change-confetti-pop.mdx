@@ -43,10 +43,15 @@ fun PaidBadge(paid: Boolean) {
 | --- | --- | --- |
 | `colors` | `ParticleContent.DefaultColors` | The colors of the pieces, taken in turn. The default is amber, coral, violet and cobalt. Must not be empty. |
 | `count` | `28` | How many pieces one change throws. Must be positive. |
+| `physics` | `ParticlePhysics.Default` | How the pieces launch and move: direction and spread, speed, gravity, drag, lifetime, spin, fade curve, emission area, blend mode and color pick. Size and scale parts are ignored, use `pieceSize`. Parts you leave out keep the pop's own values. |
+| `ribbonRatio` | `1f / 3f` | The share of pieces that are long thin ribbons, from 0 to 1. The default makes every third piece a ribbon. |
+| `pieceSize` | `7.dp` | The width of the small rectangles. Ribbons and the other pieces are sized from it. Must be positive. |
+| `origin` | `TransformOrigin.Center` | Where the confetti starts, as fractions of the element's width and height. An `EmissionArea` in the physics is centered on it. |
+| `seed` | `0` | The first seed. Each change takes the next one. |
 
 ## Reduced motion
 
-No confetti is thrown. The element brightens briefly.
+No confetti is thrown. The element brightens briefly. With `reducedMotion(ReducedMotionMode.EndState)` nothing shows at all, since the effect ends at rest.
 
 ## Notes
 
@@ -54,7 +59,7 @@ No confetti is thrown. The element brightens briefly.
 - The pieces start spread across the middle of the element, fly up to about 100 dp above it, then fall under gravity while drag slows them. They fade over the last third of their life and are gone within two seconds.
 - Pieces draw through a [particle layer](/guides/particle-layer) when one is above the element, so a clipping parent does not cut them off. Without one they draw around the element.
 - There is no cooldown, so quick changes start overlapping pops.
-- It is a small preset, not a confetti engine: there is no wind, no emitter shape and no continuous stream. For a full-screen celebration use a dedicated confetti library.
+- It is a small preset, not a confetti engine: there is no wind and no continuous stream. For a full-screen celebration use a dedicated confetti library.
 
 ## Live example
 

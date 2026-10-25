@@ -42,10 +42,18 @@ fun StreakScreen(days: Int) {
 | --- | --- | --- |
 | `colors` | `ParticleContent.DefaultColors` | Colors of the sparks, taken in turn: amber, coral, violet and cobalt by default. The rocket and its trail are the first color, lightened. Must not be empty. |
 | `count` | `28` | How many sparks the explosion throws. Must be positive. |
+| `rocketHeight` | `100.dp` | How high the rocket climbs before it bursts. Must be positive. |
+| `rocketDuration` | `450.milliseconds` | How long the climb takes. Must be positive. |
+| `burstRadius` | `Dp.Unspecified` | About how far the sparks fly. Unspecified keeps the standard 100 dp. |
+| `trailLength` | `1f` | How long the embers behind the rocket last, as a factor on the standard. 0 leaves no trail. |
+| `particleSize` | `7.dp` | The size of the rocket and the sparks. Must be positive. |
+| `origin` | `TransformOrigin(0.5f, 0f)` | Where the rocket launches from, as fractions of the element's width and height. The default is the middle of the top edge. |
+| `physics` | `ParticlePhysics.Default` | How the sparks of the explosion move: direction and spread, speed, gravity, drag, lifetime, spin, scales, fade, emission area, blend mode and color pick. The rocket and its trail ignore it, and so does `size`: use `particleSize`. |
+| `seed` | `0` | The first seed. Each change takes the next ones. |
 
 ## Reduced motion
 
-Nothing is launched. The element brightens briefly instead.
+Nothing is launched. The element brightens briefly instead. With `reducedMotion(ReducedMotionMode.EndState)` nothing shows at all, since the effect ends at rest.
 
 ## Notes
 

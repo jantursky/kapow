@@ -201,6 +201,7 @@ internal class ChangeEffectNode(
         val plan = effect.plan()
         val runner = runner
         val event = feedback
+        val changed = value
         coroutineScope.launch {
             val accepted = withFrameNanos { now -> gate.tryAccept(now, plan.gateWindow) }
             if (!accepted) return@launch
@@ -208,6 +209,7 @@ internal class ChangeEffectNode(
             // The effect may have been replaced or turned off while the delay ran.
             if (runner !== this@ChangeEffectNode.runner || !isEnabled) return@launch
             perform(event)
+            runner.changedValue = changed
             plan.play(runner, this@ChangeEffectNode)
         }
     }

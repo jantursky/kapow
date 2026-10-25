@@ -1,11 +1,14 @@
 package com.jantursky.kapow
 
+import androidx.compose.animation.core.Easing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.effects.BurstRunner
 import com.jantursky.kapow.effects.ColorFlashRunner
@@ -83,21 +86,92 @@ public abstract class ChangeEffect internal constructor() {
 
     public companion object {
         /**
-         * A burst of particles that fan upward from the element, grow, then fade.
+         * A burst of particles that fan upward from the element, grow, then fade. With reduced motion no particles
+         * appear and the element brightens briefly instead.
          *
          * @param particles what each particle looks like.
          * @param count how many particles a change sprays.
+         * @param physics how the particles launch and move. By default they fan 100 degrees around straight up
+         *   from within 6 dp of [origin], are braked by drag and pulled down by gravity. Every part of the physics
+         *   is used; an [EmissionArea] is centered on [origin].
+         * @param origin where the particles start, as fractions of the element's width and height.
+         * @param rotation the range each particle's starting angle is picked from, in degrees.
+         * @param seed the first seed. Each change takes the next one, so the same seed gives the same sprays.
          */
         public fun spray(
             particles: ParticleContent = ParticleContent.shape(),
             count: Int = 11,
+            physics: ParticlePhysics = ParticlePhysics.Default,
+            origin: TransformOrigin = TransformOrigin.Center,
+            rotation: ClosedFloatingPointRange<Float> = -30f..30f,
+            seed: Int = 0,
         ): ChangeEffect {
             require(count > 0) { "count must be positive" }
-            return Spray(particles, count)
+            return Spray(particles, count, physics, origin, rotation, seed)
         }
 
-        /** One particle per change, such as a "+1", that floats up from the element and fades. */
-        public fun rise(particles: ParticleContent = ParticleContent.text("+1")): ChangeEffect = Rise(particles)
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with physics.", level = DeprecationLevel.HIDDEN)
+        public fun spray(
+            particles: ParticleContent = ParticleContent.shape(),
+            count: Int = 11,
+        ): ChangeEffect = spray(particles, count, ParticlePhysics.Default, TransformOrigin.Center, -30f..30f, 0)
+
+        /**
+         * One particle per change, such as a "+1", that floats up from the element and fades. With reduced motion
+         * no particle appears and the element brightens briefly instead.
+         *
+         * @param distance about how far the particle floats. Unspecified keeps the standard 44 dp.
+         * @param duration how long the particle lives.
+         * @param drift the heading in degrees away from straight up; positive leans right.
+         * @param wobble how far the particle sways from side to side.
+         * @param startOffset where the particle starts, from [anchor].
+         * @param scaleIn the size the particle is born at, as a fraction of its full size. It grows to full size
+         *   over the first 15 % of its life.
+         * @param scaleOut the size factor at the end of its life: 1 stays, 0.5 shrinks to half.
+         * @param fade maps life progress to how far the particle has faded (0 visible, 1 gone). Null keeps it
+         *   opaque for the first half of its life, then fades it out.
+         * @param label the text shown for a change, from the value that changed, when [particles] is text. Remember
+         *   the lambda, as a new one makes the effect unequal. Ignored for other kinds of particle.
+         * @param anchor where the particle starts, as fractions of the element's width and height.
+         */
+        public fun rise(
+            particles: ParticleContent = ParticleContent.text("+1"),
+            distance: Dp = Dp.Unspecified,
+            duration: Duration = 1200.milliseconds,
+            drift: Float = 0f,
+            wobble: Dp = 4.dp,
+            startOffset: DpOffset = DpOffset.Zero,
+            scaleIn: Float = 0.4f,
+            scaleOut: Float = 1f,
+            fade: Easing? = null,
+            label: ((Any?) -> String)? = null,
+            anchor: TransformOrigin = TransformOrigin(0.5f, 0f),
+        ): ChangeEffect {
+            require(distance == Dp.Unspecified || distance > 0.dp) { "distance must be positive" }
+            require(duration.isPositive()) { "duration must be positive" }
+            require(wobble >= 0.dp) { "wobble must not be negative" }
+            require(scaleIn in 0f..1f) { "scaleIn must be between 0 and 1" }
+            require(scaleOut >= 0f) { "scaleOut must not be negative" }
+            return Rise(
+                particles,
+                distance,
+                duration,
+                drift,
+                wobble,
+                startOffset,
+                scaleIn,
+                scaleOut,
+                fade,
+                label,
+                anchor,
+            )
+        }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with options.", level = DeprecationLevel.HIDDEN)
+        public fun rise(particles: ParticleContent = ParticleContent.text("+1")): ChangeEffect =
+            rise(particles, Dp.Unspecified)
 
         /**
          * A soft band of light that sweeps across the element's drawn pixels.
@@ -211,14 +285,44 @@ public abstract class ChangeEffect internal constructor() {
          * or been hit. With reduced motion no lines appear and the element brightens briefly instead.
          *
          * @param count how many lines go around the element.
+         * @param length how far the longest line reaches past its start. Unspecified uses half the element's shorter
+         *   side, between 16 and 40 dp.
+         * @param thickness the width of the widest line.
+         * @param innerRadius the gap between the element's edge and where the lines start.
+         * @param taper how much each line narrows towards its outer end, from 0 (a round-ended line of even width)
+         *   to 1 (ending in a point).
+         * @param directions which way the lines point.
+         * @param duration how long the lines take to fly out and vanish.
+         * @param easing the curve of the flight.
+         * @param seed the first seed. Each change takes the next one, so the same seed gives the same lines.
          */
         public fun speedLines(
             color: Color = Color(0xFF6B62F2),
             count: Int = 12,
+            length: Dp = Dp.Unspecified,
+            thickness: Dp = 3.dp,
+            innerRadius: Dp = 6.dp,
+            taper: Float = 0f,
+            directions: SpeedLineDirections = SpeedLineDirections.All,
+            duration: Duration = 500.milliseconds,
+            easing: Easing = LinearEasing,
+            seed: Int = 0,
         ): ChangeEffect {
             require(count > 0) { "count must be positive" }
-            return SpeedLines(color, count)
+            require(length == Dp.Unspecified || length > 0.dp) { "length must be positive" }
+            require(thickness > 0.dp) { "thickness must be positive" }
+            require(innerRadius >= 0.dp) { "innerRadius must not be negative" }
+            require(taper in 0f..1f) { "taper must be between 0 and 1" }
+            require(duration.isPositive()) { "duration must be positive" }
+            return SpeedLines(color, count, length, thickness, innerRadius, taper, directions, duration, easing, seed)
         }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with options.", level = DeprecationLevel.HIDDEN)
+        public fun speedLines(
+            color: Color = Color(0xFF6B62F2),
+            count: Int = 12,
+        ): ChangeEffect = speedLines(color, count, Dp.Unspecified)
 
         /**
          * Four-point stars that twinkle in and out one after another over the element, for about 0.8 seconds. Each
@@ -226,14 +330,38 @@ public abstract class ChangeEffect internal constructor() {
          * element brightens briefly instead.
          *
          * @param count how many stars a change lights up.
+         * @param size how big each star is. Unspecified uses a third of the element's shorter side, between 10 and
+         *   22 dp.
+         * @param duration how long the whole twinkle takes, from the first star appearing to the last one going out.
+         * @param spread how much of the element the stars cover, as a factor on its size around its center. Above 1
+         *   the stars land outside the element too.
+         * @param spin the range the turning speed of each star is picked from, in degrees per second.
+         * @param shape what each star looks like.
+         * @param seed the first seed. Each change takes the next one, so the same seed gives the same pattern.
          */
         public fun sparkle(
             color: Color = Color.White,
             count: Int = 6,
+            size: Dp = Dp.Unspecified,
+            duration: Duration = 800.milliseconds,
+            spread: Float = 1f,
+            spin: ClosedFloatingPointRange<Float> = -90f..90f,
+            shape: ParticleShape = ParticleShape.Sparkle,
+            seed: Int = 0,
         ): ChangeEffect {
             require(count > 0) { "count must be positive" }
-            return Sparkle(color, count)
+            require(size == Dp.Unspecified || size > 0.dp) { "size must be positive" }
+            require(duration.isPositive()) { "duration must be positive" }
+            require(spread > 0f && spread.isFinite()) { "spread must be positive" }
+            return Sparkle(color, count, size, duration, spread, spin, shape, seed)
         }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with options.", level = DeprecationLevel.HIDDEN)
+        public fun sparkle(
+            color: Color = Color.White,
+            count: Int = 6,
+        ): ChangeEffect = sparkle(color, count, Dp.Unspecified)
 
         /**
          * A spark that climbs 100 dp from the element's top edge, then bursts into a ring of sparks that slow down,
@@ -242,15 +370,57 @@ public abstract class ChangeEffect internal constructor() {
          *
          * @param colors the colors of the sparks, taken in turn. The rocket is the first one, lightened.
          * @param count how many sparks the explosion throws.
+         * @param rocketHeight how high the rocket climbs before it bursts.
+         * @param rocketDuration how long the climb takes.
+         * @param burstRadius about how far the sparks fly. Unspecified keeps the standard 100 dp.
+         * @param trailLength how long the embers behind the rocket last, as a factor on the standard: 0 leaves no
+         *   trail.
+         * @param particleSize the size of the rocket and the sparks.
+         * @param origin where the rocket launches from, as fractions of the element's width and height.
+         * @param physics how the sparks of the explosion move. The rocket and its trail ignore it. Direction and
+         *   spread, speed, gravity, drag, lifetime, spin, scales, fade, emission area (centered on the burst),
+         *   blend mode and color pick all apply; size does not, use [particleSize].
+         * @param seed the first seed. Each change takes the next ones, so the same seed gives the same bursts.
          */
         public fun fireworks(
             colors: List<Color> = ParticleContent.DefaultColors,
             count: Int = 28,
+            rocketHeight: Dp = 100.dp,
+            rocketDuration: Duration = 450.milliseconds,
+            burstRadius: Dp = Dp.Unspecified,
+            trailLength: Float = 1f,
+            particleSize: Dp = 7.dp,
+            origin: TransformOrigin = TransformOrigin(0.5f, 0f),
+            physics: ParticlePhysics = ParticlePhysics.Default,
+            seed: Int = 0,
         ): ChangeEffect {
             require(colors.isNotEmpty()) { "colors must not be empty" }
             require(count > 0) { "count must be positive" }
-            return Fireworks(colors, count)
+            require(rocketHeight > 0.dp) { "rocketHeight must be positive" }
+            require(rocketDuration.isPositive()) { "rocketDuration must be positive" }
+            require(burstRadius == Dp.Unspecified || burstRadius > 0.dp) { "burstRadius must be positive" }
+            require(trailLength >= 0f) { "trailLength must not be negative" }
+            require(particleSize > 0.dp) { "particleSize must be positive" }
+            return Fireworks(
+                colors,
+                count,
+                rocketHeight,
+                rocketDuration,
+                burstRadius,
+                trailLength,
+                particleSize,
+                origin,
+                physics,
+                seed,
+            )
         }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with options.", level = DeprecationLevel.HIDDEN)
+        public fun fireworks(
+            colors: List<Color> = ParticleContent.DefaultColors,
+            count: Int = 28,
+        ): ChangeEffect = fireworks(colors, count, 100.dp)
 
         /**
          * A short pop of confetti: small rectangles and ribbons in [colors] burst up and out of the element,
@@ -258,15 +428,36 @@ public abstract class ChangeEffect internal constructor() {
          * brightens instead.
          *
          * @param count how many pieces a change throws.
+         * @param physics how the pieces launch and move. All parts apply except size and scales: use [pieceSize].
+         *   An [EmissionArea] is centered on [origin]; by default pieces start across the middle half of the
+         *   element's width.
+         * @param ribbonRatio the share of pieces that are long thin ribbons, from 0 to 1. The standard is a third.
+         * @param pieceSize the width of the small rectangles; ribbons and the rest are sized from it.
+         * @param origin where the confetti starts, as fractions of the element's width and height.
+         * @param seed the first seed. Each change takes the next one, so the same seed gives the same pop.
          */
         public fun confettiPop(
             colors: List<Color> = ParticleContent.DefaultColors,
             count: Int = 28,
+            physics: ParticlePhysics = ParticlePhysics.Default,
+            ribbonRatio: Float = 1f / 3f,
+            pieceSize: Dp = 7.dp,
+            origin: TransformOrigin = TransformOrigin.Center,
+            seed: Int = 0,
         ): ChangeEffect {
             require(colors.isNotEmpty()) { "colors must not be empty" }
             require(count > 0) { "count must be positive" }
-            return ConfettiPop(colors, count)
+            require(ribbonRatio in 0f..1f) { "ribbonRatio must be between 0 and 1" }
+            require(pieceSize > 0.dp) { "pieceSize must be positive" }
+            return ConfettiPop(colors, count, physics, ribbonRatio, pieceSize, origin, seed)
         }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with physics.", level = DeprecationLevel.HIDDEN)
+        public fun confettiPop(
+            colors: List<Color> = ParticleContent.DefaultColors,
+            count: Int = 28,
+        ): ChangeEffect = confettiPop(colors, count, ParticlePhysics.Default)
 
         /**
          * A comet-like stroke with a fading tail that runs once around the element's [shape] outline, then
@@ -365,18 +556,45 @@ public abstract class ChangeEffect internal constructor() {
     internal data class Spray(
         val particles: ParticleContent,
         val count: Int,
+        val physics: ParticlePhysics,
+        val origin: TransformOrigin,
+        val rotation: ClosedFloatingPointRange<Float>,
+        val seed: Int,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
 
-        override fun createRunner(): ChangeRunner = SprayRunner(particles, count)
+        override fun createRunner(): ChangeRunner = SprayRunner(particles, count, physics, origin, rotation, seed)
     }
 
     internal data class Rise(
         val particles: ParticleContent,
+        val distance: Dp,
+        val duration: Duration,
+        val drift: Float,
+        val wobble: Dp,
+        val startOffset: DpOffset,
+        val scaleIn: Float,
+        val scaleOut: Float,
+        val fade: Easing?,
+        val label: ((Any?) -> String)?,
+        val anchor: TransformOrigin,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
 
-        override fun createRunner(): ChangeRunner = RiseRunner(particles)
+        override fun createRunner(): ChangeRunner =
+            RiseRunner(
+                particles,
+                distance,
+                duration,
+                drift,
+                wobble,
+                startOffset,
+                scaleIn,
+                scaleOut,
+                fade,
+                label,
+                anchor,
+            )
     }
 
     internal data class Shine(
@@ -452,37 +670,79 @@ public abstract class ChangeEffect internal constructor() {
     internal data class SpeedLines(
         val color: Color,
         val count: Int,
+        val length: Dp,
+        val thickness: Dp,
+        val innerRadius: Dp,
+        val taper: Float,
+        val directions: SpeedLineDirections,
+        val duration: Duration,
+        val easing: Easing,
+        val seed: Int,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
 
-        override fun createRunner(): ChangeRunner = SpeedLinesRunner(color, count)
+        override fun createRunner(): ChangeRunner =
+            SpeedLinesRunner(color, count, length, thickness, innerRadius, taper, directions, duration, easing, seed)
     }
 
     internal data class Sparkle(
         val color: Color,
         val count: Int,
+        val size: Dp,
+        val duration: Duration,
+        val spread: Float,
+        val spin: ClosedFloatingPointRange<Float>,
+        val shape: ParticleShape,
+        val seed: Int,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
 
-        override fun createRunner(): ChangeRunner = SparkleRunner(color, count)
+        override fun createRunner(): ChangeRunner =
+            SparkleRunner(color, count, size, duration, spread, spin, shape, seed)
     }
 
     internal data class Fireworks(
         val colors: List<Color>,
         val count: Int,
+        val rocketHeight: Dp,
+        val rocketDuration: Duration,
+        val burstRadius: Dp,
+        val trailLength: Float,
+        val particleSize: Dp,
+        val origin: TransformOrigin,
+        val physics: ParticlePhysics,
+        val seed: Int,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
 
-        override fun createRunner(): ChangeRunner = FireworksRunner(colors, count)
+        override fun createRunner(): ChangeRunner =
+            FireworksRunner(
+                colors,
+                count,
+                rocketHeight,
+                rocketDuration,
+                burstRadius,
+                trailLength,
+                particleSize,
+                origin,
+                physics,
+                seed,
+            )
     }
 
     internal data class ConfettiPop(
         val colors: List<Color>,
         val count: Int,
+        val physics: ParticlePhysics,
+        val ribbonRatio: Float,
+        val pieceSize: Dp,
+        val origin: TransformOrigin,
+        val seed: Int,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
 
-        override fun createRunner(): ChangeRunner = ConfettiPopRunner(colors, count)
+        override fun createRunner(): ChangeRunner =
+            ConfettiPopRunner(colors, count, physics, ribbonRatio, pieceSize, origin, seed)
     }
 
     internal data class Trace(
@@ -540,3 +800,18 @@ public enum class SpinAxis { X, Y, Z }
 
 /** How fast a [ChangeEffect.spin] starts. */
 public enum class SpinRate { Default, Fast }
+
+/** Which way the lines of [ChangeEffect.speedLines] point. */
+public enum class SpeedLineDirections {
+    /** All the way around the element. */
+    All,
+
+    /** Left and right only, in two fans. */
+    Horizontal,
+
+    /** Up and down only, in two fans. */
+    Vertical,
+
+    /** Over the top only, in a half circle. */
+    Arc,
+}

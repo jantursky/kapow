@@ -74,6 +74,9 @@ internal interface EffectContext {
 
 /** A runner that plays once each time its effect fires. */
 internal abstract class ChangeRunner : EffectRunner() {
+    /** The value that changed, set just before [fire]. Only runners that show it, such as a label, read it. */
+    var changedValue: Any? = null
+
     abstract fun fire(context: EffectContext)
 }
 

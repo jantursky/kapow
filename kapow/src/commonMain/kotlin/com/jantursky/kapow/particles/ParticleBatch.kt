@@ -1,7 +1,11 @@
 package com.jantursky.kapow.particles
 
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
@@ -27,9 +31,30 @@ internal class ParticleBatch(
     /** Where the emission started, in the coordinates of whoever draws the batch. Set when it is handed over. */
     var origin: Offset = Offset.Zero
 
-    fun step(seconds: Float): Boolean = system.step(seconds)
+    /** A factor on time, for effects played at another speed. */
+    var timeScale: Float = 1f
+
+    /** How the batch blends with what is behind it; null draws it normally. */
+    var blendMode: BlendMode? = null
+
+    fun step(seconds: Float): Boolean = system.step(seconds * timeScale)
 
     fun draw(scope: DrawScope) {
+        val mode = blendMode
+        if (mode == null || mode == BlendMode.SrcOver) {
+            drawParticles(scope)
+            return
+        }
+        // The particles are drawn into a layer of their own, which then blends as one.
+        val paint = Paint().apply { blendMode = mode }
+        scope.drawIntoCanvas { canvas ->
+            canvas.saveLayer(Rect(-UNBOUNDED, -UNBOUNDED, UNBOUNDED, UNBOUNDED), paint)
+            drawParticles(scope)
+            canvas.restore()
+        }
+    }
+
+    private fun drawParticles(scope: DrawScope) {
         with(scope) {
             for (i in 0 until system.count) {
                 if (!system.isAlive(i)) continue
@@ -48,3 +73,5 @@ internal class ParticleBatch(
         }
     }
 }
+
+private const val UNBOUNDED = 100_000f

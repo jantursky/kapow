@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.ParticleContent
 import com.jantursky.kapow.samples.design.KapowEffectColors
 import com.jantursky.kapow.samples.design.LabeledSlider
@@ -31,9 +32,11 @@ internal fun FireworksDemo() {
     var days by remember { mutableIntStateOf(6) }
     var palette by remember { mutableStateOf(SparkColors.Mixed) }
     var sparks by remember { mutableFloatStateOf(28f) }
+    var height by remember { mutableFloatStateOf(100f) }
+    var radius by remember { mutableFloatStateOf(100f) }
     ExampleScaffold(
         autoplay = Autoplay(2.2.seconds) { days++ },
-        stage = { FireworksExample(days, palette.colors, sparks.roundToInt()) },
+        stage = { FireworksExample(days, palette.colors, sparks.roundToInt(), height.dp, radius.dp) },
         code = {
             changeEffectCode(
                 call(
@@ -41,6 +44,8 @@ internal fun FireworksDemo() {
                     *listOfNotNull(
                         palette.kt()?.let { "colors" to it },
                         "count" to sparks.roundToInt().toString(),
+                        "rocketHeight" to "${height.roundToInt()}.dp",
+                        "burstRadius" to "${radius.roundToInt()}.dp",
                     ).toTypedArray(),
                 ),
                 value = "days",
@@ -50,6 +55,8 @@ internal fun FireworksDemo() {
             PrimaryPill("Check in", onClick = { days++ })
             ChoiceRow("Colors", SparkColors.entries, palette, { palette = it }, { it.name })
             LabeledSlider("Sparks", sparks.roundToInt().toString(), sparks, { sparks = it }, 8f..60f)
+            LabeledSlider("Rocket height", "${height.roundToInt()} dp", height, { height = it }, 40f..150f)
+            LabeledSlider("Burst radius", "${radius.roundToInt()} dp", radius, { radius = it }, 40f..160f)
         },
     )
 }

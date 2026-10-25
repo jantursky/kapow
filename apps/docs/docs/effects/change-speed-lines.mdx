@@ -38,10 +38,18 @@ fun CallerAvatar(rings: Int) {
 | --- | --- | --- |
 | `color` | `Color(0xFF6B62F2)` | Color of the lines. |
 | `count` | `12` | How many lines go around the element. Must be positive. |
+| `length` | `Dp.Unspecified` | How far the longest line reaches. Unspecified uses half the element's shorter side, between 16 and 40 dp. Must be positive. |
+| `thickness` | `3.dp` | The width of the widest line. Must be positive. |
+| `innerRadius` | `6.dp` | The gap between the element's edge and where the lines start. |
+| `taper` | `0f` | How much each line narrows towards its outer end, from 0 (an even line with round ends) to 1 (ending in a point). |
+| `directions` | `SpeedLineDirections.All` | Which way the lines point: `All`, `Horizontal` and `Vertical` (two fans each) or `Arc` (over the top). |
+| `duration` | `500.milliseconds` | How long the lines take to fly out and vanish. Must be positive. |
+| `easing` | `LinearEasing` | The curve of the flight. |
+| `seed` | `0` | The first seed. Each change takes the next one. |
 
 ## Reduced motion
 
-No lines appear. The element brightens briefly instead.
+No lines appear. The element brightens briefly instead. With `reducedMotion(ReducedMotionMode.EndState)` nothing shows at all, since the effect ends at rest.
 
 ## Notes
 

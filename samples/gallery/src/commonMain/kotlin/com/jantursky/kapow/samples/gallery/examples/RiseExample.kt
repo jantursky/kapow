@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.ChangeEffect
 import com.jantursky.kapow.ParticleContent
@@ -24,13 +25,15 @@ import com.jantursky.kapow.samples.design.KapowTheme
 fun RiseExample(
     items: Int,
     label: String,
+    distance: Dp = Dp.Unspecified,
+    drift: Float = 0f,
 ) {
     Row(horizontalArrangement = Arrangement.spacedBy(20.dp), verticalAlignment = Alignment.CenterVertically) {
         KapowText("Cart", style = KapowTheme.type.subheading)
         Box(
             Modifier
                 .size(44.dp)
-                .changeEffect(items, ChangeEffect.rise(ParticleContent.text(label)))
+                .changeEffect(items, ChangeEffect.rise(ParticleContent.text(label), distance = distance, drift = drift))
                 .clip(KapowShapes.pill)
                 .background(KapowEffectColors.amber),
             contentAlignment = Alignment.Center,

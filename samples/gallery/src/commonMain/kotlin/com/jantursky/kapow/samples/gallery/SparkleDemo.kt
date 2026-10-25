@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import com.jantursky.kapow.ParticleShape
 import com.jantursky.kapow.samples.design.KapowEffectColors
 import com.jantursky.kapow.samples.design.LabeledSlider
 import com.jantursky.kapow.samples.design.PrimaryPill
@@ -30,12 +31,20 @@ internal fun SparkleDemo() {
     var points by remember { mutableIntStateOf(1200) }
     var star by remember { mutableStateOf(StarColor.White) }
     var count by remember { mutableFloatStateOf(6f) }
+    var spread by remember { mutableFloatStateOf(1f) }
+    var shape by remember { mutableStateOf(ParticleShape.Sparkle) }
     ExampleScaffold(
         autoplay = Autoplay(1.6.seconds) { points += 50 },
-        stage = { SparkleExample(points, star.color, count.roundToInt()) },
+        stage = { SparkleExample(points, star.color, count.roundToInt(), spread, shape) },
         code = {
             changeEffectCode(
-                call("ChangeEffect.sparkle", "color" to star.color.kt(), "count" to count.roundToInt().toString()),
+                call(
+                    "ChangeEffect.sparkle",
+                    "color" to star.color.kt(),
+                    "count" to count.roundToInt().toString(),
+                    "spread" to "${spread.oneDecimal()}f",
+                    "shape" to "ParticleShape.${shape.name}",
+                ),
                 value = "points",
             )
         },
@@ -43,6 +52,8 @@ internal fun SparkleDemo() {
             PrimaryPill("Add points", onClick = { points += 50 })
             ChoiceRow("Color", StarColor.entries, star, { star = it }, { it.name })
             LabeledSlider("Stars", count.roundToInt().toString(), count, { count = it }, 1f..16f)
+            LabeledSlider("Spread", "${spread.oneDecimal()}x", spread, { spread = it }, 0.5f..1.5f)
+            ChoiceRow("Shape", ParticleShape.entries, shape, { shape = it }, { it.name })
         },
     )
 }
