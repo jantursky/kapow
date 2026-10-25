@@ -36,6 +36,7 @@ export default defineMeta({
     'conditional-flame',
     'conditional-grayscale',
     'conditional-spotlight',
+    'conditional-shimmer',
     'progress-shine',
     'progress-glow',
     'progress-iris',

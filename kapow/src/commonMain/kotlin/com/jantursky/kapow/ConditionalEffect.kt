@@ -3,6 +3,7 @@ package com.jantursky.kapow
 import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
@@ -20,6 +21,7 @@ import com.jantursky.kapow.effects.OrbitRunner
 import com.jantursky.kapow.effects.PushDownRunner
 import com.jantursky.kapow.effects.RainbowBorderRunner
 import com.jantursky.kapow.effects.RepeatRunner
+import com.jantursky.kapow.effects.ShimmerRunner
 import com.jantursky.kapow.effects.SmokeRunner
 import com.jantursky.kapow.effects.SparklesRunner
 import com.jantursky.kapow.effects.SpotlightRunner
@@ -28,6 +30,7 @@ import com.jantursky.kapow.internal.ConditionalRunner
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.DurationUnit
 
 /** An effect that stays on while a condition is true. Attach it with [conditionalEffect]. */
 @Immutable
@@ -644,6 +647,39 @@ public abstract class ConditionalEffect internal constructor() {
             padding: Dp = 8.dp,
             softness: Dp = 24.dp,
         ): ConditionalEffect = spotlight(color, shape, padding, softness, 0.dp)
+
+        /**
+         * A band of light that sweeps the element's drawn pixels again and again while the condition holds, with a
+         * pause between sweeps, as a loading placeholder does. It fades out over 200 ms when the condition turns
+         * false (change that with [fadeOut]).
+         *
+         * With reduced motion the element is lightened evenly while the condition holds, and no band travels.
+         *
+         * @param color the band. Its alpha is how bright the band gets at its middle.
+         * @param angle the direction the band travels, in degrees clockwise from pointing right. 20 sweeps mostly
+         *   left to right, tilted slightly downward.
+         * @param duration how long one sweep takes.
+         * @param bandWidth the width of the band, as a fraction of the element's length along the sweep.
+         * @param softness how soft the band's edges are, above 0 and at most 1. Lower values look harder edged.
+         * @param pause how long the element rests between two sweeps.
+         * @param blendMode how the band blends with the element. The default keeps it on the element's own pixels;
+         *   a mode such as `BlendMode.Plus` lights them up instead.
+         */
+        public fun shimmer(
+            color: Color = Color.White.copy(alpha = 0.4f),
+            angle: Float = 20f,
+            duration: Duration = 1500.milliseconds,
+            bandWidth: Float = 0.4f,
+            softness: Float = 1f,
+            pause: Duration = 400.milliseconds,
+            blendMode: BlendMode = BlendMode.SrcAtop,
+        ): ConditionalEffect {
+            require(duration.isPositive()) { "duration must be positive" }
+            require(bandWidth > 0f && bandWidth.isFinite()) { "bandWidth must be positive" }
+            require(softness > 0f && softness <= 1f) { "softness must be above 0 and at most 1" }
+            require(!pause.isNegative()) { "pause must not be negative" }
+            return Shimmer(color, angle, duration, bandWidth, softness, pause, blendMode)
+        }
     }
 
     internal data class Repeat(
@@ -821,5 +857,26 @@ public abstract class ConditionalEffect internal constructor() {
     ) : ConditionalEffect() {
         override fun createRunner(): ConditionalRunner =
             SpotlightRunner(color, shape, padding, softness, ring, ringColor, breathe, period)
+    }
+
+    internal data class Shimmer(
+        val color: Color,
+        val angle: Float,
+        val duration: Duration,
+        val bandWidth: Float,
+        val softness: Float,
+        val pause: Duration,
+        val blendMode: BlendMode,
+    ) : ConditionalEffect() {
+        override fun createRunner(): ConditionalRunner =
+            ShimmerRunner(
+                color,
+                angle,
+                duration.toDouble(DurationUnit.SECONDS),
+                pause.toDouble(DurationUnit.SECONDS),
+                bandWidth,
+                softness,
+                blendMode,
+            )
     }
 }

@@ -249,6 +249,13 @@ val entries: List<Entry> =
             Example("SpotlightExample.kt") { SpotlightDemo() },
         ),
         Entry(
+            "conditional-shimmer",
+            Group.Conditional,
+            "Shimmer",
+            "A band of light sweeps the element again and again while a condition holds.",
+            Example("ShimmerExample.kt") { ShimmerDemo() },
+        ),
+        Entry(
             "progress-shine",
             Group.Progress,
             "Shine",

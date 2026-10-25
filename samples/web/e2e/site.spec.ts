@@ -178,6 +178,7 @@ const LIVE = [
   'conditional-flame',
   'conditional-grayscale',
   'conditional-spotlight',
+  'conditional-shimmer',
   'progress-iris',
   'transition-iris',
   'transition-clock',
