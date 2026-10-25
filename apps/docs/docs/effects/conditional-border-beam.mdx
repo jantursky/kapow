@@ -42,6 +42,12 @@ fun RecordingCard(recording: Boolean) {
 | `shape` | `RectangleShape` | The outline the beam follows. |
 | `length` | `0.25f` | How much of the outline the beam covers, above 0 and at most 1. |
 | `duration` | `2.seconds` | How long one lap takes. |
+| `brush` | `null` | Strokes the beam and its track instead of `color`, such as a gradient. The beam is not whitened toward its head then. |
+| `trackAlpha` | `0.18f` | How visible the faint track under the beam is, from 0 to 1. |
+| `beams` | `1` | How many beams go round, evenly spaced. Must be positive. |
+| `clockwise` | `true` | Whether the beams go round clockwise. |
+| `glow` | `1f` | How strong the soft halo around the front of the beam is, as a factor. 0 hides it. |
+| `tailFade` | `1.5f` | How quickly the beam fades toward its tail. Higher keeps the tail dark for longer; 0 lights the whole beam evenly. |
 
 ## Reduced motion
 

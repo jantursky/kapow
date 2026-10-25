@@ -43,6 +43,10 @@ fun SelectablePhoto(photo: Painter, selected: Boolean) {
 | `dash` | `6.dp` | Length of one dash. |
 | `gap` | `4.dp` | Space between two dashes. |
 | `speed` | `24.dp` | How far the dashes move each second. `0.dp` keeps them still. |
+| `brush` | `null` | Strokes the dashes instead of `color`, such as a gradient. |
+| `clockwise` | `true` | Whether the dashes move clockwise. |
+| `roundCaps` | `false` | Whether the dashes end in round caps. The pattern keeps its period, so a dash shorter than the stroke becomes a dot. |
+| `dashOffset` | `0.dp` | How far along the pattern the dashes start. |
 
 ## Reduced motion
 

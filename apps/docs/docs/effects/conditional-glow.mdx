@@ -40,6 +40,10 @@ fun SelectableCard(selected: Boolean) {
 | `color` | `Color(0xFF6B62F2)` | Color of the halo. |
 | `radius` | `16.dp` | How far the halo reaches. |
 | `shape` | `RectangleShape` | The shape the halo follows. |
+| `strength` | `0.7f` | How strong the steady halo is, above 0 and up to 1.5. It reaches `radius * strength` past the element. |
+| `breathe` | `0f` | How much the halo swells and shrinks, as a share of its strength, from 0 (steady) to 1. |
+| `period` | `2.seconds` | How long one breath takes. Must be positive. |
+| `innerGlow` | `0.25f` | How much the element itself brightens at full strength, from 0 to 1. |
 
 ## Reduced motion
 

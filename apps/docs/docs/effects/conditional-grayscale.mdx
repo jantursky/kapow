@@ -37,6 +37,8 @@ fun PaymentCard(expired: Boolean) {
 | Parameter | Default | Description |
 | --- | --- | --- |
 | `amount` | `1f` | How much color is taken away, from 0 (none) to 1 (fully gray). |
+| `tint` | `null` | A color the remaining colors are multiplied by, such as a brown for a sepia look. Null leaves them as they are. |
+| `dim` | `0f` | How much the element darkens, from 0 to 1. |
 
 ## Reduced motion
 
@@ -44,7 +46,7 @@ The color goes and comes back at once, without the fade.
 
 ## Notes
 
-- The change fades in and out over 0.3 s.
+- The change fades in and out over 0.3 s, or over the time set with `fadeIn(...)` and `fadeOut(...)`.
 - The element is drawn into a graphics layer of its own with a color-matrix filter. The modifier only affects what is drawn after it in the chain and the element's children, so put it before `background` and the content you want grayed.
 - Grayscale only changes the look. Disable input yourself, for example with `enabled = false` on the control.
 

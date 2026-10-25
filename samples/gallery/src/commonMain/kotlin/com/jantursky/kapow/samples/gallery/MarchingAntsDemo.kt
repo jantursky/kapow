@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.samples.design.KapowToggle
 import com.jantursky.kapow.samples.design.LabeledSlider
 import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.gallery.examples.MarchingAntsExample
@@ -19,24 +20,31 @@ internal fun MarchingAntsDemo() {
     var selected by remember { mutableStateOf(true) }
     var dash by remember { mutableFloatStateOf(6f) }
     var speed by remember { mutableFloatStateOf(24f) }
+    var clockwise by remember { mutableStateOf(true) }
+    var round by remember { mutableStateOf(false) }
+    var offset by remember { mutableFloatStateOf(0f) }
     ExampleScaffold(
         autoplay = Autoplay({ if (selected) 4.seconds else 1.5.seconds }, startsOn = true) { selected = !selected },
-        stage = { MarchingAntsExample(selected, dash.dp, speed.dp) },
+        stage = { MarchingAntsExample(selected, dash.dp, speed.dp, clockwise, round, offset.dp) },
         code = {
-            conditionalEffectCode(
-                call(
-                    "ConditionalEffect.marchingAnts",
+            val args =
+                listOfNotNull(
                     "shape" to "RoundedCornerShape(12.dp)",
                     "dash" to dash.dp.kt(),
                     "speed" to speed.dp.kt(),
-                ),
-                "selected",
-            )
+                    ("clockwise" to clockwise).takeIf { !clockwise },
+                    ("roundCaps" to round).takeIf { round },
+                    ("dashOffset" to offset.dp.kt()).takeIf { offset != 0f },
+                )
+            conditionalEffectCode(call("ConditionalEffect.marchingAnts", *args.toTypedArray()), "selected")
         },
         controls = {
             PrimaryPill("Toggle", onClick = { selected = !selected })
             LabeledSlider("Dash", "${dash.roundToInt()} dp", dash, { dash = it }, 2f..16f)
             LabeledSlider("Speed", "${speed.roundToInt()} dp/s", speed, { speed = it }, 0f..80f)
+            LabeledSlider("Offset", "${offset.roundToInt()} dp", offset, { offset = it }, 0f..16f)
+            KapowToggle(clockwise, { clockwise = it }, "Clockwise")
+            KapowToggle(round, { round = it }, "Round caps")
         },
     )
 }

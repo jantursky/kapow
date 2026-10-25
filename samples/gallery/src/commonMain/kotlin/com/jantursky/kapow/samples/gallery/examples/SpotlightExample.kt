@@ -33,8 +33,17 @@ fun SpotlightExample(
     onboarding: Boolean,
     dim: Float,
     softness: Dp,
+    ring: Dp = 0.dp,
+    breathe: Dp = 0.dp,
 ) {
-    val spotlight = ConditionalEffect.spotlight(Color.Black.copy(alpha = dim), CircleShape, softness = softness)
+    val spotlight =
+        ConditionalEffect.spotlight(
+            Color.Black.copy(alpha = dim),
+            CircleShape,
+            softness = softness,
+            ring = ring,
+            breathe = breathe,
+        )
     Column(Modifier.width(260.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         // The scrim is drawn by the add button, so the header row draws after the list below it, and the hint
         // after the header row, to stay on top.

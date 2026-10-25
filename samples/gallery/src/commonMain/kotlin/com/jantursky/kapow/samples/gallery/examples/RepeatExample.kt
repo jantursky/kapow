@@ -25,6 +25,9 @@ import kotlin.time.Duration
 fun RepeatExample(
     unread: Boolean,
     every: Duration,
+    initialDelay: Duration = Duration.ZERO,
+    maxCount: Int? = null,
+    jitter: Float = 0f,
 ) {
     val pulse = ChangeEffect.pulse(shape = CircleShape, color = KapowEffectColors.coral, style = PulseStyle.Fill)
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -32,7 +35,7 @@ fun RepeatExample(
         Box(
             Modifier
                 .size(18.dp)
-                .conditionalEffect(unread, ConditionalEffect.repeat(pulse, every))
+                .conditionalEffect(unread, ConditionalEffect.repeat(pulse, every, initialDelay, maxCount, jitter))
                 .clip(CircleShape)
                 .background(if (unread) KapowEffectColors.coral else KapowTheme.colors.hairline),
         )

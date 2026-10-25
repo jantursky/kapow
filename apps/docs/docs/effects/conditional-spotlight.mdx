@@ -48,6 +48,10 @@ fun TaskScreen(firstLaunch: Boolean, list: @Composable () -> Unit) {
 | `shape` | `RectangleShape` | The shape left clear. |
 | `padding` | `8.dp` | How far past the shape the clear area reaches. |
 | `softness` | `24.dp` | How wide the soft edge between the clear area and the full dim is. `0.dp` gives a hard edge. |
+| `ring` | `0.dp` | Width of a ring around the edge of the clear area. `0.dp` draws none. |
+| `ringColor` | `Color.White` | Color of the ring. |
+| `breathe` | `0.dp` | How far the clear area grows and shrinks around `padding`. `0.dp` keeps it still. Not applied under reduced motion. |
+| `period` | `1500.milliseconds` | How long one breath takes. Must be positive. |
 
 ## Reduced motion
 

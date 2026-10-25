@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.ConditionalEffect
 import com.jantursky.kapow.conditionalEffect
@@ -19,11 +20,16 @@ import com.jantursky.kapow.samples.design.KapowText
 fun PushDownExample(
     pressed: Boolean,
     scale: Float,
+    damping: Float = 0.6f,
+    dim: Float = 0f,
+    translation: Dp = 0.dp,
 ) {
     Box(
         Modifier
-            .conditionalEffect(pressed, ConditionalEffect.pushDown(scale))
-            .clip(KapowShapes.pill)
+            .conditionalEffect(
+                pressed,
+                ConditionalEffect.pushDown(scale, damping = damping, dim = dim, translation = translation),
+            ).clip(KapowShapes.pill)
             .background(KapowEffectColors.cobalt)
             .padding(horizontal = 48.dp, vertical = 20.dp),
     ) {
