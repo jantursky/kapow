@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.KapowAnimatedVisibility
 import com.jantursky.kapow.KapowExit
@@ -31,10 +32,12 @@ fun DisintegrateExample(
     visible: Boolean,
     color: Color,
     duration: Duration,
+    particleSize: Dp = 3.dp,
+    wind: Float = 0f,
 ) {
     KapowAnimatedVisibility(
         visible,
-        exit = KapowExit.disintegrate(color, duration),
+        exit = KapowExit.disintegrate(color, duration, particleSize, wind),
     ) {
         Row(
             Modifier

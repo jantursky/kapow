@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSpecified
+import com.jantursky.kapow.transitions.SHATTER_SEED
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -882,14 +883,35 @@ public class KapowExit internal constructor(
          * @param shards about how many pieces, from 2 to 200. The content is cut into a grid of cells that fits its
          *   shape, two triangles per cell, so the actual count can differ a little.
          * @param duration how long the transition takes, 900 ms by default.
+         * @param gravity how hard the pieces fall, as a factor: 1 is the usual fall, 0 lets them hang where the
+         *   throw leaves them while they fade, more drops them faster. Must not be negative.
+         * @param spin how far the pieces turn as they fall, as a factor: 0 keeps them upright, 1 is the usual
+         *   turn. Must not be negative.
+         * @param impact where the content is hit, as a fraction of its size. The pieces part away from it and lean
+         *   away from it sideways as they fall.
+         * @param seed the seed of the crack pattern and of how each piece flies. The same seed gives the same
+         *   pieces on every target.
          */
         public fun shatter(
             shards: Int = 24,
             duration: Duration = 900.milliseconds,
+            gravity: Float = 1f,
+            spin: Float = 1f,
+            impact: TransformOrigin = TransformOrigin.Center,
+            seed: Int = SHATTER_SEED,
         ): KapowExit {
             require(shards in 2..200) { "shards must be from 2 to 200" }
-            return KapowExit(TransitionKind.Shatter(shards), duration.checked())
+            require(gravity >= 0f && gravity.isFinite()) { "gravity must not be negative" }
+            require(spin >= 0f && spin.isFinite()) { "spin must not be negative" }
+            return KapowExit(TransitionKind.Shatter(shards, gravity, spin, impact, seed), duration.checked())
         }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with gravity, spin, impact and seed.", level = DeprecationLevel.HIDDEN)
+        public fun shatter(
+            shards: Int = 24,
+            duration: Duration = 900.milliseconds,
+        ): KapowExit = shatter(shards, duration, 1f, 1f, TransformOrigin.Center, SHATTER_SEED)
 
         /**
          * The content turns to dust: a ragged band sweeps across it from left to right, grain by grain, and as it
@@ -901,11 +923,28 @@ public class KapowExit internal constructor(
          *   from a snapshot of the content as the exit starts: a few pixels per column. Where that snapshot can't
          *   be read, or reads only transparent pixels, the dust is light gray.
          * @param duration how long the transition takes, 1500 ms by default.
+         * @param particleSize the size of one grain, which is also the size of the particles that rise from it,
+         *   from 1 dp to 16 dp. Larger grains make coarser dust.
+         * @param wind how the wind blows the dust, from -1 (to the left) to 1 (to the right). At 0 the dust
+         *   drifts up and a little right, as it always has. The stronger the wind, the faster it carries the dust.
          */
         public fun disintegrate(
             color: Color = Color.Unspecified,
             duration: Duration = 1500.milliseconds,
-        ): KapowExit = KapowExit(TransitionKind.Disintegrate(color, duration.checked()), duration)
+            particleSize: Dp = 3.dp,
+            wind: Float = 0f,
+        ): KapowExit {
+            require(particleSize in 1.dp..16.dp) { "particleSize must be from 1 dp to 16 dp" }
+            require(wind in -1f..1f) { "wind must be from -1 to 1" }
+            return KapowExit(TransitionKind.Disintegrate(color, duration.checked(), particleSize, wind), duration)
+        }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with particleSize and wind.", level = DeprecationLevel.HIDDEN)
+        public fun disintegrate(
+            color: Color = Color.Unspecified,
+            duration: Duration = 1500.milliseconds,
+        ): KapowExit = disintegrate(color, duration, 3.dp, 0f)
     }
 }
 
@@ -1117,10 +1156,16 @@ internal sealed class TransitionKind {
 
     data class Shatter(
         val shards: Int,
+        val gravity: Float = 1f,
+        val spin: Float = 1f,
+        val impact: TransformOrigin = TransformOrigin.Center,
+        val seed: Int = SHATTER_SEED,
     ) : TransitionKind()
 
     data class Disintegrate(
         val color: Color,
         val duration: Duration,
+        val particleSize: Dp = 3.dp,
+        val wind: Float = 0f,
     ) : TransitionKind()
 }
