@@ -11,6 +11,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.FillDirection
 import com.jantursky.kapow.ProgressEffect
 import com.jantursky.kapow.progressEffect
 import com.jantursky.kapow.samples.design.KapowCaption
@@ -25,11 +26,24 @@ fun ProgressFillExample(
     progress: Float,
     color: Color,
     wave: Dp,
+    direction: FillDirection = FillDirection.Up,
+    waves: Float = 1.5f,
+    foam: Dp = 0.dp,
+    colorRamp: List<Color>? = null,
 ) {
     Column(
         Modifier
             .size(width = 240.dp, height = 140.dp)
-            .progressEffect(ProgressEffect.fill(color.copy(alpha = 0.6f), wave)) { progress }
+            .progressEffect(
+                ProgressEffect.fill(
+                    color.copy(alpha = 0.6f),
+                    wave,
+                    direction = direction,
+                    waves = waves,
+                    colorRamp = colorRamp,
+                    foam = foam,
+                ),
+            ) { progress }
             .clip(KapowShapes.card)
             .background(KapowTheme.colors.panel)
             .padding(20.dp),

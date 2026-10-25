@@ -42,6 +42,11 @@ fun UploadCard(progress: () -> Float) {
 | `shape` | `RectangleShape` | The outline the stroke follows. Use the shape the element is clipped to. |
 | `color` | `Color(0xFF6B62F2)` | Color of the stroke. |
 | `width` | `3.dp` | Width of the stroke. Must be positive. |
+| `brush` | `null` | Strokes the outline instead of `color`, such as a gradient. |
+| `clockwise` | `true` | Whether the trace goes round clockwise. |
+| `start` | `0f` | Where the trace starts, as a share of the way round the outline, from 0 to 1. 0 is the middle of the top edge, 0.25 the middle of the right edge. |
+| `tail` | `1f` | How much of the outline the stroke covers behind its head, above 0 and up to 1. 1 keeps everything from the start; less leaves a short stroke that travels. |
+| `cap` | `StrokeCap.Round` | The ends of the stroke. |
 
 ## Reduced motion
 

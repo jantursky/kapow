@@ -40,6 +40,8 @@ fun ChargeCard(charge: () -> Float) {
 | `color` | `Color(0xFF6B62F2)` | Color of the halo. |
 | `radius` | `16.dp` | How far the halo reaches at full progress. |
 | `shape` | `RectangleShape` | The shape the halo follows. |
+| `alphaCurve` | `null` | Scales the halo's opacity by this curve at the progress, such as `EaseIn` to keep it faint at first. Null leaves the opacity to the halo's strength. |
+| `colorRamp` | `null` | The halo's colors from progress 0 to 1, blended in between. Null keeps `color`. Must not be empty. The halo is drawn in 24 shades along the ramp. |
 
 ## Reduced motion
 

@@ -19,23 +19,37 @@ import kotlin.time.Duration.Companion.seconds
 internal fun ProgressShineDemo() {
     var progress by remember { mutableFloatStateOf(0f) }
     var angle by remember { mutableFloatStateOf(45f) }
+    var bandWidth by remember { mutableFloatStateOf(0.6f) }
+    var softness by remember { mutableFloatStateOf(1f) }
+    var bands by remember { mutableFloatStateOf(1f) }
     val scope = rememberCoroutineScope()
     ExampleScaffold(
         autoplay = Autoplay(1.seconds) { sweepThereAndBack { progress = it } },
-        stage = { ProgressShineExample(progress, angle, Color.White) },
+        stage = { ProgressShineExample(progress, angle, Color.White, bandWidth, softness, bands.roundToInt()) },
         code = {
-            progressEffectCode(
-                call(
-                    "ProgressEffect.shine",
+            val args =
+                listOfNotNull(
                     "angle" to angle.kt(),
                     "color" to "Color.White",
-                ),
-            )
+                    ("bandWidth" to bandWidth.kt()).takeIf { bandWidth != 0.6f },
+                    ("softness" to softness.kt()).takeIf { softness != 1f },
+                    ("bands" to bands.roundToInt()).takeIf { bands.roundToInt() != 1 },
+                )
+            progressEffectCode(call("ProgressEffect.shine", *args.toTypedArray()))
         },
         controls = {
             PrimaryPill("Play", onClick = { scope.launch { sweep { progress = it } } })
             LabeledSlider("Progress", "${(progress * 100).roundToInt()} %", progress, { progress = it }, 0f..1f)
             LabeledSlider("Angle", "${angle.roundToInt()}°", angle, { angle = it }, 0f..360f)
+            LabeledSlider(
+                "Band width",
+                "${(bandWidth * 100).roundToInt()} %",
+                bandWidth,
+                { bandWidth = it },
+                0.1f..1.2f,
+            )
+            LabeledSlider("Softness", softness.oneDecimal(), softness, { softness = it }, 0.3f..3f)
+            LabeledSlider("Bands", "${bands.roundToInt()}", bands, { bands = it }, 1f..5f)
         },
     )
 }

@@ -215,20 +215,3 @@ internal class ConditionalGlowRunner(
 
 private const val STEADY = 0.7f
 private const val INNER_GLOW = 0.25f
-
-internal class GlowProgressRunner(
-    color: Color,
-    radius: Dp,
-    shape: Shape,
-) : ProgressRunner() {
-    private val base =
-        object : GlowRunnerBase(color, radius, shape) {
-            override val amount: Float get() = progress().coerceIn(0f, 1f) * MAX_HALO
-        }
-
-    override fun ContentDrawScope.drawEffect() = with(base) { drawEffect() }
-
-    override fun attach(context: EffectContext) = base.attach(context)
-
-    override fun stop() = base.stop()
-}

@@ -1,5 +1,6 @@
 package com.jantursky.kapow.samples.gallery.examples
 
+import androidx.compose.animation.core.EaseIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -23,11 +24,21 @@ fun ProgressGlowExample(
     color: Color,
     radius: Dp,
     shape: Shape,
+    colorRamp: List<Color>? = null,
+    faintStart: Boolean = false,
 ) {
     Box(
         Modifier
             .size(width = 220.dp, height = 120.dp)
-            .progressEffect(ProgressEffect.glow(color, radius, shape)) { progress }
+            .progressEffect(
+                ProgressEffect.glow(
+                    color,
+                    radius,
+                    shape,
+                    alphaCurve = if (faintStart) EaseIn else null,
+                    colorRamp = colorRamp,
+                ),
+            ) { progress }
             .clip(shape)
             .background(KapowTheme.colors.panel),
         contentAlignment = Alignment.Center,

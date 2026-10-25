@@ -22,11 +22,14 @@ fun ProgressShineExample(
     progress: Float,
     angle: Float,
     color: Color,
+    bandWidth: Float = 0.6f,
+    softness: Float = 1f,
+    bands: Int = 1,
 ) {
     Box(
         Modifier
             .size(width = 240.dp, height = 140.dp)
-            .progressEffect(ProgressEffect.shine(angle, color)) { progress }
+            .progressEffect(ProgressEffect.shine(angle, color, bandWidth, softness, bands)) { progress }
             .clip(KapowShapes.card)
             .background(Brush.linearGradient(listOf(KapowEffectColors.violet, KapowEffectColors.cobalt))),
         contentAlignment = Alignment.Center,

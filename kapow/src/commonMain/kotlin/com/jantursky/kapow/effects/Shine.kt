@@ -109,25 +109,6 @@ internal class ShineRunner(
     }
 }
 
-internal class ShineProgressRunner(
-    private val angle: Float,
-    color: Color,
-) : ProgressRunner() {
-    private val stops = shineStops(color)
-
-    override val needsLayer: Boolean get() = true
-
-    override fun DrawScope.configureLayer(layer: GraphicsLayer) {
-        layer.compositingStrategy = CompositingStrategy.Offscreen
-    }
-
-    override fun ContentDrawScope.drawEffect() {
-        drawContent()
-        val t = progress().coerceIn(0f, 1f)
-        if (t > 0f && t < 1f) drawShine(stops, angle, t)
-    }
-}
-
 private fun Float.pow8(): Float {
     val sq = this * this
     val q = sq * sq

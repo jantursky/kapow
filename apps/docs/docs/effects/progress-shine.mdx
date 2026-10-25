@@ -37,6 +37,11 @@ fun ShineCard(progress: () -> Float) {
 | --- | --- | --- |
 | `angle` | `45f` | Direction the band travels, in degrees clockwise from pointing right. |
 | `color` | `Color.White` | Color of the band. |
+| `bandWidth` | `0.6f` | How wide a band is, as a share of the element's length along the sweep. Above 0, at most 1.5. |
+| `softness` | `1f` | How soft the band's edges are. 1 is the usual falloff; more spreads the glow wider, less pulls it into a tighter core. Must be positive. |
+| `bands` | `1` | How many bands cross together. Must be positive. |
+| `bandSpacing` | `0.3f` | How far apart the bands are, as a share of the element's length along the sweep. Must not be negative. |
+| `blendMode` | `BlendMode.SrcAtop` | How the bands blend with the element. The default keeps them on its own pixels. |
 
 ## Reduced motion
 
