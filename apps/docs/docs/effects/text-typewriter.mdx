@@ -1,0 +1,63 @@
+---
+title: "Text: typewriter"
+description: Text that types itself out or unscrambles itself at a steady rate, with an optional cursor.
+---
+
+`KapowTypewriter` shows a string one character at a time. It measures the whole string first and takes its final size from the first frame, so the layout around it never moves while it types.
+
+## Usage
+
+The sample types a greeting with a blinking cursor and a short pause after each comma and full stop. Setting a different string restarts the reveal.
+
+```kotlin
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.sp
+import com.jantursky.kapow.KapowTypewriter
+import com.jantursky.kapow.TypewriterCursor
+import kotlin.time.Duration.Companion.milliseconds
+
+@Composable
+fun Greeting(text: String) {
+    KapowTypewriter(
+        text = text,
+        style = TextStyle(fontSize = 20.sp),
+        charsPerSecond = 24f,
+        cursor = TypewriterCursor.bar(),
+        punctuationPause = 250.milliseconds,
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `text` | | The string to show. Plain text only, no spans. |
+| `modifier` | `Modifier` | Modifier for the text. |
+| `style` | `TextStyle.Default` | Text style. |
+| `mode` | `TypewriterMode.Type` | `Type` shows characters one after another. `Scramble` starts every character as a random glyph and resolves them left to right. |
+| `charsPerSecond` | `30f` | Characters per second. Must be positive. |
+| `startDelay` | `0.milliseconds` | Wait before the first character. Must not be negative. |
+| `cursor` | `null` | `TypewriterCursor.bar(color, width, blink, hideWhenDone)`, or `null` for no cursor. |
+| `punctuationPause` | `0.milliseconds` | Extra pause after `, . ; : ! ?`. Must not be negative. |
+| `glyphs` | `A-Z 0-9 # % & * + = ?` | Where `Scramble` takes its random glyphs from. Must not be empty. |
+| `glyphRate` | `40.milliseconds` | How often the scrambled glyphs change. Must be positive. |
+| `seed` | `0` | Seeds the random glyphs: the same seed scrambles the same way every time. |
+
+## Reduced motion
+
+The full text shows at once, without a cursor.
+
+## Notes
+
+- The size never changes: the whole text is measured up front and the reveal is drawn inside that space. Long text wraps to the width it is given, and wraps the same way from the first character.
+- Screen readers read the full text from the first frame, not the part revealed so far.
+- Progress is read only while drawing, so typing does not recompose the screen.
+- The cursor stays solid while characters appear and blinks once the text is complete. `hideWhenDone = true` removes it instead.
+- In `Scramble` mode every character has a fixed slot the size of the final character, and the random glyph is centered in it, so nothing shifts. It looks best in a monospaced font, where all glyphs are as wide as the slot. Spaces and line breaks are never scrambled.
+- Changing `text` or any timing parameter restarts the reveal from the first character.
+
+## Live example
+
+<include example="text-typewriter">../_snippets/live-example.mdx</include>
