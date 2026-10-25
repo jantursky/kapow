@@ -35,6 +35,16 @@ fun TodoLabel(text: String, done: Boolean) {
 | `color` | `Color(0xFF6B62F2)` | Color of the line. |
 | `width` | `2.dp` | Thickness of the line. Must be positive. |
 | `hold` | `600.milliseconds` | How long the full line stays before it fades. Must not be negative. |
+| `direction` | `StrikeDirection.Reading` | Which way the line runs: `Reading` (start edge to end edge), `Reverse`, `Vertical` (top to bottom) or `Diagonal` (corner to corner). |
+| `drawDuration` | `260.milliseconds` | How long the line takes to draw across. Must be positive. |
+| `easing` | `FastOutSlowInEasing` | The curve of the drawing. |
+| `offset` | `0f` | Moves the line across the element, as a fraction of its size from the middle, from -0.5 to 0.5. |
+| `cap` | `StrokeCap.Butt` | How the line's ends look. With the default the moving end is rounded while the line draws. |
+| `waveAmplitude` | `0.dp` | How far a wavy line swings from straight. 0 draws a straight line. |
+| `waveLength` | `12.dp` | The distance of one wave. Must be positive. |
+| `lines` | `1` | How many parallel lines are drawn, centered on the offset. Must be positive. |
+| `lineSpacing` | `6.dp` | The distance between parallel lines. |
+| `brush` | `null` | Draws the line instead of `color`, so it can be a gradient. |
 
 ## Reduced motion
 

@@ -39,10 +39,17 @@ fun ScoreCard(score: Int) {
 | `color` | `Color(0xFF6B62F2)` | Color of the halo. |
 | `radius` | `16.dp` | How far the halo reaches at its normal strength. A strengthened halo reaches further. |
 | `shape` | `RectangleShape` | The shape the halo follows. |
+| `intensity` | `1f` | How strong the halo is at its brightest, from 0 to 1, as a factor on the color's alpha. |
+| `spread` | `0.dp` | How much wider the halo reaches, added to `radius`. |
+| `offset` | `DpOffset.Zero` | Moves the halo away from the element, for a glow cast to one side. |
+| `innerGlow` | `0f` | How strong a second glow just inside the element's edge is, from 0 (none) to 1. |
+| `flare` | `null` | How long the halo takes to reach full strength. Setting this or `decay` replaces the default spring, which overshoots and settles on its own, with a rise and a fall that take the times given. The other one defaults to 150 ms or 1 second. |
+| `decay` | `null` | How long the halo takes to fade away once it peaks. See `flare`. |
+| `stackLimit` | `1.5f` | How strong quick repeated changes can make the halo, as a multiple of a single change's strength (which is 1). |
 
 ## Reduced motion
 
-No spring. A faint halo appears and fades out in 0.3 s. The element is brightened only a little.
+No spring. A faint halo appears and fades out in 0.3 s. The element is brightened only a little. With `reducedMotion(ReducedMotionMode.EndState)` nothing shows at all, since the effect ends at rest.
 
 ## Notes
 

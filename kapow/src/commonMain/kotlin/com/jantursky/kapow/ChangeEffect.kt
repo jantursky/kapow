@@ -1,11 +1,15 @@
 package com.jantursky.kapow
 
 import androidx.compose.animation.core.Easing
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
@@ -16,6 +20,7 @@ import com.jantursky.kapow.effects.ConfettiPopRunner
 import com.jantursky.kapow.effects.FireworksRunner
 import com.jantursky.kapow.effects.GlitchRunner
 import com.jantursky.kapow.effects.GlowRunner
+import com.jantursky.kapow.effects.OutlineRoute
 import com.jantursky.kapow.effects.PulseRunner
 import com.jantursky.kapow.effects.RippleRunner
 import com.jantursky.kapow.effects.RiseRunner
@@ -178,43 +183,149 @@ public abstract class ChangeEffect internal constructor() {
          *
          * @param angle the direction the band travels, in degrees clockwise from pointing right. 45 sweeps from the
          *   top left to the bottom right.
+         * @param easing the curve of the sweep.
+         * @param bandWidth the width of the band, as a fraction of the element's length along the sweep.
+         * @param softness how soft the band's edges are, above 0 and at most 1. Lower values reach full strength
+         *   sooner, so the band looks harder edged.
+         * @param peakAlpha how strong the band is at its brightest, as a fraction of [color]'s alpha, from 0 to 1.
+         * @param blendMode how the band blends with the element. The default keeps it on the element's own pixels;
+         *   a mode such as `BlendMode.Plus` lights them up instead.
+         * @param bands how many bands sweep across, one behind the other.
+         * @param bandSpacing the distance between bands, in band widths. Used with more than one band.
+         * @param reverse sweeps the other way, from the far end of [angle] back towards the start.
          */
         public fun shine(
             angle: Float = 45f,
             duration: Duration = 1.seconds,
             color: Color = Color.White,
+            easing: Easing = FastOutSlowInEasing,
+            bandWidth: Float = 0.6f,
+            softness: Float = 1f,
+            peakAlpha: Float = 0.8f,
+            blendMode: BlendMode = BlendMode.SrcAtop,
+            bands: Int = 1,
+            bandSpacing: Float = 1.5f,
+            reverse: Boolean = false,
         ): ChangeEffect {
             require(duration.isPositive()) { "duration must be positive" }
-            return Shine(angle, duration, color)
+            require(bandWidth > 0f && bandWidth.isFinite()) { "bandWidth must be positive" }
+            require(softness > 0f && softness <= 1f) { "softness must be above 0 and at most 1" }
+            require(peakAlpha in 0f..1f) { "peakAlpha must be between 0 and 1" }
+            require(bands > 0) { "bands must be positive" }
+            require(bandSpacing >= 0f && bandSpacing.isFinite()) { "bandSpacing must not be negative" }
+            return Shine(
+                angle,
+                duration,
+                color,
+                easing,
+                bandWidth,
+                softness,
+                peakAlpha,
+                blendMode,
+                bands,
+                bandSpacing,
+                reverse,
+            )
         }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with options.", level = DeprecationLevel.HIDDEN)
+        public fun shine(
+            angle: Float = 45f,
+            duration: Duration = 1.seconds,
+            color: Color = Color.White,
+        ): ChangeEffect = shine(angle, duration, color, FastOutSlowInEasing)
 
         /**
          * Rings or fills in the element's [shape] that grow outward behind it and fade.
          *
-         * @param count how many pulses a change sends, 0.2 seconds apart.
+         * @param count how many pulses a change sends, [interval] apart.
+         * @param brush draws the pulses instead of [color], so they can be gradients. Its colors keep their own
+         *   alpha.
+         * @param reach how far the pulses grow past the element's edge. Unspecified uses three quarters of the
+         *   element's shorter side, at most 64 dp.
+         * @param duration how long one pulse takes to grow and fade. Null is 1.5 seconds for rings and 2 for fills.
+         * @param interval the time between the pulses of one change.
+         * @param easing the curve of the pulse's life, from born to gone.
+         * @param startInset how far inside the element's edge a pulse starts. The pulse is drawn behind the element,
+         *   so an inset one starts hidden.
+         * @param fade maps the pulse's life progress to how far it has faded (0 visible, 1 gone). Null fades it
+         *   out quickly at first, then slowly.
          */
         public fun pulse(
             shape: Shape = RectangleShape,
             color: Color = Color(0xFF6B62F2),
             style: PulseStyle = PulseStyle.Stroke(),
             count: Int = 1,
+            brush: Brush? = null,
+            reach: Dp = Dp.Unspecified,
+            duration: Duration? = null,
+            interval: Duration = 200.milliseconds,
+            easing: Easing = LinearEasing,
+            startInset: Dp = 0.dp,
+            fade: Easing? = null,
         ): ChangeEffect {
             require(count > 0) { "count must be positive" }
-            return Pulse(shape, color, style, count)
+            require(reach == Dp.Unspecified || reach >= 0.dp) { "reach must not be negative" }
+            require(duration == null || duration.isPositive()) { "duration must be positive" }
+            require(!interval.isNegative()) { "interval must not be negative" }
+            require(startInset >= 0.dp) { "startInset must not be negative" }
+            return Pulse(shape, color, style, count, brush, reach, duration, interval, easing, startInset, fade)
         }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with options.", level = DeprecationLevel.HIDDEN)
+        public fun pulse(
+            shape: Shape = RectangleShape,
+            color: Color = Color(0xFF6B62F2),
+            style: PulseStyle = PulseStyle.Stroke(),
+            count: Int = 1,
+        ): ChangeEffect = pulse(shape, color, style, count, null)
 
         /**
          * A colored halo in the element's [shape] that flares up and fades. Quick repeated changes make it
          * stronger, up to a limit.
+         *
+         * @param intensity how strong the halo is at its brightest, from 0 to 1, as a factor on [color]'s alpha.
+         * @param spread how much wider the halo reaches, added to [radius].
+         * @param offset moves the halo away from the element, for a glow cast to one side.
+         * @param innerGlow how strong a second glow just inside the element's edge is, from 0 (none) to 1.
+         * @param flare how long the halo takes to reach full strength. Setting this or [decay] replaces the default
+         *   spring, which overshoots and settles on its own, with a rise and a fall that take the times given (the
+         *   other one defaults to 150 ms or 1 second).
+         * @param decay how long the halo takes to fade away once it peaks. See [flare].
+         * @param stackLimit how strong quick repeated changes can make the halo, as a multiple of a single one's
+         *   (which is 1). With reduced motion the halo is faint and short and does not stack.
          */
         public fun glow(
             color: Color = Color(0xFF6B62F2),
             radius: Dp = 16.dp,
             shape: Shape = RectangleShape,
+            intensity: Float = 1f,
+            spread: Dp = 0.dp,
+            offset: DpOffset = DpOffset.Zero,
+            innerGlow: Float = 0f,
+            flare: Duration? = null,
+            decay: Duration? = null,
+            stackLimit: Float = 1.5f,
         ): ChangeEffect {
             require(radius >= 0.dp) { "radius must not be negative" }
-            return Glow(color, radius, shape)
+            require(intensity in 0f..1f) { "intensity must be between 0 and 1" }
+            require(spread >= 0.dp) { "spread must not be negative" }
+            require(innerGlow in 0f..1f) { "innerGlow must be between 0 and 1" }
+            require(flare == null || flare.isPositive()) { "flare must be positive" }
+            require(decay == null || decay.isPositive()) { "decay must be positive" }
+            require(stackLimit > 0f && stackLimit.isFinite()) { "stackLimit must be positive" }
+            return Glow(color, radius, shape, intensity, spread, offset, innerGlow, flare, decay, stackLimit)
         }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with options.", level = DeprecationLevel.HIDDEN)
+        public fun glow(
+            color: Color = Color(0xFF6B62F2),
+            radius: Dp = 16.dp,
+            shape: Shape = RectangleShape,
+        ): ChangeEffect = glow(color, radius, shape, 1f)
 
         /** Spins the element one or more full turns and settles where it started. Changes mid-spin add speed. */
         public fun spin(
@@ -230,16 +341,42 @@ public abstract class ChangeEffect internal constructor() {
          * @param shape the element's shape. The ripple never draws outside it.
          * @param origin where the ripple starts, as fractions of the element's width and height.
          * @param duration how long the ripple takes to spread and fade.
+         * @param rings how many rings spread, one after another.
+         * @param ringWidth the width of each ring. Unspecified draws each ring as a filled disc, as ink.
+         * @param maxRadius how far the rings spread. Unspecified is as far as the element's farthest corner.
+         * @param ringSpacing how long after the one before each ring starts, as a fraction of [duration]. The rings
+         *   still end together with the ripple, so (rings - 1) times the spacing must stay below 1.
+         * @param easing the curve of the ripple's life.
          */
         public fun ripple(
             color: Color = Color(0x66FFFFFF),
             shape: Shape = RectangleShape,
             origin: TransformOrigin = TransformOrigin.Center,
             duration: Duration = 600.milliseconds,
+            rings: Int = 1,
+            ringWidth: Dp = Dp.Unspecified,
+            maxRadius: Dp = Dp.Unspecified,
+            ringSpacing: Float = 0.2f,
+            easing: Easing = LinearEasing,
         ): ChangeEffect {
             require(duration.isPositive()) { "duration must be positive" }
-            return Ripple(color, shape, origin, duration)
+            require(rings > 0) { "rings must be positive" }
+            require(ringWidth == Dp.Unspecified || ringWidth > 0.dp) { "ringWidth must be positive" }
+            require(maxRadius == Dp.Unspecified || maxRadius > 0.dp) { "maxRadius must be positive" }
+            require(ringSpacing >= 0f && (rings - 1) * ringSpacing < 1f) {
+                "ringSpacing must not be negative and (rings - 1) * ringSpacing must be below 1"
+            }
+            return Ripple(color, shape, origin, duration, rings, ringWidth, maxRadius, ringSpacing, easing)
         }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with options.", level = DeprecationLevel.HIDDEN)
+        public fun ripple(
+            color: Color = Color(0x66FFFFFF),
+            shape: Shape = RectangleShape,
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+        ): ChangeEffect = ripple(color, shape, origin, duration, 1)
 
         /**
          * The element's own pixels flash in [color] and fade back, like a hit in a game. Transparent parts of the
@@ -247,23 +384,31 @@ public abstract class ChangeEffect internal constructor() {
          *
          * @param duration how long the flash takes to rise and fade back.
          * @param peak how strongly the flash covers the element at its brightest, from just above 0 to 1.
+         * @param blendMode how the flash blends with the element. The default tints only the element's own
+         *   pixels; `BlendMode.Plus` or `BlendMode.Screen` lighten them instead.
+         * @param strobes how many times the flash fires within [duration], each a full rise and fade.
+         * @param shape limits the flash to this shape within the element. Null flashes the whole element.
          */
         public fun flash(
             color: Color = Color.White,
             duration: Duration = 400.milliseconds,
             peak: Float = 0.85f,
+            blendMode: BlendMode = BlendMode.SrcAtop,
+            strobes: Int = 1,
+            shape: Shape? = null,
         ): ChangeEffect {
             require(duration.isPositive()) { "duration must be positive" }
             require(peak > 0f && peak <= 1f) { "peak must be above 0 and at most 1" }
-            return Flash(color, duration, peak)
+            require(strobes > 0) { "strobes must be positive" }
+            return Flash(color, duration, peak, blendMode, strobes, shape)
         }
 
         // Kept for binaries compiled against 1.0.0.
-        @Deprecated("Use the overload with peak.", level = DeprecationLevel.HIDDEN)
+        @Deprecated("Use the overload with options.", level = DeprecationLevel.HIDDEN)
         public fun flash(
             color: Color = Color.White,
             duration: Duration = 400.milliseconds,
-        ): ChangeEffect = flash(color, duration, 0.85f)
+        ): ChangeEffect = flash(color, duration, 0.85f, BlendMode.SrcAtop)
 
         /**
          * A spiky comic star burst, in [color] with a lighter core, that pops out from behind the element, overshoots
@@ -466,18 +611,47 @@ public abstract class ChangeEffect internal constructor() {
          * once and fades.
          *
          * @param width the stroke's width at the comet's head.
-         * @param duration how long one lap takes.
+         * @param duration how long the whole run takes, for all [laps].
+         * @param tail how long the comet's tail is, as a fraction of the outline, from 0 to 1.
+         * @param clockwise whether the comet runs clockwise. Otherwise it runs the other way round.
+         * @param startAt where the comet starts, as a fraction of the way round the outline from its usual start
+         *   (the middle of the top edge for rectangles).
+         * @param laps how many times the comet goes around.
+         * @param easing the curve of the run.
+         * @param headGlow how strong the faint wide light under the comet's head is, as a factor on the standard.
+         *   0 leaves it out.
+         * @param brush draws the stroke instead of [color], so the comet can be a gradient.
          */
         public fun trace(
             shape: Shape = RectangleShape,
             color: Color = Color(0xFF6B62F2),
             width: Dp = 3.dp,
             duration: Duration = 1.seconds,
+            tail: Float = 0.4f,
+            clockwise: Boolean = true,
+            startAt: Float = 0f,
+            laps: Int = 1,
+            easing: Easing = FastOutSlowInEasing,
+            headGlow: Float = 1f,
+            brush: Brush? = null,
         ): ChangeEffect {
             require(width > 0.dp) { "width must be positive" }
             require(duration.isPositive()) { "duration must be positive" }
-            return Trace(shape, color, width, duration)
+            require(tail in 0f..1f) { "tail must be between 0 and 1" }
+            require(startAt in 0f..1f) { "startAt must be between 0 and 1" }
+            require(laps > 0) { "laps must be positive" }
+            require(headGlow >= 0f) { "headGlow must not be negative" }
+            return Trace(shape, color, width, duration, tail, clockwise, startAt, laps, easing, headGlow, brush)
         }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with options.", level = DeprecationLevel.HIDDEN)
+        public fun trace(
+            shape: Shape = RectangleShape,
+            color: Color = Color(0xFF6B62F2),
+            width: Dp = 3.dp,
+            duration: Duration = 1.seconds,
+        ): ChangeEffect = trace(shape, color, width, duration, 0.4f)
 
         /**
          * A line that draws across the middle of the element, in the reading direction, like crossing off a
@@ -486,16 +660,65 @@ public abstract class ChangeEffect internal constructor() {
          * same way.
          *
          * @param width the line's thickness.
+         * @param direction which way the line runs across the element.
+         * @param drawDuration how long the line takes to draw across.
+         * @param easing the curve of the drawing.
+         * @param offset moves the line across the element, as a fraction of the element's size from the middle, from
+         *   -0.5 to 0.5. Positive is lower for horizontal lines and further along for vertical ones.
+         * @param cap how the line's ends look. With the default the moving end is rounded while it draws.
+         * @param waveAmplitude how far a wavy line swings from straight. 0 draws a straight line.
+         * @param waveLength the distance of one wave, for a wavy line.
+         * @param lines how many parallel lines are drawn, centered on the offset.
+         * @param lineSpacing the distance between parallel lines.
+         * @param brush draws the line instead of [color], so it can be a gradient.
          */
         public fun strike(
             color: Color = Color(0xFF6B62F2),
             width: Dp = 2.dp,
             hold: Duration = 600.milliseconds,
+            direction: StrikeDirection = StrikeDirection.Reading,
+            drawDuration: Duration = 260.milliseconds,
+            easing: Easing = FastOutSlowInEasing,
+            offset: Float = 0f,
+            cap: StrokeCap = StrokeCap.Butt,
+            waveAmplitude: Dp = 0.dp,
+            waveLength: Dp = 12.dp,
+            lines: Int = 1,
+            lineSpacing: Dp = 6.dp,
+            brush: Brush? = null,
         ): ChangeEffect {
             require(width > 0.dp) { "width must be positive" }
             require(!hold.isNegative()) { "hold must not be negative" }
-            return Strike(color, width, hold)
+            require(drawDuration.isPositive()) { "drawDuration must be positive" }
+            require(offset in -0.5f..0.5f) { "offset must be between -0.5 and 0.5" }
+            require(waveAmplitude >= 0.dp) { "waveAmplitude must not be negative" }
+            require(waveLength > 0.dp) { "waveLength must be positive" }
+            require(lines > 0) { "lines must be positive" }
+            require(lineSpacing >= 0.dp) { "lineSpacing must not be negative" }
+            return Strike(
+                color,
+                width,
+                hold,
+                direction,
+                drawDuration,
+                easing,
+                offset,
+                cap,
+                waveAmplitude,
+                waveLength,
+                lines,
+                lineSpacing,
+                brush,
+            )
         }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with options.", level = DeprecationLevel.HIDDEN)
+        public fun strike(
+            color: Color = Color(0xFF6B62F2),
+            width: Dp = 2.dp,
+            hold: Duration = 600.milliseconds,
+        ): ChangeEffect = strike(color, width, hold, StrikeDirection.Reading)
 
         /**
          * Brings the element down like a rubber stamp: it drops from [scale] times its size, lands with a squash
@@ -601,10 +824,31 @@ public abstract class ChangeEffect internal constructor() {
         val angle: Float,
         val duration: Duration,
         val color: Color,
+        val easing: Easing,
+        val bandWidth: Float,
+        val softness: Float,
+        val peakAlpha: Float,
+        val blendMode: BlendMode,
+        val bands: Int,
+        val bandSpacing: Float,
+        val reverse: Boolean,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = duration / 2
 
-        override fun createRunner(): ChangeRunner = ShineRunner(angle, duration, color)
+        override fun createRunner(): ChangeRunner =
+            ShineRunner(
+                angle,
+                duration,
+                color,
+                easing,
+                bandWidth,
+                softness,
+                peakAlpha,
+                blendMode,
+                bands,
+                bandSpacing,
+                reverse,
+            )
     }
 
     internal data class Pulse(
@@ -612,20 +856,36 @@ public abstract class ChangeEffect internal constructor() {
         val color: Color,
         val style: PulseStyle,
         val count: Int,
+        val brush: Brush?,
+        val reach: Dp,
+        val duration: Duration?,
+        val interval: Duration,
+        val easing: Easing,
+        val startInset: Dp,
+        val fade: Easing?,
     ) : ChangeEffect() {
-        override val cooldown: Duration get() = 200.milliseconds * (count - 1)
+        override val cooldown: Duration get() = interval * (count - 1)
 
-        override fun createRunner(): ChangeRunner = PulseRunner(shape, color, style, count)
+        override fun createRunner(): ChangeRunner =
+            PulseRunner(shape, color, style, count, brush, reach, duration, interval, easing, startInset, fade)
     }
 
     internal data class Glow(
         val color: Color,
         val radius: Dp,
         val shape: Shape,
+        val intensity: Float,
+        val spread: Dp,
+        val offset: DpOffset,
+        val innerGlow: Float,
+        val flare: Duration?,
+        val decay: Duration?,
+        val stackLimit: Float,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
 
-        override fun createRunner(): ChangeRunner = GlowRunner(color, radius, shape)
+        override fun createRunner(): ChangeRunner =
+            GlowRunner(color, radius, shape, intensity, spread, offset, innerGlow, flare, decay, stackLimit)
     }
 
     internal data class Spin(
@@ -642,20 +902,29 @@ public abstract class ChangeEffect internal constructor() {
         val shape: Shape,
         val origin: TransformOrigin,
         val duration: Duration,
+        val rings: Int,
+        val ringWidth: Dp,
+        val maxRadius: Dp,
+        val ringSpacing: Float,
+        val easing: Easing,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
 
-        override fun createRunner(): ChangeRunner = RippleRunner(color, shape, origin, duration)
+        override fun createRunner(): ChangeRunner =
+            RippleRunner(color, shape, origin, duration, rings, ringWidth, maxRadius, ringSpacing, easing)
     }
 
     internal data class Flash(
         val color: Color,
         val duration: Duration,
         val peak: Float,
+        val blendMode: BlendMode,
+        val strobes: Int,
+        val shape: Shape?,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
 
-        override fun createRunner(): ChangeRunner = ColorFlashRunner(color, duration, peak)
+        override fun createRunner(): ChangeRunner = ColorFlashRunner(color, duration, peak, blendMode, strobes, shape)
     }
 
     internal data class Burst(
@@ -750,20 +1019,63 @@ public abstract class ChangeEffect internal constructor() {
         val color: Color,
         val width: Dp,
         val duration: Duration,
+        val tail: Float,
+        val clockwise: Boolean,
+        val startAt: Float,
+        val laps: Int,
+        val easing: Easing,
+        val headGlow: Float,
+        val brush: Brush?,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = duration / 2
 
-        override fun createRunner(): ChangeRunner = TraceRunner(shape, color, width, duration)
+        override fun createRunner(): ChangeRunner =
+            TraceRunner(
+                shape,
+                color,
+                width,
+                duration,
+                tail,
+                OutlineRoute(laps, startAt, clockwise),
+                easing,
+                headGlow,
+                brush,
+            )
     }
 
     internal data class Strike(
         val color: Color,
         val width: Dp,
         val hold: Duration,
+        val direction: StrikeDirection,
+        val drawDuration: Duration,
+        val easing: Easing,
+        val offset: Float,
+        val cap: StrokeCap,
+        val waveAmplitude: Dp,
+        val waveLength: Dp,
+        val lines: Int,
+        val lineSpacing: Dp,
+        val brush: Brush?,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
 
-        override fun createRunner(): ChangeRunner = StrikeRunner(color, width, hold)
+        override fun createRunner(): ChangeRunner =
+            StrikeRunner(
+                color,
+                width,
+                hold,
+                direction,
+                drawDuration,
+                easing,
+                offset,
+                cap,
+                waveAmplitude,
+                waveLength,
+                lines,
+                lineSpacing,
+                brush,
+            )
     }
 
     internal data class Stamp(
@@ -814,4 +1126,19 @@ public enum class SpeedLineDirections {
 
     /** Over the top only, in a half circle. */
     Arc,
+}
+
+/** Which way the line of [ChangeEffect.strike] runs across the element. */
+public enum class StrikeDirection {
+    /** From the start edge to the end edge, the way text is read in the layout direction. */
+    Reading,
+
+    /** From the end edge to the start edge. */
+    Reverse,
+
+    /** From the top edge to the bottom edge, through the middle. */
+    Vertical,
+
+    /** From the top corner on the start side to the bottom corner on the end side. */
+    Diagonal,
 }

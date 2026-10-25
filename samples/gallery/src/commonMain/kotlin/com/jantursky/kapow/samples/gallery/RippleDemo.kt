@@ -7,6 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.samples.design.LabeledSlider
 import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.gallery.examples.RippleExample
@@ -30,10 +32,12 @@ internal fun RippleDemo() {
     var swatch by remember { mutableStateOf(Swatch.Cobalt) }
     var from by remember { mutableStateOf(RippleFrom.Checkbox) }
     var seconds by remember { mutableFloatStateOf(0.6f) }
+    var rings by remember { mutableFloatStateOf(1f) }
+    var ringWidth by remember { mutableFloatStateOf(0f) }
     val duration = (seconds * 1000).roundToInt().milliseconds
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.seconds) { done = !done },
-        stage = { RippleExample(done, swatch.color, from.origin, duration) },
+        stage = { RippleExample(done, swatch.color, from.origin, duration, rings.roundToInt(), ringWidth.ring()) },
         code = {
             changeEffectCode(
                 call(
@@ -42,6 +46,8 @@ internal fun RippleDemo() {
                     "shape" to "RoundedCornerShape(16.dp)",
                     "origin" to from.kt(),
                     "duration" to duration.kt(),
+                    "rings" to rings.roundToInt().toString(),
+                    "ringWidth" to (if (ringWidth < 1f) "Dp.Unspecified" else ringWidth.ring().kt()),
                 ),
                 value = "done",
             )
@@ -51,6 +57,20 @@ internal fun RippleDemo() {
             ChoiceRow("From", RippleFrom.entries, from, { from = it }, { it.name })
             ChoiceRow("Color", Swatch.Palette, swatch, { swatch = it }, { it.name })
             LabeledSlider("Duration", "${seconds.oneDecimal()} s", seconds, { seconds = it }, 0.2f..2f)
+            LabeledSlider("Rings", rings.roundToInt().toString(), rings, { rings = it }, 1f..4f)
+            LabeledSlider(
+                "Ring width",
+                if (ringWidth <
+                    1f
+                ) {
+                    "filled"
+                } else {
+                    "${ringWidth.roundToInt()} dp"
+                },
+                ringWidth,
+                { ringWidth = it },
+                0f..12f,
+            )
         },
     )
 }
@@ -62,3 +82,6 @@ private fun RippleFrom.kt(): String =
         RippleFrom.Center -> "TransformOrigin.Center"
         RippleFrom.End -> "TransformOrigin(1f, 0.5f)"
     }
+
+/** The slider's width as a ring width: below 1 the ripple is a filled disc. */
+private fun Float.ring(): Dp = if (this < 1f) Dp.Unspecified else dp

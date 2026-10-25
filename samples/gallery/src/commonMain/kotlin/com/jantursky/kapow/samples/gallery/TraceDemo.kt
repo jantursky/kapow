@@ -21,10 +21,13 @@ internal fun TraceDemo() {
     var shape by remember { mutableStateOf(ShapeChoice.Rounded) }
     var swatch by remember { mutableStateOf(Swatch.Violet) }
     var seconds by remember { mutableFloatStateOf(1f) }
+    var clockwise by remember { mutableStateOf(true) }
+    var laps by remember { mutableFloatStateOf(1f) }
+    var tail by remember { mutableFloatStateOf(0.4f) }
     val duration = (seconds * 1000).roundToInt().milliseconds
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.seconds) { syncs++ },
-        stage = { TraceExample(syncs, shape.shape, swatch.color, duration) },
+        stage = { TraceExample(syncs, shape.shape, swatch.color, duration, clockwise, laps.roundToInt(), tail) },
         code = {
             changeEffectCode(
                 call(
@@ -32,6 +35,9 @@ internal fun TraceDemo() {
                     "shape" to shape.kt(),
                     "color" to swatch.color.kt(),
                     "duration" to duration.kt(),
+                    "tail" to "${tail.oneDecimal()}f",
+                    "clockwise" to clockwise.toString(),
+                    "laps" to laps.roundToInt().toString(),
                 ),
                 value = "syncs",
             )
@@ -41,6 +47,15 @@ internal fun TraceDemo() {
             ChoiceRow("Shape", ShapeChoice.entries, shape, { shape = it }, { it.name })
             ChoiceRow("Color", Swatch.Palette, swatch, { swatch = it }, { it.name })
             LabeledSlider("Duration", "${seconds.oneDecimal()} s", seconds, { seconds = it }, 0.4f..3f)
+            ChoiceRow(
+                "Direction",
+                listOf(true, false),
+                clockwise,
+                { clockwise = it },
+                { if (it) "Clockwise" else "Back" },
+            )
+            LabeledSlider("Laps", laps.roundToInt().toString(), laps, { laps = it }, 1f..3f)
+            LabeledSlider("Tail", tail.oneDecimal(), tail, { tail = it }, 0f..1f)
         },
     )
 }

@@ -19,17 +19,29 @@ internal fun ShineDemo() {
     var count by remember { mutableIntStateOf(0) }
     var angle by remember { mutableFloatStateOf(45f) }
     var seconds by remember { mutableFloatStateOf(1f) }
+    var bands by remember { mutableFloatStateOf(1f) }
+    var softness by remember { mutableFloatStateOf(1f) }
     val duration = (seconds * 1000).roundToInt().milliseconds
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.2.seconds) { count++ },
-        stage = { ShineExample(count, angle, duration) },
+        stage = { ShineExample(count, angle, duration, bands.roundToInt(), softness) },
         code = {
-            changeEffectCode(call("ChangeEffect.shine", "angle" to angle.kt(), "duration" to duration.kt()))
+            changeEffectCode(
+                call(
+                    "ChangeEffect.shine",
+                    "angle" to angle.kt(),
+                    "duration" to duration.kt(),
+                    "softness" to softness.oneDecimal() + "f",
+                    "bands" to bands.roundToInt().toString(),
+                ),
+            )
         },
         controls = {
             PrimaryPill("Fire", onClick = { count++ })
             LabeledSlider("Angle", "${angle.roundToInt()}°", angle, { angle = it }, 0f..360f)
             LabeledSlider("Duration", "${(seconds * 10).roundToInt() / 10f} s", seconds, { seconds = it }, 0.2f..3f)
+            LabeledSlider("Bands", bands.roundToInt().toString(), bands, { bands = it }, 1f..4f)
+            LabeledSlider("Softness", softness.oneDecimal(), softness, { softness = it }, 0.1f..1f)
         },
     )
 }

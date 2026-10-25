@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.ChangeEffect
 import com.jantursky.kapow.changeEffect
@@ -29,13 +30,24 @@ fun RippleExample(
     color: Color,
     origin: TransformOrigin,
     duration: Duration,
+    rings: Int = 1,
+    ringWidth: Dp = Dp.Unspecified,
 ) {
     val shape = RoundedCornerShape(16.dp)
     Row(
         Modifier
             .size(width = 260.dp, height = 64.dp)
-            .changeEffect(done, ChangeEffect.ripple(color.copy(alpha = 0.35f), shape, origin, duration))
-            .clip(shape)
+            .changeEffect(
+                done,
+                ChangeEffect.ripple(
+                    color.copy(alpha = 0.35f),
+                    shape,
+                    origin,
+                    duration,
+                    rings = rings,
+                    ringWidth = ringWidth,
+                ),
+            ).clip(shape)
             .background(KapowTheme.colors.panel)
             .padding(horizontal = 18.dp),
         horizontalArrangement = Arrangement.spacedBy(14.dp),

@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.ChangeEffect
 import com.jantursky.kapow.PulseStyle
@@ -26,8 +27,18 @@ fun PulseExample(
     color: Color,
     fill: Boolean,
     pulses: Int,
+    reach: Dp = Dp.Unspecified,
+    startInset: Dp = 0.dp,
 ) {
-    val pulse = ChangeEffect.pulse(shape, color, if (fill) PulseStyle.Fill else PulseStyle.Stroke(), pulses)
+    val pulse =
+        ChangeEffect.pulse(
+            shape,
+            color,
+            if (fill) PulseStyle.Fill else PulseStyle.Stroke(),
+            pulses,
+            reach = reach,
+            startInset = startInset,
+        )
     Row(horizontalArrangement = Arrangement.spacedBy(20.dp), verticalAlignment = Alignment.CenterVertically) {
         KapowText("Cart", style = KapowTheme.type.subheading)
         Box(

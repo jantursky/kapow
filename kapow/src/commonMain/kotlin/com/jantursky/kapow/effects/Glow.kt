@@ -10,31 +10,41 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.GraphicsContext
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.internal.ChangeRunner
 import com.jantursky.kapow.internal.ConditionalRunner
 import com.jantursky.kapow.internal.EffectContext
 import com.jantursky.kapow.internal.EffectRunner
 import com.jantursky.kapow.internal.ProgressRunner
+import com.jantursky.kapow.internal.at
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.math.min
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 /** The velocity a glow impulse gives its spring: a fresh 5, or 1.5 more while it is still glowing, up to 5. */
 internal fun glowImpulse(
     running: Boolean,
     velocity: Float,
-): Float = if (running) min(velocity + 1.5f, 5f) else 5f
+    cap: Float = 5f,
+): Float = if (running) min(velocity + 1.5f, cap) else min(5f, cap)
 
 /** Shared by the three glows: a halo behind the element, and the element brightened by a quarter of it. */
 internal abstract class GlowRunnerBase(
     color: Color,
     radius: Dp,
     shape: Shape,
+    private val offset: DpOffset = DpOffset.Zero,
+    private val limit: Float = MAX_HALO,
+    private val inner: InnerGlow? = null,
 ) : EffectRunner() {
-    private val halo = Halo(color, radius, shape)
+    private val halo = Halo(color, radius, shape, limit = limit)
     private var graphics: GraphicsContext? = null
     private var content: GraphicsLayer? = null
 
@@ -42,8 +52,17 @@ internal abstract class GlowRunnerBase(
 
     override fun ContentDrawScope.drawEffect() {
         val amount = amount
-        halo.draw(this, amount)
-        val brighten = min(amount, MAX_HALO) / MAX_HALO * 0.25f
+        drawHaloAndContent(amount)
+        inner?.draw(this, amount)
+    }
+
+    private fun ContentDrawScope.drawHaloAndContent(amount: Float) {
+        if (offset == DpOffset.Zero) {
+            halo.draw(this, amount)
+        } else {
+            translate(offset.x.toPx(), offset.y.toPx()) { halo.draw(this, amount) }
+        }
+        val brighten = min(amount, limit) / limit * 0.25f
         val graphics = graphics
         if (brighten <= 0f || graphics == null) {
             drawContent()
@@ -57,7 +76,7 @@ internal abstract class GlowRunnerBase(
                 content = it
             }
         layer.record {
-            this@drawEffect.drawContent()
+            this@drawHaloAndContent.drawContent()
             drawRect(Color.White, alpha = brighten, blendMode = BlendMode.SrcAtop)
         }
         drawLayer(layer)
@@ -79,9 +98,24 @@ internal class GlowRunner(
     color: Color,
     radius: Dp,
     shape: Shape,
+    intensity: Float = 1f,
+    spread: Dp = 0.dp,
+    offset: DpOffset = DpOffset.Zero,
+    innerGlow: Float = 0f,
+    private val flare: Duration? = null,
+    private val decay: Duration? = null,
+    private val stackLimit: Float = MAX_HALO,
 ) : ChangeRunner() {
+    private val shown = if (intensity == 1f) color else color.copy(alpha = color.alpha * intensity)
     private val base =
-        object : GlowRunnerBase(color, radius, shape) {
+        object : GlowRunnerBase(
+            shown,
+            radius + spread,
+            shape,
+            offset,
+            stackLimit,
+            if (innerGlow > 0f) InnerGlow(shown, radius + spread, shape, innerGlow, stackLimit) else null,
+        ) {
             override val amount: Float get() = glow.value.coerceAtLeast(0f) * SPRING_GAIN
         }
     private val glow = Animatable(0f)
@@ -93,15 +127,37 @@ internal class GlowRunner(
 
     override fun fire(context: EffectContext) {
         job?.cancel()
+        val speed = context.speed
         job =
             context.scope.launch {
                 if (context.isReducedMotion()) {
+                    if (!context.showsReducedStandIn()) return@launch
                     // A faint, short halo that doesn't pulse.
                     glow.snapTo(0.3f)
-                    glow.animateTo(0f, tween(300))
+                    glow.animateTo(
+                        0f,
+                        tween(
+                            300
+                                .milliseconds
+                                .at(speed)
+                                .inWholeMilliseconds
+                                .toInt(),
+                        ),
+                    )
+                } else if (flare == null && decay == null) {
+                    val cap = 5f * stackLimit / MAX_HALO
+                    val velocity = glowImpulse(glow.isRunning, glow.velocity, cap)
+                    // A faster spring is a stiffer one: time shrinks with the square root of stiffness.
+                    val stiffness = 15f * speed * speed
+                    glow.animateTo(0f, spring(dampingRatio = 0.75f, stiffness = stiffness), initialVelocity = velocity)
                 } else {
-                    val velocity = glowImpulse(glow.isRunning, glow.velocity)
-                    glow.animateTo(0f, spring(dampingRatio = 0.75f, stiffness = 15f), initialVelocity = velocity)
+                    val rise = (flare ?: DEFAULT_FLARE).at(speed).inWholeMilliseconds.toInt()
+                    val fall = (decay ?: DEFAULT_DECAY).at(speed).inWholeMilliseconds.toInt()
+                    // A change while still glowing builds on what is showing, up to the limit.
+                    val now = glow.value.coerceAtLeast(0f) * SPRING_GAIN
+                    val peak = min(if (now > 0.05f) now + 0.5f else 1f, stackLimit)
+                    glow.animateTo(peak / SPRING_GAIN, tween(rise))
+                    glow.animateTo(0f, tween(fall))
                 }
             }
     }
@@ -115,6 +171,8 @@ internal class GlowRunner(
         // The spring above peaks at about 0.57 after one impulse; this makes one change a full halo and leaves
         // room for quick repeats to build up to the cap.
         const val SPRING_GAIN = 1.75f
+        val DEFAULT_FLARE = 150.milliseconds
+        val DEFAULT_DECAY = 1000.milliseconds
     }
 }
 

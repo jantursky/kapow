@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.samples.design.LabeledSlider
 import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.gallery.examples.PulseExample
@@ -21,9 +22,11 @@ internal fun PulseDemo() {
     var swatch by remember { mutableStateOf(Swatch.Amber) }
     var fill by remember { mutableStateOf(false) }
     var pulses by remember { mutableFloatStateOf(1f) }
+    var reach by remember { mutableFloatStateOf(64f) }
+    var inset by remember { mutableFloatStateOf(0f) }
     ExampleScaffold(
         autoplay = Autoplay(2.seconds + 0.5.seconds * pulses.roundToInt()) { items++ },
-        stage = { PulseExample(items, shape.shape, swatch.color, fill, pulses.roundToInt()) },
+        stage = { PulseExample(items, shape.shape, swatch.color, fill, pulses.roundToInt(), reach.dp, inset.dp) },
         code = {
             changeEffectCode(
                 call(
@@ -32,6 +35,8 @@ internal fun PulseDemo() {
                     "color" to swatch.color.kt(),
                     "style" to if (fill) "PulseStyle.Fill" else "PulseStyle.Stroke()",
                     "count" to pulses.roundToInt().toString(),
+                    "reach" to reach.dp.kt(),
+                    "startInset" to inset.dp.kt(),
                 ),
                 value = "items",
             )
@@ -42,6 +47,8 @@ internal fun PulseDemo() {
             ChoiceRow("Color", Swatch.Palette, swatch, { swatch = it }, { it.name })
             ChoiceRow("Style", listOf(false, true), fill, { fill = it }, { if (it) "Fill" else "Stroke" })
             LabeledSlider("Pulses", pulses.roundToInt().toString(), pulses, { pulses = it }, 1f..4f)
+            LabeledSlider("Reach", "${reach.roundToInt()} dp", reach, { reach = it }, 10f..120f)
+            LabeledSlider("Start inset", "${inset.roundToInt()} dp", inset, { inset = it }, 0f..30f)
         },
     )
 }

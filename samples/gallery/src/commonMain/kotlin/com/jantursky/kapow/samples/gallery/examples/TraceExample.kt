@@ -25,12 +25,17 @@ fun TraceExample(
     shape: Shape,
     color: Color,
     duration: Duration,
+    clockwise: Boolean = true,
+    laps: Int = 1,
+    tail: Float = 0.4f,
 ) {
     Column(
         Modifier
             .size(width = 240.dp, height = 110.dp)
-            .changeEffect(syncs, ChangeEffect.trace(shape, color, duration = duration))
-            .clip(shape)
+            .changeEffect(
+                syncs,
+                ChangeEffect.trace(shape, color, duration = duration, tail = tail, clockwise = clockwise, laps = laps),
+            ).clip(shape)
             .background(KapowTheme.colors.panel),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,

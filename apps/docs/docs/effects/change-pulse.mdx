@@ -39,11 +39,18 @@ fun UnreadBadge(unread: Int) {
 | `shape` | `RectangleShape` | The shape of the rings or fills. Use the element's own shape so the pulse matches it. |
 | `color` | `Color(0xFF6B62F2)` | Color of the rings or fills. |
 | `style` | `PulseStyle.Stroke()` | `PulseStyle.Stroke(width)` draws rings, 2 dp wide by default. `PulseStyle.Fill` draws filled shapes. |
-| `count` | `1` | How many pulses one change sends, 0.2 s apart. Must be positive. |
+| `count` | `1` | How many pulses one change sends, `interval` apart. Must be positive. |
+| `brush` | `null` | Draws the rings or fills instead of `color`, so they can be gradients. |
+| `reach` | `Dp.Unspecified` | How far a pulse grows past the element's edge. Unspecified is three quarters of the element's shorter side, at most 64 dp. |
+| `duration` | `null` | How long one pulse takes to grow and fade. Null is 1.5 seconds for rings and 2 for fills. |
+| `interval` | `200.milliseconds` | The time between the pulses of one change. The cooldown follows it. |
+| `easing` | `LinearEasing` | The curve of a pulse's life, from born to gone. |
+| `startInset` | `0.dp` | How far inside the element's edge a pulse starts. The pulses draw behind the element, so an inset pulse starts hidden. |
+| `fade` | `null` | An `Easing` that maps life progress to how far a pulse has faded. Null fades rings quickly at first and then slowly. |
 
 ## Reduced motion
 
-No rings grow. The element's area flashes in the pulse color at about 30 % opacity and fades out in 0.4 s.
+No rings grow. The element's area flashes in the pulse color at about 30 % opacity and fades out in 0.4 s. With `reducedMotion(ReducedMotionMode.EndState)` nothing shows at all, since the effect ends at rest.
 
 ## Notes
 

@@ -51,10 +51,15 @@ fun TaskRow(done: Boolean) {
 | `shape` | `RectangleShape` | The element's shape. The ripple is clipped to it, so pass the same shape you clip or draw the element with. |
 | `origin` | `TransformOrigin.Center` | Where the ripple starts, as fractions of the element's width and height. `TransformOrigin(0f, 0f)` is the top left corner. |
 | `duration` | `600.milliseconds` | How long the ripple takes to spread and fade. Must be positive. |
+| `rings` | `1` | How many rings spread, one after another. Must be positive. |
+| `ringWidth` | `Dp.Unspecified` | The width of each ring. Unspecified draws each ring as a filled disc, like ink. |
+| `maxRadius` | `Dp.Unspecified` | How far the rings spread. Unspecified is as far as the element's farthest corner. |
+| `ringSpacing` | `0.2f` | How long after the one before each ring starts, as a fraction of `duration`. The rings still end together, so `(rings - 1) * ringSpacing` must stay below 1. |
+| `easing` | `LinearEasing` | The curve of the ripple's life. The spread itself always slows towards the end. |
 
 ## Reduced motion
 
-Nothing spreads. The whole shape tints in `color` and fades back in 0.3 s.
+Nothing spreads. The whole shape tints in `color` and fades back in 0.3 s. With `reducedMotion(ReducedMotionMode.EndState)` nothing shows at all, since the effect ends at rest.
 
 ## Notes
 

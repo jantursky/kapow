@@ -43,11 +43,18 @@ fun BackupCard(backups: Int) {
 | `shape` | `RectangleShape` | The outline the stroke follows. Use the shape the element is clipped to. |
 | `color` | `Color(0xFF6B62F2)` | Color of the stroke. The head has a lighter core and a soft glow in the same color. |
 | `width` | `3.dp` | Width of the stroke at the head. The tail thins out towards its end. Must be positive. |
-| `duration` | `1.seconds` | How long one lap takes. Must be positive. |
+| `duration` | `1.seconds` | How long the whole run takes, for all `laps`. Must be positive. |
+| `tail` | `0.4f` | How long the comet's tail is, as a fraction of the outline, from 0 to 1. |
+| `clockwise` | `true` | Whether the comet runs clockwise. Otherwise it runs the other way round. |
+| `startAt` | `0f` | Where the comet starts, as a fraction of the way round the outline from its usual start, from 0 to 1. |
+| `laps` | `1` | How many times the comet goes around. `duration` covers all of them. Must be positive. |
+| `easing` | `FastOutSlowInEasing` | The curve of the run. |
+| `headGlow` | `1f` | How strong the faint wide light under the comet's head is, as a factor on the standard. 0 leaves it out. |
+| `brush` | `null` | Draws the stroke instead of `color`, so the comet can be a gradient. The head's bright core stays white. |
 
 ## Reduced motion
 
-Nothing travels. The whole outline appears at once and fades out over 0.4 s.
+Nothing travels. The whole outline appears at once and fades out over 0.4 s. With `reducedMotion(ReducedMotionMode.EndState)` nothing shows at all, since the effect ends at rest.
 
 ## Notes
 

@@ -39,10 +39,14 @@ fun PinBoxes(failedAttempts: Int) {
 | --- | --- | --- |
 | `color` | `Color.White` | The color of the flash. At its peak it covers the element at 85 % of this color's alpha. |
 | `duration` | `400.milliseconds` | How long the flash takes to rise and fade back. Must be positive. |
+| `peak` | `0.85f` | How strongly the flash covers the element at its brightest, from just above 0 to 1. |
+| `blendMode` | `BlendMode.SrcAtop` | How the flash blends with the element. The default tints only the element's own pixels. `BlendMode.Plus` and `BlendMode.Screen` lighten them instead. |
+| `strobes` | `1` | How many times the flash fires within `duration`, each a full rise and fade. Must be positive. |
+| `shape` | `null` | Limits the flash to this shape within the element. Null flashes the whole element. |
 
 ## Reduced motion
 
-Nothing moves in this effect either way, so the flash still plays, but at 35 % instead of 85 %.
+Nothing moves in this effect either way, so the flash still plays, but at 35 % instead of 85 %. With `reducedMotion(ReducedMotionMode.EndState)` there is no flash.
 
 ## Notes
 

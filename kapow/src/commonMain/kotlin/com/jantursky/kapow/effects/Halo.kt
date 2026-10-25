@@ -34,6 +34,7 @@ internal class Halo(
     private val color: Color,
     private val radius: Dp,
     private val shape: Shape,
+    private val limit: Float = MAX_HALO,
     private val canBlur: () -> Boolean = ::blurSupported,
 ) {
     private var graphics: GraphicsContext? = null
@@ -52,7 +53,7 @@ internal class Halo(
         scope: DrawScope,
         amount: Float,
     ) = with(scope) {
-        val a = amount.coerceIn(0f, MAX_HALO)
+        val a = amount.coerceIn(0f, limit)
         if (a <= 0f) return@with
         val reach = radius.toPx() * a
         val alpha = haloOpacity(a)

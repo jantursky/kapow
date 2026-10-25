@@ -13,8 +13,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.StrikeDirection
 import com.jantursky.kapow.changeEffect
 import com.jantursky.kapow.samples.design.KapowShapes
 import com.jantursky.kapow.samples.design.KapowText
@@ -27,6 +29,9 @@ fun StrikeExample(
     done: Boolean,
     color: Color,
     hold: Duration,
+    direction: StrikeDirection = StrikeDirection.Reading,
+    lines: Int = 1,
+    waveAmplitude: Dp = 0.dp,
 ) {
     val colors = KapowTheme.colors
     Row(
@@ -49,7 +54,18 @@ fun StrikeExample(
         KapowText(
             "Buy oat milk",
             color = if (done) colors.slate else colors.ink,
-            modifier = Modifier.changeEffect(done, ChangeEffect.strike(color, hold = hold), isEnabled = done),
+            modifier =
+                Modifier.changeEffect(
+                    done,
+                    ChangeEffect.strike(
+                        color,
+                        hold = hold,
+                        direction = direction,
+                        lines = lines,
+                        waveAmplitude = waveAmplitude,
+                    ),
+                    isEnabled = done,
+                ),
         )
     }
 }

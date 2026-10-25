@@ -33,10 +33,18 @@ fun PriceTag(price: Int) {
 | `angle` | `45f` | Direction the band travels, in degrees clockwise from pointing right. 45 sweeps from the top left to the bottom right. |
 | `duration` | `1.seconds` | How long the sweep takes. Must be positive. |
 | `color` | `Color.White` | Color of the band. At its center the band is 80 % of this color's alpha. |
+| `easing` | `FastOutSlowInEasing` | The curve of the sweep. |
+| `bandWidth` | `0.6f` | The width of the band, as a fraction of the element's length along the sweep. Must be positive. |
+| `softness` | `1f` | How soft the band's edges are, above 0 and at most 1. Lower values reach full strength sooner, so the edges look harder. |
+| `peakAlpha` | `0.8f` | How strong the band is at its brightest, as a fraction of `color`'s alpha, from 0 to 1. |
+| `blendMode` | `BlendMode.SrcAtop` | How the band blends with the element. The default keeps it on the element's own pixels. A mode such as `BlendMode.Plus` lights them up instead, and also draws over transparent parts. |
+| `bands` | `1` | How many bands sweep across, one behind the other. Must be positive. |
+| `bandSpacing` | `1.5f` | The distance between bands, in band widths. Used with more than one band. |
+| `reverse` | `false` | Sweeps the other way, from the far end of `angle` back towards the start. |
 
 ## Reduced motion
 
-No band moves. The element gets a brief highlight of the band's color that fades out over half the `duration`.
+No band moves. The element gets a brief highlight of the band's color that fades out over half the `duration`. With `reducedMotion(ReducedMotionMode.EndState)` nothing shows at all, since the effect ends at rest.
 
 ## Notes
 

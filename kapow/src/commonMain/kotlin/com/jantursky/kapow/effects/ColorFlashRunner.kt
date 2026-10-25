@@ -3,17 +3,24 @@ package com.jantursky.kapow.effects
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.addOutline
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.layer.CompositingStrategy
 import androidx.compose.ui.graphics.layer.GraphicsLayer
+import androidx.compose.ui.unit.LayoutDirection
 import com.jantursky.kapow.internal.ChangeRunner
 import com.jantursky.kapow.internal.EffectContext
 import com.jantursky.kapow.internal.at
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlin.math.floor
 import kotlin.time.Duration
 
 /**
@@ -29,17 +36,34 @@ internal fun flashStrength(progress: Float): Float {
 
 private const val FLASH_ATTACK = 0.1f
 
+/** [progress] of a flash that strobes [strobes] times: each strobe is a whole flash in its share of the time. */
+internal fun strobeProgress(
+    progress: Float,
+    strobes: Int,
+): Float {
+    if (strobes == 1) return progress
+    val scaled = progress.coerceIn(0f, 1f) * strobes
+    return scaled - floor(scaled)
+}
+
 /** Tints the element's own pixels in a color that fades back. Transparent parts of the element stay clear. */
 internal class ColorFlashRunner(
     private val color: Color,
     private val duration: Duration,
     private val fullPeak: Float = FULL_PEAK,
+    private val blendMode: BlendMode = BlendMode.SrcAtop,
+    private val strobes: Int = 1,
+    private val shape: Shape? = null,
 ) : ChangeRunner() {
     private val progress = Animatable(1f)
+    private val mask = Path()
+    private var maskSize = Size.Unspecified
+    private var maskDirection: LayoutDirection? = null
     private var peak = fullPeak
     private var job: Job? = null
 
-    private val strength: Float get() = if (progress.value < 1f) flashStrength(progress.value) * peak else 0f
+    private val strength: Float
+        get() = if (progress.value < 1f) flashStrength(strobeProgress(progress.value, strobes)) * peak else 0f
 
     override val needsLayer: Boolean get() = true
 
@@ -51,11 +75,31 @@ internal class ColorFlashRunner(
     override fun ContentDrawScope.drawEffect() {
         drawContent()
         val a = strength
-        if (a > 0f) drawRect(color, alpha = a, blendMode = BlendMode.SrcAtop)
+        if (a <= 0f) return
+        val shape = shape
+        if (shape == null) {
+            drawRect(color, alpha = a, blendMode = blendMode)
+        } else {
+            clipPath(maskFor(shape, this)) { drawRect(color, alpha = a, blendMode = blendMode) }
+        }
+    }
+
+    private fun maskFor(
+        shape: Shape,
+        scope: DrawScope,
+    ): Path {
+        if (scope.size != maskSize || scope.layoutDirection != maskDirection) {
+            mask.reset()
+            mask.addOutline(shape.createOutline(scope.size, scope.layoutDirection, scope))
+            maskSize = scope.size
+            maskDirection = scope.layoutDirection
+        }
+        return mask
     }
 
     override fun fire(context: EffectContext) {
         job?.cancel()
+        if (context.isReducedMotion() && !context.showsReducedStandIn()) return
         peak = if (context.isReducedMotion()) minOf(REDUCED_PEAK, fullPeak) else fullPeak
         val millis = duration.at(context.speed).inWholeMilliseconds.toInt()
         job =

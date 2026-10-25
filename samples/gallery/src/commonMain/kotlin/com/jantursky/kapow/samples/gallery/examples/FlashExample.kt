@@ -25,11 +25,13 @@ fun FlashExample(
     attempts: Int,
     color: Color,
     duration: Duration,
+    strobes: Int = 1,
+    peak: Float = 0.85f,
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(14.dp)) {
         // The flash tints only what the row draws: the boxes and digits, not the gaps between them.
         Row(
-            Modifier.changeEffect(attempts, ChangeEffect.flash(color, duration)),
+            Modifier.changeEffect(attempts, ChangeEffect.flash(color, duration, peak, strobes = strobes)),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             for (digit in listOf("4", "7", "1", "9")) {

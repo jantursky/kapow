@@ -23,13 +23,17 @@ fun ShineExample(
     count: Int,
     angle: Float,
     duration: Duration,
+    bands: Int = 1,
+    softness: Float = 1f,
 ) {
     Box(
         modifier =
             Modifier
                 .size(width = 240.dp, height = 140.dp)
-                .changeEffect(count, ChangeEffect.shine(angle = angle, duration = duration))
-                .clip(RoundedCornerShape(20.dp))
+                .changeEffect(
+                    count,
+                    ChangeEffect.shine(angle = angle, duration = duration, softness = softness, bands = bands),
+                ).clip(RoundedCornerShape(20.dp))
                 .background(Brush.linearGradient(listOf(KapowEffectColors.amber, KapowEffectColors.coral))),
         contentAlignment = Alignment.Center,
     ) {

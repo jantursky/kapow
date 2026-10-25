@@ -5,6 +5,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
@@ -13,6 +14,8 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import kotlin.math.floor
+import kotlin.math.min
 
 /**
  * The part of an outline of [length] that a stroke from [start] to [end] covers, clipped to the outline. Null when
@@ -26,6 +29,16 @@ internal fun clipSpan(
     val from = start.coerceIn(0f, length)
     val to = end.coerceIn(0f, length)
     return if (to > from) from..to else null
+}
+
+/** How a stroke runs along an outline: [laps] times around, from [startAt] of the way round, [clockwise] or not. */
+internal data class OutlineRoute(
+    val laps: Int = 1,
+    val startAt: Float = 0f,
+    val clockwise: Boolean = true,
+) {
+    /** Whether this is the plain single clockwise lap from the usual start. */
+    val isStandard: Boolean get() = laps == 1 && startAt == 0f && clockwise
 }
 
 /**
@@ -112,15 +125,91 @@ internal class OutlineTracer(
         width: Float,
         alpha: Float = 1f,
         cap: StrokeCap = StrokeCap.Round,
+        brush: Brush? = null,
     ) {
         val span = clipSpan(start, end, length) ?: return
         if (span.start <= 0f && span.endInclusive >= length) {
             // The whole outline, closed, so its two ends join without a seam.
-            drawPath(path, color, alpha, Stroke(width))
+            strokePath(path, color, brush, alpha, Stroke(width))
             return
         }
         segment.reset()
         measure.getSegment(span.start, span.endInclusive, segment, startWithMoveTo = true)
-        drawPath(segment, color, alpha, Stroke(width, cap = cap))
+        strokePath(segment, color, brush, alpha, Stroke(width, cap = cap))
+    }
+
+    /**
+     * Draws the part of a route that [start] to [end] cover. The route goes [laps] times around the outline,
+     * beginning [startAt] (a fraction of the outline) past its usual start, clockwise or not, and distances count
+     * along the whole route.
+     */
+    fun DrawScope.drawRoute(
+        start: Float,
+        end: Float,
+        route: OutlineRoute,
+        color: Color,
+        width: Float,
+        alpha: Float = 1f,
+        cap: StrokeCap = StrokeCap.Round,
+        brush: Brush? = null,
+    ) {
+        if (route.isStandard) {
+            drawSpan(start, end, color, width, alpha, cap, brush)
+            return
+        }
+        val span = clipSpan(start, end, length * route.laps) ?: return
+        var from = span.start
+        while (from < span.endInclusive) {
+            val lap = floor(from / length)
+            var lapEnd = (lap + 1f) * length
+            if (lapEnd <= from) lapEnd = from + 1f
+            val to = min(span.endInclusive, lapEnd)
+            val local = from - lap * length
+            var a = local
+            var b = local + (to - from)
+            if (!route.clockwise) {
+                val flippedA = length - b
+                b = length - a
+                a = flippedA
+            }
+            a += route.startAt * length
+            b += route.startAt * length
+            if (a >= length) {
+                a -= length
+                b -= length
+            }
+            if (b > length) {
+                strokeRange(a, length, color, brush, alpha, width, cap)
+                strokeRange(0f, b - length, color, brush, alpha, width, cap)
+            } else {
+                strokeRange(a, b, color, brush, alpha, width, cap)
+            }
+            from = to
+        }
+    }
+
+    private fun DrawScope.strokeRange(
+        a: Float,
+        b: Float,
+        color: Color,
+        brush: Brush?,
+        alpha: Float,
+        width: Float,
+        cap: StrokeCap,
+    ) {
+        if (b <= a) return
+        segment.reset()
+        measure.getSegment(a, b, segment, startWithMoveTo = true)
+        strokePath(segment, color, brush, alpha, Stroke(width, cap = cap))
+    }
+
+    private fun DrawScope.strokePath(
+        path: Path,
+        color: Color,
+        brush: Brush?,
+        alpha: Float,
+        style: Stroke,
+    ) {
+        if (brush == null) drawPath(path, color, alpha, style) else drawPath(path, brush, alpha, style)
     }
 }
