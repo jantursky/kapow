@@ -102,8 +102,40 @@ public abstract class ConditionalEffect internal constructor() {
             return PushDown(scale)
         }
 
-        /** Soft particles that rise from the top of the element, like smoke. */
-        public fun smoke(color: Color = Color(0xFF8A8A8A)): ConditionalEffect = Smoke(color)
+        /**
+         * Soft particles that rise from the top of the element, like smoke.
+         *
+         * Smoke is made of particles: a [KapowParticleLayer] above the element keeps clipping parents from cutting
+         * it off. With reduced motion there are none. [physics] sets the launch cone, speed, lifetime, gravity,
+         * drag, size, spin, fade, scale and emission area (`EmissionArea.Edge(...)` moves the source to another
+         * edge); its blend mode and color pick are ignored.
+         *
+         * @param rate how often puffs come, as a factor: 2 is twice as many.
+         * @param size the radius of a puff at its start.
+         * @param opacity how opaque a puff gets at most, from just above 0 to 1.
+         * @param wind a sideways push in dp per second squared. Positive blows toward the right.
+         * @param physics how the puffs launch and move.
+         * @param seed the start of the random numbers that place and shape the puffs.
+         */
+        public fun smoke(
+            color: Color = Color(0xFF8A8A8A),
+            rate: Float = 1f,
+            size: Dp = 10.dp,
+            opacity: Float = 0.7f,
+            wind: Float = 0f,
+            physics: ParticlePhysics = ParticlePhysics.Default,
+            seed: Int = 0,
+        ): ConditionalEffect {
+            require(rate > 0f && rate.isFinite()) { "rate must be positive" }
+            require(size > 0.dp) { "size must be positive" }
+            require(opacity > 0f && opacity <= 1f) { "opacity must be above 0 and at most 1" }
+            require(wind.isFinite()) { "wind must be a number" }
+            return Smoke(color, rate, size, opacity, wind, physics, seed)
+        }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with more options.", level = DeprecationLevel.HIDDEN)
+        public fun smoke(color: Color = Color(0xFF8A8A8A)): ConditionalEffect = smoke(color, 1f)
 
         /**
          * A short, bright beam of light that travels around the outline of [shape], on a faint track of the same
@@ -194,7 +226,7 @@ public abstract class ConditionalEffect internal constructor() {
         /**
          * Four-point stars that keep twinkling in and out over the element and just past its edges, a few at a
          * time, for something new or special. Each sparkle stays where it appears; their spots, sizes and colors
-         * come from a fixed seed.
+         * come from [seed].
          *
          * Sparkles are particles: a [KapowParticleLayer] above the element keeps clipping parents from cutting them
          * off. With reduced motion there are none.
@@ -202,17 +234,34 @@ public abstract class ConditionalEffect internal constructor() {
          * @param colors the sparkles' colors, used in turn.
          * @param size the size of the largest sparkle.
          * @param count about how many sparkles are visible at once.
+         * @param lifetime how long one sparkle twinkles, in seconds, as a range.
+         * @param areaPadding how far past the element's edges a sparkle may appear. Negative keeps them inside.
+         * @param shape the shape of a sparkle.
+         * @param seed the start of the random numbers that place the sparkles.
          */
         public fun sparkles(
             colors: List<Color> = listOf(Color(0xFFFFF1C2), Color(0xFFFFB547)),
             size: Dp = 18.dp,
             count: Int = 4,
+            lifetime: ClosedFloatingPointRange<Float> = 0.8f..1.3f,
+            areaPadding: Dp = size / 2,
+            shape: ParticleShape = ParticleShape.Sparkle,
+            seed: Int = 0,
         ): ConditionalEffect {
             require(colors.isNotEmpty()) { "colors must not be empty" }
             require(size > 0.dp) { "size must be positive" }
             require(count > 0) { "count must be positive" }
-            return Sparkles(colors, size, count)
+            require(lifetime.start > 0f) { "lifetime must be positive" }
+            return Sparkles(colors, size, count, lifetime, areaPadding, shape, seed)
         }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with more options.", level = DeprecationLevel.HIDDEN)
+        public fun sparkles(
+            colors: List<Color> = listOf(Color(0xFFFFF1C2), Color(0xFFFFB547)),
+            size: Dp = 18.dp,
+            count: Int = 4,
+        ): ConditionalEffect = sparkles(colors, size, count, 0.8f..1.3f)
 
         /**
          * A few glowing particles that circle the element on a tipped ellipse, like a ring around a planet. They
@@ -225,36 +274,87 @@ public abstract class ConditionalEffect internal constructor() {
          * @param count how many particles circle, spaced evenly.
          * @param size the diameter of a particle in front.
          * @param duration how long one turn takes.
+         * @param radius how far the orbit reaches from the center, as a factor of the element's half width.
+         * @param tilt how far the orbit is tipped, in degrees clockwise. The default lifts its right end.
+         * @param clockwise whether the particles turn clockwise.
+         * @param depthScale how big a particle is at the back of the orbit, as a share of its size in front, from
+         *   just above 0 to 1.
+         * @param content what is drawn for each particle instead of a glowing dot, such as an icon or a shape. Its
+         *   own size is used and [size] is ignored. Null draws dots in [colors].
+         * @param trail how many fading dots follow each particle. 0 gives none.
          */
         public fun orbit(
             colors: List<Color> = ParticleContent.DefaultColors,
             count: Int = 3,
             size: Dp = 8.dp,
             duration: Duration = 2.5.seconds,
+            radius: Float = 1.6f,
+            tilt: Float = -17.188734f,
+            clockwise: Boolean = true,
+            depthScale: Float = 0.55f,
+            content: ParticleContent? = null,
+            trail: Int = 4,
         ): ConditionalEffect {
             require(colors.isNotEmpty()) { "colors must not be empty" }
             require(count > 0) { "count must be positive" }
             require(size > 0.dp) { "size must be positive" }
             require(duration.isPositive()) { "duration must be positive" }
-            return Orbit(colors, count, size, duration)
+            require(radius > 0f && radius.isFinite()) { "radius must be positive" }
+            require(tilt.isFinite()) { "tilt must be a number" }
+            require(depthScale > 0f && depthScale <= 1f) { "depthScale must be above 0 and at most 1" }
+            require(trail >= 0) { "trail must not be negative" }
+            return Orbit(colors, count, size, duration, radius, tilt, clockwise, depthScale, content, trail)
         }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with more options.", level = DeprecationLevel.HIDDEN)
+        public fun orbit(
+            colors: List<Color> = ParticleContent.DefaultColors,
+            count: Int = 3,
+            size: Dp = 8.dp,
+            duration: Duration = 2.5.seconds,
+        ): ConditionalEffect = orbit(colors, count, size, duration, 1.6f)
 
         /**
          * Small bubbles that keep rising from the element's top edge, wobbling a little, then pop, for something
          * fizzy, bubbling or underwater.
          *
          * Bubbles are particles: a [KapowParticleLayer] above the element keeps clipping parents from cutting them
-         * off. With reduced motion there are none.
+         * off. With reduced motion there are none. [physics] sets the launch cone, speed, lifetime (how high they
+         * rise), gravity, drag, size, spin, fade, scale and emission area; its blend mode and color pick are
+         * ignored.
          *
          * @param size the diameter of the largest bubble.
+         * @param rate how often bubbles come, as a factor: 2 is twice as many.
+         * @param wobble how wide a bubble sways from side to side.
+         * @param pop whether a bubble swells and pops at the end of its life. Without it the bubble just thins out.
+         * @param colorVariation how much the bubbles differ in tint, from 0 (all [color]) to 1.
+         * @param physics how the bubbles launch and move.
+         * @param seed the start of the random numbers that place and shape the bubbles.
          */
         public fun bubbles(
             color: Color = Color(0xFF9ED8FF),
             size: Dp = 10.dp,
+            rate: Float = 1f,
+            wobble: Dp = 3.dp,
+            pop: Boolean = true,
+            colorVariation: Float = 0f,
+            physics: ParticlePhysics = ParticlePhysics.Default,
+            seed: Int = 0,
         ): ConditionalEffect {
             require(size > 0.dp) { "size must be positive" }
-            return Bubbles(color, size)
+            require(rate > 0f && rate.isFinite()) { "rate must be positive" }
+            require(wobble >= 0.dp) { "wobble must not be negative" }
+            require(colorVariation in 0f..1f) { "colorVariation must be between 0 and 1" }
+            return Bubbles(color, size, rate, wobble, pop, colorVariation, physics, seed)
         }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with more options.", level = DeprecationLevel.HIDDEN)
+        public fun bubbles(
+            color: Color = Color(0xFF9ED8FF),
+            size: Dp = 10.dp,
+        ): ConditionalEffect = bubbles(color, size, 1f)
 
         /** Pale yellow, amber, coral and a deep red that fades out: the colors [flame] burns through by default. */
         public val FlameColors: List<Color> =
@@ -266,19 +366,47 @@ public abstract class ConditionalEffect internal constructor() {
          * flickering tongues. Drawn with radial gradients, without sprites or shaders.
          *
          * Flames are particles: a [KapowParticleLayer] above the element keeps clipping parents from cutting them
-         * off. With reduced motion there are none.
+         * off. With reduced motion there are none. [physics] sets the launch cone, speed, lifetime, gravity, drag,
+         * size, spin, fade, scale and emission area; its blend mode and color pick are ignored.
          *
          * @param colors the colors a puff goes through, from its birth to its end. Fade the last one out.
-         * @param height about how high the flames reach above the element.
+         * @param height about how high the flames reach away from the element.
+         * @param width how wide the base of the flames is. Null takes about a fifth of the edge, at most half the
+         *   height.
+         * @param intensity how dense the flames are, as a factor: 2 is twice as many puffs.
+         * @param wind a sideways push in dp per second squared along the edge. Positive blows toward the right, or
+         *   down for a flame on the start or end edge.
+         * @param edge the edge the flames burn from. [EdgeSide.Start] and [EdgeSide.End] follow the layout direction.
+         * @param flicker how fast the flames sway, as a factor.
+         * @param physics how the puffs launch and move.
+         * @param seed the start of the random numbers that place and shape the puffs.
          */
         public fun flame(
             colors: List<Color> = FlameColors,
             height: Dp = 40.dp,
+            width: Dp? = null,
+            intensity: Float = 1f,
+            wind: Float = 0f,
+            edge: EdgeSide = EdgeSide.Top,
+            flicker: Float = 1f,
+            physics: ParticlePhysics = ParticlePhysics.Default,
+            seed: Int = 0,
         ): ConditionalEffect {
             require(colors.size >= 2) { "colors needs at least two colors" }
             require(height > 0.dp) { "height must be positive" }
-            return Flame(colors, height)
+            require(width == null || width > 0.dp) { "width must be positive" }
+            require(intensity > 0f && intensity.isFinite()) { "intensity must be positive" }
+            require(wind.isFinite()) { "wind must be a number" }
+            require(flicker >= 0f && flicker.isFinite()) { "flicker must not be negative" }
+            return Flame(colors, height, width, intensity, wind, edge, flicker, physics, seed)
         }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with more options.", level = DeprecationLevel.HIDDEN)
+        public fun flame(
+            colors: List<Color> = FlameColors,
+            height: Dp = 40.dp,
+        ): ConditionalEffect = flame(colors, height, null)
 
         /**
          * Drains the color from the element, for a disabled or unavailable look. It fades in and out over 0.3 s.
@@ -343,8 +471,14 @@ public abstract class ConditionalEffect internal constructor() {
 
     internal data class Smoke(
         val color: Color,
+        val rate: Float,
+        val size: Dp,
+        val opacity: Float,
+        val wind: Float,
+        val physics: ParticlePhysics,
+        val seed: Int,
     ) : ConditionalEffect() {
-        override fun createRunner(): ConditionalRunner = SmokeRunner(color)
+        override fun createRunner(): ConditionalRunner = SmokeRunner(color, rate, size, opacity, wind, physics, seed)
     }
 
     internal data class BorderBeam(
@@ -383,8 +517,13 @@ public abstract class ConditionalEffect internal constructor() {
         val colors: List<Color>,
         val size: Dp,
         val count: Int,
+        val lifetime: ClosedFloatingPointRange<Float>,
+        val areaPadding: Dp,
+        val shape: ParticleShape,
+        val seed: Int,
     ) : ConditionalEffect() {
-        override fun createRunner(): ConditionalRunner = SparklesRunner(colors, size, count)
+        override fun createRunner(): ConditionalRunner =
+            SparklesRunner(colors, size, count, lifetime, areaPadding, shape, seed)
     }
 
     internal data class Orbit(
@@ -392,22 +531,44 @@ public abstract class ConditionalEffect internal constructor() {
         val count: Int,
         val size: Dp,
         val duration: Duration,
+        val radius: Float,
+        val tilt: Float,
+        val clockwise: Boolean,
+        val depthScale: Float,
+        val content: ParticleContent?,
+        val trail: Int,
     ) : ConditionalEffect() {
-        override fun createRunner(): ConditionalRunner = OrbitRunner(colors, count, size, duration)
+        override fun createRunner(): ConditionalRunner =
+            OrbitRunner(colors, count, size, duration, radius, tilt, clockwise, depthScale, content, trail)
     }
 
     internal data class Bubbles(
         val color: Color,
         val size: Dp,
+        val rate: Float,
+        val wobble: Dp,
+        val pop: Boolean,
+        val colorVariation: Float,
+        val physics: ParticlePhysics,
+        val seed: Int,
     ) : ConditionalEffect() {
-        override fun createRunner(): ConditionalRunner = BubblesRunner(color, size)
+        override fun createRunner(): ConditionalRunner =
+            BubblesRunner(color, size, rate, wobble, pop, colorVariation, physics, seed)
     }
 
     internal data class Flame(
         val colors: List<Color>,
         val height: Dp,
+        val width: Dp?,
+        val intensity: Float,
+        val wind: Float,
+        val edge: EdgeSide,
+        val flicker: Float,
+        val physics: ParticlePhysics,
+        val seed: Int,
     ) : ConditionalEffect() {
-        override fun createRunner(): ConditionalRunner = FlameRunner(colors, height)
+        override fun createRunner(): ConditionalRunner =
+            FlameRunner(colors, height, width, intensity, wind, edge, flicker, physics, seed)
     }
 
     internal data class Grayscale(
