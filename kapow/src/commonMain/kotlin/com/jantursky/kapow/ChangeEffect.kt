@@ -327,11 +327,50 @@ public abstract class ChangeEffect internal constructor() {
             shape: Shape = RectangleShape,
         ): ChangeEffect = glow(color, radius, shape, 1f)
 
-        /** Spins the element one or more full turns and settles where it started. Changes mid-spin add speed. */
+        /**
+         * Spins the element one or more full turns and settles where it started. Changes mid-spin add speed. With
+         * reduced motion it does not turn; the element brightens briefly instead.
+         *
+         * @param turns how many full turns a change makes. Null takes one for [SpinRate.Default] and two for
+         *   [SpinRate.Fast].
+         * @param duration how long the spin takes. Null lets a spring decide, which kicks off fast, overshoots and
+         *   settles on its own; a duration replaces it with a plain animation along [easing].
+         * @param easing the curve of the spin, used with a [duration].
+         * @param reverse spins the other way round.
+         * @param pivot the point the element turns around, as fractions of its width and height.
+         * @param cameraDistance how far the viewer is from the element, in dp. Closer makes the turn more dramatic
+         *   on X and Y; it has no effect on Z.
+         * @param shading how much darker the element gets as it turns edge-on, from 0 (not at all) to 1. Z
+         *   spins are never shaded.
+         * @param overshoot how far the spring swings past its end and back, from 0 (settles smoothly) to 0.95. It
+         *   applies when there is no [duration].
+         */
         public fun spin(
             axis: SpinAxis = SpinAxis.Y,
             rate: SpinRate = SpinRate.Default,
-        ): ChangeEffect = Spin(axis, rate)
+            turns: Int? = null,
+            duration: Duration? = null,
+            easing: Easing = FastOutSlowInEasing,
+            reverse: Boolean = false,
+            pivot: TransformOrigin = TransformOrigin.Center,
+            cameraDistance: Dp = 12.dp,
+            shading: Float = 0.35f,
+            overshoot: Float = 0.35f,
+        ): ChangeEffect {
+            require(turns == null || turns > 0) { "turns must be positive" }
+            require(duration == null || duration.isPositive()) { "duration must be positive" }
+            require(cameraDistance > 0.dp) { "cameraDistance must be positive" }
+            require(shading in 0f..1f) { "shading must be between 0 and 1" }
+            require(overshoot in 0f..0.95f) { "overshoot must be between 0 and 0.95" }
+            return Spin(axis, rate, turns, duration, easing, reverse, pivot, cameraDistance, shading, overshoot)
+        }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with options.", level = DeprecationLevel.HIDDEN)
+        public fun spin(
+            axis: SpinAxis = SpinAxis.Y,
+            rate: SpinRate = SpinRate.Default,
+        ): ChangeEffect = spin(axis, rate, null)
 
         /**
          * An ink ripple that spreads from [origin] until it covers the element, clipped to the element's [shape],
@@ -416,14 +455,62 @@ public abstract class ChangeEffect internal constructor() {
          * element brightens briefly instead.
          *
          * @param spikes how many points the burst has. At least 3.
+         * @param sizeScale a factor on how far the burst reaches.
+         * @param coreColor the color of the lighter core. Unspecified lightens [color].
+         * @param rotation how many degrees the burst turns while it plays.
+         * @param overshoot how far past its full size the burst pops, as a fraction of it.
+         * @param innerRatio the size of the core, as a fraction of the burst's.
+         * @param anchor where the burst is centered, as fractions of the element's width and height.
+         * @param inFront draws the burst over the element instead of behind it.
+         * @param outline the width of an outline around the burst, 0 for none.
+         * @param outlineColor the color of the outline.
+         * @param duration how long the burst takes to pop and fade.
+         * @param seed the first seed. Each change takes the next one, so the same seed gives the same outlines.
          */
         public fun burst(
             color: Color = Color(0xFFFFB547),
             spikes: Int = 12,
+            sizeScale: Float = 1f,
+            coreColor: Color = Color.Unspecified,
+            rotation: Float = 14f,
+            overshoot: Float = 0.15f,
+            innerRatio: Float = 0.72f,
+            anchor: TransformOrigin = TransformOrigin.Center,
+            inFront: Boolean = false,
+            outline: Dp = 0.dp,
+            outlineColor: Color = Color(0xFF1B1B1F),
+            duration: Duration = 600.milliseconds,
+            seed: Int = 0,
         ): ChangeEffect {
             require(spikes >= 3) { "spikes must be at least 3" }
-            return Burst(color, spikes)
+            require(sizeScale > 0f && sizeScale.isFinite()) { "sizeScale must be positive" }
+            require(overshoot >= 0f && overshoot.isFinite()) { "overshoot must not be negative" }
+            require(innerRatio in 0f..1f) { "innerRatio must be between 0 and 1" }
+            require(outline >= 0.dp) { "outline must not be negative" }
+            require(duration.isPositive()) { "duration must be positive" }
+            return Burst(
+                color,
+                spikes,
+                sizeScale,
+                coreColor,
+                rotation,
+                overshoot,
+                innerRatio,
+                anchor,
+                inFront,
+                outline,
+                outlineColor,
+                duration,
+                seed,
+            )
         }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with options.", level = DeprecationLevel.HIDDEN)
+        public fun burst(
+            color: Color = Color(0xFFFFB547),
+            spikes: Int = 12,
+        ): ChangeEffect = burst(color, spikes, 1f)
 
         /**
          * Comic action lines that fly outward from all of the element's edges and vanish, as if it had just moved
@@ -727,14 +814,58 @@ public abstract class ChangeEffect internal constructor() {
          *
          * @param scale how much larger the element starts, 1 or more.
          * @param dustColor the color of the dust puffs.
+         * @param duration how long the stamp takes from the start of the drop to the end of the rebound. A quarter
+         *   of it is the drop.
+         * @param squash how flat the impact squashes the element, as a fraction of its size.
+         * @param rebound how much the element springs back after the squash, from 0 (settles at once) to 1.
+         * @param dustCount how many puffs of dust fly out to each side. 0 leaves out the dust.
+         * @param dustSize the size of a puff of dust.
+         * @param dustSpread how far the dust flies, as a factor on the standard.
+         * @param tilt how many degrees the element is turned as it starts to drop; it levels out as it lands.
+         * @param origin the point the element drops around, as fractions of its width and height.
+         * @param seed the first seed. Each landing takes the next ones, so the same seed gives the same dust.
          */
         public fun stamp(
             scale: Float = 1.3f,
             dustColor: Color = Color(0xFFB0B0B0),
+            duration: Duration = 560.milliseconds,
+            squash: Float = 0.1f,
+            rebound: Float = 1f,
+            dustCount: Int = 5,
+            dustSize: Dp = 8.dp,
+            dustSpread: Float = 1f,
+            tilt: Float = 0f,
+            origin: TransformOrigin = TransformOrigin.Center,
+            seed: Int = 0,
         ): ChangeEffect {
             require(scale >= 1f) { "scale must be at least 1" }
-            return Stamp(scale, dustColor)
+            require(duration.isPositive()) { "duration must be positive" }
+            require(squash in 0f..0.5f) { "squash must be between 0 and 0.5" }
+            require(rebound in 0f..1f) { "rebound must be between 0 and 1" }
+            require(dustCount >= 0) { "dustCount must not be negative" }
+            require(dustSize > 0.dp) { "dustSize must be positive" }
+            require(dustSpread >= 0f && dustSpread.isFinite()) { "dustSpread must not be negative" }
+            return Stamp(
+                scale,
+                dustColor,
+                duration,
+                squash,
+                rebound,
+                dustCount,
+                dustSize,
+                dustSpread,
+                tilt,
+                origin,
+                seed,
+            )
         }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with options.", level = DeprecationLevel.HIDDEN)
+        public fun stamp(
+            scale: Float = 1.3f,
+            dustColor: Color = Color(0xFFB0B0B0),
+        ): ChangeEffect = stamp(scale, dustColor, 560.milliseconds)
 
         /**
          * A digital glitch: for [duration] the element splits into offset red, green and blue copies while
@@ -742,15 +873,41 @@ public abstract class ChangeEffect internal constructor() {
          * element briefly brightens instead.
          *
          * @param offset how far the color channels split apart. Slices jump up to one and a half times as far.
+         * @param sliceHeight the range a slice's height is picked from, as a fraction of the element's height. Taller
+         *   slices mean fewer of them.
+         * @param channelColors the colors of the three copies of the element: the first goes one way, the third
+         *   the other and the second stays. Each copy keeps one channel of the element, red, green and blue in turn,
+         *   tinted in its color, so the default red, green and blue rebuild the original.
+         * @param jumpChance the share of slices that jump sideways, from 0 to 1.
+         * @param jitterRate how many times a second the glitch changes its look.
+         * @param seed the first seed. Each change takes the next one, so the same seed gives the same glitches.
          */
         public fun glitch(
             duration: Duration = 300.milliseconds,
             offset: Dp = 6.dp,
+            sliceHeight: ClosedFloatingPointRange<Float> = 0.08f..0.3f,
+            channelColors: List<Color> = listOf(Color.Red, Color.Green, Color.Blue),
+            jumpChance: Float = 0.5f,
+            jitterRate: Float = 20f,
+            seed: Int = 0,
         ): ChangeEffect {
             require(duration.isPositive()) { "duration must be positive" }
             require(offset >= 0.dp) { "offset must not be negative" }
-            return Glitch(duration, offset)
+            require(sliceHeight.start > 0f && sliceHeight.endInclusive <= 1f) {
+                "sliceHeight must be above 0 and at most 1"
+            }
+            require(channelColors.size == 3) { "channelColors must have three colors" }
+            require(jumpChance in 0f..1f) { "jumpChance must be between 0 and 1" }
+            require(jitterRate > 0f && jitterRate.isFinite()) { "jitterRate must be positive" }
+            return Glitch(duration, offset, sliceHeight, channelColors, jumpChance, jitterRate, seed)
         }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with options.", level = DeprecationLevel.HIDDEN)
+        public fun glitch(
+            duration: Duration = 300.milliseconds,
+            offset: Dp = 6.dp,
+        ): ChangeEffect = glitch(duration, offset, 0.08f..0.3f)
     }
 
     internal data class Delayed(
@@ -891,10 +1048,19 @@ public abstract class ChangeEffect internal constructor() {
     internal data class Spin(
         val axis: SpinAxis,
         val rate: SpinRate,
+        val turns: Int?,
+        val duration: Duration?,
+        val easing: Easing,
+        val reverse: Boolean,
+        val pivot: TransformOrigin,
+        val cameraDistance: Dp,
+        val shading: Float,
+        val overshoot: Float,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
 
-        override fun createRunner(): ChangeRunner = SpinRunner(axis, rate)
+        override fun createRunner(): ChangeRunner =
+            SpinRunner(axis, rate, turns, duration, easing, reverse, pivot, cameraDistance, shading, overshoot)
     }
 
     internal data class Ripple(
@@ -930,10 +1096,36 @@ public abstract class ChangeEffect internal constructor() {
     internal data class Burst(
         val color: Color,
         val spikes: Int,
+        val sizeScale: Float,
+        val coreColor: Color,
+        val rotation: Float,
+        val overshoot: Float,
+        val innerRatio: Float,
+        val anchor: TransformOrigin,
+        val inFront: Boolean,
+        val outline: Dp,
+        val outlineColor: Color,
+        val duration: Duration,
+        val seed: Int,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
 
-        override fun createRunner(): ChangeRunner = BurstRunner(color, spikes)
+        override fun createRunner(): ChangeRunner =
+            BurstRunner(
+                color,
+                spikes,
+                sizeScale,
+                coreColor,
+                rotation,
+                overshoot,
+                innerRatio,
+                anchor,
+                inFront,
+                outline,
+                outlineColor,
+                duration,
+                seed,
+            )
     }
 
     internal data class SpeedLines(
@@ -1081,19 +1273,56 @@ public abstract class ChangeEffect internal constructor() {
     internal data class Stamp(
         val scale: Float,
         val dustColor: Color,
+        val duration: Duration,
+        val squash: Float,
+        val rebound: Float,
+        val dustCount: Int,
+        val dustSize: Dp,
+        val dustSpread: Float,
+        val tilt: Float,
+        val origin: TransformOrigin,
+        val seed: Int,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
 
-        override fun createRunner(): ChangeRunner = StampRunner(scale, dustColor)
+        override fun createRunner(): ChangeRunner =
+            StampRunner(
+                scale,
+                dustColor,
+                duration,
+                squash,
+                rebound,
+                dustCount,
+                dustSize,
+                dustSpread,
+                tilt,
+                origin,
+                seed,
+            )
     }
 
     internal data class Glitch(
         val duration: Duration,
         val offset: Dp,
+        val sliceHeight: ClosedFloatingPointRange<Float>,
+        val channelColors: List<Color>,
+        val jumpChance: Float,
+        val jitterRate: Float,
+        val seed: Int,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
 
-        override fun createRunner(): ChangeRunner = GlitchRunner(duration, offset)
+        override fun createRunner(): ChangeRunner =
+            GlitchRunner(
+                duration,
+                offset,
+                sliceHeight.start,
+                sliceHeight.endInclusive,
+                channelColors,
+                jumpChance,
+                jitterRate,
+                seed,
+            )
     }
 }
 

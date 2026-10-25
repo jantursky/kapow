@@ -43,10 +43,21 @@ fun LevelBadge(level: Int) {
 | --- | --- | --- |
 | `color` | `Color(0xFFFFB547)` | Color of the burst. Its core is the same color mixed about halfway with white. |
 | `spikes` | `12` | How many points the burst has. Must be at least 3. |
+| `sizeScale` | `1f` | A factor on how far the burst reaches. Must be positive. |
+| `coreColor` | `Color.Unspecified` | The color of the lighter core. Unspecified lightens `color`. |
+| `rotation` | `14f` | How many degrees the burst turns while it plays. |
+| `overshoot` | `0.15f` | How far past its full size the burst pops, as a fraction of it. Must not be negative. |
+| `innerRatio` | `0.72f` | The size of the core as a fraction of the burst's, from 0 to 1. |
+| `anchor` | `TransformOrigin.Center` | Where the burst is centered, as fractions of the element's width and height. |
+| `inFront` | `false` | Draws the burst over the element instead of behind it. |
+| `outline` | `0.dp` | The width of an outline around the burst. 0 draws none. |
+| `outlineColor` | `Color(0xFF1B1B1F)` | The color of the outline. |
+| `duration` | `600.milliseconds` | How long the burst takes to pop and fade. Must be positive. |
+| `seed` | `0` | The first seed. Each change takes the next one, so the same seed gives the same outlines. |
 
 ## Reduced motion
 
-No burst appears. The element brightens briefly instead.
+No burst appears. The element brightens briefly instead. With `reducedMotion(ReducedMotionMode.EndState)` nothing shows at all, since the effect ends at rest.
 
 ## Notes
 

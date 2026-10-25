@@ -43,10 +43,15 @@ fun ErrorToast(failures: Int) {
 | --- | --- | --- |
 | `duration` | `300.milliseconds` | How long the glitch lasts. Must be positive. |
 | `offset` | `6.dp` | How far the color channels split apart. Slices jump up to one and a half times as far. Must not be negative; 0 keeps the element in place and only redraws it. |
+| `sliceHeight` | `0.08f..0.3f` | The range a slice's height is picked from, as a fraction of the element's height. Taller slices mean fewer of them. |
+| `channelColors` | `listOf(Color.Red, Color.Green, Color.Blue)` | The colors of the three copies of the element. The first goes one way, the third the other and the second stays. Each copy keeps one channel of the element (red, green, blue in turn) and tints it in its color, so the default rebuilds the original. Must have three colors. |
+| `jumpChance` | `0.5f` | The share of slices that jump sideways, from 0 to 1. |
+| `jitterRate` | `20f` | How many times a second the glitch changes its look. Must be positive. |
+| `seed` | `0` | The first seed. Each change takes the next one, so the same seed gives the same glitches. |
 
 ## Reduced motion
 
-Nothing splits or shifts. The element brightens briefly.
+Nothing splits or shifts. The element brightens briefly. With `reducedMotion(ReducedMotionMode.EndState)` nothing shows at all, since the effect ends at rest.
 
 ## Notes
 

@@ -27,10 +27,12 @@ fun GlitchExample(
     errors: Int,
     duration: Duration,
     offset: Dp,
+    sliceHeight: ClosedFloatingPointRange<Float> = 0.08f..0.3f,
+    jumpChance: Float = 0.5f,
 ) {
     Row(
         Modifier
-            .changeEffect(errors, ChangeEffect.glitch(duration, offset))
+            .changeEffect(errors, ChangeEffect.glitch(duration, offset, sliceHeight, jumpChance = jumpChance))
             .clip(KapowShapes.control)
             .background(KapowTheme.colors.panel)
             .padding(horizontal = 16.dp, vertical = 12.dp),

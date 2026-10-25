@@ -28,6 +28,8 @@ import com.jantursky.kapow.samples.design.KapowTheme
 fun StampExample(
     approvals: Int,
     scale: Float,
+    tilt: Float = 0f,
+    dustCount: Int = 5,
 ) {
     val colors = KapowTheme.colors
     Box(
@@ -53,7 +55,7 @@ fun StampExample(
         Box(
             Modifier
                 .align(Alignment.BottomEnd)
-                .changeEffect(approvals, ChangeEffect.stamp(scale))
+                .changeEffect(approvals, ChangeEffect.stamp(scale, tilt = tilt, dustCount = dustCount))
                 .rotate(-8f)
                 .border(2.dp, KapowEffectColors.coral, stampShape)
                 .padding(horizontal = 10.dp, vertical = 4.dp),

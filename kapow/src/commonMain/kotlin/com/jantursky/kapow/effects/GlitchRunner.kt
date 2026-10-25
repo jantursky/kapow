@@ -5,6 +5,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.GraphicsContext
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.toIntSize
 import com.jantursky.kapow.internal.ChangeRunner
 import com.jantursky.kapow.internal.EffectContext
+import com.jantursky.kapow.internal.at
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -38,6 +40,9 @@ internal fun glitchFrame(
     step: Int,
     height: Float,
     offset: Float,
+    sliceMin: Float = 0.08f,
+    sliceMax: Float = 0.3f,
+    jumpChance: Float = 0.5f,
 ): GlitchRunner.Frame {
     val random = Random(seed * 7919 + step)
     val sign = if (random.nextBoolean()) 1f else -1f
@@ -46,9 +51,9 @@ internal fun glitchFrame(
     var top = 0f
     while (top < height) {
         // Whole pixels, so neighbouring slices meet without a soft seam.
-        val next = (top + height * (0.08f + 0.22f * random.nextFloat())).roundToInt().toFloat()
+        val next = (top + height * (sliceMin + (sliceMax - sliceMin) * random.nextFloat())).roundToInt().toFloat()
         val bottom = minOf(height, maxOf(top + 1f, next))
-        val jumps = random.nextFloat() < 0.5f
+        val jumps = random.nextFloat() < jumpChance
         val direction = if (random.nextBoolean()) 1f else -1f
         val shift = if (jumps) direction * offset * (0.3f + 1.2f * random.nextFloat()) else 0f
         slices += GlitchRunner.Slice(top, bottom, shift)
@@ -60,11 +65,19 @@ internal fun glitchFrame(
 /** How long each look of the glitch is held before the next one, in seconds. */
 internal const val GLITCH_STEP = 0.05f
 
-/** Keeps one color channel of what is drawn, so three copies added together rebuild the original. */
-private fun channelPaint(channel: Int): Paint =
+/**
+ * Keeps one color channel of what is drawn and tints it with [color], so three copies added together rebuild the
+ * original when the colors are red, green and blue.
+ */
+private fun channelPaint(
+    channel: Int,
+    color: Color,
+): Paint =
     Paint().apply {
         val m = FloatArray(20)
-        m[channel * 5 + channel] = 1f
+        m[0 * 5 + channel] = color.red
+        m[1 * 5 + channel] = color.green
+        m[2 * 5 + channel] = color.blue
         m[18] = 1f
         colorFilter = ColorFilter.colorMatrix(ColorMatrix(m))
         blendMode = BlendMode.Plus
@@ -78,15 +91,21 @@ private fun channelPaint(channel: Int): Paint =
 internal class GlitchRunner(
     private val duration: Duration,
     private val offset: Dp,
+    private val sliceMin: Float = 0.08f,
+    private val sliceMax: Float = 0.3f,
+    channelColors: List<Color> = listOf(Color.Red, Color.Green, Color.Blue),
+    private val jumpChance: Float = 0.5f,
+    private val jitterRate: Float = 20f,
+    firstSeed: Int = 0,
 ) : ChangeRunner() {
     private val time = Animatable(0f)
     private val flash = Flash()
-    private val channels = Array(3) { channelPaint(it) }
+    private val channels = Array(3) { channelPaint(it, channelColors[it]) }
     private var job: Job? = null
     private var graphics: GraphicsContext? = null
     private var content: GraphicsLayer? = null
     private var composite: GraphicsLayer? = null
-    private var seed = 0
+    private var seed = firstSeed
     private var frame: Frame? = null
     private var frameStep = -1
 
@@ -142,11 +161,11 @@ internal class GlitchRunner(
         height: Float,
         offset: Float,
     ): Frame {
-        val step = (t * duration.inWholeMilliseconds / 1000f / GLITCH_STEP).toInt()
+        val step = (t * duration.inWholeMilliseconds / 1000f / (1f / jitterRate)).toInt()
         val cached = frame
         if (cached != null && step == frameStep) return cached
         frameStep = step
-        return glitchFrame(seed, step, height, offset).also { frame = it }
+        return glitchFrame(seed, step, height, offset, sliceMin, sliceMax, jumpChance).also { frame = it }
     }
 
     private fun DrawScope.drawChannels(
@@ -173,12 +192,12 @@ internal class GlitchRunner(
     override fun fire(context: EffectContext) {
         job?.cancel()
         if (context.isReducedMotion()) {
-            job = context.scope.launch { flash.play() }
+            if (context.showsReducedStandIn()) job = context.scope.launch { flash.play(context) }
             return
         }
         seed++
         frameStep = -1
-        val millis = duration.inWholeMilliseconds.toInt()
+        val millis = duration.at(context.speed).inWholeMilliseconds.toInt()
         job =
             context.scope.launch {
                 time.snapTo(0f)

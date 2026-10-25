@@ -25,11 +25,13 @@ fun SpinExample(
     count: Int,
     axis: SpinAxis,
     rate: SpinRate,
+    reverse: Boolean = false,
+    shading: Float = 0.35f,
 ) {
     Box(
         Modifier
             .size(120.dp)
-            .changeEffect(count, ChangeEffect.spin(axis, rate))
+            .changeEffect(count, ChangeEffect.spin(axis, rate, reverse = reverse, shading = shading))
             .clip(KapowShapes.pill)
             .background(Brush.linearGradient(listOf(KapowEffectColors.amber, KapowEffectColors.coral))),
         contentAlignment = Alignment.Center,

@@ -40,10 +40,18 @@ fun Coin(balance: Int) {
 | --- | --- | --- |
 | `axis` | `SpinAxis.Y` | `X` flips top over bottom, `Y` turns like a coin on a table, `Z` turns like a wheel. |
 | `rate` | `SpinRate.Default` | How fast the spin starts. `SpinRate.Fast` starts quicker. |
+| `turns` | `null` | How many full turns a change makes. Null takes one for `SpinRate.Default` and two for `SpinRate.Fast`. Must be positive. |
+| `duration` | `null` | How long the spin takes. Null lets a spring decide, which starts fast, overshoots and settles on its own. A duration replaces the spring with a plain animation along `easing`. |
+| `easing` | `FastOutSlowInEasing` | The curve of the spin when there is a `duration`. |
+| `reverse` | `false` | Spins the other way round. |
+| `pivot` | `TransformOrigin.Center` | The point the element turns around, as fractions of its width and height. |
+| `cameraDistance` | `12.dp` | How far the viewer is from the element. Closer makes the turn on X and Y more dramatic. Must be positive. |
+| `shading` | `0.35f` | How much darker the element gets as it turns edge-on, from 0 (not at all) to 1. Z spins are never shaded. |
+| `overshoot` | `0.35f` | How far the spring swings past its end and back, from 0 (settles smoothly) to 0.95. It applies when there is no `duration`. |
 
 ## Reduced motion
 
-The element does not rotate. It brightens briefly.
+The element does not rotate. It brightens briefly. With `reducedMotion(ReducedMotionMode.EndState)` nothing shows at all, since the effect ends at rest.
 
 ## Notes
 

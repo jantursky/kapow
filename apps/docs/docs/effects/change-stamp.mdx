@@ -44,10 +44,19 @@ fun StatusStamp(status: String) {
 | --- | --- | --- |
 | `scale` | `1.3f` | How much larger the element starts. Must be at least 1. |
 | `dustColor` | `Color(0xFFB0B0B0)` | Color of the dust puffs at the base. |
+| `duration` | `560.milliseconds` | How long the stamp takes from the start of the drop to the end of the rebound. A quarter of it is the drop. Must be positive. |
+| `squash` | `0.1f` | How flat the impact squashes the element, as a fraction of its size, from 0 to 0.5. |
+| `rebound` | `1f` | How much the element springs back after the squash, from 0 (settles at once) to 1. |
+| `dustCount` | `5` | How many puffs of dust fly out to each side. 0 leaves out the dust. |
+| `dustSize` | `8.dp` | The size of a puff of dust. Must be positive. |
+| `dustSpread` | `1f` | How far the dust flies, as a factor on the standard. |
+| `tilt` | `0f` | How many degrees the element is turned as it starts to drop. It levels out as it lands. |
+| `origin` | `TransformOrigin.Center` | The point the element drops around, as fractions of its width and height. |
+| `seed` | `0` | The first seed. Each landing takes the next ones, so the same seed gives the same dust. |
 
 ## Reduced motion
 
-The element does not move or scale and no dust is puffed. It brightens briefly.
+The element does not move or scale and no dust is puffed. It brightens briefly. With `reducedMotion(ReducedMotionMode.EndState)` nothing shows at all, since the effect ends at rest.
 
 ## Notes
 
