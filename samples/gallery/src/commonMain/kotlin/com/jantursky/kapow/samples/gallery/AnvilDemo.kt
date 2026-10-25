@@ -48,7 +48,7 @@ internal fun AnvilDemo() {
                         "KapowEnter.anvil",
                         *transitionArgs(
                             "duration" to duration.kt(),
-                            ("dropHeight" to dropHeight.kt()).takeIf { drop >= 1f },
+                            if (drop >= 1f) "dropHeight" to dropHeight.kt() else null,
                             ("shake" to shake.kt()).takeIf { shake != 1f },
                             dust.code?.let { "dustColor" to it },
                             ("dustCount" to dustCount.roundToInt()).takeIf { dustCount.roundToInt() != 6 },
