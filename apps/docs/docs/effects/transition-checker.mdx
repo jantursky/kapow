@@ -39,6 +39,10 @@ fun LevelTile(visible: Boolean) {
 | --- | --- | --- |
 | `cellSize` | `24.dp` | The side of one square of the board. Must be at least 2 dp. |
 | `duration` | `600.milliseconds` | How long the transition takes. Must be positive. |
+| `order` | `CheckerOrder.Together` | The order the squares open in. `Together` opens the squares of one color at once, then the other color. `Diagonal` sweeps from the top-left corner to the bottom-right, `Random` opens them in a seeded random order, and `Spiral` goes outward from the middle in a turn. The exit runs the order in reverse. |
+| `seed` | `41` | The seed of `CheckerOrder.Random`. The same seed gives the same order on every target. Ignored by the other orders. |
+
+Every transition also has `.delay(...)`, `.easing(...)` and `.reducedMotion(...)`. See [Stagger](/effects/transition-stagger).
 
 ## Reduced motion
 

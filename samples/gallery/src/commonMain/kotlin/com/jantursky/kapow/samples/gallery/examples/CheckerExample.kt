@@ -11,6 +11,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.CheckerOrder
 import com.jantursky.kapow.KapowAnimatedVisibility
 import com.jantursky.kapow.KapowEnter
 import com.jantursky.kapow.KapowExit
@@ -26,11 +27,13 @@ fun CheckerExample(
     visible: Boolean,
     cellSize: Dp,
     duration: Duration,
+    order: CheckerOrder = CheckerOrder.Together,
+    seed: Int = 41,
 ) {
     KapowAnimatedVisibility(
         visible,
-        enter = KapowEnter.checker(cellSize, duration),
-        exit = KapowExit.checker(cellSize, duration),
+        enter = KapowEnter.checker(cellSize, duration, order, seed),
+        exit = KapowExit.checker(cellSize, duration, order, seed),
     ) {
         Column(
             Modifier

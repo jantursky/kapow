@@ -16,6 +16,36 @@ import kotlin.time.Duration.Companion.milliseconds
  */
 public enum class BlindsOrientation { Horizontal, Vertical }
 
+/** The shape of the cells in [KapowEnter.dissolve] and [KapowExit.dissolve]. */
+public enum class CellShape {
+    /** Squares that tile the content. */
+    Square,
+
+    /** Circles as wide as their cell's diagonal, so neighbours overlap and cover the content when all are on. */
+    Circle,
+
+    /** Flat-topped hexagons that tile the content. */
+    Hexagon,
+}
+
+/** The order in which the squares of [KapowEnter.checker] and [KapowExit.checker] open. */
+public enum class CheckerOrder {
+    /** The squares of one color open together, then the other color: the checkerboard's two waves. */
+    Together,
+
+    /** The squares open in a sweep from the top-left corner to the bottom-right (reversed on exit). */
+    Diagonal,
+
+    /** The squares open in a seeded random order. */
+    Random,
+
+    /** The squares open in a turn around the middle, from the center outward. */
+    Spiral,
+}
+
+internal const val DEFAULT_DISSOLVE_SEED = 31
+internal const val DEFAULT_CHECKER_SEED = 41
+
 /**
  * How content appears inside an `AnimatedVisibility` or `AnimatedContent`. Apply it with [kapowTransition] or
  * [KapowAnimatedVisibility].
@@ -224,11 +254,30 @@ public class KapowEnter internal constructor(
          * @param cellSize the side of one square, at least 2 dp. Large elements get bigger squares so a frame never
          *   draws more than a few thousand.
          * @param duration how long the transition takes, 600 ms by default.
+         * @param cellShape the shape of the cells: squares, circles or hexagons. See [CellShape].
+         * @param softness how gradually each cell turns on, from 0 to 1. At 0 a cell pops to full size at its moment;
+         *   above it, each grows from its middle over that share of the transition, so 1 makes every cell grow
+         *   together.
+         * @param seed the seed of the random order. The same seed gives the same order on every target.
          */
         public fun dissolve(
             cellSize: Dp = 12.dp,
             duration: Duration = 600.milliseconds,
-        ): KapowEnter = KapowEnter(TransitionKind.Dissolve(cellSize.checkedCell()), duration.checked())
+            cellShape: CellShape = CellShape.Square,
+            softness: Float = 0f,
+            seed: Int = DEFAULT_DISSOLVE_SEED,
+        ): KapowEnter =
+            KapowEnter(
+                TransitionKind.Dissolve(cellSize.checkedCell(), cellShape, softness.checkedSoftness(), seed),
+                duration.checked(),
+            )
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with cellShape, softness and seed.", level = DeprecationLevel.HIDDEN)
+        public fun dissolve(
+            cellSize: Dp = 12.dp,
+            duration: Duration = 600.milliseconds,
+        ): KapowEnter = dissolve(cellSize, duration, CellShape.Square, 0f, DEFAULT_DISSOLVE_SEED)
 
         /**
          * Two halves part from the middle to reveal the content, like a stage curtain. With reduced motion it fades
@@ -292,11 +341,22 @@ public class KapowEnter internal constructor(
          * @param cellSize the side of one square of the board, at least 2 dp. Large elements get bigger squares
          *   so a frame never draws more than a few thousand.
          * @param duration how long the transition takes, 600 ms by default.
+         * @param order the order the squares open in. See [CheckerOrder].
+         * @param seed the seed of [CheckerOrder.Random]. Ignored by the other orders.
          */
         public fun checker(
             cellSize: Dp = 24.dp,
             duration: Duration = 600.milliseconds,
-        ): KapowEnter = KapowEnter(TransitionKind.Checker(cellSize.checkedCell()), duration.checked())
+            order: CheckerOrder = CheckerOrder.Together,
+            seed: Int = DEFAULT_CHECKER_SEED,
+        ): KapowEnter = KapowEnter(TransitionKind.Checker(cellSize.checkedCell(), order, seed), duration.checked())
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with order and seed.", level = DeprecationLevel.HIDDEN)
+        public fun checker(
+            cellSize: Dp = 24.dp,
+            duration: Duration = 600.milliseconds,
+        ): KapowEnter = checker(cellSize, duration, CheckerOrder.Together, DEFAULT_CHECKER_SEED)
 
         /**
          * A [wipe] whose leading edge is torn like paper: an irregular zigzag with a light rim along it, moving
@@ -522,11 +582,28 @@ public class KapowExit internal constructor(
          *
          * @param cellSize the side of one square, at least 2 dp.
          * @param duration how long the transition takes, 600 ms by default.
+         * @param cellShape the shape of the cells, as in [KapowEnter.dissolve].
+         * @param softness how gradually each cell turns off, from 0 to 1, as in [KapowEnter.dissolve].
+         * @param seed the seed of the random order.
          */
         public fun dissolve(
             cellSize: Dp = 12.dp,
             duration: Duration = 600.milliseconds,
-        ): KapowExit = KapowExit(TransitionKind.Dissolve(cellSize.checkedCell()), duration.checked())
+            cellShape: CellShape = CellShape.Square,
+            softness: Float = 0f,
+            seed: Int = DEFAULT_DISSOLVE_SEED,
+        ): KapowExit =
+            KapowExit(
+                TransitionKind.Dissolve(cellSize.checkedCell(), cellShape, softness.checkedSoftness(), seed),
+                duration.checked(),
+            )
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with cellShape, softness and seed.", level = DeprecationLevel.HIDDEN)
+        public fun dissolve(
+            cellSize: Dp = 12.dp,
+            duration: Duration = 600.milliseconds,
+        ): KapowExit = dissolve(cellSize, duration, CellShape.Square, 0f, DEFAULT_DISSOLVE_SEED)
 
         /**
          * Two halves close in from the sides and meet in the middle, hiding the content. With reduced motion it fades
@@ -583,11 +660,22 @@ public class KapowExit internal constructor(
          *
          * @param cellSize the side of one square of the board, at least 2 dp.
          * @param duration how long the transition takes, 600 ms by default.
+         * @param order the order the squares close in, as in [KapowEnter.checker]. The exit runs it in reverse.
+         * @param seed the seed of [CheckerOrder.Random].
          */
         public fun checker(
             cellSize: Dp = 24.dp,
             duration: Duration = 600.milliseconds,
-        ): KapowExit = KapowExit(TransitionKind.Checker(cellSize.checkedCell()), duration.checked())
+            order: CheckerOrder = CheckerOrder.Together,
+            seed: Int = DEFAULT_CHECKER_SEED,
+        ): KapowExit = KapowExit(TransitionKind.Checker(cellSize.checkedCell(), order, seed), duration.checked())
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with order and seed.", level = DeprecationLevel.HIDDEN)
+        public fun checker(
+            cellSize: Dp = 24.dp,
+            duration: Duration = 600.milliseconds,
+        ): KapowExit = checker(cellSize, duration, CheckerOrder.Together, DEFAULT_CHECKER_SEED)
 
         /**
          * A torn edge, like [KapowEnter.tear], that covers the content moving against [angle]. With reduced motion
@@ -701,6 +789,11 @@ private fun Float.checkedStagger(): Float {
     return this
 }
 
+private fun Float.checkedSoftness(): Float {
+    require(this in 0f..1f) { "softness must be between 0 and 1" }
+    return this
+}
+
 private fun Float.checkedSplit(): Float {
     require(this in 0f..1f) { "split must be between 0 and 1" }
     return this
@@ -759,6 +852,9 @@ internal sealed class TransitionKind {
 
     data class Dissolve(
         val cellSize: Dp,
+        val cellShape: CellShape = CellShape.Square,
+        val softness: Float = 0f,
+        val seed: Int = DEFAULT_DISSOLVE_SEED,
     ) : TransitionKind()
 
     data class Curtain(
@@ -775,6 +871,8 @@ internal sealed class TransitionKind {
 
     data class Checker(
         val cellSize: Dp,
+        val order: CheckerOrder = CheckerOrder.Together,
+        val seed: Int = DEFAULT_CHECKER_SEED,
     ) : TransitionKind()
 
     data class Tear(

@@ -39,6 +39,11 @@ fun Photo(visible: Boolean) {
 | --- | --- | --- |
 | `cellSize` | `12.dp` | The side of one square. Must be at least 2 dp. |
 | `duration` | `600.milliseconds` | How long the transition takes. Must be positive. |
+| `cellShape` | `CellShape.Square` | The shape of the cells. `Square` and `Hexagon` tile the content. `Circle` cells are as wide as their cell's diagonal, so they overlap and cover the content when all are on. |
+| `softness` | `0f` | How gradually each cell turns on, from 0 to 1. At 0 a cell pops to full size. Above it each cell grows from its middle over that share of the transition; at 1 every cell grows together. |
+| `seed` | `31` | The seed of the random order. The same seed gives the same order on every target. |
+
+Every transition also has `.delay(...)`, `.easing(...)` and `.reducedMotion(...)`. See [Stagger](/effects/transition-stagger).
 
 ## Reduced motion
 
