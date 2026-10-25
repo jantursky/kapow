@@ -25,11 +25,14 @@ fun BlobExample(
     visible: Boolean,
     origin: TransformOrigin,
     duration: Duration,
+    points: Int = 9,
+    wobble: Float = 0.25f,
+    seed: Int = 53,
 ) {
     KapowAnimatedVisibility(
         visible,
-        enter = KapowEnter.blob(origin, duration),
-        exit = KapowExit.blob(origin, duration),
+        enter = KapowEnter.blob(origin, duration, points, wobble, seed),
+        exit = KapowExit.blob(origin, duration, points, wobble, seed),
     ) {
         Column(
             Modifier

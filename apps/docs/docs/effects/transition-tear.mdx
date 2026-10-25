@@ -40,6 +40,10 @@ fun Coupon(visible: Boolean) {
 | `angle` | `0f` | The direction the edge moves in, in degrees: 0 is rightward, 90 downward. |
 | `toothSize` | `12.dp` | How far the tear strays off a straight line. Its jags come at under half of that apart. Must be at least 2 dp. |
 | `duration` | `500.milliseconds` | How long the transition takes. Must be positive. |
+| `roughness` | `0.4f` | How jagged the tear is, from 0 (a slow wander with no jags) to 1 (all jags). |
+| `rimColor` | white at 75 % | The color of the rim along the edge, drawn over the content. Pass a transparent color for no rim. |
+
+Every transition also has `.delay(...)`, `.easing(...)` and `.reducedMotion(...)`. See [Stagger](/effects/transition-stagger).
 
 ## Reduced motion
 

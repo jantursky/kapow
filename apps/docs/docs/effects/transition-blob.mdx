@@ -40,6 +40,11 @@ fun Bubble(visible: Boolean) {
 | --- | --- | --- |
 | `origin` | `TransformOrigin.Center` | The point the blob grows from or shrinks to, as a fraction of the content's size. |
 | `duration` | `600.milliseconds` | How long the transition takes. Must be positive. |
+| `points` | `9` | How many points the outline runs through, from 4 to 32. More points give a more irregular outline. |
+| `wobble` | `0.25f` | How far each point swells and shrinks, as a share of its radius, from 0 (a plain circle) to 0.5. The bigger the wobble and the fewer the points, the further the blob has to grow to cover the content, so it covers it earlier than a plain circle would. |
+| `seed` | `53` | The seed of the wobble. The same seed gives the same blob on every target. |
+
+Every transition also has `.delay(...)`, `.easing(...)` and `.reducedMotion(...)`. See [Stagger](/effects/transition-stagger).
 
 ## Reduced motion
 

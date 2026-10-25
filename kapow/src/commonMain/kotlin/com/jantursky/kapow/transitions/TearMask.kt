@@ -23,15 +23,18 @@ internal fun tearEdge(
     reach: Float,
     tooth: Float,
     progress: Float,
+    roughness: Float = TEAR_ROUGHNESS,
 ): FloatArray {
     val depth = tooth
     val middle = wipeEdge(reach + depth, progress)
     val points = ArrayList<Float>()
+    // The share of the edge that is jagged; the rest wanders slowly. The default keeps the 0.6 / 0.4 split.
+    val calm = if (roughness == TEAR_ROUGHNESS) 0.6f else 1f - roughness
     var y = -reach - tooth
     var i = 0
     while (true) {
         val jag = if (i % 2 == 0) 1f else -1f
-        val offset = 0.6f * tearWander((y + reach) / (tooth * 4)) + 0.4f * jag * cellHash(i, 1, TEAR_SEED)
+        val offset = calm * tearWander((y + reach) / (tooth * 4)) + roughness * jag * cellHash(i, 1, TEAR_SEED)
         points += middle + depth * offset
         points += y
         if (y > reach) break
@@ -53,6 +56,9 @@ internal fun tearWander(t: Float): Float {
 
 private const val TEAR_SEED = 47
 
+/** How much of the tear is jagged by default, from 0 (a slow wander) to 1 (all jags). */
+internal const val TEAR_ROUGHNESS = 0.4f
+
 /** A wipe at an angle, like [cutWipe], whose leading edge is a tear with a light rim of paper along it. */
 internal class TearMask(
     private val kind: TransitionKind.Tear,
@@ -60,7 +66,7 @@ internal class TearMask(
     override fun ContentDrawScope.draw(progress: Float) {
         drawContent()
         val reach = hypot(size.width, size.height) / 2
-        val edge = tearEdge(reach, kind.toothSize.toPx(), progress)
+        val edge = tearEdge(reach, kind.toothSize.toPx(), progress, kind.roughness)
         val line = Path()
         for (i in edge.indices step 2) {
             if (i == 0) line.moveTo(edge[i], edge[i + 1]) else line.lineTo(edge[i], edge[i + 1])
@@ -76,12 +82,14 @@ internal class TearMask(
         rotate(kind.angle, pivot = center) {
             translate(center.x, center.y) {
                 drawPath(hidden, Color.Black, blendMode = BlendMode.DstOut)
-                drawPath(
-                    line,
-                    Color.White.copy(alpha = 0.75f),
-                    style = Stroke(width = 2.dp.toPx(), join = StrokeJoin.Miter),
-                    blendMode = BlendMode.SrcAtop,
-                )
+                if (kind.rimColor.alpha > 0f) {
+                    drawPath(
+                        line,
+                        kind.rimColor,
+                        style = Stroke(width = 2.dp.toPx(), join = StrokeJoin.Miter),
+                        blendMode = BlendMode.SrcAtop,
+                    )
+                }
             }
         }
     }

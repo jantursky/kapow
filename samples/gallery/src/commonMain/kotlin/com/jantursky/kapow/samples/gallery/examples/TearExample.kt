@@ -27,11 +27,13 @@ fun TearExample(
     angle: Float,
     toothSize: Dp,
     duration: Duration,
+    roughness: Float = 0.4f,
+    rimColor: Color = Color.White.copy(alpha = 0.75f),
 ) {
     KapowAnimatedVisibility(
         visible,
-        enter = KapowEnter.tear(angle, toothSize, duration),
-        exit = KapowExit.tear(angle, toothSize, duration),
+        enter = KapowEnter.tear(angle, toothSize, duration, roughness, rimColor),
+        exit = KapowExit.tear(angle, toothSize, duration, roughness, rimColor),
     ) {
         Column(
             Modifier

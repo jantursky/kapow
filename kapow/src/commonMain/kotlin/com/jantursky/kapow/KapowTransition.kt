@@ -43,6 +43,9 @@ public enum class CheckerOrder {
     Spiral,
 }
 
+/** The light rim along a torn edge: white at 75 % opacity. */
+internal val DEFAULT_TEAR_RIM: Color = Color.White.copy(alpha = 0.75f)
+
 internal const val DEFAULT_DISSOLVE_SEED = 31
 internal const val DEFAULT_CHECKER_SEED = 41
 
@@ -366,12 +369,30 @@ public class KapowEnter internal constructor(
          * @param toothSize how far the tear strays off a straight line, at least 2 dp. Its jags come at under
          *   half of that apart. They are irregular, but the same every time.
          * @param duration how long the transition takes, 500 ms by default.
+         * @param roughness how jagged the tear is, from 0 (a slow wander with no jags) to 1 (all jags). The default
+         *   0.4 is a mix.
+         * @param rimColor the color of the rim along the edge, drawn over the content. Make it transparent for no
+         *   rim. The default is white at 75 % opacity.
          */
         public fun tear(
             angle: Float = 0f,
             toothSize: Dp = 12.dp,
             duration: Duration = 500.milliseconds,
-        ): KapowEnter = KapowEnter(TransitionKind.Tear(angle, toothSize.checkedTooth()), duration.checked())
+            roughness: Float = 0.4f,
+            rimColor: Color = DEFAULT_TEAR_RIM,
+        ): KapowEnter =
+            KapowEnter(
+                TransitionKind.Tear(angle, toothSize.checkedTooth(), roughness.checkedRoughness(), rimColor),
+                duration.checked(),
+            )
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with roughness and rimColor.", level = DeprecationLevel.HIDDEN)
+        public fun tear(
+            angle: Float = 0f,
+            toothSize: Dp = 12.dp,
+            duration: Duration = 500.milliseconds,
+        ): KapowEnter = tear(angle, toothSize, duration, 0.4f, DEFAULT_TEAR_RIM)
 
         /**
          * An organic blob grows from [origin] until it covers the content. Its outline is a smooth curve through a
@@ -380,11 +401,31 @@ public class KapowEnter internal constructor(
          *
          * @param origin the point the blob grows from, as a fraction of the content's size.
          * @param duration how long the transition takes, 600 ms by default.
+         * @param points how many points the outline runs through, from 4 to 32. More points give a more irregular
+         *   outline.
+         * @param wobble how far each point swells and shrinks, as a share of its radius, from 0 (a plain circle) to
+         *   0.5. The bigger the wobble and the fewer the points, the further the blob has to grow to cover the
+         *   content, so it covers it earlier than a plain circle would.
+         * @param seed the seed of the wobble. The same seed gives the same blob on every target.
          */
         public fun blob(
             origin: TransformOrigin = TransformOrigin.Center,
             duration: Duration = 600.milliseconds,
-        ): KapowEnter = KapowEnter(TransitionKind.Blob(origin), duration.checked())
+            points: Int = 9,
+            wobble: Float = 0.25f,
+            seed: Int = 53,
+        ): KapowEnter =
+            KapowEnter(
+                TransitionKind.Blob(origin, points.checkedPoints(), wobble.checkedWobble(), seed),
+                duration.checked(),
+            )
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with points, wobble and seed.", level = DeprecationLevel.HIDDEN)
+        public fun blob(
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+        ): KapowEnter = blob(origin, duration, 9, 0.25f, 53)
     }
 }
 
@@ -684,12 +725,28 @@ public class KapowExit internal constructor(
          * @param angle the direction the edge moved in on enter, in degrees; the exit runs it backward.
          * @param toothSize how far the tear strays off a straight line, at least 2 dp.
          * @param duration how long the transition takes, 500 ms by default.
+         * @param roughness how jagged the tear is, as in [KapowEnter.tear].
+         * @param rimColor the color of the rim along the edge, as in [KapowEnter.tear].
          */
         public fun tear(
             angle: Float = 0f,
             toothSize: Dp = 12.dp,
             duration: Duration = 500.milliseconds,
-        ): KapowExit = KapowExit(TransitionKind.Tear(angle, toothSize.checkedTooth()), duration.checked())
+            roughness: Float = 0.4f,
+            rimColor: Color = DEFAULT_TEAR_RIM,
+        ): KapowExit =
+            KapowExit(
+                TransitionKind.Tear(angle, toothSize.checkedTooth(), roughness.checkedRoughness(), rimColor),
+                duration.checked(),
+            )
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with roughness and rimColor.", level = DeprecationLevel.HIDDEN)
+        public fun tear(
+            angle: Float = 0f,
+            toothSize: Dp = 12.dp,
+            duration: Duration = 500.milliseconds,
+        ): KapowExit = tear(angle, toothSize, duration, 0.4f, DEFAULT_TEAR_RIM)
 
         /**
          * A wobbling blob, like [KapowEnter.blob], that shrinks toward [origin] until nothing is left. With reduced
@@ -697,11 +754,28 @@ public class KapowExit internal constructor(
          *
          * @param origin the point the blob shrinks toward, as a fraction of the content's size.
          * @param duration how long the transition takes, 600 ms by default.
+         * @param points how many points the outline runs through, as in [KapowEnter.blob].
+         * @param wobble how far each point swells and shrinks, as in [KapowEnter.blob].
+         * @param seed the seed of the wobble.
          */
         public fun blob(
             origin: TransformOrigin = TransformOrigin.Center,
             duration: Duration = 600.milliseconds,
-        ): KapowExit = KapowExit(TransitionKind.Blob(origin), duration.checked())
+            points: Int = 9,
+            wobble: Float = 0.25f,
+            seed: Int = 53,
+        ): KapowExit =
+            KapowExit(
+                TransitionKind.Blob(origin, points.checkedPoints(), wobble.checkedWobble(), seed),
+                duration.checked(),
+            )
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with points, wobble and seed.", level = DeprecationLevel.HIDDEN)
+        public fun blob(
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+        ): KapowExit = blob(origin, duration, 9, 0.25f, 53)
 
         /**
          * The content breaks like glass: it cracks into triangular shards that part, then fall with gravity,
@@ -794,6 +868,21 @@ private fun Float.checkedSoftness(): Float {
     return this
 }
 
+private fun Float.checkedRoughness(): Float {
+    require(this in 0f..1f) { "roughness must be between 0 and 1" }
+    return this
+}
+
+private fun Int.checkedPoints(): Int {
+    require(this in 4..32) { "points must be from 4 to 32" }
+    return this
+}
+
+private fun Float.checkedWobble(): Float {
+    require(this in 0f..0.5f) { "wobble must be between 0 and 0.5" }
+    return this
+}
+
 private fun Float.checkedSplit(): Float {
     require(this in 0f..1f) { "split must be between 0 and 1" }
     return this
@@ -878,10 +967,15 @@ internal sealed class TransitionKind {
     data class Tear(
         val angle: Float,
         val toothSize: Dp,
+        val roughness: Float = 0.4f,
+        val rimColor: Color = DEFAULT_TEAR_RIM,
     ) : TransitionKind()
 
     data class Blob(
         val origin: TransformOrigin,
+        val points: Int = 9,
+        val wobble: Float = 0.25f,
+        val seed: Int = 53,
     ) : TransitionKind()
 
     data class Shatter(
