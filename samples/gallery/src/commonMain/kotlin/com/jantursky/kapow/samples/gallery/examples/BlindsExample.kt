@@ -28,11 +28,14 @@ fun BlindsExample(
     orientation: BlindsOrientation,
     staggered: Boolean,
     duration: Duration,
+    slatCount: Int? = null,
+    staggerAmount: Float = 1f,
+    reverse: Boolean = false,
 ) {
     KapowAnimatedVisibility(
         visible,
-        enter = KapowEnter.blinds(slatWidth, orientation, staggered, duration),
-        exit = KapowExit.blinds(slatWidth, orientation, staggered, duration),
+        enter = KapowEnter.blinds(slatWidth, orientation, staggered, duration, slatCount, staggerAmount, reverse),
+        exit = KapowExit.blinds(slatWidth, orientation, staggered, duration, slatCount, staggerAmount, reverse),
     ) {
         Box(
             Modifier

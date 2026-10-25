@@ -27,11 +27,12 @@ fun CurtainExample(
     visible: Boolean,
     orientation: BlindsOrientation,
     duration: Duration,
+    split: Float = 0.5f,
 ) {
     KapowAnimatedVisibility(
         visible,
-        enter = KapowEnter.curtain(orientation, duration),
-        exit = KapowExit.curtain(orientation, duration),
+        enter = KapowEnter.curtain(orientation, duration, split),
+        exit = KapowExit.curtain(orientation, duration, split),
     ) {
         Column(
             Modifier

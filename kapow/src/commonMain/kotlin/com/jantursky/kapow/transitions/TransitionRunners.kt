@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.layer.CompositingStrategy
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.isSpecified
 import com.jantursky.kapow.ParticleShape
 import com.jantursky.kapow.TransitionKind
 import com.jantursky.kapow.internal.EffectContext
@@ -114,22 +115,34 @@ private class KindRunner(
         when (kind) {
             is TransitionKind.Iris -> {
                 drawContent()
-                cutOutside(irisPath(size, kind.origin, p))
+                cutIris(kind.origin, kind.softEdge.toPx(), p)
             }
 
             is TransitionKind.Clock -> {
                 drawContent()
-                cutOutside(clockPath(size, kind.origin, p))
+                cutClock(kind.origin, kind.softEdge.toPx(), kind.counterClockwise, p)
             }
 
             is TransitionKind.Blinds -> {
                 drawContent()
-                cutOutside(blindsPath(size, kind.slatWidth.toPx(), kind.orientation, kind.staggered, p))
+                cutOutside(
+                    blindsPath(
+                        size,
+                        kind.slatWidth.toPx(),
+                        kind.orientation,
+                        kind.staggered,
+                        p,
+                        kind.slatCount,
+                        kind.staggerAmount,
+                        kind.reverse,
+                    ),
+                )
             }
 
             is TransitionKind.Wipe -> {
                 drawContent()
-                cutWipe(kind.angle, kind.glare, p)
+                val width = if (kind.glareWidth.isSpecified) kind.glareWidth.toPx() else Float.NaN
+                cutWipe(kind.angle, kind.glare, p, kind.softEdge.toPx(), width, kind.intensity)
             }
 
             is TransitionKind.Pop -> {

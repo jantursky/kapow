@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.KapowAnimatedVisibility
 import com.jantursky.kapow.KapowEnter
@@ -25,11 +26,14 @@ fun GlareExample(
     angle: Float,
     color: Color,
     duration: Duration,
+    softEdge: Dp = 0.dp,
+    width: Dp = Dp.Unspecified,
+    intensity: Float = 1f,
 ) {
     KapowAnimatedVisibility(
         visible,
-        enter = KapowEnter.glare(angle, color, duration),
-        exit = KapowExit.glare(angle, color, duration),
+        enter = KapowEnter.glare(angle, color, duration, softEdge, width, intensity),
+        exit = KapowExit.glare(angle, color, duration, softEdge, width, intensity),
     ) {
         Box(
             Modifier

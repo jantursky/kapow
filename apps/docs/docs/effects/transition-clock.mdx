@@ -41,6 +41,10 @@ fun TimerCard(visible: Boolean) {
 | --- | --- | --- |
 | `origin` | `TransformOrigin.Center` | The point the sweep turns around, as a fraction of the content's size. |
 | `duration` | `450.milliseconds` | How long the transition takes. Must be positive. |
+| `softEdge` | `0.dp` | How wide the leading edge of the sweep fades, measured at the content's farthest corner; it is narrower closer to the origin. 0 is a sharp edge. The content is fully shown at the end. Must not be negative. |
+| `counterClockwise` | `false` | Sweeps counterclockwise from 12 o'clock instead. The exit takes the content away the other way around. |
+
+Every transition also has `.delay(...)`, `.easing(...)` and `.reducedMotion(...)`. See [Stagger](/effects/transition-stagger).
 
 ## Reduced motion
 

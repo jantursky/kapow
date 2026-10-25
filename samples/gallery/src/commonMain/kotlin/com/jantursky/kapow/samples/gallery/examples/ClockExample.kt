@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.KapowAnimatedVisibility
 import com.jantursky.kapow.KapowEnter
@@ -24,11 +25,13 @@ fun ClockExample(
     visible: Boolean,
     origin: TransformOrigin,
     duration: Duration,
+    softEdge: Dp = 0.dp,
+    counterClockwise: Boolean = false,
 ) {
     KapowAnimatedVisibility(
         visible,
-        enter = KapowEnter.clock(origin, duration),
-        exit = KapowExit.clock(origin, duration),
+        enter = KapowEnter.clock(origin, duration, softEdge, counterClockwise),
+        exit = KapowExit.clock(origin, duration, softEdge, counterClockwise),
     ) {
         Box(
             Modifier

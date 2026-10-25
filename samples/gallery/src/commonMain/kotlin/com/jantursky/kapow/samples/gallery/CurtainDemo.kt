@@ -20,17 +20,24 @@ internal fun CurtainDemo() {
     var visible by remember { mutableStateOf(false) }
     var orientation by remember { mutableStateOf(BlindsOrientation.Vertical) }
     var seconds by remember { mutableFloatStateOf(0.6f) }
+    var split by remember { mutableFloatStateOf(0.5f) }
     val duration = (seconds * 1000).roundToInt().milliseconds
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
-        stage = { CurtainExample(visible, orientation, duration) },
+        stage = { CurtainExample(visible, orientation, duration, split) },
         code = {
-            val args = arrayOf("orientation" to orientation.kt(), "duration" to duration.kt())
+            val args =
+                transitionArgs(
+                    "orientation" to orientation.kt(),
+                    "duration" to duration.kt(),
+                    ("split" to split.kt()).takeIf { split != 0.5f },
+                )
             transitionCode(call("KapowEnter.curtain", *args), call("KapowExit.curtain", *args))
         },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             ChoiceRow("Seam", BlindsOrientation.entries, orientation, { orientation = it }, { it.name })
+            LabeledSlider("Split", "${(split * 100).roundToInt()} %", split, { split = it }, 0f..1f)
             LabeledSlider("Duration", "${seconds.oneDecimal()} s", seconds, { seconds = it }, 0.2f..3f)
         },
     )

@@ -2,6 +2,7 @@ package com.jantursky.kapow.transitions
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathMeasure
@@ -74,7 +75,8 @@ internal fun shapeIrisSide(
     point: Offset,
     ratio: Float,
     progress: Float,
-): Float = farthestCorner(size, point) / ratio * progress.coerceIn(0f, 1f)
+    scale: Float = 1f,
+): Float = farthestCorner(size, point) / ratio * scale * progress.coerceIn(0f, 1f)
 
 /** [inradius] of an [outline] drawn in a [side] px square, as a share of the side. Never below [MIN_RATIO]. */
 internal fun outlineRatio(
@@ -130,9 +132,20 @@ internal class ShapeIrisMask(
     override fun ContentDrawScope.draw(progress: Float) {
         drawContent()
         val point = originPoint(size, kind.origin)
-        val side = shapeIrisSide(size, point, ratio(size, layoutDirection, this), progress)
+        val side = shapeIrisSide(size, point, ratio(size, layoutDirection, this), progress, kind.scale)
         val path = Path().apply { addOutline(kind.shape.createOutline(Size(side, side), layoutDirection, this@draw)) }
         path.translate(Offset(point.x - side / 2, point.y - side / 2))
+        // The shape turns about the origin as it grows; a turn never uncovers a corner, since the circle it holds
+        // is the same at every angle.
+        if (kind.rotation != 0f) {
+            path.transform(
+                Matrix().apply {
+                    translate(point.x, point.y)
+                    rotateZ(kind.rotation * progress)
+                    translate(-point.x, -point.y)
+                },
+            )
+        }
         cutOutside(path)
     }
 

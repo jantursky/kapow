@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.KapowAnimatedVisibility
 import com.jantursky.kapow.KapowEnter
@@ -23,11 +24,12 @@ fun WipeExample(
     visible: Boolean,
     angle: Float,
     duration: Duration,
+    softEdge: Dp = 0.dp,
 ) {
     KapowAnimatedVisibility(
         visible,
-        enter = KapowEnter.wipe(angle, duration),
-        exit = KapowExit.wipe(angle, duration),
+        enter = KapowEnter.wipe(angle, duration, softEdge),
+        exit = KapowExit.wipe(angle, duration, softEdge),
     ) {
         Box(
             Modifier

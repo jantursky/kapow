@@ -40,6 +40,9 @@ fun Panel(visible: Boolean) {
 | --- | --- | --- |
 | `origin` | `TransformOrigin.Center` | The point the circle grows from or shrinks to, as a fraction of the content's size. |
 | `duration` | `450.milliseconds` | How long the transition takes. Must be positive. |
+| `softEdge` | `0.dp` | How wide the edge of the circle fades from shown to hidden. 0 is a sharp edge. The edge travels that much further, so the content is fully shown at the end. Must not be negative. |
+
+Every transition also has `.delay(...)`, `.easing(...)` and `.reducedMotion(...)`. See [Stagger](/effects/transition-stagger).
 
 ## Reduced motion
 
