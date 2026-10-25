@@ -214,6 +214,7 @@ const LIVE = [
   'text-typewriter',
   'text-counter',
   'more-tilt',
+  'more-skeleton',
 ]
 
 for (const id of LIVE) {

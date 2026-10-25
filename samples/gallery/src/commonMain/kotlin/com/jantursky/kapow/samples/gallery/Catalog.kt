@@ -458,6 +458,13 @@ val entries: List<Entry> =
             "The element tilts in 3D toward the pointer, with a light sheen.",
             Example("TiltExample.kt") { TiltDemo() },
         ),
+        Entry(
+            "more-skeleton",
+            Group.More,
+            "Skeleton",
+            "A shimmering placeholder over the content that fades away when loading ends.",
+            Example("SkeletonExample.kt") { SkeletonDemo() },
+        ),
     )
 
 /** The entry with [id], the part of a link after `#`, or null. */

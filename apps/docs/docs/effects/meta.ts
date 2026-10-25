@@ -62,5 +62,6 @@ export default defineMeta({
     'text-typewriter',
     'text-counter',
     'more-tilt',
+    'more-skeleton',
   ],
 })
