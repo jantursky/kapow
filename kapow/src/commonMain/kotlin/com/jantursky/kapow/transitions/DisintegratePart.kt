@@ -23,6 +23,7 @@ import com.jantursky.kapow.particles.shapePainter
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -36,9 +37,10 @@ internal fun dustMoment(
     column: Int,
     row: Int,
     columns: Int,
+    seed: Int = DUST_SEED,
 ): Float {
     val u = (column + 0.5f) / columns
-    return (u * (1f - DUST_BAND) + DUST_BAND * cellHash(column, row, DUST_SEED)) * DUST_SWEEP
+    return (u * (1f - DUST_BAND) + DUST_BAND * cellHash(column, row, seed)) * DUST_SWEEP
 }
 
 /** The moment the dust of emission column [index] of [count] rises: when the band's middle passes it. */
@@ -58,6 +60,7 @@ internal fun dustHidden(
     size: Size,
     cell: Float,
     t: Float,
+    seed: Int = DUST_SEED,
 ): Path {
     val grid = cellGrid(size, cell)
     // Columns whose latest grain is already gone are gone whole.
@@ -70,7 +73,7 @@ internal fun dustHidden(
             val bottom = cellEdge(row + 1, grid.height, size.height)
             var start = -1
             for (column in gone..grid.width) {
-                val hidden = column < grid.width && dustMoment(column, row, grid.width) <= t
+                val hidden = column < grid.width && dustMoment(column, row, grid.width, seed) <= t
                 if (hidden && start < 0) start = column
                 if (!hidden && start >= 0) {
                     addRect(
@@ -113,7 +116,11 @@ internal const val DUST_SWEEP = 0.55f
 internal const val DUST_BAND = 0.3f
 internal const val DUST_COLUMNS = 10
 private const val DUST_SAMPLES = 4
-private const val DUST_SEED = 71
+internal const val DUST_SEED = 71
+
+/** How far a full wind turns the launch angle, in degrees, and how much faster it blows the dust. */
+private const val WIND_TILT = 40f
+private const val WIND_GUST = 0.6f
 private val DustFallback = Color(0xFFC2C2C2)
 
 /**
@@ -129,7 +136,7 @@ internal class DisintegratePart(
 
     override fun ContentDrawScope.draw(progress: Float) {
         drawContent()
-        drawPath(dustHidden(size, 3.dp.toPx(), 1f - progress), Color.Black, blendMode = BlendMode.DstOut)
+        drawPath(dustHidden(size, kind.particleSize.toPx(), 1f - progress), Color.Black, blendMode = BlendMode.DstOut)
     }
 
     override fun attach(
@@ -186,6 +193,8 @@ internal class DisintegratePart(
             val width = context.size.width.toFloat()
             val height = context.size.height.toFloat()
             val half = width / DUST_COLUMNS / 2
+            val wind = kind.wind
+            val gust = 1f + abs(wind) * WIND_GUST
             val life = max(0.2f, kind.duration.inWholeMilliseconds / 1000f * (1f - DUST_SWEEP) * 0.9f)
             val palette =
                 if (kind.color.isSpecified) listOf(kind.color) else colors?.get(column) ?: listOf(DustFallback)
@@ -193,8 +202,8 @@ internal class DisintegratePart(
                 ParticleSystem(
                     Emission(
                         count = min(40, max(8, (height / 2.5.dp.toPx()).roundToInt())),
-                        angle = Spread(-85f, -15f),
-                        speed = Spread(30.dp.toPx(), 110.dp.toPx()),
+                        angle = Spread(-85f + wind * WIND_TILT, -15f + wind * WIND_TILT),
+                        speed = Spread(30.dp.toPx() * gust, 110.dp.toPx() * gust),
                         lifetime = Spread(life * 0.5f, life),
                         gravity = -40.dp.toPx(),
                         drag = 0.4f,
@@ -207,7 +216,7 @@ internal class DisintegratePart(
                     ),
                     seed = DUST_SEED + column,
                 ),
-                shapePainter(ParticleShape.Square, palette, 3.dp.toPx()),
+                shapePainter(ParticleShape.Square, palette, kind.particleSize.toPx()),
                 opacity = { 1f - it * it },
                 growth = { 1f - 0.4f * it },
             ).apply { origin = Offset((column + 0.5f) / DUST_COLUMNS * width, height / 2) }

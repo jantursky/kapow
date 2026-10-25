@@ -42,6 +42,11 @@ fun Picture(visible: Boolean) {
 | `orientation` | `BlindsOrientation.Horizontal` | The direction of the slats. |
 | `staggered` | `false` | When true, slats nearer the top (or the start) open first. |
 | `duration` | `450.milliseconds` | How long the transition takes. Must be positive. |
+| `slatCount` | `null` | How many slats there are, from 1 to 200, sharing the content's height (or width) evenly. `null` sizes them by `slatWidth`, which is then ignored when a count is set. |
+| `staggerAmount` | `1f` | When `staggered`, how far the start of the last slat trails the first: 0 opens them together, 1 spreads the starts over half the transition, more spreads them further. Must not be negative. |
+| `reverse` | `false` | When `staggered`, starts from the bottom (or the end) instead. |
+
+Every transition also has `.delay(...)`, `.easing(...)` and `.reducedMotion(...)`. See [Stagger](/effects/transition-stagger).
 
 ## Reduced motion
 

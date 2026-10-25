@@ -37,6 +37,11 @@ fun Notification(visible: Boolean) {
 | --- | --- | --- |
 | `color` | `Color.Unspecified` | The color of the dust. Unspecified takes the content's own colors; see below. |
 | `duration` | `1500.milliseconds` | How long the transition takes. Must be positive. |
+| `particleSize` | `3.dp` | The size of one grain, which is also the size of the particles that rise from it, from 1 dp to 16 dp. Larger grains make coarser dust. |
+| `wind` | `0f` | How the wind blows the dust, from -1 (to the left) to 1 (to the right). At 0 the dust drifts up and a little right. The stronger the wind, the faster it carries the dust. |
+
+Every transition also has `.delay(...)`, `.easing(...)` and `.reducedMotion(...)`. See [Stagger](/effects/transition-stagger).
+
 
 ## Where the dust gets its color
 

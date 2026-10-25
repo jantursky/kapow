@@ -36,18 +36,29 @@ internal fun ShapeIrisDemo() {
     var opening by remember { mutableStateOf(Opening.Star) }
     var origin by remember { mutableStateOf(Origin.Center) }
     var seconds by remember { mutableFloatStateOf(0.6f) }
+    var rotation by remember { mutableFloatStateOf(0f) }
+    var scale by remember { mutableFloatStateOf(1f) }
     val duration = (seconds * 1000).roundToInt().milliseconds
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
-        stage = { ShapeIrisExample(visible, opening.shape, origin.origin, duration) },
+        stage = { ShapeIrisExample(visible, opening.shape, origin.origin, duration, rotation, scale) },
         code = {
-            val args = arrayOf("shape" to opening.code, "origin" to origin.kt(), "duration" to duration.kt())
+            val args =
+                transitionArgs(
+                    "shape" to opening.code,
+                    "origin" to origin.kt(),
+                    "duration" to duration.kt(),
+                    ("rotation" to rotation.kt()).takeIf { rotation != 0f },
+                    ("scale" to scale.kt()).takeIf { scale != 1f },
+                )
             transitionCode(call("KapowEnter.shapeIris", *args), call("KapowExit.shapeIris", *args))
         },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             ChoiceRow("Shape", Opening.entries, opening, { opening = it }, { it.name })
             ChoiceRow("Origin", Origin.entries, origin, { origin = it }, { it.name })
+            LabeledSlider("Rotation", "${rotation.roundToInt()}°", rotation, { rotation = it }, -360f..360f)
+            LabeledSlider("Scale", scale.oneDecimal(), scale, { scale = it }, 1f..2f)
             LabeledSlider("Duration", "${seconds.oneDecimal()} s", seconds, { seconds = it }, 0.2f..3f)
         },
     )

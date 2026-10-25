@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.KapowAnimatedVisibility
 import com.jantursky.kapow.KapowExit
@@ -27,10 +28,14 @@ fun ShatterExample(
     visible: Boolean,
     shards: Int,
     duration: Duration,
+    gravity: Float = 1f,
+    spin: Float = 1f,
+    impact: TransformOrigin = TransformOrigin.Center,
+    seed: Int = 61,
 ) {
     KapowAnimatedVisibility(
         visible,
-        exit = KapowExit.shatter(shards, duration),
+        exit = KapowExit.shatter(shards, duration, gravity, spin, impact, seed),
     ) {
         Row(
             Modifier

@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.CellShape
 import com.jantursky.kapow.KapowAnimatedVisibility
 import com.jantursky.kapow.KapowEnter
 import com.jantursky.kapow.KapowExit
@@ -29,11 +30,14 @@ fun DissolveExample(
     visible: Boolean,
     cellSize: Dp,
     duration: Duration,
+    cellShape: CellShape = CellShape.Square,
+    softness: Float = 0f,
+    seed: Int = 31,
 ) {
     KapowAnimatedVisibility(
         visible,
-        enter = KapowEnter.dissolve(cellSize, duration),
-        exit = KapowExit.dissolve(cellSize, duration),
+        enter = KapowEnter.dissolve(cellSize, duration, cellShape, softness, seed),
+        exit = KapowExit.dissolve(cellSize, duration, cellShape, softness, seed),
     ) {
         Box(Modifier.size(width = 260.dp, height = 170.dp).clip(KapowShapes.card)) {
             Canvas(Modifier.fillMaxSize()) {

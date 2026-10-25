@@ -403,6 +403,13 @@ val entries: List<Entry> =
             Example("DisintegrateExample.kt") { DisintegrateDemo() },
         ),
         Entry(
+            "transition-stagger",
+            Group.Transitions,
+            "Stagger",
+            "The rows of a list start one after another.",
+            Example("StaggerExample.kt") { StaggerDemo() },
+        ),
+        Entry(
             "more-particle-layer",
             Group.More,
             "Particle layer",

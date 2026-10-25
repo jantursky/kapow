@@ -18,7 +18,14 @@ internal fun curtainOpening(
     extent: Float,
     fold: Float,
     progress: Float,
-): Float = (extent / 2 + fold) * progress.coerceIn(0f, 1f)
+): Float = curtainHalfOpening(extent / 2, fold, progress)
+
+/** How far a curtain half has moved at [progress] when it has [reach] px to cover from the seam to its edge. */
+internal fun curtainHalfOpening(
+    reach: Float,
+    fold: Float,
+    progress: Float,
+): Float = (reach + fold) * progress.coerceIn(0f, 1f)
 
 /** How far the hem bulges at [along] px down the seam: folds [fold] px deep and [wavelength] px apart. */
 internal fun curtainFold(
@@ -41,12 +48,13 @@ internal class CurtainMask(
         val length = if (vertical) size.height else size.width
         val fold = 3.dp.toPx()
         val wavelength = 28.dp.toPx()
-        val middle = extent / 2
-        val open = curtainOpening(extent, fold, progress)
+        // The seam sits at [split] of the extent; each half moves just far enough to clear its own side.
+        val middle = if (kind.split == 0.5f) extent / 2 else extent * kind.split
         val step = 4.dp.toPx()
         val halves = Path()
         for (side in listOf(-1f, 1f)) {
             val edge = if (side < 0) 0f else extent
+            val open = curtainHalfOpening(if (side < 0) middle else extent - middle, fold, progress)
             point(halves, vertical, edge, 0f, move = true)
             var along = 0f
             while (true) {

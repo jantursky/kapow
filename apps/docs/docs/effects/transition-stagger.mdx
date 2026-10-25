@@ -1,0 +1,71 @@
+---
+title: "Transition: stagger"
+description: Start the items of a list one after another with a delay that grows with the index.
+---
+
+Stagger is not an effect of its own. `KapowStagger.delay(index)` gives each item of a list a start time that grows with its position, and `.delay(...)` on a transition or a change effect holds the item back until then. Use it for a list that fills in row by row, or a shine that runs down a set of cards.
+
+## Usage
+
+The sample wipes each row in 60 ms after the one above, and out again in the same order.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+import com.jantursky.kapow.KapowStagger
+import kotlin.time.Duration.Companion.milliseconds
+
+@Composable
+fun Rows(visible: Boolean, titles: List<String>) {
+    Column {
+        titles.forEachIndexed { index, _ ->
+            val delay = KapowStagger.delay(index, step = 60.milliseconds)
+            KapowAnimatedVisibility(
+                visible = visible,
+                enter = KapowEnter.wipe().delay(delay),
+                exit = KapowExit.wipe().delay(delay),
+            ) {
+                Box(Modifier.size(240.dp, 40.dp).background(Color.DarkGray))
+            }
+        }
+    }
+}
+```
+
+## Parameters
+
+`KapowStagger.delay(index, step, max)`:
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `index` | required | The item's position in the list. Must not be negative. Item 0 has no delay. |
+| `step` | `50.milliseconds` | How much later each item starts than the one before. Must not be negative. |
+| `max` | `500.milliseconds` | The longest delay, so a long list does not wait for ever. Must not be negative. |
+
+The result is `index * step`, never above `max`.
+
+`KapowEnter.delay(delay)` and `KapowExit.delay(delay)` take the delay to wait. It must not be negative.
+
+## Reduced motion
+
+A delayed transition keeps its delay. Under reduced motion it fades, or does what its `reducedMotion(...)` override says, after the same wait.
+
+## Notes
+
+- The content stays hidden for the delay of an enter, and fully shown for the delay of an exit. The transition then plays over its normal duration.
+- The delay is part of the animation, so `AnimatedVisibility` and `AnimatedContent` keep the content until a delayed exit has ended.
+- The delay is part of the transition's value: two transitions are equal only when their delays are.
+- `ChangeEffect.delay(...)` takes the same value, so one `KapowStagger.delay(index)` can drive both a transition and a change effect on a row.
+
+## Live example
+
+<include example="transition-stagger">../_snippets/live-example.mdx</include>

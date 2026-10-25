@@ -10,6 +10,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.KapowAnimatedVisibility
 import com.jantursky.kapow.KapowEnter
@@ -25,11 +26,12 @@ fun IrisExample(
     visible: Boolean,
     origin: TransformOrigin,
     duration: Duration,
+    softEdge: Dp = 0.dp,
 ) {
     KapowAnimatedVisibility(
         visible,
-        enter = KapowEnter.iris(origin, duration),
-        exit = KapowExit.iris(origin, duration),
+        enter = KapowEnter.iris(origin, duration, softEdge),
+        exit = KapowExit.iris(origin, duration, softEdge),
     ) {
         Box(
             Modifier

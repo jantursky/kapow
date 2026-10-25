@@ -40,6 +40,11 @@ fun PromoCard(visible: Boolean) {
 | `angle` | `45f` | The direction the edge moves, in degrees. 0 is rightward. |
 | `color` | `Color.White` | Color of the streak. |
 | `duration` | `450.milliseconds` | How long the transition takes. Must be positive. |
+| `softEdge` | `0.dp` | How wide the edge fades from shown to hidden, as in `wipe`. Must not be negative. |
+| `width` | unspecified | How wide the streak is. Left unspecified, it is a share of the content's size. Must be positive. |
+| `intensity` | `1f` | How strong the streak is, from 0 (none) to 1 (the full `color`). |
+
+Every transition also has `.delay(...)`, `.easing(...)` and `.reducedMotion(...)`. See [Stagger](/effects/transition-stagger).
 
 ## Reduced motion
 

@@ -38,6 +38,13 @@ fun Badge(visible: Boolean) {
 | --- | --- | --- |
 | `color` | `Color(0xFF6B62F2)` | Color of the ring and particles. |
 | `duration` | `1200.milliseconds` | How long the whole transition takes. Must be positive. |
+| `overshoot` | `1f` | How far the content grows past its size before it settles, as a factor. 0 grows to its size without passing it. Must not be negative. |
+| `ringCount` | `1` | How many rings go off one after another, from 0 to 5. |
+| `particleCount` | `12` | How many particles burst out, from 0 to 100. |
+| `physics` | `ParticlePhysics.Default` | How the burst launches and moves: direction, spread, speed, lifetime, gravity, drag, spin, size, scale and fade. The emission area, blend mode and color pick are ignored. |
+
+Every transition also has `.delay(...)`, `.easing(...)` and `.reducedMotion(...)`. See [Stagger](/effects/transition-stagger).
+
 
 ## Reduced motion
 

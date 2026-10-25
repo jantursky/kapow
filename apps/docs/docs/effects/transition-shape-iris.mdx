@@ -43,6 +43,10 @@ fun Badge(visible: Boolean) {
 | `shape` | `StarShape()` | The opening. It is drawn in a square box that grows around `origin`. |
 | `origin` | `TransformOrigin.Center` | The point the shape grows from or shrinks to, as a fraction of the content's size. |
 | `duration` | `600.milliseconds` | How long the transition takes. Must be positive. |
+| `rotation` | `0f` | How many degrees the shape turns about the origin while it grows. 0 keeps it upright. The exit turns it back. |
+| `scale` | `1f` | How much larger than needed the shape grows, at least 1. 1 covers the content just as the transition ends; more covers it sooner. |
+
+Every transition also has `.delay(...)`, `.easing(...)` and `.reducedMotion(...)`. See [Stagger](/effects/transition-stagger).
 
 ## Reduced motion
 

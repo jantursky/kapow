@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.isSpecified
+import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.samples.design.KapowEffectColors
 import com.jantursky.kapow.samples.design.LabeledSlider
 import com.jantursky.kapow.samples.design.PrimaryPill
@@ -31,22 +32,30 @@ internal fun DisintegrateDemo() {
     var visible by remember { mutableStateOf(true) }
     var dust by remember { mutableStateOf(Dust.Content) }
     var seconds by remember { mutableFloatStateOf(1.5f) }
+    var grain by remember { mutableFloatStateOf(3f) }
+    var wind by remember { mutableFloatStateOf(0f) }
     val duration = (seconds * 1000).roundToInt().milliseconds
     ExampleScaffold(
         autoplay = Autoplay(duration + 1.2.seconds) { visible = !visible },
-        stage = { DisintegrateExample(visible, dust.color, duration) },
+        stage = { DisintegrateExample(visible, dust.color, duration, grain.roundToInt().dp, wind) },
         code = {
             val exit =
-                if (dust.color.isSpecified) {
-                    call("KapowExit.disintegrate", "color" to dust.color.kt(), "duration" to duration.kt())
-                } else {
-                    call("KapowExit.disintegrate", "duration" to duration.kt())
-                }
+                call(
+                    "KapowExit.disintegrate",
+                    *transitionArgs(
+                        ("color" to dust.color.kt()).takeIf { dust.color.isSpecified },
+                        "duration" to duration.kt(),
+                        ("particleSize" to grain.roundToInt().dp.kt()).takeIf { grain.roundToInt() != 3 },
+                        ("wind" to wind.kt()).takeIf { wind != 0f },
+                    ),
+                )
             transitionCode(exit = exit)
         },
         controls = {
             PrimaryPill(if (visible) "Hide" else "Show", onClick = { visible = !visible })
             ChoiceRow("Dust", Dust.entries, dust, { dust = it }, { it.name })
+            LabeledSlider("Particle size", "${grain.roundToInt()} dp", grain, { grain = it }, 1f..16f)
+            LabeledSlider("Wind", wind.oneDecimal(), wind, { wind = it }, -1f..1f)
             LabeledSlider("Duration", "${seconds.oneDecimal()} s", seconds, { seconds = it }, 0.5f..4f)
         },
     )

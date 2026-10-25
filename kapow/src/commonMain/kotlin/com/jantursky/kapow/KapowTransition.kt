@@ -1,11 +1,14 @@
 package com.jantursky.kapow
 
+import androidx.compose.animation.core.Easing
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.isSpecified
+import com.jantursky.kapow.transitions.SHATTER_SEED
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -15,6 +18,39 @@ import kotlin.time.Duration.Companion.milliseconds
  */
 public enum class BlindsOrientation { Horizontal, Vertical }
 
+/** The shape of the cells in [KapowEnter.dissolve] and [KapowExit.dissolve]. */
+public enum class CellShape {
+    /** Squares that tile the content. */
+    Square,
+
+    /** Circles as wide as their cell's diagonal, so neighbours overlap and cover the content when all are on. */
+    Circle,
+
+    /** Flat-topped hexagons that tile the content. */
+    Hexagon,
+}
+
+/** The order in which the squares of [KapowEnter.checker] and [KapowExit.checker] open. */
+public enum class CheckerOrder {
+    /** The squares of one color open together, then the other color: the checkerboard's two waves. */
+    Together,
+
+    /** The squares open in a sweep from the top-left corner to the bottom-right (reversed on exit). */
+    Diagonal,
+
+    /** The squares open in a seeded random order. */
+    Random,
+
+    /** The squares open in a turn around the middle, from the center outward. */
+    Spiral,
+}
+
+/** The light rim along a torn edge: white at 75 % opacity. */
+internal val DEFAULT_TEAR_RIM: Color = Color.White.copy(alpha = 0.75f)
+
+internal const val DEFAULT_DISSOLVE_SEED = 31
+internal const val DEFAULT_CHECKER_SEED = 41
+
 /**
  * How content appears inside an `AnimatedVisibility` or `AnimatedContent`. Apply it with [kapowTransition] or
  * [KapowAnimatedVisibility].
@@ -23,60 +59,266 @@ public enum class BlindsOrientation { Horizontal, Vertical }
 public class KapowEnter internal constructor(
     internal val kind: TransitionKind,
     internal val duration: Duration,
+    internal val delay: Duration = Duration.ZERO,
+    internal val easing: Easing? = null,
+    internal val reducedMotion: ReducedMotionMode = ReducedMotionMode.Default,
 ) {
-    override fun equals(other: Any?): Boolean = other is KapowEnter && kind == other.kind && duration == other.duration
+    /**
+     * This transition, started [delay] after the content becomes visible. The content stays hidden until then and
+     * the transition plays over its normal duration afterward. Use [KapowStagger.delay] to cascade the items of a
+     * list.
+     */
+    public fun delay(delay: Duration): KapowEnter {
+        require(!delay.isNegative()) { "delay must not be negative" }
+        return KapowEnter(kind, duration, delay, easing, reducedMotion)
+    }
 
-    override fun hashCode(): Int = 31 * kind.hashCode() + duration.hashCode()
+    /**
+     * This transition with its progress shaped by [easing] instead of its own curve. Transitions that run their own
+     * motion on a linear clock, such as `anvil`, `pop`, `shatter` and `disintegrate`, stretch their whole timeline
+     * with it.
+     */
+    public fun easing(easing: Easing): KapowEnter = KapowEnter(kind, duration, delay, easing, reducedMotion)
 
-    override fun toString(): String = "KapowEnter($kind, $duration)"
+    /**
+     * This transition with [mode] as its reduced-motion behavior. [ReducedMotionMode.Default] and
+     * [ReducedMotionMode.Fade] fade the content in over the transition's duration. [ReducedMotionMode.Nothing] and
+     * [ReducedMotionMode.EndState] show the content at once, without a delay.
+     */
+    public fun reducedMotion(mode: ReducedMotionMode): KapowEnter = KapowEnter(kind, duration, delay, easing, mode)
+
+    override fun equals(other: Any?): Boolean =
+        other is KapowEnter && kind == other.kind && duration == other.duration && delay == other.delay &&
+            easing == other.easing && reducedMotion == other.reducedMotion
+
+    override fun hashCode(): Int =
+        (((31 * kind.hashCode() + duration.hashCode()) * 31 + delay.hashCode()) * 31 + easing.hashCode()) * 31 +
+            reducedMotion.hashCode()
+
+    override fun toString(): String = "KapowEnter($kind, $duration${tuningText(delay, easing, reducedMotion)})"
 
     public companion object {
         /** No Kapow transition. Content appears with whatever stock transition the caller set. */
         public val None: KapowEnter = KapowEnter(TransitionKind.None, Duration.ZERO)
 
-        /** A circle that grows from [origin] until it covers the content. */
+        /**
+         * A circle that grows from [origin] until it covers the content.
+         *
+         * @param origin the point the circle grows from, as a fraction of the content's size.
+         * @param duration how long the transition takes, 450 ms by default.
+         * @param softEdge how wide the edge of the circle fades from shown to hidden. 0 gives a sharp edge. The fade
+         *   has left the content when the circle is done, so it is fully shown at the end.
+         */
         public fun iris(
             origin: TransformOrigin = TransformOrigin.Center,
             duration: Duration = DefaultMaskDuration,
-        ): KapowEnter = KapowEnter(TransitionKind.Iris(origin), duration.checked())
+            softEdge: Dp = 0.dp,
+        ): KapowEnter = KapowEnter(TransitionKind.Iris(origin, softEdge.checkedSoft()), duration.checked())
 
-        /** A sweep around [origin], clockwise from 12 o'clock, like a clock hand. */
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with softEdge.", level = DeprecationLevel.HIDDEN)
+        public fun iris(
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = DefaultMaskDuration,
+        ): KapowEnter = iris(origin, duration, 0.dp)
+
+        /**
+         * A sweep around [origin], clockwise from 12 o'clock, like a clock hand.
+         *
+         * @param origin the point the sweep turns around, as a fraction of the content's size.
+         * @param duration how long the transition takes, 450 ms by default.
+         * @param softEdge how wide the leading edge of the sweep fades, measured at the content's farthest corner; it
+         *   is narrower closer to [origin]. 0 gives a sharp edge. The content is fully shown at the end.
+         * @param counterClockwise sweeps counterclockwise from 12 o'clock instead.
+         */
         public fun clock(
             origin: TransformOrigin = TransformOrigin.Center,
             duration: Duration = DefaultMaskDuration,
-        ): KapowEnter = KapowEnter(TransitionKind.Clock(origin), duration.checked())
+            softEdge: Dp = 0.dp,
+            counterClockwise: Boolean = false,
+        ): KapowEnter =
+            KapowEnter(TransitionKind.Clock(origin, softEdge.checkedSoft(), counterClockwise), duration.checked())
 
-        /** A straight edge that moves across the content in the direction of [angle] (degrees, 0 = rightward). */
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with softEdge and counterClockwise.", level = DeprecationLevel.HIDDEN)
+        public fun clock(
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = DefaultMaskDuration,
+        ): KapowEnter = clock(origin, duration, 0.dp, false)
+
+        /**
+         * A straight edge that moves across the content in the direction of [angle] (degrees, 0 = rightward).
+         *
+         * @param duration how long the transition takes, 450 ms by default.
+         * @param softEdge how wide the edge fades from shown to hidden. 0 gives a sharp edge. The edge travels that
+         *   much further, so the content is fully shown at the end.
+         */
         public fun wipe(
             angle: Float = 0f,
             duration: Duration = DefaultMaskDuration,
-        ): KapowEnter = KapowEnter(TransitionKind.Wipe(angle, glare = null), duration.checked())
+            softEdge: Dp = 0.dp,
+        ): KapowEnter =
+            KapowEnter(TransitionKind.Wipe(angle, glare = null, softEdge = softEdge.checkedSoft()), duration.checked())
 
-        /** A [wipe] with a bright streak of [color] running along its edge. */
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with softEdge.", level = DeprecationLevel.HIDDEN)
+        public fun wipe(
+            angle: Float = 0f,
+            duration: Duration = DefaultMaskDuration,
+        ): KapowEnter = wipe(angle, duration, 0.dp)
+
+        /**
+         * A [wipe] with a bright streak of [color] running along its edge.
+         *
+         * @param softEdge how wide the edge fades, as in [wipe].
+         * @param width how wide the streak is. Left unspecified, it is a share of the content's size.
+         * @param intensity how strong the streak is, from 0 (none) to 1 (the full [color]).
+         */
         public fun glare(
             angle: Float = 45f,
             color: Color = Color.White,
             duration: Duration = DefaultMaskDuration,
-        ): KapowEnter = KapowEnter(TransitionKind.Wipe(angle, glare = color), duration.checked())
+            softEdge: Dp = 0.dp,
+            width: Dp = Dp.Unspecified,
+            intensity: Float = 1f,
+        ): KapowEnter =
+            KapowEnter(
+                TransitionKind.Wipe(
+                    angle,
+                    color,
+                    softEdge.checkedSoft(),
+                    width.checkedGlareWidth(),
+                    intensity.checkedIntensity(),
+                ),
+                duration.checked(),
+            )
 
-        /** Slats that open like venetian blinds. With [staggered], slats nearer the top (or start) open first. */
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with softEdge, width and intensity.", level = DeprecationLevel.HIDDEN)
+        public fun glare(
+            angle: Float = 45f,
+            color: Color = Color.White,
+            duration: Duration = DefaultMaskDuration,
+        ): KapowEnter = glare(angle, color, duration, 0.dp, Dp.Unspecified, 1f)
+
+        /**
+         * Slats that open like venetian blinds. With [staggered], slats nearer the top (or start) open first.
+         *
+         * @param slatWidth the width of one slat, at least 5 dp. Ignored when [slatCount] is set.
+         * @param staggered whether the slats open one after another instead of together.
+         * @param slatCount how many slats there are, from 1 to 200, so the slats share the content's height (or
+         *   width) evenly. Null sizes them by [slatWidth].
+         * @param staggerAmount how far the start of the last slat trails the first, when [staggered]: 0 opens them
+         *   together, 1 spreads the starts over half the transition, more spreads them further.
+         * @param reverse opens the slats from the bottom (or end) up, when [staggered].
+         */
         public fun blinds(
             slatWidth: Dp = 10.dp,
             orientation: BlindsOrientation = BlindsOrientation.Horizontal,
             staggered: Boolean = false,
             duration: Duration = DefaultMaskDuration,
+            slatCount: Int? = null,
+            staggerAmount: Float = 1f,
+            reverse: Boolean = false,
         ): KapowEnter =
-            KapowEnter(TransitionKind.Blinds(slatWidth.coerceAtLeast(5.dp), orientation, staggered), duration.checked())
+            KapowEnter(
+                TransitionKind.Blinds(
+                    slatWidth.coerceAtLeast(5.dp),
+                    orientation,
+                    staggered,
+                    slatCount.checkedSlats(),
+                    staggerAmount.checkedStagger(),
+                    reverse,
+                ),
+                duration.checked(),
+            )
 
-        /** The content drops in from above, lands with a shake and kicks up dust. */
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with slatCount, staggerAmount and reverse.", level = DeprecationLevel.HIDDEN)
+        public fun blinds(
+            slatWidth: Dp = 10.dp,
+            orientation: BlindsOrientation = BlindsOrientation.Horizontal,
+            staggered: Boolean = false,
+            duration: Duration = DefaultMaskDuration,
+        ): KapowEnter = blinds(slatWidth, orientation, staggered, duration, null, 1f, false)
+
+        /**
+         * The content drops in from above, lands with a shake and kicks up dust. With reduced motion it fades in
+         * instead, with no dust.
+         *
+         * @param duration how long the transition takes, 1400 ms by default.
+         * @param dropHeight how far above its place the content starts. Left unspecified, it is twice its own
+         *   height, at least 200 dp.
+         * @param shake how strong the shake after landing is, as a factor: 0 lands without a shake, 1 is the usual
+         *   one.
+         * @param dustColor the color of the dust.
+         * @param dustCount how many puffs of dust run out to each side, from 0 to 40.
+         */
+        public fun anvil(
+            duration: Duration = 1400.milliseconds,
+            dropHeight: Dp = Dp.Unspecified,
+            shake: Float = 1f,
+            dustColor: Color = Color(0xFFB0B0B0),
+            dustCount: Int = 6,
+        ): KapowEnter =
+            KapowEnter(
+                TransitionKind.Anvil(
+                    dropHeight.checkedDrop(),
+                    shake.checkedShake(),
+                    dustColor,
+                    dustCount.checkedCount(0..40, "dustCount"),
+                ),
+                duration.checked(),
+            )
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated(
+            "Use the overload with dropHeight, shake, dustColor and dustCount.",
+            level = DeprecationLevel.HIDDEN,
+        )
         public fun anvil(duration: Duration = 1400.milliseconds): KapowEnter =
-            KapowEnter(TransitionKind.Anvil, duration.checked())
+            anvil(duration, Dp.Unspecified, 1f, Color(0xFFB0B0B0), 6)
 
-        /** The content pops in with an overshoot while a ring and a burst of particles of [color] go off behind it. */
+        /**
+         * The content pops in with an overshoot while a ring and a burst of particles of [color] go off behind it.
+         * With reduced motion it fades in instead, with no ring or burst.
+         *
+         * @param duration how long the transition takes, 1200 ms by default.
+         * @param overshoot how far the content grows past its size before it settles, as a factor: 0 grows to its
+         *   size without passing it, 1 is the usual overshoot, more passes it further.
+         * @param ringCount how many rings go off one after another, from 0 to 5.
+         * @param particleCount how many particles burst out, from 0 to 100.
+         * @param physics how the burst's particles launch and move. The direction, spread, speed, lifetime, gravity,
+         *   drag, spin, size, scale and fade parts apply; the emission area, blend mode and color pick are ignored.
+         */
         public fun pop(
             color: Color = Color(0xFF6B62F2),
             duration: Duration = 1200.milliseconds,
-        ): KapowEnter = KapowEnter(TransitionKind.Pop(color), duration.checked())
+            overshoot: Float = 1f,
+            ringCount: Int = 1,
+            particleCount: Int = 12,
+            physics: ParticlePhysics = ParticlePhysics.Default,
+        ): KapowEnter =
+            KapowEnter(
+                TransitionKind.Pop(
+                    color,
+                    overshoot.checkedOvershoot(),
+                    ringCount.checkedCount(0..5, "ringCount"),
+                    particleCount.checkedCount(0..100, "particleCount"),
+                    physics,
+                ),
+                duration.checked(),
+            )
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated(
+            "Use the overload with overshoot, ringCount, particleCount and physics.",
+            level = DeprecationLevel.HIDDEN,
+        )
+        public fun pop(
+            color: Color = Color(0xFF6B62F2),
+            duration: Duration = 1200.milliseconds,
+        ): KapowEnter = pop(color, duration, 1f, 1, 12, ParticlePhysics.Default)
 
         /**
          * The content appears as a grid of small squares that turn on one by one in a random order. The order is
@@ -85,11 +327,30 @@ public class KapowEnter internal constructor(
          * @param cellSize the side of one square, at least 2 dp. Large elements get bigger squares so a frame never
          *   draws more than a few thousand.
          * @param duration how long the transition takes, 600 ms by default.
+         * @param cellShape the shape of the cells: squares, circles or hexagons. See [CellShape].
+         * @param softness how gradually each cell turns on, from 0 to 1. At 0 a cell pops to full size at its moment;
+         *   above it, each grows from its middle over that share of the transition, so 1 makes every cell grow
+         *   together.
+         * @param seed the seed of the random order. The same seed gives the same order on every target.
          */
         public fun dissolve(
             cellSize: Dp = 12.dp,
             duration: Duration = 600.milliseconds,
-        ): KapowEnter = KapowEnter(TransitionKind.Dissolve(cellSize.checkedCell()), duration.checked())
+            cellShape: CellShape = CellShape.Square,
+            softness: Float = 0f,
+            seed: Int = DEFAULT_DISSOLVE_SEED,
+        ): KapowEnter =
+            KapowEnter(
+                TransitionKind.Dissolve(cellSize.checkedCell(), cellShape, softness.checkedSoftness(), seed),
+                duration.checked(),
+            )
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with cellShape, softness and seed.", level = DeprecationLevel.HIDDEN)
+        public fun dissolve(
+            cellSize: Dp = 12.dp,
+            duration: Duration = 600.milliseconds,
+        ): KapowEnter = dissolve(cellSize, duration, CellShape.Square, 0f, DEFAULT_DISSOLVE_SEED)
 
         /**
          * Two halves part from the middle to reveal the content, like a stage curtain. With reduced motion it fades
@@ -99,11 +360,21 @@ public class KapowEnter internal constructor(
          *   [BlindsOrientation.Vertical] they slide apart to the left and right, with [BlindsOrientation.Horizontal]
          *   up and down.
          * @param duration how long the transition takes, 450 ms by default.
+         * @param split where the seam between the halves sits, as a share of the content's width (or height) from 0
+         *   to 1. 0.5 splits it in the middle; the halves then move just far enough to clear their own side.
          */
         public fun curtain(
             orientation: BlindsOrientation = BlindsOrientation.Vertical,
             duration: Duration = DefaultMaskDuration,
-        ): KapowEnter = KapowEnter(TransitionKind.Curtain(orientation), duration.checked())
+            split: Float = 0.5f,
+        ): KapowEnter = KapowEnter(TransitionKind.Curtain(orientation, split.checkedSplit()), duration.checked())
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with split.", level = DeprecationLevel.HIDDEN)
+        public fun curtain(
+            orientation: BlindsOrientation = BlindsOrientation.Vertical,
+            duration: Duration = DefaultMaskDuration,
+        ): KapowEnter = curtain(orientation, duration, 0.5f)
 
         /**
          * Like [iris], but the opening is [shape] instead of a circle: it grows from [origin] until it covers the
@@ -115,12 +386,26 @@ public class KapowEnter internal constructor(
          *   `GenericShape` in a `remember` or a top-level value, since a new one is a new transition.
          * @param origin the point the shape grows from, as a fraction of the content's size.
          * @param duration how long the transition takes, 600 ms by default.
+         * @param rotation how many degrees the shape turns about [origin] while it grows. 0 keeps it upright.
+         * @param scale how much larger than needed the shape grows, at least 1. 1 covers the content just as the
+         *   transition ends; more covers it sooner.
          */
         public fun shapeIris(
             shape: Shape = StarShape(),
             origin: TransformOrigin = TransformOrigin.Center,
             duration: Duration = 600.milliseconds,
-        ): KapowEnter = KapowEnter(TransitionKind.ShapeIris(shape, origin), duration.checked())
+            rotation: Float = 0f,
+            scale: Float = 1f,
+        ): KapowEnter =
+            KapowEnter(TransitionKind.ShapeIris(shape, origin, rotation, scale.checkedScale()), duration.checked())
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with rotation and scale.", level = DeprecationLevel.HIDDEN)
+        public fun shapeIris(
+            shape: Shape = StarShape(),
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+        ): KapowEnter = shapeIris(shape, origin, duration, 0f, 1f)
 
         /**
          * A checkerboard of squares grows over the content in two waves: the squares of one color open from their
@@ -129,11 +414,22 @@ public class KapowEnter internal constructor(
          * @param cellSize the side of one square of the board, at least 2 dp. Large elements get bigger squares
          *   so a frame never draws more than a few thousand.
          * @param duration how long the transition takes, 600 ms by default.
+         * @param order the order the squares open in. See [CheckerOrder].
+         * @param seed the seed of [CheckerOrder.Random]. Ignored by the other orders.
          */
         public fun checker(
             cellSize: Dp = 24.dp,
             duration: Duration = 600.milliseconds,
-        ): KapowEnter = KapowEnter(TransitionKind.Checker(cellSize.checkedCell()), duration.checked())
+            order: CheckerOrder = CheckerOrder.Together,
+            seed: Int = DEFAULT_CHECKER_SEED,
+        ): KapowEnter = KapowEnter(TransitionKind.Checker(cellSize.checkedCell(), order, seed), duration.checked())
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with order and seed.", level = DeprecationLevel.HIDDEN)
+        public fun checker(
+            cellSize: Dp = 24.dp,
+            duration: Duration = 600.milliseconds,
+        ): KapowEnter = checker(cellSize, duration, CheckerOrder.Together, DEFAULT_CHECKER_SEED)
 
         /**
          * A [wipe] whose leading edge is torn like paper: an irregular zigzag with a light rim along it, moving
@@ -143,12 +439,30 @@ public class KapowEnter internal constructor(
          * @param toothSize how far the tear strays off a straight line, at least 2 dp. Its jags come at under
          *   half of that apart. They are irregular, but the same every time.
          * @param duration how long the transition takes, 500 ms by default.
+         * @param roughness how jagged the tear is, from 0 (a slow wander with no jags) to 1 (all jags). The default
+         *   0.4 is a mix.
+         * @param rimColor the color of the rim along the edge, drawn over the content. Make it transparent for no
+         *   rim. The default is white at 75 % opacity.
          */
         public fun tear(
             angle: Float = 0f,
             toothSize: Dp = 12.dp,
             duration: Duration = 500.milliseconds,
-        ): KapowEnter = KapowEnter(TransitionKind.Tear(angle, toothSize.checkedTooth()), duration.checked())
+            roughness: Float = 0.4f,
+            rimColor: Color = DEFAULT_TEAR_RIM,
+        ): KapowEnter =
+            KapowEnter(
+                TransitionKind.Tear(angle, toothSize.checkedTooth(), roughness.checkedRoughness(), rimColor),
+                duration.checked(),
+            )
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with roughness and rimColor.", level = DeprecationLevel.HIDDEN)
+        public fun tear(
+            angle: Float = 0f,
+            toothSize: Dp = 12.dp,
+            duration: Duration = 500.milliseconds,
+        ): KapowEnter = tear(angle, toothSize, duration, 0.4f, DEFAULT_TEAR_RIM)
 
         /**
          * An organic blob grows from [origin] until it covers the content. Its outline is a smooth curve through a
@@ -157,11 +471,31 @@ public class KapowEnter internal constructor(
          *
          * @param origin the point the blob grows from, as a fraction of the content's size.
          * @param duration how long the transition takes, 600 ms by default.
+         * @param points how many points the outline runs through, from 4 to 32. More points give a more irregular
+         *   outline.
+         * @param wobble how far each point swells and shrinks, as a share of its radius, from 0 (a plain circle) to
+         *   0.5. The bigger the wobble and the fewer the points, the further the blob has to grow to cover the
+         *   content, so it covers it earlier than a plain circle would.
+         * @param seed the seed of the wobble. The same seed gives the same blob on every target.
          */
         public fun blob(
             origin: TransformOrigin = TransformOrigin.Center,
             duration: Duration = 600.milliseconds,
-        ): KapowEnter = KapowEnter(TransitionKind.Blob(origin), duration.checked())
+            points: Int = 9,
+            wobble: Float = 0.25f,
+            seed: Int = 53,
+        ): KapowEnter =
+            KapowEnter(
+                TransitionKind.Blob(origin, points.checkedPoints(), wobble.checkedWobble(), seed),
+                duration.checked(),
+            )
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with points, wobble and seed.", level = DeprecationLevel.HIDDEN)
+        public fun blob(
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+        ): KapowEnter = blob(origin, duration, 9, 0.25f, 53)
     }
 }
 
@@ -173,56 +507,213 @@ public class KapowEnter internal constructor(
 public class KapowExit internal constructor(
     internal val kind: TransitionKind,
     internal val duration: Duration,
+    internal val delay: Duration = Duration.ZERO,
+    internal val easing: Easing? = null,
+    internal val reducedMotion: ReducedMotionMode = ReducedMotionMode.Default,
 ) {
-    override fun equals(other: Any?): Boolean = other is KapowExit && kind == other.kind && duration == other.duration
+    /**
+     * This transition, started [delay] after the content is asked to go. The content stays fully shown until then
+     * and the exit plays over its normal duration afterward. The container keeps the content until the exit has
+     * ended. Use [KapowStagger.delay] to cascade the items of a list.
+     */
+    public fun delay(delay: Duration): KapowExit {
+        require(!delay.isNegative()) { "delay must not be negative" }
+        return KapowExit(kind, duration, delay, easing, reducedMotion)
+    }
 
-    override fun hashCode(): Int = 31 * kind.hashCode() + duration.hashCode()
+    /**
+     * This transition with its progress shaped by [easing] instead of its own curve, so an ease-in curve
+     * starts the exit slowly. Transitions that run their own motion
+     * on a linear clock, such as `poof`, `shatter` and `disintegrate`, stretch their whole timeline with it.
+     */
+    public fun easing(easing: Easing): KapowExit = KapowExit(kind, duration, delay, easing, reducedMotion)
 
-    override fun toString(): String = "KapowExit($kind, $duration)"
+    /**
+     * This transition with [mode] as its reduced-motion behavior. [ReducedMotionMode.Default] and
+     * [ReducedMotionMode.Fade] fade the content out over the transition's duration. [ReducedMotionMode.Nothing] and
+     * [ReducedMotionMode.EndState] remove the content at once, without a delay.
+     */
+    public fun reducedMotion(mode: ReducedMotionMode): KapowExit = KapowExit(kind, duration, delay, easing, mode)
+
+    override fun equals(other: Any?): Boolean =
+        other is KapowExit && kind == other.kind && duration == other.duration && delay == other.delay &&
+            easing == other.easing && reducedMotion == other.reducedMotion
+
+    override fun hashCode(): Int =
+        (((31 * kind.hashCode() + duration.hashCode()) * 31 + delay.hashCode()) * 31 + easing.hashCode()) * 31 +
+            reducedMotion.hashCode()
+
+    override fun toString(): String = "KapowExit($kind, $duration${tuningText(delay, easing, reducedMotion)})"
 
     public companion object {
         /** No Kapow transition. Content disappears with whatever stock transition the caller set. */
         public val None: KapowExit = KapowExit(TransitionKind.None, Duration.ZERO)
 
-        /** A circle that shrinks toward [origin]. */
+        /**
+         * A circle that shrinks toward [origin].
+         *
+         * @param softEdge how wide the edge of the circle fades, as in [KapowEnter.iris].
+         */
         public fun iris(
             origin: TransformOrigin = TransformOrigin.Center,
             duration: Duration = DefaultMaskDuration,
-        ): KapowExit = KapowExit(TransitionKind.Iris(origin), duration.checked())
+            softEdge: Dp = 0.dp,
+        ): KapowExit = KapowExit(TransitionKind.Iris(origin, softEdge.checkedSoft()), duration.checked())
 
-        /** A sweep around [origin] that takes the content away, counterclockwise back to 12 o'clock. */
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with softEdge.", level = DeprecationLevel.HIDDEN)
+        public fun iris(
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = DefaultMaskDuration,
+        ): KapowExit = iris(origin, duration, 0.dp)
+
+        /**
+         * A sweep around [origin] that takes the content away, counterclockwise back to 12 o'clock.
+         *
+         * @param softEdge how wide the trailing edge of the sweep fades, as in [KapowEnter.clock].
+         * @param counterClockwise the direction of the enter counterpart; the exit takes the content away the
+         *   other way around, so with `true` it sweeps clockwise back to 12 o'clock.
+         */
         public fun clock(
             origin: TransformOrigin = TransformOrigin.Center,
             duration: Duration = DefaultMaskDuration,
-        ): KapowExit = KapowExit(TransitionKind.Clock(origin), duration.checked())
+            softEdge: Dp = 0.dp,
+            counterClockwise: Boolean = false,
+        ): KapowExit =
+            KapowExit(TransitionKind.Clock(origin, softEdge.checkedSoft(), counterClockwise), duration.checked())
 
-        /** A straight edge that covers the content, moving against [angle]. */
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with softEdge and counterClockwise.", level = DeprecationLevel.HIDDEN)
+        public fun clock(
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = DefaultMaskDuration,
+        ): KapowExit = clock(origin, duration, 0.dp, false)
+
+        /**
+         * A straight edge that covers the content, moving against [angle].
+         *
+         * @param softEdge how wide the edge fades, as in [KapowEnter.wipe].
+         */
         public fun wipe(
             angle: Float = 0f,
             duration: Duration = DefaultMaskDuration,
-        ): KapowExit = KapowExit(TransitionKind.Wipe(angle, glare = null), duration.checked())
+            softEdge: Dp = 0.dp,
+        ): KapowExit =
+            KapowExit(TransitionKind.Wipe(angle, glare = null, softEdge = softEdge.checkedSoft()), duration.checked())
 
-        /** A [wipe] with a bright streak of [color] along its edge. */
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with softEdge.", level = DeprecationLevel.HIDDEN)
+        public fun wipe(
+            angle: Float = 0f,
+            duration: Duration = DefaultMaskDuration,
+        ): KapowExit = wipe(angle, duration, 0.dp)
+
+        /**
+         * A [wipe] with a bright streak of [color] along its edge.
+         *
+         * @param softEdge how wide the edge fades, as in [KapowEnter.wipe].
+         * @param width how wide the streak is. Left unspecified, it is a share of the content's size.
+         * @param intensity how strong the streak is, from 0 (none) to 1 (the full [color]).
+         */
         public fun glare(
             angle: Float = 45f,
             color: Color = Color.White,
             duration: Duration = DefaultMaskDuration,
-        ): KapowExit = KapowExit(TransitionKind.Wipe(angle, glare = color), duration.checked())
+            softEdge: Dp = 0.dp,
+            width: Dp = Dp.Unspecified,
+            intensity: Float = 1f,
+        ): KapowExit =
+            KapowExit(
+                TransitionKind.Wipe(
+                    angle,
+                    color,
+                    softEdge.checkedSoft(),
+                    width.checkedGlareWidth(),
+                    intensity.checkedIntensity(),
+                ),
+                duration.checked(),
+            )
 
-        /** Slats that close like venetian blinds. */
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with softEdge, width and intensity.", level = DeprecationLevel.HIDDEN)
+        public fun glare(
+            angle: Float = 45f,
+            color: Color = Color.White,
+            duration: Duration = DefaultMaskDuration,
+        ): KapowExit = glare(angle, color, duration, 0.dp, Dp.Unspecified, 1f)
+
+        /**
+         * Slats that close like venetian blinds.
+         *
+         * @param slatWidth the width of one slat, at least 5 dp. Ignored when [slatCount] is set.
+         * @param staggered whether the slats close one after another instead of together.
+         * @param slatCount how many slats there are, as in [KapowEnter.blinds].
+         * @param staggerAmount how far the slats' timings are spread, when [staggered], as in [KapowEnter.blinds].
+         * @param reverse starts from the bottom (or end), when [staggered].
+         */
         public fun blinds(
             slatWidth: Dp = 10.dp,
             orientation: BlindsOrientation = BlindsOrientation.Horizontal,
             staggered: Boolean = false,
             duration: Duration = DefaultMaskDuration,
+            slatCount: Int? = null,
+            staggerAmount: Float = 1f,
+            reverse: Boolean = false,
         ): KapowExit =
-            KapowExit(TransitionKind.Blinds(slatWidth.coerceAtLeast(5.dp), orientation, staggered), duration.checked())
+            KapowExit(
+                TransitionKind.Blinds(
+                    slatWidth.coerceAtLeast(5.dp),
+                    orientation,
+                    staggered,
+                    slatCount.checkedSlats(),
+                    staggerAmount.checkedStagger(),
+                    reverse,
+                ),
+                duration.checked(),
+            )
 
-        /** The content vanishes at once in a puff of smoke of [color]. */
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with slatCount, staggerAmount and reverse.", level = DeprecationLevel.HIDDEN)
+        public fun blinds(
+            slatWidth: Dp = 10.dp,
+            orientation: BlindsOrientation = BlindsOrientation.Horizontal,
+            staggered: Boolean = false,
+            duration: Duration = DefaultMaskDuration,
+        ): KapowExit = blinds(slatWidth, orientation, staggered, duration, null, 1f, false)
+
+        /**
+         * The content vanishes at once in a puff of smoke of [color]. With reduced motion it fades out instead,
+         * with no smoke.
+         *
+         * @param duration how long the transition takes, 400 ms by default.
+         * @param puffCount how many puffs there are, from 1 to 60.
+         * @param puffSize how wide one puff is when it starts.
+         * @param direction the way the puffs drift, in degrees clockwise from pointing right, so -90 is straight up.
+         *   They fan out over a 90 degree cone around it. Null sends them every way.
+         */
         public fun poof(
             color: Color = Color(0xFFC2C2C2),
             duration: Duration = 400.milliseconds,
-        ): KapowExit = KapowExit(TransitionKind.Poof(color), duration.checked())
+            puffCount: Int = 10,
+            puffSize: Dp = 28.dp,
+            direction: Float? = null,
+        ): KapowExit =
+            KapowExit(
+                TransitionKind.Poof(
+                    color,
+                    puffCount.checkedCount(1..60, "puffCount"),
+                    puffSize.checkedPuff(),
+                    direction,
+                ),
+                duration.checked(),
+            )
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with puffCount, puffSize and direction.", level = DeprecationLevel.HIDDEN)
+        public fun poof(
+            color: Color = Color(0xFFC2C2C2),
+            duration: Duration = 400.milliseconds,
+        ): KapowExit = poof(color, duration, 10, 28.dp, null)
 
         /**
          * The content vanishes as a grid of small squares that turn off one by one, in the reverse of
@@ -230,11 +721,28 @@ public class KapowExit internal constructor(
          *
          * @param cellSize the side of one square, at least 2 dp.
          * @param duration how long the transition takes, 600 ms by default.
+         * @param cellShape the shape of the cells, as in [KapowEnter.dissolve].
+         * @param softness how gradually each cell turns off, from 0 to 1, as in [KapowEnter.dissolve].
+         * @param seed the seed of the random order.
          */
         public fun dissolve(
             cellSize: Dp = 12.dp,
             duration: Duration = 600.milliseconds,
-        ): KapowExit = KapowExit(TransitionKind.Dissolve(cellSize.checkedCell()), duration.checked())
+            cellShape: CellShape = CellShape.Square,
+            softness: Float = 0f,
+            seed: Int = DEFAULT_DISSOLVE_SEED,
+        ): KapowExit =
+            KapowExit(
+                TransitionKind.Dissolve(cellSize.checkedCell(), cellShape, softness.checkedSoftness(), seed),
+                duration.checked(),
+            )
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with cellShape, softness and seed.", level = DeprecationLevel.HIDDEN)
+        public fun dissolve(
+            cellSize: Dp = 12.dp,
+            duration: Duration = 600.milliseconds,
+        ): KapowExit = dissolve(cellSize, duration, CellShape.Square, 0f, DEFAULT_DISSOLVE_SEED)
 
         /**
          * Two halves close in from the sides and meet in the middle, hiding the content. With reduced motion it fades
@@ -242,11 +750,20 @@ public class KapowExit internal constructor(
          *
          * @param orientation the direction of the seam where the halves meet, as in [KapowEnter.curtain].
          * @param duration how long the transition takes, 450 ms by default.
+         * @param split where the seam between the halves sits, as in [KapowEnter.curtain].
          */
         public fun curtain(
             orientation: BlindsOrientation = BlindsOrientation.Vertical,
             duration: Duration = DefaultMaskDuration,
-        ): KapowExit = KapowExit(TransitionKind.Curtain(orientation), duration.checked())
+            split: Float = 0.5f,
+        ): KapowExit = KapowExit(TransitionKind.Curtain(orientation, split.checkedSplit()), duration.checked())
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with split.", level = DeprecationLevel.HIDDEN)
+        public fun curtain(
+            orientation: BlindsOrientation = BlindsOrientation.Vertical,
+            duration: Duration = DefaultMaskDuration,
+        ): KapowExit = curtain(orientation, duration, 0.5f)
 
         /**
          * Like [iris], but the opening is [shape]: it shrinks toward [origin] until nothing is left. With reduced
@@ -255,12 +772,26 @@ public class KapowExit internal constructor(
          * @param shape the opening, as in [KapowEnter.shapeIris].
          * @param origin the point the shape shrinks toward, as a fraction of the content's size.
          * @param duration how long the transition takes, 600 ms by default.
+         * @param rotation how many degrees the shape turns about [origin] while it shrinks, as in
+         *   [KapowEnter.shapeIris].
+         * @param scale how much larger than needed the shape starts, at least 1, as in [KapowEnter.shapeIris].
          */
         public fun shapeIris(
             shape: Shape = StarShape(),
             origin: TransformOrigin = TransformOrigin.Center,
             duration: Duration = 600.milliseconds,
-        ): KapowExit = KapowExit(TransitionKind.ShapeIris(shape, origin), duration.checked())
+            rotation: Float = 0f,
+            scale: Float = 1f,
+        ): KapowExit =
+            KapowExit(TransitionKind.ShapeIris(shape, origin, rotation, scale.checkedScale()), duration.checked())
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with rotation and scale.", level = DeprecationLevel.HIDDEN)
+        public fun shapeIris(
+            shape: Shape = StarShape(),
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+        ): KapowExit = shapeIris(shape, origin, duration, 0f, 1f)
 
         /**
          * A checkerboard of squares shrinks away in two waves, the reverse of [KapowEnter.checker]. With reduced
@@ -268,11 +799,22 @@ public class KapowExit internal constructor(
          *
          * @param cellSize the side of one square of the board, at least 2 dp.
          * @param duration how long the transition takes, 600 ms by default.
+         * @param order the order the squares close in, as in [KapowEnter.checker]. The exit runs it in reverse.
+         * @param seed the seed of [CheckerOrder.Random].
          */
         public fun checker(
             cellSize: Dp = 24.dp,
             duration: Duration = 600.milliseconds,
-        ): KapowExit = KapowExit(TransitionKind.Checker(cellSize.checkedCell()), duration.checked())
+            order: CheckerOrder = CheckerOrder.Together,
+            seed: Int = DEFAULT_CHECKER_SEED,
+        ): KapowExit = KapowExit(TransitionKind.Checker(cellSize.checkedCell(), order, seed), duration.checked())
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with order and seed.", level = DeprecationLevel.HIDDEN)
+        public fun checker(
+            cellSize: Dp = 24.dp,
+            duration: Duration = 600.milliseconds,
+        ): KapowExit = checker(cellSize, duration, CheckerOrder.Together, DEFAULT_CHECKER_SEED)
 
         /**
          * A torn edge, like [KapowEnter.tear], that covers the content moving against [angle]. With reduced motion
@@ -281,12 +823,28 @@ public class KapowExit internal constructor(
          * @param angle the direction the edge moved in on enter, in degrees; the exit runs it backward.
          * @param toothSize how far the tear strays off a straight line, at least 2 dp.
          * @param duration how long the transition takes, 500 ms by default.
+         * @param roughness how jagged the tear is, as in [KapowEnter.tear].
+         * @param rimColor the color of the rim along the edge, as in [KapowEnter.tear].
          */
         public fun tear(
             angle: Float = 0f,
             toothSize: Dp = 12.dp,
             duration: Duration = 500.milliseconds,
-        ): KapowExit = KapowExit(TransitionKind.Tear(angle, toothSize.checkedTooth()), duration.checked())
+            roughness: Float = 0.4f,
+            rimColor: Color = DEFAULT_TEAR_RIM,
+        ): KapowExit =
+            KapowExit(
+                TransitionKind.Tear(angle, toothSize.checkedTooth(), roughness.checkedRoughness(), rimColor),
+                duration.checked(),
+            )
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with roughness and rimColor.", level = DeprecationLevel.HIDDEN)
+        public fun tear(
+            angle: Float = 0f,
+            toothSize: Dp = 12.dp,
+            duration: Duration = 500.milliseconds,
+        ): KapowExit = tear(angle, toothSize, duration, 0.4f, DEFAULT_TEAR_RIM)
 
         /**
          * A wobbling blob, like [KapowEnter.blob], that shrinks toward [origin] until nothing is left. With reduced
@@ -294,11 +852,28 @@ public class KapowExit internal constructor(
          *
          * @param origin the point the blob shrinks toward, as a fraction of the content's size.
          * @param duration how long the transition takes, 600 ms by default.
+         * @param points how many points the outline runs through, as in [KapowEnter.blob].
+         * @param wobble how far each point swells and shrinks, as in [KapowEnter.blob].
+         * @param seed the seed of the wobble.
          */
         public fun blob(
             origin: TransformOrigin = TransformOrigin.Center,
             duration: Duration = 600.milliseconds,
-        ): KapowExit = KapowExit(TransitionKind.Blob(origin), duration.checked())
+            points: Int = 9,
+            wobble: Float = 0.25f,
+            seed: Int = 53,
+        ): KapowExit =
+            KapowExit(
+                TransitionKind.Blob(origin, points.checkedPoints(), wobble.checkedWobble(), seed),
+                duration.checked(),
+            )
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with points, wobble and seed.", level = DeprecationLevel.HIDDEN)
+        public fun blob(
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+        ): KapowExit = blob(origin, duration, 9, 0.25f, 53)
 
         /**
          * The content breaks like glass: it cracks into triangular shards that part, then fall with gravity,
@@ -308,14 +883,35 @@ public class KapowExit internal constructor(
          * @param shards about how many pieces, from 2 to 200. The content is cut into a grid of cells that fits its
          *   shape, two triangles per cell, so the actual count can differ a little.
          * @param duration how long the transition takes, 900 ms by default.
+         * @param gravity how hard the pieces fall, as a factor: 1 is the usual fall, 0 lets them hang where the
+         *   throw leaves them while they fade, more drops them faster. Must not be negative.
+         * @param spin how far the pieces turn as they fall, as a factor: 0 keeps them upright, 1 is the usual
+         *   turn. Must not be negative.
+         * @param impact where the content is hit, as a fraction of its size. The pieces part away from it and lean
+         *   away from it sideways as they fall.
+         * @param seed the seed of the crack pattern and of how each piece flies. The same seed gives the same
+         *   pieces on every target.
          */
         public fun shatter(
             shards: Int = 24,
             duration: Duration = 900.milliseconds,
+            gravity: Float = 1f,
+            spin: Float = 1f,
+            impact: TransformOrigin = TransformOrigin.Center,
+            seed: Int = SHATTER_SEED,
         ): KapowExit {
             require(shards in 2..200) { "shards must be from 2 to 200" }
-            return KapowExit(TransitionKind.Shatter(shards), duration.checked())
+            require(gravity >= 0f && gravity.isFinite()) { "gravity must not be negative" }
+            require(spin >= 0f && spin.isFinite()) { "spin must not be negative" }
+            return KapowExit(TransitionKind.Shatter(shards, gravity, spin, impact, seed), duration.checked())
         }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with gravity, spin, impact and seed.", level = DeprecationLevel.HIDDEN)
+        public fun shatter(
+            shards: Int = 24,
+            duration: Duration = 900.milliseconds,
+        ): KapowExit = shatter(shards, duration, 1f, 1f, TransformOrigin.Center, SHATTER_SEED)
 
         /**
          * The content turns to dust: a ragged band sweeps across it from left to right, grain by grain, and as it
@@ -327,15 +923,44 @@ public class KapowExit internal constructor(
          *   from a snapshot of the content as the exit starts: a few pixels per column. Where that snapshot can't
          *   be read, or reads only transparent pixels, the dust is light gray.
          * @param duration how long the transition takes, 1500 ms by default.
+         * @param particleSize the size of one grain, which is also the size of the particles that rise from it,
+         *   from 1 dp to 16 dp. Larger grains make coarser dust.
+         * @param wind how the wind blows the dust, from -1 (to the left) to 1 (to the right). At 0 the dust
+         *   drifts up and a little right, as it always has. The stronger the wind, the faster it carries the dust.
          */
         public fun disintegrate(
             color: Color = Color.Unspecified,
             duration: Duration = 1500.milliseconds,
-        ): KapowExit = KapowExit(TransitionKind.Disintegrate(color, duration.checked()), duration)
+            particleSize: Dp = 3.dp,
+            wind: Float = 0f,
+        ): KapowExit {
+            require(particleSize in 1.dp..16.dp) { "particleSize must be from 1 dp to 16 dp" }
+            require(wind in -1f..1f) { "wind must be from -1 to 1" }
+            return KapowExit(TransitionKind.Disintegrate(color, duration.checked(), particleSize, wind), duration)
+        }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with particleSize and wind.", level = DeprecationLevel.HIDDEN)
+        public fun disintegrate(
+            color: Color = Color.Unspecified,
+            duration: Duration = 1500.milliseconds,
+        ): KapowExit = disintegrate(color, duration, 3.dp, 0f)
     }
 }
 
 private val DefaultMaskDuration: Duration = 450.milliseconds
+
+/** The `, delay=…` parts of a transition's text that differ from the defaults, so a plain one reads as before. */
+private fun tuningText(
+    delay: Duration,
+    easing: Easing?,
+    reducedMotion: ReducedMotionMode,
+): String =
+    buildString {
+        if (delay.isPositive()) append(", delay=").append(delay)
+        if (easing != null) append(", easing=").append(easing)
+        if (reducedMotion != ReducedMotionMode.Default) append(", reducedMotion=").append(reducedMotion)
+    }
 
 private fun Duration.checked(): Duration {
     require(isPositive()) { "duration must be positive" }
@@ -344,6 +969,91 @@ private fun Duration.checked(): Duration {
 
 private fun Dp.checkedCell(): Dp {
     require(this >= 2.dp) { "cellSize must be at least 2 dp" }
+    return this
+}
+
+private fun Dp.checkedSoft(): Dp {
+    require(this >= 0.dp && value.isFinite()) { "softEdge must not be negative" }
+    return this
+}
+
+private fun Dp.checkedGlareWidth(): Dp {
+    require(!isSpecified || (this > 0.dp && value.isFinite())) { "width must be positive" }
+    return this
+}
+
+private fun Float.checkedIntensity(): Float {
+    require(this in 0f..1f) { "intensity must be between 0 and 1" }
+    return this
+}
+
+/** Null (sized by width) becomes 0; a count must be from 1 to 200. */
+private fun Int?.checkedSlats(): Int {
+    if (this == null) return 0
+    require(this in 1..200) { "slatCount must be from 1 to 200" }
+    return this
+}
+
+private fun Float.checkedStagger(): Float {
+    require(this >= 0f && isFinite()) { "staggerAmount must not be negative" }
+    return this
+}
+
+private fun Float.checkedSoftness(): Float {
+    require(this in 0f..1f) { "softness must be between 0 and 1" }
+    return this
+}
+
+private fun Float.checkedRoughness(): Float {
+    require(this in 0f..1f) { "roughness must be between 0 and 1" }
+    return this
+}
+
+private fun Int.checkedPoints(): Int {
+    require(this in 4..32) { "points must be from 4 to 32" }
+    return this
+}
+
+private fun Float.checkedWobble(): Float {
+    require(this in 0f..0.5f) { "wobble must be between 0 and 0.5" }
+    return this
+}
+
+private fun Dp.checkedDrop(): Dp {
+    require(!isSpecified || (this > 0.dp && value.isFinite())) { "dropHeight must be positive" }
+    return this
+}
+
+private fun Float.checkedShake(): Float {
+    require(this >= 0f && isFinite()) { "shake must not be negative" }
+    return this
+}
+
+private fun Float.checkedOvershoot(): Float {
+    require(this >= 0f && isFinite()) { "overshoot must not be negative" }
+    return this
+}
+
+private fun Dp.checkedPuff(): Dp {
+    require(this > 0.dp && value.isFinite()) { "puffSize must be positive" }
+    return this
+}
+
+private fun Int.checkedCount(
+    range: IntRange,
+    name: String,
+): Int {
+    require(this in range) { "$name must be from ${range.first} to ${range.last}" }
+    return this
+}
+
+private fun Float.checkedSplit(): Float {
+    require(this in 0f..1f) { "split must be between 0 and 1" }
+    return this
+}
+
+private fun Float.checkedScale(): Float {
+    require(this >= 1f && isFinite()) { "scale must be at least 1" }
     return this
 }
 
@@ -357,65 +1067,105 @@ internal sealed class TransitionKind {
 
     data class Iris(
         val origin: TransformOrigin,
+        val softEdge: Dp = 0.dp,
     ) : TransitionKind()
 
     data class Clock(
         val origin: TransformOrigin,
+        val softEdge: Dp = 0.dp,
+        val counterClockwise: Boolean = false,
     ) : TransitionKind()
 
     data class Wipe(
         val angle: Float,
         val glare: Color?,
+        val softEdge: Dp = 0.dp,
+        val glareWidth: Dp = Dp.Unspecified,
+        val intensity: Float = 1f,
     ) : TransitionKind()
 
     data class Blinds(
         val slatWidth: Dp,
         val orientation: BlindsOrientation,
         val staggered: Boolean,
+        val slatCount: Int = 0,
+        val staggerAmount: Float = 1f,
+        val reverse: Boolean = false,
     ) : TransitionKind()
 
-    data object Anvil : TransitionKind()
+    data class Anvil(
+        val dropHeight: Dp = Dp.Unspecified,
+        val shake: Float = 1f,
+        val dustColor: Color = Color(0xFFB0B0B0),
+        val dustCount: Int = 6,
+    ) : TransitionKind()
 
     data class Pop(
         val color: Color,
+        val overshoot: Float = 1f,
+        val ringCount: Int = 1,
+        val particleCount: Int = 12,
+        val physics: ParticlePhysics = ParticlePhysics.Default,
     ) : TransitionKind()
 
     data class Poof(
         val color: Color,
+        val puffCount: Int = 10,
+        val puffSize: Dp = 28.dp,
+        val direction: Float? = null,
     ) : TransitionKind()
 
     data class Dissolve(
         val cellSize: Dp,
+        val cellShape: CellShape = CellShape.Square,
+        val softness: Float = 0f,
+        val seed: Int = DEFAULT_DISSOLVE_SEED,
     ) : TransitionKind()
 
     data class Curtain(
         val orientation: BlindsOrientation,
+        val split: Float = 0.5f,
     ) : TransitionKind()
 
     data class ShapeIris(
         val shape: Shape,
         val origin: TransformOrigin,
+        val rotation: Float = 0f,
+        val scale: Float = 1f,
     ) : TransitionKind()
 
     data class Checker(
         val cellSize: Dp,
+        val order: CheckerOrder = CheckerOrder.Together,
+        val seed: Int = DEFAULT_CHECKER_SEED,
     ) : TransitionKind()
 
     data class Tear(
         val angle: Float,
         val toothSize: Dp,
+        val roughness: Float = 0.4f,
+        val rimColor: Color = DEFAULT_TEAR_RIM,
     ) : TransitionKind()
 
     data class Blob(
         val origin: TransformOrigin,
+        val points: Int = 9,
+        val wobble: Float = 0.25f,
+        val seed: Int = 53,
     ) : TransitionKind()
 
     data class Shatter(
         val shards: Int,
+        val gravity: Float = 1f,
+        val spin: Float = 1f,
+        val impact: TransformOrigin = TransformOrigin.Center,
+        val seed: Int = SHATTER_SEED,
     ) : TransitionKind()
 
     data class Disintegrate(
         val color: Color,
         val duration: Duration,
+        val particleSize: Dp = 3.dp,
+        val wind: Float = 0f,
     ) : TransitionKind()
 }

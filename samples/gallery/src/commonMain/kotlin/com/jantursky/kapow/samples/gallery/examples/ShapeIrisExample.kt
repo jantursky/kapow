@@ -29,11 +29,13 @@ fun ShapeIrisExample(
     shape: Shape,
     origin: TransformOrigin,
     duration: Duration,
+    rotation: Float = 0f,
+    scale: Float = 1f,
 ) {
     KapowAnimatedVisibility(
         visible,
-        enter = KapowEnter.shapeIris(shape, origin, duration),
-        exit = KapowExit.shapeIris(shape, origin, duration),
+        enter = KapowEnter.shapeIris(shape, origin, duration, rotation, scale),
+        exit = KapowExit.shapeIris(shape, origin, duration, rotation, scale),
     ) {
         Column(
             Modifier

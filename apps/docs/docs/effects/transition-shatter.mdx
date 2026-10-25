@@ -37,6 +37,13 @@ fun FileRow(visible: Boolean) {
 | --- | --- | --- |
 | `shards` | `24` | About how many pieces, from 2 to 200. The content is cut into a grid that fits its shape, two triangles per cell, so the count can differ a little. |
 | `duration` | `900.milliseconds` | How long the transition takes. Must be positive. |
+| `gravity` | `1f` | How hard the pieces fall, as a factor. 0 lets them hang where the throw leaves them while they fade. Must not be negative. |
+| `spin` | `1f` | How far the pieces turn as they fall, as a factor. 0 keeps them upright. Must not be negative. |
+| `impact` | `TransformOrigin.Center` | Where the content is hit, as a fraction of its size. The pieces part away from it and lean away from it sideways as they fall. |
+| `seed` | `61` | The seed of the crack pattern and of how each piece flies. The same seed gives the same pieces on every target. |
+
+Every transition also has `.delay(...)`, `.easing(...)` and `.reducedMotion(...)`. See [Stagger](/effects/transition-stagger).
+
 
 ## Reduced motion
 
