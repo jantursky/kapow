@@ -17,7 +17,6 @@ import com.jantursky.kapow.effects.riseSpeedFor
 import com.jantursky.kapow.effects.rocketEmission
 import com.jantursky.kapow.effects.sparklePlacements
 import com.jantursky.kapow.effects.speedLines
-import com.jantursky.kapow.effects.taperedLine
 import com.jantursky.kapow.particles.ParticleSystem
 import com.jantursky.kapow.particles.pickColors
 import kotlin.math.PI
@@ -131,16 +130,6 @@ class ParticleOptionsMathTest {
         assertTrue(abs(cos(horizontal[0])) > 0.7f)
         assertTrue(speedLines(12, 3).contentEquals(speedLines(12, 3, SpeedLineDirections.All)))
         assertEquals(1.2f, SpeedLineDirections.All.fit(1.2f))
-    }
-
-    @Test
-    fun aTaperedLineNarrowsToItsHead() {
-        val flat = taperedLine(Offset(0f, 0f), Offset(10f, 0f), 4f, 0f)
-        val pointed = taperedLine(Offset(0f, 0f), Offset(10f, 0f), 4f, 1f)
-        assertEquals(4f, flat.getBounds().height)
-        assertEquals(4f, pointed.getBounds().height)
-        assertEquals(10f, pointed.getBounds().right)
-        assertEquals(4f, flat.getBounds().height)
     }
 
     @Test

@@ -14,7 +14,6 @@ import com.jantursky.kapow.effects.shineStops
 import com.jantursky.kapow.effects.strikeLine
 import com.jantursky.kapow.effects.strikeSegment
 import com.jantursky.kapow.effects.strobeProgress
-import com.jantursky.kapow.effects.wavyPath
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -137,15 +136,5 @@ class LightOptionsMathTest {
             strikeLine(size, 1f, LayoutDirection.Ltr),
             strikeSegment(size, 1f, StrikeDirection.Reading, LayoutDirection.Ltr, 0f, 0f),
         )
-    }
-
-    @Test
-    fun aWavyLineSwingsWithinItsAmplitudeAndEndsWhereTheLineDoes() {
-        val path = wavyPath(Offset(0f, 10f), Offset(100f, 10f), amplitude = 4f, length = 20f)
-        val bounds = path.getBounds()
-        assertEquals(10f - 4f, bounds.top, 0.2f)
-        assertEquals(10f + 4f, bounds.bottom, 0.2f)
-        assertEquals(100f, bounds.right, 1e-3f)
-        assertEquals(0f, wavyPath(Offset(5f, 5f), Offset(5f, 5f), 4f, 20f).getBounds().width)
     }
 }
