@@ -57,5 +57,6 @@ export default defineMeta({
     'transition-blob',
     'transition-shatter',
     'transition-disintegrate',
+    'text-typewriter',
   ],
 })

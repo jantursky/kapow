@@ -209,6 +209,7 @@ const LIVE = [
   'transition-blob',
   'transition-shatter',
   'transition-disintegrate',
+  'text-typewriter',
 ]
 
 for (const id of LIVE) {

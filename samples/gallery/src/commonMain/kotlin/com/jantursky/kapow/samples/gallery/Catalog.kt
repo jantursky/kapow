@@ -423,6 +423,13 @@ val entries: List<Entry> =
             "Haptics or sound fired together with an effect.",
             Example("FeedbackExample.kt") { FeedbackDemo() },
         ),
+        Entry(
+            "text-typewriter",
+            Group.More,
+            "Typewriter",
+            "Text that types itself, with a cursor, and keeps its size.",
+            Example("TypewriterExample.kt") { TypewriterDemo() },
+        ),
     )
 
 /** The entry with [id], the part of a link after `#`, or null. */
