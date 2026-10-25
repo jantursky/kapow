@@ -437,6 +437,13 @@ val entries: List<Entry> =
             "A number that counts or rolls to its new value.",
             Example("CounterExample.kt") { CounterDemo() },
         ),
+        Entry(
+            "more-tilt",
+            Group.More,
+            "Tilt",
+            "The element tilts in 3D toward the pointer, with a light sheen.",
+            Example("TiltExample.kt") { TiltDemo() },
+        ),
     )
 
 /** The entry with [id], the part of a link after `#`, or null. */

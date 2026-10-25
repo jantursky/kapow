@@ -59,5 +59,6 @@ export default defineMeta({
     'transition-disintegrate',
     'text-typewriter',
     'text-counter',
+    'more-tilt',
   ],
 })

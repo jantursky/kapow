@@ -211,6 +211,7 @@ const LIVE = [
   'transition-disintegrate',
   'text-typewriter',
   'text-counter',
+  'more-tilt',
 ]
 
 for (const id of LIVE) {

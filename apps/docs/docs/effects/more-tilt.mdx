@@ -1,0 +1,64 @@
+---
+title: "Pointer: tilt"
+description: The element tilts in 3D toward a hovering mouse or a pressed finger, with an optional light sheen, and springs back.
+---
+
+`Modifier.kapowTilt` turns an element toward the pointer like a card on a table. A hovering mouse or a pressed finger pushes the side it is on away from the viewer, by an angle that grows with the distance from the middle. When the pointer leaves or lifts, the element springs back to flat.
+
+## Usage
+
+The sample is a card with a light sheen that moves opposite to the tilt. The card is still an ordinary clickable.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.kapowTilt
+
+@Composable
+fun TiltCard(onClick: () -> Unit) {
+    Box(
+        Modifier
+            .size(240.dp, 150.dp)
+            .kapowTilt(maxAngle = 12f, sheen = Color.White.copy(alpha = 0.35f))
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color(0xFF6B62F2))
+            .clickable(onClick = onClick),
+    )
+}
+```
+
+Put `kapowTilt` before the `clip` and `background` that make up the look of the element, so they turn with it.
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `maxAngle` | `12f` | Angle in degrees at the edge of the element. Must not be negative. |
+| `sheen` | `Color.White.copy(alpha = 0.35f)` | Color of a soft highlight that sits opposite to the pointer and gets stronger with the tilt. `null` draws none. |
+| `enabled` | `true` | Whether the element tilts. |
+| `perspective` | `8.dp` | Camera distance of the layer, as in `graphicsLayer`'s `cameraDistance`. A smaller distance gives a stronger perspective; larger elements look better with a larger one. Must be positive. |
+| `damping` | `0.6f` | Damping ratio of the springs. Lower values overshoot more. Must be positive. |
+
+## Reduced motion
+
+The element stays flat and draws no sheen, as when `enabled` is false.
+
+## Notes
+
+- The modifier only watches the pointer. It never consumes an event, so buttons, clickables, drags and scrolls inside the element, or under it, work as if the modifier were not there.
+- A mouse tilts the element while it hovers. A finger tilts it while it is down, and releases it when it lifts.
+- The angle follows the pointer through a spring, so a fast move eases in and leaving the element ends in a soft overshoot.
+- Nothing recomposes while it tilts. The angles are read only when the layer is drawn.
+- There is no gyroscope input: the tilt follows the pointer on every platform.
+
+## Live example
+
+<include example="more-tilt">../_snippets/live-example.mdx</include>
