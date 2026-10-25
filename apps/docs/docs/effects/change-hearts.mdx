@@ -1,0 +1,65 @@
+---
+title: "Change: hearts"
+description: A large heart pops over an element and small hearts float up when a value changes.
+---
+
+Hearts pops one large heart over the element and floats a few small ones upward, the way a like button reacts. The large heart scales in with an overshoot and fades; the small hearts drift up, sway a little and fade.
+
+## Usage
+
+The sample plays the effect when the like is switched on. `isEnabled = liked` keeps unliking from playing it. The hearts are particles, so inside a `KapowParticleLayer` they are not clipped by the element's parents.
+
+```kotlin
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.KapowParticleLayer
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun LikeButton(liked: Boolean) {
+    KapowParticleLayer {
+        Box(
+            Modifier
+                .size(48.dp)
+                .changeEffect(liked, ChangeEffect.hearts(Color(0xFFFF4D6D)), isEnabled = liked),
+        ) {
+            BasicText(if (liked) "♥" else "♡")
+        }
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `color` | `Color(0xFFFF4D6D)` | Color of the large heart, and of the small ones unless `smallColors` is set. |
+| `count` | `6` | How many small hearts float up. 0 leaves them out. Must not be negative. |
+| `physics` | `ParticlePhysics.Default` | How the small hearts launch and move. By default they fan 70 degrees around straight up and drift upward. The large heart ignores it. |
+| `seed` | `0` | The first seed. Each change takes the next one, so the same seed gives the same hearts. |
+| `bigHeart` | `true` | Whether the large heart pops. |
+| `bigHeartScale` | `1f` | A factor on the large heart's size, which is 70 % of the element's shorter side but at least 28 dp. Must be positive. |
+| `overshoot` | `1f` | How far the large heart grows past its size before it settles. 0 does not pass it. Must not be negative. |
+| `smallColors` | `emptyList()` | Colors of the small hearts, taken in turn. Empty uses `color`. |
+| `heartSize` | `14.dp` | Size of a small heart. Must be positive. |
+| `origin` | `TransformOrigin.Center` | Where the hearts appear, as fractions of the element's width and height. |
+
+## Reduced motion
+
+One heart fades in and out in place, over about 0.6 s, and no small hearts appear. With `ReducedMotionMode.EndState` nothing is shown.
+
+## Notes
+
+- The large heart is up to full size within about 0.13 s, holds until about 0.4 s and fades out by 0.8 s.
+- `.speed()` scales every timing of the effect, and `.delay()` starts it later.
+- A new change adds another set of hearts; there is no cooldown.
+
+## Live example
+
+<include example="change-hearts">../_snippets/live-example.mdx</include>

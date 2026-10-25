@@ -158,6 +158,13 @@ val entries: List<Entry> =
             Example("GlitchExample.kt") { GlitchDemo() },
         ),
         Entry(
+            "change-hearts",
+            Group.Change,
+            "Hearts",
+            "A big heart pops and small hearts float up, like a like button.",
+            Example("HeartsExample.kt") { HeartsDemo() },
+        ),
+        Entry(
             "conditional-repeat",
             Group.Conditional,
             "Repeat",

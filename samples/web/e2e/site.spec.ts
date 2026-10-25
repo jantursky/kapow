@@ -199,6 +199,7 @@ const LIVE = [
   'change-strike',
   'change-stamp',
   'change-glitch',
+  'change-hearts',
   'progress-fill',
   'progress-trace',
   'transition-dissolve',

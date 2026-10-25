@@ -20,6 +20,7 @@ import com.jantursky.kapow.effects.ConfettiPopRunner
 import com.jantursky.kapow.effects.FireworksRunner
 import com.jantursky.kapow.effects.GlitchRunner
 import com.jantursky.kapow.effects.GlowRunner
+import com.jantursky.kapow.effects.HeartsRunner
 import com.jantursky.kapow.effects.OutlineRoute
 import com.jantursky.kapow.effects.PulseRunner
 import com.jantursky.kapow.effects.RippleRunner
@@ -692,6 +693,58 @@ public abstract class ChangeEffect internal constructor() {
         ): ChangeEffect = confettiPop(colors, count, ParticlePhysics.Default)
 
         /**
+         * A large heart pops over the element with an overshoot and fades, while small hearts float up and fade,
+         * like the like button of a feed. The hearts are particles, so inside a `KapowParticleLayer` they are not
+         * clipped by the element's parents. With reduced motion a single heart fades in and out in place and no
+         * small hearts appear.
+         *
+         * @param color the color of the large heart, and of the small ones unless [smallColors] is set.
+         * @param count how many small hearts float up. 0 leaves them out.
+         * @param physics how the small hearts launch and move. By default they fan 70 degrees around straight up,
+         *   drift upward against a light gravity and fade late. Every part applies; an [EmissionArea] is centered
+         *   on [origin]. The large heart ignores it.
+         * @param bigHeart whether the large heart pops. Without it only the small hearts float up (with reduced
+         *   motion the single heart still shows).
+         * @param bigHeartScale a factor on the large heart's size, which is 70 % of the element's shorter side but
+         *   at least 28 dp.
+         * @param overshoot how far the large heart grows past its size before settling: 0 does not pass it, 1 is
+         *   the usual overshoot, more passes it further.
+         * @param smallColors the colors of the small hearts, taken in turn. Empty uses [color].
+         * @param heartSize the size of a small heart.
+         * @param origin where the hearts appear, as fractions of the element's width and height.
+         * @param seed the first seed. Each change takes the next one, so the same seed gives the same hearts.
+         */
+        public fun hearts(
+            color: Color = Color(0xFFFF4D6D),
+            count: Int = 6,
+            physics: ParticlePhysics = ParticlePhysics.Default,
+            seed: Int = 0,
+            bigHeart: Boolean = true,
+            bigHeartScale: Float = 1f,
+            overshoot: Float = 1f,
+            smallColors: List<Color> = emptyList(),
+            heartSize: Dp = 14.dp,
+            origin: TransformOrigin = TransformOrigin.Center,
+        ): ChangeEffect {
+            require(count >= 0) { "count must not be negative" }
+            require(bigHeartScale > 0f && bigHeartScale.isFinite()) { "bigHeartScale must be positive" }
+            require(overshoot >= 0f && overshoot.isFinite()) { "overshoot must not be negative" }
+            require(heartSize > 0.dp) { "heartSize must be positive" }
+            return Hearts(
+                color,
+                count,
+                physics,
+                seed,
+                bigHeart,
+                bigHeartScale,
+                overshoot,
+                smallColors,
+                heartSize,
+                origin,
+            )
+        }
+
+        /**
          * A comet-like stroke with a fading tail that runs once around the element's [shape] outline, then
          * disappears. Rectangles and rounded shapes are traced clockwise from the middle of the top edge. The stroke
          * sits just inside the element's bounds. With reduced motion nothing travels: the whole outline shows at
@@ -1204,6 +1257,35 @@ public abstract class ChangeEffect internal constructor() {
 
         override fun createRunner(): ChangeRunner =
             ConfettiPopRunner(colors, count, physics, ribbonRatio, pieceSize, origin, seed)
+    }
+
+    internal data class Hearts(
+        val color: Color,
+        val count: Int,
+        val physics: ParticlePhysics,
+        val seed: Int,
+        val bigHeart: Boolean,
+        val bigHeartScale: Float,
+        val overshoot: Float,
+        val smallColors: List<Color>,
+        val heartSize: Dp,
+        val origin: TransformOrigin,
+    ) : ChangeEffect() {
+        override val cooldown: Duration get() = Duration.ZERO
+
+        override fun createRunner(): ChangeRunner =
+            HeartsRunner(
+                color,
+                count,
+                physics,
+                bigHeart,
+                bigHeartScale,
+                overshoot,
+                smallColors,
+                heartSize,
+                origin,
+                seed,
+            )
     }
 
     internal data class Trace(

@@ -23,6 +23,7 @@ export default defineMeta({
     'change-strike',
     'change-stamp',
     'change-glitch',
+    'change-hearts',
     'conditional-repeat',
     'conditional-glow',
     'conditional-push-down',
