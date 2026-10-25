@@ -54,6 +54,31 @@ internal fun totalMillis(
         startDelayMillis + appearMillis(text, text.lastIndex, charsPerSecond, pauseMillis)
     }
 
+/** Which re-roll of the scrambled glyphs [elapsedMillis] falls in. */
+internal fun scrambleTick(
+    elapsedMillis: Long,
+    rateMillis: Long,
+): Long = elapsedMillis / rateMillis
+
+/** The random glyph shown in slot [index] during [tick]: the same inputs always give the same glyph. */
+internal fun scrambleGlyph(
+    index: Int,
+    tick: Long,
+    seed: Int,
+    glyphs: String,
+): Char {
+    var h = seed * -1640531535 + index * 374761393 + tick.toInt() * 668265263
+    h = h xor (h ushr 15)
+    h *= 0x2c1b3c6d
+    h = h xor (h ushr 12)
+    h *= 0x297a2d39
+    h = h xor (h ushr 15)
+    return glyphs[(h and Int.MAX_VALUE) % glyphs.length]
+}
+
+/** Whether a slot scrambles while unresolved. Whitespace keeps showing as it is. */
+internal fun isScrambled(char: Char): Boolean = !char.isWhitespace()
+
 /** The cursor stays solid while characters appear and blinks once the text is complete. */
 internal fun cursorVisible(
     elapsedMillis: Long,

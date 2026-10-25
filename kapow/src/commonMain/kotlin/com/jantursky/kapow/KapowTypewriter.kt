@@ -17,6 +17,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -24,6 +25,9 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.text.cursorVisible
+import com.jantursky.kapow.text.isScrambled
+import com.jantursky.kapow.text.scrambleGlyph
+import com.jantursky.kapow.text.scrambleTick
 import com.jantursky.kapow.text.totalMillis
 import com.jantursky.kapow.text.visibleCount
 import kotlin.time.Duration
@@ -33,6 +37,13 @@ import kotlin.time.Duration.Companion.milliseconds
 public enum class TypewriterMode {
     /** Characters appear one after another from the start. */
     Type,
+
+    /**
+     * Every character starts as a random glyph and resolves to the real one, left to right. Each character keeps
+     * its own slot, centered in the space of the final character, so the layout never shifts. It looks best in a
+     * monospaced font, where every glyph has the width of the character it stands for.
+     */
+    Scramble,
 }
 
 /** The cursor [KapowTypewriter] draws after the last visible character. Create one with [bar]. */
@@ -98,6 +109,9 @@ public class TypewriterCursor internal constructor(
  * @param startDelay How long to wait before the first character. Must not be negative.
  * @param cursor The cursor to draw after the last visible character, or null for none.
  * @param punctuationPause Extra pause after each of `, . ; : ! ?`. Must not be negative.
+ * @param glyphs The characters [TypewriterMode.Scramble] picks its random glyphs from. Must not be empty.
+ * @param glyphRate How often the scrambled glyphs change in [TypewriterMode.Scramble]. Must be positive.
+ * @param seed Seeds the random glyphs, so the same seed scrambles the same way every time.
  */
 @Composable
 public fun KapowTypewriter(
@@ -109,11 +123,16 @@ public fun KapowTypewriter(
     startDelay: Duration = Duration.ZERO,
     cursor: TypewriterCursor? = null,
     punctuationPause: Duration = Duration.ZERO,
+    glyphs: String = DEFAULT_GLYPHS,
+    glyphRate: Duration = 40.milliseconds,
+    seed: Int = 0,
 ) {
     require(charsPerSecond > 0f && charsPerSecond.isFinite()) { "charsPerSecond must be positive" }
     require(!startDelay.isNegative()) { "startDelay must not be negative" }
     require(!punctuationPause.isNegative()) { "punctuationPause must not be negative" }
-    val measurer = rememberTextMeasurer()
+    require(glyphs.isNotEmpty()) { "glyphs must not be empty" }
+    require(glyphRate.isPositive()) { "glyphRate must be positive" }
+    val measurer = rememberTextMeasurer(cacheSize = 64)
     val reduced = isReducedMotion()
     val measured = remember { MeasuredText() }
     val startMillis = startDelay.inWholeMilliseconds
@@ -150,6 +169,10 @@ public fun KapowTypewriter(
                             )
                         }
                     drawReveal(layout, count)
+                    if (mode == TypewriterMode.Scramble && count < text.length) {
+                        val tick = scrambleTick(elapsed, glyphRate.inWholeMilliseconds.coerceAtLeast(1))
+                        drawScrambled(layout, count, tick, seed, glyphs, measurer, style)
+                    }
                     if (cursor != null && !reduced) {
                         val done = elapsed >= total
                         if (!(done && cursor.hideWhenDone) &&
@@ -190,6 +213,33 @@ private fun DrawScope.drawReveal(
     when {
         count >= length -> drawText(layout)
         count > 0 -> clipPath(layout.getPathForRange(0, count)) { drawText(layout) }
+    }
+}
+
+private const val DEFAULT_GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=?"
+
+/** Draws a random glyph in the slot of every unresolved character from [count] on, centered in the slot. */
+private fun DrawScope.drawScrambled(
+    layout: TextLayoutResult,
+    count: Int,
+    tick: Long,
+    seed: Int,
+    glyphs: String,
+    measurer: TextMeasurer,
+    style: TextStyle,
+) {
+    val text = layout.layoutInput.text.text
+    for (i in count until text.length) {
+        if (!isScrambled(text[i])) continue
+        val slot = layout.getBoundingBox(i)
+        val glyph =
+            measurer.measure(
+                text = scrambleGlyph(i, tick, seed, glyphs).toString(),
+                style = style,
+                layoutDirection = layoutDirection,
+                density = this,
+            )
+        drawText(glyph, topLeft = Offset(slot.left + (slot.width - glyph.size.width) / 2f, slot.top))
     }
 }
 

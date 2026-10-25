@@ -2,6 +2,9 @@ package com.jantursky.kapow
 
 import com.jantursky.kapow.text.appearMillis
 import com.jantursky.kapow.text.cursorVisible
+import com.jantursky.kapow.text.isScrambled
+import com.jantursky.kapow.text.scrambleGlyph
+import com.jantursky.kapow.text.scrambleTick
 import com.jantursky.kapow.text.totalMillis
 import com.jantursky.kapow.text.visibleCount
 import kotlin.test.Test
@@ -61,5 +64,40 @@ class TypewriterMathTest {
         assertEquals(true, cursorVisible(500, 500, 400))
         assertEquals(false, cursorVisible(900, 500, 400))
         assertEquals(true, cursorVisible(1300, 500, 400))
+    }
+
+    @Test
+    fun scrambledGlyphsComeFromTheSetAndRepeatForTheSameInputs() {
+        val glyphs = "XYZ01"
+        for (i in 0 until 20) {
+            for (tick in 0L until 20) {
+                val glyph = scrambleGlyph(i, tick, 7, glyphs)
+                assertTrue(glyph in glyphs)
+                assertEquals(glyph, scrambleGlyph(i, tick, 7, glyphs))
+            }
+        }
+    }
+
+    @Test
+    fun scrambledGlyphsChangeWithTheTickAndTheSeed() {
+        val glyphs = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        val overTime = (0L until 30).map { scrambleGlyph(3, it, 1, glyphs) }.toSet()
+        assertTrue(overTime.size > 5, "re-rolls produce different glyphs")
+        val otherSeed = (0L until 30).map { scrambleGlyph(3, it, 2, glyphs) }
+        assertTrue(otherSeed != (0L until 30).map { scrambleGlyph(3, it, 1, glyphs) })
+    }
+
+    @Test
+    fun theTickAdvancesAtTheRerollRate() {
+        assertEquals(0, scrambleTick(39, 40))
+        assertEquals(1, scrambleTick(40, 40))
+        assertEquals(5, scrambleTick(205, 40))
+    }
+
+    @Test
+    fun whitespaceDoesNotScramble() {
+        assertEquals(false, isScrambled(' '))
+        assertEquals(false, isScrambled('\n'))
+        assertEquals(true, isScrambled('a'))
     }
 }

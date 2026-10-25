@@ -32,6 +32,7 @@ class TypewriterTest {
     private fun ComposeUiTest.scene(
         motion: KapowMotion = KapowMotion.Full,
         cursor: TypewriterCursor? = null,
+        mode: TypewriterMode = TypewriterMode.Type,
     ) {
         setEffectContent(motion) {
             Box(Modifier.fillMaxSize().background(Color.White)) {
@@ -40,6 +41,7 @@ class TypewriterTest {
                     text,
                     Modifier.testTag("tw"),
                     style = TextStyle(color = Color.Black, fontSize = 24.sp),
+                    mode = mode,
                     charsPerSecond = 20f,
                     cursor = cursor,
                 )
@@ -134,6 +136,56 @@ class TypewriterTest {
             repeat(60) { mainClock.advanceTimeByFrame() }
             assertTrue(counter.count - before <= 1)
         }
+
+    @Test
+    fun scrambleShowsGlyphsInTheSlotsOfTheUnresolvedText() =
+        runEffectTest {
+            scene(mode = TypewriterMode.Scramble)
+            mainClock.advanceTimeBy(40)
+            val scrambling = capture().darkPixels()
+            assertTrue(scrambling > 100, "glyphs stand where the text will be")
+        }
+
+    private fun frame(
+        mode: TypewriterMode,
+        afterMillis: Long,
+    ): ImageBitmap {
+        lateinit var image: ImageBitmap
+        runEffectTest {
+            scene(mode = mode)
+            mainClock.advanceTimeBy(afterMillis)
+            image = capture()
+        }
+        return image
+    }
+
+    private fun assertSame(
+        a: ImageBitmap,
+        b: ImageBitmap,
+    ) {
+        for (x in 0 until a.width step 2) {
+            for (y in 0 until a.height / 2 step 2) assertEquals(a.colorAt(x, y), b.colorAt(x, y))
+        }
+    }
+
+    @Test
+    fun scrambleKeepsTheSizeAndEndsOnTheRealText() {
+        runEffectTest {
+            scene(mode = TypewriterMode.Scramble)
+            val first = size()
+            mainClock.advanceTimeBy(500)
+            assertEquals(first, size())
+            mainClock.advanceTimeBy(3000)
+            assertEquals(first, size())
+        }
+        // Nothing scrambled is left at the end, so it looks like the typed text.
+        assertSame(frame(TypewriterMode.Type, 3500), frame(TypewriterMode.Scramble, 3500))
+    }
+
+    @Test
+    fun scrambleIsDeterministic() {
+        assertSame(frame(TypewriterMode.Scramble, 300), frame(TypewriterMode.Scramble, 300))
+    }
 
     @Test
     fun parametersAreChecked() {
