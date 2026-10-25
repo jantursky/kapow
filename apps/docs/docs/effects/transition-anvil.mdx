@@ -36,6 +36,13 @@ fun LevelComplete(visible: Boolean) {
 | Parameter | Default | Description |
 | --- | --- | --- |
 | `duration` | `1400.milliseconds` | How long the whole transition takes, including the shake and the dust. Must be positive. |
+| `dropHeight` | unspecified | How far above its place the content starts. Unspecified is twice its own height, at least 200 dp. Must be positive. |
+| `shake` | `1f` | How strong the shake after landing is, as a factor. 0 lands without a shake. Must not be negative. |
+| `dustColor` | `Color(0xFFB0B0B0)` | The color of the dust. |
+| `dustCount` | `6` | How many puffs of dust run out to each side, from 0 to 40. |
+
+Every transition also has `.delay(...)`, `.easing(...)` and `.reducedMotion(...)`. See [Stagger](/effects/transition-stagger).
+
 
 ## Reduced motion
 

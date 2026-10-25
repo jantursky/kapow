@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.KapowAnimatedVisibility
 import com.jantursky.kapow.KapowEnter
@@ -21,10 +22,14 @@ import kotlin.time.Duration
 fun AnvilExample(
     visible: Boolean,
     duration: Duration,
+    dropHeight: Dp = Dp.Unspecified,
+    shake: Float = 1f,
+    dustColor: Color = Color(0xFFB0B0B0),
+    dustCount: Int = 6,
 ) {
     KapowAnimatedVisibility(
         visible,
-        enter = KapowEnter.anvil(duration),
+        enter = KapowEnter.anvil(duration, dropHeight, shake, dustColor, dustCount),
     ) {
         Box(
             Modifier

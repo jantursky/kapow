@@ -37,6 +37,12 @@ fun Notification(visible: Boolean) {
 | --- | --- | --- |
 | `color` | `Color(0xFFC2C2C2)` | Color of the smoke. |
 | `duration` | `400.milliseconds` | How long the puff plays. Must be positive. |
+| `puffCount` | `10` | How many puffs there are, from 1 to 60. |
+| `puffSize` | `28.dp` | How wide one puff is when it starts. Must be positive. |
+| `direction` | `null` | The way the puffs drift, in degrees clockwise from pointing right, so -90 is straight up. They fan out over a 90 degree cone around it. Null sends them every way. |
+
+Every transition also has `.delay(...)`, `.easing(...)` and `.reducedMotion(...)`. See [Stagger](/effects/transition-stagger).
+
 
 ## Reduced motion
 

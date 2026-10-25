@@ -135,7 +135,7 @@ private fun spec(
         }
 
         // These run their own curves on a linear clock.
-        kind == TransitionKind.Anvil || kind is TransitionKind.Pop || kind is TransitionKind.Poof -> {
+        kind is TransitionKind.Anvil || kind is TransitionKind.Pop || kind is TransitionKind.Poof -> {
             tween(millis, wait, easing ?: LinearEasing)
         }
 

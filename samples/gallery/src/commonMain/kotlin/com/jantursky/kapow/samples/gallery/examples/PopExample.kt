@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.KapowAnimatedVisibility
 import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.ParticlePhysics
 import com.jantursky.kapow.samples.design.KapowShapes
 import com.jantursky.kapow.samples.design.KapowText
 import kotlin.time.Duration
@@ -22,10 +23,14 @@ fun PopExample(
     visible: Boolean,
     color: Color,
     duration: Duration,
+    overshoot: Float = 1f,
+    ringCount: Int = 1,
+    particleCount: Int = 12,
+    physics: ParticlePhysics = ParticlePhysics.Default,
 ) {
     KapowAnimatedVisibility(
         visible,
-        enter = KapowEnter.pop(color, duration),
+        enter = KapowEnter.pop(color, duration, overshoot, ringCount, particleCount, physics),
     ) {
         Box(
             Modifier

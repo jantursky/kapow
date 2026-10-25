@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.isSpecified
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -240,15 +241,83 @@ public class KapowEnter internal constructor(
             duration: Duration = DefaultMaskDuration,
         ): KapowEnter = blinds(slatWidth, orientation, staggered, duration, null, 1f, false)
 
-        /** The content drops in from above, lands with a shake and kicks up dust. */
-        public fun anvil(duration: Duration = 1400.milliseconds): KapowEnter =
-            KapowEnter(TransitionKind.Anvil, duration.checked())
+        /**
+         * The content drops in from above, lands with a shake and kicks up dust. With reduced motion it fades in
+         * instead, with no dust.
+         *
+         * @param duration how long the transition takes, 1400 ms by default.
+         * @param dropHeight how far above its place the content starts. Left unspecified, it is twice its own
+         *   height, at least 200 dp.
+         * @param shake how strong the shake after landing is, as a factor: 0 lands without a shake, 1 is the usual
+         *   one.
+         * @param dustColor the color of the dust.
+         * @param dustCount how many puffs of dust run out to each side, from 0 to 40.
+         */
+        public fun anvil(
+            duration: Duration = 1400.milliseconds,
+            dropHeight: Dp = Dp.Unspecified,
+            shake: Float = 1f,
+            dustColor: Color = Color(0xFFB0B0B0),
+            dustCount: Int = 6,
+        ): KapowEnter =
+            KapowEnter(
+                TransitionKind.Anvil(
+                    dropHeight.checkedDrop(),
+                    shake.checkedShake(),
+                    dustColor,
+                    dustCount.checkedCount(0..40, "dustCount"),
+                ),
+                duration.checked(),
+            )
 
-        /** The content pops in with an overshoot while a ring and a burst of particles of [color] go off behind it. */
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated(
+            "Use the overload with dropHeight, shake, dustColor and dustCount.",
+            level = DeprecationLevel.HIDDEN,
+        )
+        public fun anvil(duration: Duration = 1400.milliseconds): KapowEnter =
+            anvil(duration, Dp.Unspecified, 1f, Color(0xFFB0B0B0), 6)
+
+        /**
+         * The content pops in with an overshoot while a ring and a burst of particles of [color] go off behind it.
+         * With reduced motion it fades in instead, with no ring or burst.
+         *
+         * @param duration how long the transition takes, 1200 ms by default.
+         * @param overshoot how far the content grows past its size before it settles, as a factor: 0 grows to its
+         *   size without passing it, 1 is the usual overshoot, more passes it further.
+         * @param ringCount how many rings go off one after another, from 0 to 5.
+         * @param particleCount how many particles burst out, from 0 to 100.
+         * @param physics how the burst's particles launch and move. The direction, spread, speed, lifetime, gravity,
+         *   drag, spin, size, scale and fade parts apply; the emission area, blend mode and color pick are ignored.
+         */
         public fun pop(
             color: Color = Color(0xFF6B62F2),
             duration: Duration = 1200.milliseconds,
-        ): KapowEnter = KapowEnter(TransitionKind.Pop(color), duration.checked())
+            overshoot: Float = 1f,
+            ringCount: Int = 1,
+            particleCount: Int = 12,
+            physics: ParticlePhysics = ParticlePhysics.Default,
+        ): KapowEnter =
+            KapowEnter(
+                TransitionKind.Pop(
+                    color,
+                    overshoot.checkedOvershoot(),
+                    ringCount.checkedCount(0..5, "ringCount"),
+                    particleCount.checkedCount(0..100, "particleCount"),
+                    physics,
+                ),
+                duration.checked(),
+            )
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated(
+            "Use the overload with overshoot, ringCount, particleCount and physics.",
+            level = DeprecationLevel.HIDDEN,
+        )
+        public fun pop(
+            color: Color = Color(0xFF6B62F2),
+            duration: Duration = 1200.milliseconds,
+        ): KapowEnter = pop(color, duration, 1f, 1, 12, ParticlePhysics.Default)
 
         /**
          * The content appears as a grid of small squares that turn on one by one in a random order. The order is
@@ -611,11 +680,39 @@ public class KapowExit internal constructor(
             duration: Duration = DefaultMaskDuration,
         ): KapowExit = blinds(slatWidth, orientation, staggered, duration, null, 1f, false)
 
-        /** The content vanishes at once in a puff of smoke of [color]. */
+        /**
+         * The content vanishes at once in a puff of smoke of [color]. With reduced motion it fades out instead,
+         * with no smoke.
+         *
+         * @param duration how long the transition takes, 400 ms by default.
+         * @param puffCount how many puffs there are, from 1 to 60.
+         * @param puffSize how wide one puff is when it starts.
+         * @param direction the way the puffs drift, in degrees clockwise from pointing right, so -90 is straight up.
+         *   They fan out over a 90 degree cone around it. Null sends them every way.
+         */
         public fun poof(
             color: Color = Color(0xFFC2C2C2),
             duration: Duration = 400.milliseconds,
-        ): KapowExit = KapowExit(TransitionKind.Poof(color), duration.checked())
+            puffCount: Int = 10,
+            puffSize: Dp = 28.dp,
+            direction: Float? = null,
+        ): KapowExit =
+            KapowExit(
+                TransitionKind.Poof(
+                    color,
+                    puffCount.checkedCount(1..60, "puffCount"),
+                    puffSize.checkedPuff(),
+                    direction,
+                ),
+                duration.checked(),
+            )
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with puffCount, puffSize and direction.", level = DeprecationLevel.HIDDEN)
+        public fun poof(
+            color: Color = Color(0xFFC2C2C2),
+            duration: Duration = 400.milliseconds,
+        ): KapowExit = poof(color, duration, 10, 28.dp, null)
 
         /**
          * The content vanishes as a grid of small squares that turn off one by one, in the reverse of
@@ -842,7 +939,7 @@ private fun Dp.checkedSoft(): Dp {
 }
 
 private fun Dp.checkedGlareWidth(): Dp {
-    require(this == Dp.Unspecified || (this > 0.dp && value.isFinite())) { "width must be positive" }
+    require(!isSpecified || (this > 0.dp && value.isFinite())) { "width must be positive" }
     return this
 }
 
@@ -880,6 +977,34 @@ private fun Int.checkedPoints(): Int {
 
 private fun Float.checkedWobble(): Float {
     require(this in 0f..0.5f) { "wobble must be between 0 and 0.5" }
+    return this
+}
+
+private fun Dp.checkedDrop(): Dp {
+    require(!isSpecified || (this > 0.dp && value.isFinite())) { "dropHeight must be positive" }
+    return this
+}
+
+private fun Float.checkedShake(): Float {
+    require(this >= 0f && isFinite()) { "shake must not be negative" }
+    return this
+}
+
+private fun Float.checkedOvershoot(): Float {
+    require(this >= 0f && isFinite()) { "overshoot must not be negative" }
+    return this
+}
+
+private fun Dp.checkedPuff(): Dp {
+    require(this > 0.dp && value.isFinite()) { "puffSize must be positive" }
+    return this
+}
+
+private fun Int.checkedCount(
+    range: IntRange,
+    name: String,
+): Int {
+    require(this in range) { "$name must be from ${range.first} to ${range.last}" }
     return this
 }
 
@@ -929,14 +1054,26 @@ internal sealed class TransitionKind {
         val reverse: Boolean = false,
     ) : TransitionKind()
 
-    data object Anvil : TransitionKind()
+    data class Anvil(
+        val dropHeight: Dp = Dp.Unspecified,
+        val shake: Float = 1f,
+        val dustColor: Color = Color(0xFFB0B0B0),
+        val dustCount: Int = 6,
+    ) : TransitionKind()
 
     data class Pop(
         val color: Color,
+        val overshoot: Float = 1f,
+        val ringCount: Int = 1,
+        val particleCount: Int = 12,
+        val physics: ParticlePhysics = ParticlePhysics.Default,
     ) : TransitionKind()
 
     data class Poof(
         val color: Color,
+        val puffCount: Int = 10,
+        val puffSize: Dp = 28.dp,
+        val direction: Float? = null,
     ) : TransitionKind()
 
     data class Dissolve(

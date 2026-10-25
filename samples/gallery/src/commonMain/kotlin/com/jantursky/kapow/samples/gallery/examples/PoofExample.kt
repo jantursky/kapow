@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.KapowAnimatedVisibility
 import com.jantursky.kapow.KapowExit
@@ -22,10 +23,13 @@ fun PoofExample(
     visible: Boolean,
     color: Color,
     duration: Duration,
+    puffCount: Int = 10,
+    puffSize: Dp = 28.dp,
+    direction: Float? = null,
 ) {
     KapowAnimatedVisibility(
         visible,
-        exit = KapowExit.poof(color, duration),
+        exit = KapowExit.poof(color, duration, puffCount, puffSize, direction),
     ) {
         Box(
             Modifier
