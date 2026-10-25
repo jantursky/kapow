@@ -1,5 +1,6 @@
 package com.jantursky.kapow
 
+import androidx.compose.animation.core.Easing
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -24,6 +25,8 @@ public class KapowEnter internal constructor(
     internal val kind: TransitionKind,
     internal val duration: Duration,
     internal val delay: Duration = Duration.ZERO,
+    internal val easing: Easing? = null,
+    internal val reducedMotion: ReducedMotionMode = ReducedMotionMode.Default,
 ) {
     /**
      * This transition, started [delay] after the content becomes visible. The content stays hidden until then and
@@ -32,15 +35,32 @@ public class KapowEnter internal constructor(
      */
     public fun delay(delay: Duration): KapowEnter {
         require(!delay.isNegative()) { "delay must not be negative" }
-        return KapowEnter(kind, duration, delay)
+        return KapowEnter(kind, duration, delay, easing, reducedMotion)
     }
 
+    /**
+     * This transition with its progress shaped by [easing] instead of its own curve. Transitions that run their own
+     * motion on a linear clock, such as `anvil`, `pop`, `shatter` and `disintegrate`, stretch their whole timeline
+     * with it.
+     */
+    public fun easing(easing: Easing): KapowEnter = KapowEnter(kind, duration, delay, easing, reducedMotion)
+
+    /**
+     * This transition with [mode] as its reduced-motion behavior. [ReducedMotionMode.Default] and
+     * [ReducedMotionMode.Fade] fade the content in over the transition's duration. [ReducedMotionMode.Nothing] and
+     * [ReducedMotionMode.EndState] show the content at once, without a delay.
+     */
+    public fun reducedMotion(mode: ReducedMotionMode): KapowEnter = KapowEnter(kind, duration, delay, easing, mode)
+
     override fun equals(other: Any?): Boolean =
-        other is KapowEnter && kind == other.kind && duration == other.duration && delay == other.delay
+        other is KapowEnter && kind == other.kind && duration == other.duration && delay == other.delay &&
+            easing == other.easing && reducedMotion == other.reducedMotion
 
-    override fun hashCode(): Int = (31 * kind.hashCode() + duration.hashCode()) * 31 + delay.hashCode()
+    override fun hashCode(): Int =
+        (((31 * kind.hashCode() + duration.hashCode()) * 31 + delay.hashCode()) * 31 + easing.hashCode()) * 31 +
+            reducedMotion.hashCode()
 
-    override fun toString(): String = "KapowEnter($kind, $duration${if (delay.isPositive()) ", delay=$delay" else ""})"
+    override fun toString(): String = "KapowEnter($kind, $duration${tuningText(delay, easing, reducedMotion)})"
 
     public companion object {
         /** No Kapow transition. Content appears with whatever stock transition the caller set. */
@@ -186,6 +206,8 @@ public class KapowExit internal constructor(
     internal val kind: TransitionKind,
     internal val duration: Duration,
     internal val delay: Duration = Duration.ZERO,
+    internal val easing: Easing? = null,
+    internal val reducedMotion: ReducedMotionMode = ReducedMotionMode.Default,
 ) {
     /**
      * This transition, started [delay] after the content is asked to go. The content stays fully shown until then
@@ -194,15 +216,32 @@ public class KapowExit internal constructor(
      */
     public fun delay(delay: Duration): KapowExit {
         require(!delay.isNegative()) { "delay must not be negative" }
-        return KapowExit(kind, duration, delay)
+        return KapowExit(kind, duration, delay, easing, reducedMotion)
     }
 
+    /**
+     * This transition with its progress shaped by [easing] instead of its own curve, so an ease-in curve
+     * starts the exit slowly. Transitions that run their own motion
+     * on a linear clock, such as `poof`, `shatter` and `disintegrate`, stretch their whole timeline with it.
+     */
+    public fun easing(easing: Easing): KapowExit = KapowExit(kind, duration, delay, easing, reducedMotion)
+
+    /**
+     * This transition with [mode] as its reduced-motion behavior. [ReducedMotionMode.Default] and
+     * [ReducedMotionMode.Fade] fade the content out over the transition's duration. [ReducedMotionMode.Nothing] and
+     * [ReducedMotionMode.EndState] remove the content at once, without a delay.
+     */
+    public fun reducedMotion(mode: ReducedMotionMode): KapowExit = KapowExit(kind, duration, delay, easing, mode)
+
     override fun equals(other: Any?): Boolean =
-        other is KapowExit && kind == other.kind && duration == other.duration && delay == other.delay
+        other is KapowExit && kind == other.kind && duration == other.duration && delay == other.delay &&
+            easing == other.easing && reducedMotion == other.reducedMotion
 
-    override fun hashCode(): Int = (31 * kind.hashCode() + duration.hashCode()) * 31 + delay.hashCode()
+    override fun hashCode(): Int =
+        (((31 * kind.hashCode() + duration.hashCode()) * 31 + delay.hashCode()) * 31 + easing.hashCode()) * 31 +
+            reducedMotion.hashCode()
 
-    override fun toString(): String = "KapowExit($kind, $duration${if (delay.isPositive()) ", delay=$delay" else ""})"
+    override fun toString(): String = "KapowExit($kind, $duration${tuningText(delay, easing, reducedMotion)})"
 
     public companion object {
         /** No Kapow transition. Content disappears with whatever stock transition the caller set. */
@@ -360,6 +399,18 @@ public class KapowExit internal constructor(
 }
 
 private val DefaultMaskDuration: Duration = 450.milliseconds
+
+/** The `, delay=…` parts of a transition's text that differ from the defaults, so a plain one reads as before. */
+private fun tuningText(
+    delay: Duration,
+    easing: Easing?,
+    reducedMotion: ReducedMotionMode,
+): String =
+    buildString {
+        if (delay.isPositive()) append(", delay=").append(delay)
+        if (easing != null) append(", easing=").append(easing)
+        if (reducedMotion != ReducedMotionMode.Default) append(", reducedMotion=").append(reducedMotion)
+    }
 
 private fun Duration.checked(): Duration {
     require(isPositive()) { "duration must be positive" }

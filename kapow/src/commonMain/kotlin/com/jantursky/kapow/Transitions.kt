@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.LinearEasing
@@ -39,7 +40,8 @@ import kotlin.time.Duration
  * }
  * ```
  *
- * With reduced motion, every Kapow transition becomes a fade over the same duration or shorter.
+ * With reduced motion, every Kapow transition becomes a fade over the same duration or shorter. A transition's
+ * [KapowEnter.reducedMotion] or [KapowExit.reducedMotion] can ask for the end state at once instead.
  *
  * @param feedback asked of the [LocalKapowFeedback] handler when the content starts to enter or exit.
  */
@@ -58,9 +60,21 @@ public fun Modifier.kapowTransition(
                 if (targetState ==
                     EnterExitState.Visible
                 ) {
-                    spec(enter.kind, enter.duration, enter.delay)
+                    spec(
+                        enter.kind,
+                        enter.duration,
+                        enter.delay,
+                        enter.easing,
+                        skipsMotion(reduced, enter.reducedMotion),
+                    )
                 } else {
-                    spec(exit.kind, exit.duration, exit.delay)
+                    spec(
+                        exit.kind,
+                        exit.duration,
+                        exit.delay,
+                        exit.easing,
+                        skipsMotion(reduced, exit.reducedMotion),
+                    )
                 }
             },
             label = "kapowTransition",
@@ -108,22 +122,38 @@ private fun spec(
     kind: TransitionKind,
     duration: Duration,
     delay: Duration,
+    easing: Easing?,
+    skipsMotion: Boolean,
 ): FiniteAnimationSpec<Float> {
     val millis = duration.inWholeMilliseconds.toInt()
     // The delay is part of the animation rather than a wait before it: the container keeps the content until every
     // animation on its scope has ended, so an exit's delay can't remove the content early.
     val wait = delay.inWholeMilliseconds.toInt()
-    return when (kind) {
-        TransitionKind.None -> snap()
+    return when {
+        kind == TransitionKind.None || skipsMotion -> {
+            snap()
+        }
 
         // These run their own curves on a linear clock.
-        TransitionKind.Anvil, is TransitionKind.Pop, is TransitionKind.Poof -> tween(millis, wait, LinearEasing)
+        kind == TransitionKind.Anvil || kind is TransitionKind.Pop || kind is TransitionKind.Poof -> {
+            tween(millis, wait, easing ?: LinearEasing)
+        }
 
-        is TransitionKind.Shatter, is TransitionKind.Disintegrate -> tween(millis, wait, LinearEasing)
+        kind is TransitionKind.Shatter || kind is TransitionKind.Disintegrate -> {
+            tween(millis, wait, easing ?: LinearEasing)
+        }
 
-        else -> tween(millis, wait, FastOutSlowInEasing)
+        else -> {
+            tween(millis, wait, easing ?: FastOutSlowInEasing)
+        }
     }
 }
+
+/** Whether reduced motion is on and [mode] asks for the end state at once rather than a fade. */
+private fun skipsMotion(
+    reduced: Boolean,
+    mode: ReducedMotionMode,
+): Boolean = reduced && (mode == ReducedMotionMode.Nothing || mode == ReducedMotionMode.EndState)
 
 private class TransitionElement(
     val enter: TransitionKind,
