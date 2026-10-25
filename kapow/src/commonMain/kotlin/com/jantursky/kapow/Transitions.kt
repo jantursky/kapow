@@ -58,9 +58,9 @@ public fun Modifier.kapowTransition(
                 if (targetState ==
                     EnterExitState.Visible
                 ) {
-                    spec(enter.kind, enter.duration)
+                    spec(enter.kind, enter.duration, enter.delay)
                 } else {
-                    spec(exit.kind, exit.duration)
+                    spec(exit.kind, exit.duration, exit.delay)
                 }
             },
             label = "kapowTransition",
@@ -107,17 +107,21 @@ public fun KapowAnimatedVisibility(
 private fun spec(
     kind: TransitionKind,
     duration: Duration,
+    delay: Duration,
 ): FiniteAnimationSpec<Float> {
     val millis = duration.inWholeMilliseconds.toInt()
+    // The delay is part of the animation rather than a wait before it: the container keeps the content until every
+    // animation on its scope has ended, so an exit's delay can't remove the content early.
+    val wait = delay.inWholeMilliseconds.toInt()
     return when (kind) {
         TransitionKind.None -> snap()
 
         // These run their own curves on a linear clock.
-        TransitionKind.Anvil, is TransitionKind.Pop, is TransitionKind.Poof -> tween(millis, easing = LinearEasing)
+        TransitionKind.Anvil, is TransitionKind.Pop, is TransitionKind.Poof -> tween(millis, wait, LinearEasing)
 
-        is TransitionKind.Shatter, is TransitionKind.Disintegrate -> tween(millis, easing = LinearEasing)
+        is TransitionKind.Shatter, is TransitionKind.Disintegrate -> tween(millis, wait, LinearEasing)
 
-        else -> tween(millis, easing = FastOutSlowInEasing)
+        else -> tween(millis, wait, FastOutSlowInEasing)
     }
 }
 

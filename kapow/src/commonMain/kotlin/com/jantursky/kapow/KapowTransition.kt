@@ -23,12 +23,24 @@ public enum class BlindsOrientation { Horizontal, Vertical }
 public class KapowEnter internal constructor(
     internal val kind: TransitionKind,
     internal val duration: Duration,
+    internal val delay: Duration = Duration.ZERO,
 ) {
-    override fun equals(other: Any?): Boolean = other is KapowEnter && kind == other.kind && duration == other.duration
+    /**
+     * This transition, started [delay] after the content becomes visible. The content stays hidden until then and
+     * the transition plays over its normal duration afterward. Use [KapowStagger.delay] to cascade the items of a
+     * list.
+     */
+    public fun delay(delay: Duration): KapowEnter {
+        require(!delay.isNegative()) { "delay must not be negative" }
+        return KapowEnter(kind, duration, delay)
+    }
 
-    override fun hashCode(): Int = 31 * kind.hashCode() + duration.hashCode()
+    override fun equals(other: Any?): Boolean =
+        other is KapowEnter && kind == other.kind && duration == other.duration && delay == other.delay
 
-    override fun toString(): String = "KapowEnter($kind, $duration)"
+    override fun hashCode(): Int = (31 * kind.hashCode() + duration.hashCode()) * 31 + delay.hashCode()
+
+    override fun toString(): String = "KapowEnter($kind, $duration${if (delay.isPositive()) ", delay=$delay" else ""})"
 
     public companion object {
         /** No Kapow transition. Content appears with whatever stock transition the caller set. */
@@ -173,12 +185,24 @@ public class KapowEnter internal constructor(
 public class KapowExit internal constructor(
     internal val kind: TransitionKind,
     internal val duration: Duration,
+    internal val delay: Duration = Duration.ZERO,
 ) {
-    override fun equals(other: Any?): Boolean = other is KapowExit && kind == other.kind && duration == other.duration
+    /**
+     * This transition, started [delay] after the content is asked to go. The content stays fully shown until then
+     * and the exit plays over its normal duration afterward. The container keeps the content until the exit has
+     * ended. Use [KapowStagger.delay] to cascade the items of a list.
+     */
+    public fun delay(delay: Duration): KapowExit {
+        require(!delay.isNegative()) { "delay must not be negative" }
+        return KapowExit(kind, duration, delay)
+    }
 
-    override fun hashCode(): Int = 31 * kind.hashCode() + duration.hashCode()
+    override fun equals(other: Any?): Boolean =
+        other is KapowExit && kind == other.kind && duration == other.duration && delay == other.delay
 
-    override fun toString(): String = "KapowExit($kind, $duration)"
+    override fun hashCode(): Int = (31 * kind.hashCode() + duration.hashCode()) * 31 + delay.hashCode()
+
+    override fun toString(): String = "KapowExit($kind, $duration${if (delay.isPositive()) ", delay=$delay" else ""})"
 
     public companion object {
         /** No Kapow transition. Content disappears with whatever stock transition the caller set. */
