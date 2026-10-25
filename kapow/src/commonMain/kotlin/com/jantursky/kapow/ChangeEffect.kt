@@ -47,6 +47,40 @@ public abstract class ChangeEffect internal constructor() {
         return Delayed(this, delay)
     }
 
+    /**
+     * Ignores changes that arrive sooner than [cooldown] after the last one that played, instead of the effect's
+     * own cooldown (which is none for most effects).
+     */
+    public fun cooldown(cooldown: Duration): ChangeEffect {
+        require(!cooldown.isNegative()) { "cooldown must not be negative" }
+        return tuned().copy(customCooldown = cooldown)
+    }
+
+    /**
+     * Plays the effect [count] times in a row for each change, [gap] apart. Changes that arrive while the series
+     * runs are ignored. A gap shorter than the effect restarts it each time.
+     */
+    public fun times(
+        count: Int,
+        gap: Duration = Duration.ZERO,
+    ): ChangeEffect {
+        require(count > 0) { "count must be positive" }
+        require(!gap.isNegative()) { "gap must not be negative" }
+        return tuned().copy(times = count, gap = gap)
+    }
+
+    /** Plays the effect at [multiplier] times the pace: 2 takes half as long, 0.5 twice as long. */
+    public fun speed(multiplier: Float): ChangeEffect {
+        require(multiplier > 0f && multiplier.isFinite()) { "multiplier must be positive" }
+        val tuned = tuned()
+        return tuned.copy(speed = tuned.speed * multiplier)
+    }
+
+    /** Chooses what the effect does under reduced motion, instead of its own fallback. */
+    public fun reducedMotion(mode: ReducedMotionMode): ChangeEffect = tuned().copy(mode = mode)
+
+    private fun tuned(): Tuned = this as? Tuned ?: Tuned(this, null, 1, Duration.ZERO, 1f, null)
+
     public companion object {
         /**
          * A burst of particles that fan upward from the element, grow, then fade.
@@ -138,14 +172,24 @@ public abstract class ChangeEffect internal constructor() {
          * element stay clear. With reduced motion the flash is less than half as strong.
          *
          * @param duration how long the flash takes to rise and fade back.
+         * @param peak how strongly the flash covers the element at its brightest, from just above 0 to 1.
          */
         public fun flash(
             color: Color = Color.White,
             duration: Duration = 400.milliseconds,
+            peak: Float = 0.85f,
         ): ChangeEffect {
             require(duration.isPositive()) { "duration must be positive" }
-            return Flash(color, duration)
+            require(peak > 0f && peak <= 1f) { "peak must be above 0 and at most 1" }
+            return Flash(color, duration, peak)
         }
+
+        // Kept for binaries compiled against 1.0.0.
+        @Deprecated("Use the overload with peak.", level = DeprecationLevel.HIDDEN)
+        public fun flash(
+            color: Color = Color.White,
+            duration: Duration = 400.milliseconds,
+        ): ChangeEffect = flash(color, duration, 0.85f)
 
         /**
          * A spiky comic star burst, in [color] with a lighter core, that pops out from behind the element, overshoots
@@ -305,6 +349,19 @@ public abstract class ChangeEffect internal constructor() {
         override fun createRunner(): ChangeRunner = effect.createRunner()
     }
 
+    internal data class Tuned(
+        val effect: ChangeEffect,
+        val customCooldown: Duration?,
+        val times: Int,
+        val gap: Duration,
+        val speed: Float,
+        val mode: ReducedMotionMode?,
+    ) : ChangeEffect() {
+        override val cooldown: Duration get() = customCooldown ?: effect.cooldown
+
+        override fun createRunner(): ChangeRunner = effect.createRunner()
+    }
+
     internal data class Spray(
         val particles: ParticleContent,
         val count: Int,
@@ -376,10 +433,11 @@ public abstract class ChangeEffect internal constructor() {
     internal data class Flash(
         val color: Color,
         val duration: Duration,
+        val peak: Float,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
 
-        override fun createRunner(): ChangeRunner = ColorFlashRunner(color, duration)
+        override fun createRunner(): ChangeRunner = ColorFlashRunner(color, duration, peak)
     }
 
     internal data class Burst(

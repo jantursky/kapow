@@ -10,7 +10,7 @@ import com.jantursky.kapow.internal.ConditionalRunner
 import com.jantursky.kapow.internal.EffectContext
 import com.jantursky.kapow.internal.TriggerGate
 import com.jantursky.kapow.internal.awaitFrameTime
-import com.jantursky.kapow.withoutDelay
+import com.jantursky.kapow.plan
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
@@ -23,18 +23,10 @@ internal class RepeatRunner(
     effect: ChangeEffect,
     private val every: Duration,
 ) : ConditionalRunner() {
-    private val inner: ChangeEffect
-    private val delay: Duration
-    private val runner: ChangeRunner
+    private val plan = effect.plan()
+    private val runner: ChangeRunner = plan.effect.createRunner()
     private val gate = TriggerGate()
     private var job: Job? = null
-
-    init {
-        val (unwrapped, delay) = effect.withoutDelay()
-        inner = unwrapped
-        this.delay = delay
-        runner = unwrapped.createRunner()
-    }
 
     override val needsLayer: Boolean get() = runner.needsLayer
 
@@ -54,10 +46,10 @@ internal class RepeatRunner(
             context.scope.launch {
                 while (true) {
                     // The wrapped effect's cooldown still applies, so a short interval can't restart it mid-play.
-                    if (withFrameNanos { gate.tryAccept(it, inner.cooldown) }) {
+                    if (withFrameNanos { gate.tryAccept(it, plan.gateWindow) }) {
                         launch {
-                            awaitFrameTime(delay)
-                            runner.fire(context)
+                            awaitFrameTime(plan.delay)
+                            plan.play(runner, context)
                         }
                     }
                     awaitFrameTime(every)

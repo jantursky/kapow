@@ -93,9 +93,9 @@ class ChangeEffectTest {
 
     @Test
     fun nestedDelaysAddUp() {
-        val (inner, delay) = RecordingEffect().delay(100.milliseconds).delay(50.milliseconds).withoutDelay()
-        assertEquals(RecordingEffect(), inner)
-        assertEquals(150.milliseconds, delay)
+        val plan = RecordingEffect().delay(100.milliseconds).delay(50.milliseconds).plan()
+        assertEquals(RecordingEffect(), plan.effect)
+        assertEquals(150.milliseconds, plan.delay)
     }
 
     @Test

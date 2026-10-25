@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.layer.CompositingStrategy
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import com.jantursky.kapow.internal.ChangeRunner
 import com.jantursky.kapow.internal.EffectContext
+import com.jantursky.kapow.internal.at
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
@@ -32,9 +33,10 @@ private const val FLASH_ATTACK = 0.1f
 internal class ColorFlashRunner(
     private val color: Color,
     private val duration: Duration,
+    private val fullPeak: Float = FULL_PEAK,
 ) : ChangeRunner() {
     private val progress = Animatable(1f)
-    private var peak = FULL_PEAK
+    private var peak = fullPeak
     private var job: Job? = null
 
     private val strength: Float get() = if (progress.value < 1f) flashStrength(progress.value) * peak else 0f
@@ -54,8 +56,8 @@ internal class ColorFlashRunner(
 
     override fun fire(context: EffectContext) {
         job?.cancel()
-        peak = if (context.isReducedMotion()) REDUCED_PEAK else FULL_PEAK
-        val millis = duration.inWholeMilliseconds.toInt()
+        peak = if (context.isReducedMotion()) minOf(REDUCED_PEAK, fullPeak) else fullPeak
+        val millis = duration.at(context.speed).inWholeMilliseconds.toInt()
         job =
             context.scope.launch {
                 progress.snapTo(0f)

@@ -8,10 +8,13 @@ import androidx.compose.ui.node.invalidateDraw
 import androidx.compose.ui.platform.InspectorInfo
 import com.jantursky.kapow.internal.ChangeRunner
 import com.jantursky.kapow.internal.ConditionalRunner
+import com.jantursky.kapow.internal.EffectContext
 import com.jantursky.kapow.internal.EffectNode
 import com.jantursky.kapow.internal.ProgressRunner
 import com.jantursky.kapow.internal.TriggerGate
+import com.jantursky.kapow.internal.TunedContext
 import com.jantursky.kapow.internal.awaitFrameTime
+import com.jantursky.kapow.internal.skipsForReducedMotion
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 
@@ -74,15 +77,82 @@ private data class ChangeEffectElement(
     }
 }
 
-/** Splits [ChangeEffect.delay] wrappers off an effect, adding up nested delays. */
-internal fun ChangeEffect.withoutDelay(): Pair<ChangeEffect, Duration> {
+/** An effect with its wrappers peeled off: how, and how often, to play the innermost one. */
+internal data class ChangePlan(
+    val effect: ChangeEffect,
+    val delay: Duration,
+    val cooldown: Duration,
+    val times: Int,
+    val gap: Duration,
+    val speed: Float,
+    val mode: ReducedMotionMode,
+) {
+    /** Changes inside this window after an accepted one are ignored: the cooldown, or the whole series. */
+    val gateWindow: Duration get() = maxOf(cooldown, gap * (times - 1))
+
+    /** [context] with this plan's speed and reduced-motion mode, for the runner. */
+    fun contextFor(context: EffectContext): EffectContext =
+        if (speed == 1f && mode == ReducedMotionMode.Default) context else TunedContext(context, speed, mode)
+
+    /** Fires [runner] [times] times, [gap] apart, unless reduced motion is on and the mode is `Nothing`. */
+    suspend fun play(
+        runner: ChangeRunner,
+        context: EffectContext,
+    ) {
+        val tuned = contextFor(context)
+        if (tuned.skipsForReducedMotion()) return
+        repeat(times) { i ->
+            if (i > 0) awaitFrameTime(gap)
+            runner.fire(tuned)
+        }
+    }
+}
+
+/**
+ * Peels [ChangeEffect.delay], [ChangeEffect.cooldown], [ChangeEffect.times], [ChangeEffect.speed] and
+ * [ChangeEffect.reducedMotion] wrappers off an effect. Delays add and speeds multiply; for the rest the outermost
+ * wrapper wins.
+ */
+internal fun ChangeEffect.plan(): ChangePlan {
     var effect = this
     var delay = Duration.ZERO
-    while (effect is ChangeEffect.Delayed) {
-        delay += effect.delay
-        effect = effect.effect
+    var cooldown: Duration? = null
+    var times: Int? = null
+    var gap = Duration.ZERO
+    var speed = 1f
+    var mode: ReducedMotionMode? = null
+    while (true) {
+        when (val e = effect) {
+            is ChangeEffect.Delayed -> {
+                delay += e.delay
+                effect = e.effect
+            }
+
+            is ChangeEffect.Tuned -> {
+                if (cooldown == null) cooldown = e.customCooldown
+                if (times == null && e.times != 1) {
+                    times = e.times
+                    gap = e.gap
+                }
+                speed *= e.speed
+                if (mode == null) mode = e.mode
+                effect = e.effect
+            }
+
+            else -> {
+                break
+            }
+        }
     }
-    return effect to delay
+    return ChangePlan(
+        effect,
+        delay,
+        cooldown ?: effect.cooldown,
+        times ?: 1,
+        gap,
+        speed,
+        mode ?: ReducedMotionMode.Default,
+    )
 }
 
 internal class ChangeEffectNode(
@@ -90,13 +160,13 @@ internal class ChangeEffectNode(
     private var effect: ChangeEffect,
     private var isEnabled: Boolean,
     private var feedback: KapowFeedbackEvent?,
-) : EffectNode<ChangeRunner>(effect.withoutDelay().first.createRunner()) {
+) : EffectNode<ChangeRunner>(effect.plan().effect.createRunner()) {
     private val gate = TriggerGate()
 
     // Set when the node is reused for other content: the next value it sees belongs to that content and is no change.
     private var isReused = false
 
-    override fun newRunner(): ChangeRunner = effect.withoutDelay().first.createRunner()
+    override fun newRunner(): ChangeRunner = effect.plan().effect.createRunner()
 
     override fun onReset() {
         super.onReset()
@@ -128,17 +198,17 @@ internal class ChangeEffectNode(
 
     /** Plays the effect once, subject to its cooldown and delay. Shared with [ConditionalEffect.repeat]. */
     fun trigger() {
-        val (inner, delay) = effect.withoutDelay()
+        val plan = effect.plan()
         val runner = runner
         val event = feedback
         coroutineScope.launch {
-            val accepted = withFrameNanos { now -> gate.tryAccept(now, inner.cooldown) }
+            val accepted = withFrameNanos { now -> gate.tryAccept(now, plan.gateWindow) }
             if (!accepted) return@launch
-            awaitFrameTime(delay)
+            awaitFrameTime(plan.delay)
             // The effect may have been replaced or turned off while the delay ran.
             if (runner !== this@ChangeEffectNode.runner || !isEnabled) return@launch
             perform(event)
-            runner.fire(this@ChangeEffectNode)
+            plan.play(runner, this@ChangeEffectNode)
         }
     }
 }

@@ -9,7 +9,12 @@ public final class com/jantursky/kapow/BlindsOrientation : java/lang/Enum {
 public abstract class com/jantursky/kapow/ChangeEffect {
 	public static final field $stable I
 	public static final field Companion Lcom/jantursky/kapow/ChangeEffect$Companion;
+	public final fun cooldown-LRDsOJo (J)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun delay-LRDsOJo (J)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun reducedMotion (Lcom/jantursky/kapow/ReducedMotionMode;)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun speed (F)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun times-HG0u8IE (IJ)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun times-HG0u8IE$default (Lcom/jantursky/kapow/ChangeEffect;IJILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 }
 
 public final class com/jantursky/kapow/ChangeEffect$Companion {
@@ -19,7 +24,9 @@ public final class com/jantursky/kapow/ChangeEffect$Companion {
 	public static synthetic fun confettiPop$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Ljava/util/List;IILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun fireworks (Ljava/util/List;I)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun fireworks$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Ljava/util/List;IILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
-	public final fun flash-pYXP5xo (JJ)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun flash-1yHTBjE (JJF)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun flash-1yHTBjE$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JJFILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final synthetic fun flash-pYXP5xo (JJ)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun flash-pYXP5xo$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JJILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun glitch-_GIBnP8 (JF)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun glitch-_GIBnP8$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JFILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
@@ -49,9 +56,22 @@ public final class com/jantursky/kapow/ChangeEffect$Companion {
 	public static synthetic fun trace-m-5BtWQ$default (Lcom/jantursky/kapow/ChangeEffect$Companion;Landroidx/compose/ui/graphics/Shape;JFJILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 }
 
+public final class com/jantursky/kapow/ColorPick : java/lang/Enum {
+	public static final field Random Lcom/jantursky/kapow/ColorPick;
+	public static final field Sequential Lcom/jantursky/kapow/ColorPick;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/jantursky/kapow/ColorPick;
+	public static fun values ()[Lcom/jantursky/kapow/ColorPick;
+}
+
 public abstract class com/jantursky/kapow/ConditionalEffect {
 	public static final field $stable I
 	public static final field Companion Lcom/jantursky/kapow/ConditionalEffect$Companion;
+	public final fun fadeIn-LRDsOJo (J)Lcom/jantursky/kapow/ConditionalEffect;
+	public final fun fadeOut-LRDsOJo (J)Lcom/jantursky/kapow/ConditionalEffect;
+	public final fun reducedMotion (Lcom/jantursky/kapow/ReducedMotionMode;)Lcom/jantursky/kapow/ConditionalEffect;
+	public final fun speed (F)Lcom/jantursky/kapow/ConditionalEffect;
+	public final fun startDelay-LRDsOJo (J)Lcom/jantursky/kapow/ConditionalEffect;
 }
 
 public final class com/jantursky/kapow/ConditionalEffect$Companion {
@@ -85,11 +105,53 @@ public final class com/jantursky/kapow/ConditionalEffect$Companion {
 	public static synthetic fun spotlight-8DiM2jg$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;JLandroidx/compose/ui/graphics/Shape;FFILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
 }
 
+public final class com/jantursky/kapow/EdgeSide : java/lang/Enum {
+	public static final field Bottom Lcom/jantursky/kapow/EdgeSide;
+	public static final field End Lcom/jantursky/kapow/EdgeSide;
+	public static final field Start Lcom/jantursky/kapow/EdgeSide;
+	public static final field Top Lcom/jantursky/kapow/EdgeSide;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/jantursky/kapow/EdgeSide;
+	public static fun values ()[Lcom/jantursky/kapow/EdgeSide;
+}
+
 public final class com/jantursky/kapow/EffectModifiersKt {
 	public static final fun changeEffect (Landroidx/compose/ui/Modifier;Ljava/lang/Object;Lcom/jantursky/kapow/ChangeEffect;ZLcom/jantursky/kapow/KapowFeedbackEvent;)Landroidx/compose/ui/Modifier;
 	public static synthetic fun changeEffect$default (Landroidx/compose/ui/Modifier;Ljava/lang/Object;Lcom/jantursky/kapow/ChangeEffect;ZLcom/jantursky/kapow/KapowFeedbackEvent;ILjava/lang/Object;)Landroidx/compose/ui/Modifier;
 	public static final fun conditionalEffect (Landroidx/compose/ui/Modifier;ZLcom/jantursky/kapow/ConditionalEffect;)Landroidx/compose/ui/Modifier;
 	public static final fun progressEffect (Landroidx/compose/ui/Modifier;Lcom/jantursky/kapow/ProgressEffect;Lkotlin/jvm/functions/Function0;)Landroidx/compose/ui/Modifier;
+}
+
+public abstract class com/jantursky/kapow/EmissionArea {
+	public static final field $stable I
+}
+
+public final class com/jantursky/kapow/EmissionArea$Edge : com/jantursky/kapow/EmissionArea {
+	public static final field $stable I
+	public fun <init> (Lcom/jantursky/kapow/EdgeSide;)V
+	public final fun component1 ()Lcom/jantursky/kapow/EdgeSide;
+	public final fun copy (Lcom/jantursky/kapow/EdgeSide;)Lcom/jantursky/kapow/EmissionArea$Edge;
+	public static synthetic fun copy$default (Lcom/jantursky/kapow/EmissionArea$Edge;Lcom/jantursky/kapow/EdgeSide;ILjava/lang/Object;)Lcom/jantursky/kapow/EmissionArea$Edge;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getSide ()Lcom/jantursky/kapow/EdgeSide;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/jantursky/kapow/EmissionArea$Point : com/jantursky/kapow/EmissionArea {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/jantursky/kapow/EmissionArea$Point;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/jantursky/kapow/EmissionArea$Rect : com/jantursky/kapow/EmissionArea {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/jantursky/kapow/EmissionArea$Rect;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class com/jantursky/kapow/FeedbackKt {
@@ -283,6 +345,20 @@ public final class com/jantursky/kapow/ParticleContent$Companion {
 	public static synthetic fun text$default (Lcom/jantursky/kapow/ParticleContent$Companion;Ljava/lang/String;Landroidx/compose/ui/text/TextStyle;ILjava/lang/Object;)Lcom/jantursky/kapow/ParticleContent;
 }
 
+public final class com/jantursky/kapow/ParticlePhysics {
+	public static final field $stable I
+	public static final field Companion Lcom/jantursky/kapow/ParticlePhysics$Companion;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/jantursky/kapow/ParticlePhysics$Companion {
+	public final fun getDefault ()Lcom/jantursky/kapow/ParticlePhysics;
+	public final fun of-ed3DKvw (Ljava/lang/Float;Ljava/lang/Float;Lkotlin/ranges/ClosedFloatingPointRange;Ljava/lang/Float;Ljava/lang/Float;Lkotlin/ranges/ClosedFloatingPointRange;Lkotlin/ranges/ClosedFloatingPointRange;Lkotlin/ranges/ClosedFloatingPointRange;Ljava/lang/Float;Ljava/lang/Float;Landroidx/compose/animation/core/Easing;Lcom/jantursky/kapow/EmissionArea;Landroidx/compose/ui/graphics/BlendMode;Lcom/jantursky/kapow/ColorPick;)Lcom/jantursky/kapow/ParticlePhysics;
+	public static synthetic fun of-ed3DKvw$default (Lcom/jantursky/kapow/ParticlePhysics$Companion;Ljava/lang/Float;Ljava/lang/Float;Lkotlin/ranges/ClosedFloatingPointRange;Ljava/lang/Float;Ljava/lang/Float;Lkotlin/ranges/ClosedFloatingPointRange;Lkotlin/ranges/ClosedFloatingPointRange;Lkotlin/ranges/ClosedFloatingPointRange;Ljava/lang/Float;Ljava/lang/Float;Landroidx/compose/animation/core/Easing;Lcom/jantursky/kapow/EmissionArea;Landroidx/compose/ui/graphics/BlendMode;Lcom/jantursky/kapow/ColorPick;ILjava/lang/Object;)Lcom/jantursky/kapow/ParticlePhysics;
+}
+
 public final class com/jantursky/kapow/ParticleShape : java/lang/Enum {
 	public static final field Circle Lcom/jantursky/kapow/ParticleShape;
 	public static final field Heart Lcom/jantursky/kapow/ParticleShape;
@@ -297,6 +373,10 @@ public final class com/jantursky/kapow/ParticleShape : java/lang/Enum {
 public abstract class com/jantursky/kapow/ProgressEffect {
 	public static final field $stable I
 	public static final field Companion Lcom/jantursky/kapow/ProgressEffect$Companion;
+	public final fun curve (Landroidx/compose/animation/core/Easing;)Lcom/jantursky/kapow/ProgressEffect;
+	public final fun reducedMotion (Lcom/jantursky/kapow/ReducedMotionMode;)Lcom/jantursky/kapow/ProgressEffect;
+	public final fun smoothed (FF)Lcom/jantursky/kapow/ProgressEffect;
+	public static synthetic fun smoothed$default (Lcom/jantursky/kapow/ProgressEffect;FFILjava/lang/Object;)Lcom/jantursky/kapow/ProgressEffect;
 }
 
 public final class com/jantursky/kapow/ProgressEffect$Companion {
@@ -336,6 +416,16 @@ public final class com/jantursky/kapow/PulseStyle$Stroke : com/jantursky/kapow/P
 	public final fun getWidth-D9Ej5fM ()F
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/jantursky/kapow/ReducedMotionMode : java/lang/Enum {
+	public static final field Default Lcom/jantursky/kapow/ReducedMotionMode;
+	public static final field EndState Lcom/jantursky/kapow/ReducedMotionMode;
+	public static final field Fade Lcom/jantursky/kapow/ReducedMotionMode;
+	public static final field Nothing Lcom/jantursky/kapow/ReducedMotionMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/jantursky/kapow/ReducedMotionMode;
+	public static fun values ()[Lcom/jantursky/kapow/ReducedMotionMode;
 }
 
 public final class com/jantursky/kapow/SpinAxis : java/lang/Enum {

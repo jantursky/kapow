@@ -19,6 +19,7 @@ import com.jantursky.kapow.effects.RepeatRunner
 import com.jantursky.kapow.effects.SmokeRunner
 import com.jantursky.kapow.effects.SparklesRunner
 import com.jantursky.kapow.effects.SpotlightRunner
+import com.jantursky.kapow.effects.TunedConditionalRunner
 import com.jantursky.kapow.internal.ConditionalRunner
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -28,6 +29,47 @@ import kotlin.time.Duration.Companion.seconds
 @Immutable
 public abstract class ConditionalEffect internal constructor() {
     internal abstract fun createRunner(): ConditionalRunner
+
+    /** How long the effect takes to fade in when the condition turns true, instead of its own fade. */
+    public fun fadeIn(duration: Duration): ConditionalEffect {
+        require(!duration.isNegative()) { "duration must not be negative" }
+        return tuned().copy(fadeIn = duration)
+    }
+
+    /** How long the effect takes to fade out when the condition turns false, instead of its own fade. */
+    public fun fadeOut(duration: Duration): ConditionalEffect {
+        require(!duration.isNegative()) { "duration must not be negative" }
+        return tuned().copy(fadeOut = duration)
+    }
+
+    /** Waits [delay] after the condition turns true before the effect starts. */
+    public fun startDelay(delay: Duration): ConditionalEffect {
+        require(!delay.isNegative()) { "delay must not be negative" }
+        return tuned().copy(startDelay = delay)
+    }
+
+    /** Runs the effect at [multiplier] times the pace: 2 is twice as fast. */
+    public fun speed(multiplier: Float): ConditionalEffect {
+        require(multiplier > 0f && multiplier.isFinite()) { "multiplier must be positive" }
+        val tuned = tuned()
+        return tuned.copy(speed = tuned.speed * multiplier)
+    }
+
+    /** Chooses what the effect does under reduced motion, instead of its own fallback. */
+    public fun reducedMotion(mode: ReducedMotionMode): ConditionalEffect = tuned().copy(mode = mode)
+
+    private fun tuned(): Tuned = this as? Tuned ?: Tuned(this, null, null, Duration.ZERO, 1f, null)
+
+    internal data class Tuned(
+        val effect: ConditionalEffect,
+        val fadeIn: Duration?,
+        val fadeOut: Duration?,
+        val startDelay: Duration,
+        val speed: Float,
+        val mode: ReducedMotionMode?,
+    ) : ConditionalEffect() {
+        override fun createRunner(): ConditionalRunner = TunedConditionalRunner(effect.createRunner(), this)
+    }
 
     public companion object {
         /** The shortest interval [repeat] accepts. Shorter ones are raised to it. */

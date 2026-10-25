@@ -10,6 +10,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -21,7 +22,9 @@ import androidx.compose.ui.test.v2.runDesktopComposeUiTest
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.internal.ChangeRunner
+import com.jantursky.kapow.internal.ConditionalRunner
 import com.jantursky.kapow.internal.EffectContext
+import com.jantursky.kapow.internal.ProgressRunner
 import kotlin.time.Duration
 
 /** The element color in drawing tests. */
@@ -96,6 +99,63 @@ data class RecordingEffect(
         object : ChangeRunner() {
             override fun fire(context: EffectContext) {
                 log += context.isReducedMotion()
+            }
+        }
+}
+
+/** A change effect that records the speed and reduced-motion mode its runner is given. */
+data class ContextProbe(
+    val seen: MutableList<Pair<Float, ReducedMotionMode>>,
+) : ChangeEffect() {
+    override val cooldown: Duration get() = Duration.ZERO
+
+    override fun createRunner(): ChangeRunner =
+        object : ChangeRunner() {
+            override fun fire(context: EffectContext) {
+                seen += context.speed to context.reducedMotionMode
+            }
+        }
+}
+
+/** A conditional effect that records each call of `setActive`. */
+data class ActiveProbe(
+    val log: MutableList<Boolean>,
+) : ConditionalEffect() {
+    override fun createRunner(): ConditionalRunner =
+        object : ConditionalRunner() {
+            override fun setActive(
+                context: EffectContext,
+                active: Boolean,
+            ) {
+                log += active
+            }
+        }
+}
+
+/** A conditional effect that records the speed and fades its runner is given. */
+data class ContextProbeConditional(
+    val seen: MutableList<Triple<Float, Any?, Any?>>,
+) : ConditionalEffect() {
+    override fun createRunner(): ConditionalRunner =
+        object : ConditionalRunner() {
+            override fun setActive(
+                context: EffectContext,
+                active: Boolean,
+            ) {
+                seen += Triple(context.speed, context.fadeIn, context.fadeOut)
+            }
+        }
+}
+
+/** A progress effect that records the progress its runner would draw. */
+data class ProgressProbe(
+    val seen: MutableList<Float>,
+) : ProgressEffect() {
+    override fun createRunner(): ProgressRunner =
+        object : ProgressRunner() {
+            override fun ContentDrawScope.drawEffect() {
+                seen += progress()
+                drawContent()
             }
         }
 }

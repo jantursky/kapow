@@ -1,5 +1,7 @@
 package com.jantursky.kapow
 
+import androidx.compose.animation.core.Easing
+import androidx.compose.animation.core.Spring
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
@@ -10,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.effects.FillProgressRunner
 import com.jantursky.kapow.effects.GlowProgressRunner
 import com.jantursky.kapow.effects.IrisProgressRunner
+import com.jantursky.kapow.effects.ShapedProgressRunner
 import com.jantursky.kapow.effects.ShineProgressRunner
 import com.jantursky.kapow.effects.TraceProgressRunner
 import com.jantursky.kapow.internal.ProgressRunner
@@ -21,6 +24,37 @@ import com.jantursky.kapow.internal.ProgressRunner
 @Immutable
 public abstract class ProgressEffect internal constructor() {
     internal abstract fun createRunner(): ProgressRunner
+
+    /** Passes the progress through [easing] before the effect draws it, such as to start slowly. */
+    public fun curve(easing: Easing): ProgressEffect = shaped().copy(curve = easing)
+
+    /**
+     * Makes the effect follow the progress with a spring instead of jumping to it, so a progress that changes in
+     * steps still moves smoothly. The spring runs in the draw phase and does not recompose.
+     */
+    public fun smoothed(
+        dampingRatio: Float = Spring.DampingRatioNoBouncy,
+        stiffness: Float = Spring.StiffnessMedium,
+    ): ProgressEffect {
+        require(dampingRatio > 0f) { "dampingRatio must be positive" }
+        require(stiffness > 0f) { "stiffness must be positive" }
+        return shaped().copy(smoothing = dampingRatio to stiffness)
+    }
+
+    /** Draws nothing under reduced motion when [mode] is [ReducedMotionMode.Nothing]; other modes change nothing. */
+    public fun reducedMotion(mode: ReducedMotionMode): ProgressEffect = shaped().copy(mode = mode)
+
+    private fun shaped(): Shaped = this as? Shaped ?: Shaped(this, null, null, ReducedMotionMode.Default)
+
+    internal data class Shaped(
+        val effect: ProgressEffect,
+        val curve: Easing?,
+        val smoothing: Pair<Float, Float>?,
+        val mode: ReducedMotionMode,
+    ) : ProgressEffect() {
+        override fun createRunner(): ProgressRunner =
+            ShapedProgressRunner(effect.createRunner(), curve, smoothing, mode)
+    }
 
     public companion object {
         /** A band of light whose position across the element follows the progress. */

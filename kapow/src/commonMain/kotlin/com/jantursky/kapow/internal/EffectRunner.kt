@@ -9,8 +9,10 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
+import com.jantursky.kapow.ReducedMotionMode
 import com.jantursky.kapow.particles.ParticleBatch
 import kotlinx.coroutines.CoroutineScope
+import kotlin.time.Duration
 
 /**
  * The part of an effect that runs on an element. It keeps its animation state in snapshot state and reads it only
@@ -50,6 +52,18 @@ internal interface EffectContext {
 
     /** Reads the reduced-motion setting now, as the effect fires. */
     fun isReducedMotion(): Boolean
+
+    /** A factor on time, set by `speed(...)`: 2 plays twice as fast. Runners divide their durations by it. */
+    val speed: Float get() = 1f
+
+    /** What to do under reduced motion, set by `reducedMotion(...)`. Runners honor [ReducedMotionMode.EndState] and [ReducedMotionMode.Fade]. */
+    val reducedMotionMode: ReducedMotionMode get() = ReducedMotionMode.Default
+
+    /** How long a conditional effect fades in, when `fadeIn(...)` set it; null leaves the effect's own. */
+    val fadeIn: Duration? get() = null
+
+    /** How long a conditional effect fades out, when `fadeOut(...)` set it; null leaves the effect's own. */
+    val fadeOut: Duration? get() = null
 
     /** Hands particles to the nearest particle layer, or draws them around the element without one. */
     fun emit(batch: ParticleBatch)
