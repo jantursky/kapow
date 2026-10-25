@@ -43,6 +43,10 @@ fun MailBadge(hasUnread: Boolean) {
 | --- | --- | --- |
 | `effect` | required | The change effect to play. |
 | `every` | required | The time between plays. Anything shorter than `ConditionalEffect.MinRepeatInterval` (1/15 s) is raised to it. |
+| `initialDelay` | `Duration.ZERO` | How long to wait after the condition turns true before the first play. |
+| `maxCount` | `null` | How many times to play in all, per time the condition turns true. Null keeps playing while it holds. Must be positive. |
+| `jitter` | `0f` | How much each wait varies, as a share of `every`, from 0 (exact) to 1. Waits never go below `MinRepeatInterval`. |
+| `seed` | `0` | The start of the random numbers that vary the waits. The same seed gives the same rhythm. |
 
 ## Reduced motion
 

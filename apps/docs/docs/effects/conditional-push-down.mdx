@@ -37,6 +37,11 @@ fun HoldButton(pressed: Boolean) {
 | Parameter | Default | Description |
 | --- | --- | --- |
 | `scale` | `0.95f` | The size the element is drawn at while the condition holds, as a fraction of its normal size. Must be positive. |
+| `damping` | `0.6f` | Damping ratio of the spring. Below 1 it overshoots when it springs back. |
+| `stiffness` | `500f` | Stiffness of the spring. Must be positive. |
+| `dim` | `0f` | How much the element dims while pressed, from 0 to 1. Under reduced motion a dim of 0 becomes a fifth. |
+| `translation` | `0.dp` | How far the element moves down while pressed. |
+| `origin` | `TransformOrigin.Center` | The point the element shrinks toward. |
 
 ## Reduced motion
 
@@ -44,7 +49,7 @@ The element keeps its size and dims slightly while the condition holds, so the p
 
 ## Notes
 
-- The element is scaled around its center and springs back to full size when the condition turns false.
+- The element is scaled around `origin` (its center by default) and springs back to full size when the condition turns false.
 - The scale is applied on the element's graphics layer. Layout keeps the real size, so neighbors don't move.
 
 ## Live example

@@ -40,6 +40,12 @@ fun Avatar(online: Boolean) {
 | `count` | `3` | How many particles circle, evenly spaced. |
 | `size` | `8.dp` | Diameter of a particle in front of the element. |
 | `duration` | `2.5.seconds` | How long one turn takes. |
+| `radius` | `1.6f` | How far the orbit reaches from the center, as a factor of the element's half width. Must be positive. |
+| `tilt` | `-17.19f` | How far the orbit is tipped, in degrees clockwise. The default lifts its right end. |
+| `clockwise` | `true` | Whether the particles turn clockwise. |
+| `depthScale` | `0.55f` | How big a particle is at the back of the orbit, as a share of its size in front. Above 0, at most 1. |
+| `content` | `null` | What is drawn for each particle instead of a glowing dot, such as a `ParticleContent.shape(...)` or an icon. It uses its own size and `size` is ignored. |
+| `trail` | `4` | How many fading dots follow each particle. 0 gives none. |
 
 ## Reduced motion
 

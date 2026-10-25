@@ -25,12 +25,17 @@ fun BubblesExample(
     fresh: Boolean,
     color: Color,
     size: Dp,
+    rate: Float = 1f,
+    pop: Boolean = true,
+    colorVariation: Float = 0f,
 ) {
     Column(
         Modifier
             .size(width = 160.dp, height = 110.dp)
-            .conditionalEffect(fresh, ConditionalEffect.bubbles(color, size))
-            .clip(KapowShapes.control)
+            .conditionalEffect(
+                fresh,
+                ConditionalEffect.bubbles(color, size, rate = rate, pop = pop, colorVariation = colorVariation),
+            ).clip(KapowShapes.control)
             .background(Brush.verticalGradient(listOf(Color(0xFF7FC4FF), KapowEffectColors.cobalt)))
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.Bottom),

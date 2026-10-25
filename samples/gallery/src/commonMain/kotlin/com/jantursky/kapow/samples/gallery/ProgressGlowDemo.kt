@@ -8,12 +8,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.samples.design.KapowToggle
 import com.jantursky.kapow.samples.design.LabeledSlider
 import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.gallery.examples.ProgressGlowExample
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
+
+/** The colors the glow ramps through, from progress 0 to 1. */
+internal val GLOW_RAMP = listOf(Swatch.Cobalt.color, Swatch.Violet.color, Swatch.Coral.color)
 
 /** The controls around [ProgressGlowExample]. */
 @Composable
@@ -22,19 +26,31 @@ internal fun ProgressGlowDemo() {
     var radius by remember { mutableFloatStateOf(16f) }
     var shape by remember { mutableStateOf(ShapeChoice.Rounded) }
     var swatch by remember { mutableStateOf(Swatch.Violet) }
+    var ramp by remember { mutableStateOf(false) }
+    var easeIn by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     ExampleScaffold(
         autoplay = Autoplay(1.seconds) { sweepThereAndBack { progress = it } },
-        stage = { ProgressGlowExample(progress, swatch.color, radius.dp, shape.shape) },
+        stage = {
+            ProgressGlowExample(
+                progress,
+                swatch.color,
+                radius.dp,
+                shape.shape,
+                if (ramp) GLOW_RAMP else null,
+                easeIn,
+            )
+        },
         code = {
-            progressEffectCode(
-                call(
-                    "ProgressEffect.glow",
+            val args =
+                listOfNotNull(
                     "color" to swatch.color.kt(),
                     "radius" to radius.dp.kt(),
                     "shape" to shape.source(),
-                ),
-            )
+                    ("alphaCurve" to "EaseIn").takeIf { easeIn },
+                    ("colorRamp" to "listOf(${GLOW_RAMP.joinToString { it.kt() }})").takeIf { ramp },
+                )
+            progressEffectCode(call("ProgressEffect.glow", *args.toTypedArray()))
         },
         controls = {
             PrimaryPill("Play", onClick = { scope.launch { sweep { progress = it } } })
@@ -42,6 +58,8 @@ internal fun ProgressGlowDemo() {
             ChoiceRow("Shape", ShapeChoice.entries, shape, { shape = it }, { it.name })
             ChoiceRow("Color", Swatch.Palette, swatch, { swatch = it }, { it.name })
             LabeledSlider("Radius", "${radius.roundToInt()} dp", radius, { radius = it }, 4f..40f)
+            KapowToggle(ramp, { ramp = it }, "Color ramp")
+            KapowToggle(easeIn, { easeIn = it }, "Faint start")
         },
     )
 }

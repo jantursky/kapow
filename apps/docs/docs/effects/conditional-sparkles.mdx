@@ -40,6 +40,10 @@ fun NewBadge(unseen: Boolean) {
 | `colors` | pale yellow and amber | The sparkles' colors, used in turn. |
 | `size` | `18.dp` | Size of the largest sparkle. |
 | `count` | `4` | About how many sparkles are visible at once. |
+| `lifetime` | `0.8f..1.3f` | How long one sparkle twinkles, in seconds, as a range. Must start above 0. |
+| `areaPadding` | `size / 2` | How far past the element's edges a sparkle may appear. Negative keeps them inside. |
+| `shape` | `ParticleShape.Sparkle` | The shape of a sparkle. |
+| `seed` | `0` | The start of the random numbers that place the sparkles. The same seed gives the same twinkling. |
 
 ## Reduced motion
 
@@ -47,7 +51,7 @@ No sparkles are shown.
 
 ## Notes
 
-- Each sparkle stays where it appears, swells and turns a little, then shrinks away. Their spots, sizes and colors come from a fixed seed.
+- Each sparkle stays where it appears, swells and turns a little, then shrinks away. Their spots, sizes and colors come from the seed.
 - Sparkles are particles. They draw through a [particle layer](/guides/particle-layer) when one is above the element, so a clipping parent does not cut them off. Without one they draw around the element.
 - When the condition turns false, no new sparkles start and the ones showing finish their twinkle.
 - Sparkles do not follow the element if it moves.

@@ -27,13 +27,24 @@ fun OrbitExample(
     online: Boolean,
     count: Int,
     turn: Duration,
+    clockwise: Boolean = true,
+    radius: Float = 1.6f,
+    trail: Int = 4,
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Box(
             Modifier
                 .size(88.dp)
-                .conditionalEffect(online, ConditionalEffect.orbit(count = count, duration = turn))
-                .clip(CircleShape)
+                .conditionalEffect(
+                    online,
+                    ConditionalEffect.orbit(
+                        count = count,
+                        duration = turn,
+                        clockwise = clockwise,
+                        radius = radius,
+                        trail = trail,
+                    ),
+                ).clip(CircleShape)
                 .background(Brush.linearGradient(listOf(KapowEffectColors.violet, KapowEffectColors.cobalt))),
             contentAlignment = Alignment.Center,
         ) {

@@ -29,12 +29,14 @@ import com.jantursky.kapow.samples.design.KapowText
 fun GrayscaleExample(
     disabled: Boolean,
     amount: Float,
+    tint: Color? = null,
+    dim: Float = 0f,
 ) {
     val shape = RoundedCornerShape(16.dp)
     Column(
         Modifier
             .width(230.dp)
-            .conditionalEffect(disabled, ConditionalEffect.grayscale(amount))
+            .conditionalEffect(disabled, ConditionalEffect.grayscale(amount, tint, dim))
             .clip(shape)
             .background(Brush.linearGradient(listOf(KapowEffectColors.coral, KapowEffectColors.violet)))
             .padding(18.dp),

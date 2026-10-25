@@ -5,6 +5,10 @@ package com.jantursky.kapow.effects
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.GraphicsContext
@@ -16,6 +20,7 @@ import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ReducedMotionMode
 import com.jantursky.kapow.internal.ChangeRunner
 import com.jantursky.kapow.internal.ConditionalRunner
 import com.jantursky.kapow.internal.EffectContext
@@ -24,9 +29,12 @@ import com.jantursky.kapow.internal.ProgressRunner
 import com.jantursky.kapow.internal.at
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlin.math.PI
 import kotlin.math.min
+import kotlin.math.sin
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /** The velocity a glow impulse gives its spring: a fresh 5, or 1.5 more while it is still glowing, up to 5. */
 internal fun glowImpulse(
@@ -43,6 +51,7 @@ internal abstract class GlowRunnerBase(
     private val offset: DpOffset = DpOffset.Zero,
     private val limit: Float = MAX_HALO,
     private val inner: InnerGlow? = null,
+    private val brightening: Float = BRIGHTENING,
 ) : EffectRunner() {
     private val halo = Halo(color, radius, shape, limit = limit)
     private var graphics: GraphicsContext? = null
@@ -62,7 +71,7 @@ internal abstract class GlowRunnerBase(
         } else {
             translate(offset.x.toPx(), offset.y.toPx()) { halo.draw(this, amount) }
         }
-        val brighten = min(amount, limit) / limit * 0.25f
+        val brighten = min(amount, limit) / limit * brightening
         val graphics = graphics
         if (brighten <= 0f || graphics == null) {
             drawContent()
@@ -176,15 +185,37 @@ internal class GlowRunner(
     }
 }
 
+/** How strong the halo is at [phase] (in turns) of a breathing cycle, as a factor on its steady strength. */
+internal fun glowBreath(
+    phase: Float,
+    amplitude: Float,
+): Float = (1f + amplitude * sin(2f * PI.toFloat() * phase)).coerceAtLeast(0f)
+
+/**
+ * A steady halo. It fades in and out, swells and shrinks by [breathe] (a share of its strength) once every
+ * [period] when [breathe] is above 0, and brightens the element by [brighten] of the halo's strength.
+ */
 internal class ConditionalGlowRunner(
     color: Color,
     radius: Dp,
     shape: Shape,
+    private val steady: Float = STEADY,
+    private val breathe: Float = 0f,
+    private val period: Duration = 2.seconds,
+    brighten: Float = BRIGHTENING,
 ) : ConditionalRunner() {
     private val strength = Animatable(0f)
+    private var clock by mutableDoubleStateOf(0.0)
+    private var clockJob: Job? = null
     private val base =
-        object : GlowRunnerBase(color, radius, shape) {
-            override val amount: Float get() = strength.value
+        object : GlowRunnerBase(color, radius, shape, brightening = brighten) {
+            override val amount: Float
+                get() =
+                    if (breathe > 0f) {
+                        strength.value * glowBreath(loopPhase(clock, period.inWholeMilliseconds / 1000.0), breathe)
+                    } else {
+                        strength.value
+                    }
         }
     private var job: Job? = null
 
@@ -197,34 +228,45 @@ internal class ConditionalGlowRunner(
         active: Boolean,
     ) {
         job?.cancel()
-        // Reduced motion keeps the steady halo but lets it appear without a fade.
-        val millis = if (context.isReducedMotion()) 0 else 250
-        job = context.scope.launch { strength.animateTo(if (active) STEADY else 0f, tween(millis)) }
+        val reduced = context.isReducedMotion()
+        // Reduced motion keeps the steady halo but lets it appear without a fade, or with one in the Fade mode.
+        val fades = !reduced || context.reducedMotionMode == ReducedMotionMode.Fade
+        val chosen = if (active) context.fadeIn else context.fadeOut
+        val millis =
+            chosen?.inWholeMilliseconds?.toInt() ?: 250
+                .milliseconds
+                .at(context.speed)
+                .inWholeMilliseconds
+                .toInt()
+        if (active && breathe > 0f && !reduced) startClock(context)
+        job =
+            context.scope.launch {
+                strength.animateTo(if (active) steady else 0f, tween(if (fades) millis else 0))
+                if (!active) clockJob?.cancel()
+            }
+    }
+
+    private fun startClock(context: EffectContext) {
+        if (clockJob?.isActive == true) return
+        val speed = context.speed
+        clockJob =
+            context.scope.launch {
+                var last = -1L
+                while (true) {
+                    withFrameNanos { now ->
+                        if (last >= 0) clock += ((now - last) / 1e9).coerceAtMost(1.0 / 30) * speed
+                        last = now
+                    }
+                }
+            }
     }
 
     override fun stop() {
         job?.cancel()
+        clockJob?.cancel()
         base.stop()
     }
-
-    private companion object {
-        const val STEADY = 0.7f
-    }
 }
 
-internal class GlowProgressRunner(
-    color: Color,
-    radius: Dp,
-    shape: Shape,
-) : ProgressRunner() {
-    private val base =
-        object : GlowRunnerBase(color, radius, shape) {
-            override val amount: Float get() = progress().coerceIn(0f, 1f) * MAX_HALO
-        }
-
-    override fun ContentDrawScope.drawEffect() = with(base) { drawEffect() }
-
-    override fun attach(context: EffectContext) = base.attach(context)
-
-    override fun stop() = base.stop()
-}
+private const val STEADY = 0.7f
+private const val BRIGHTENING = 0.25f

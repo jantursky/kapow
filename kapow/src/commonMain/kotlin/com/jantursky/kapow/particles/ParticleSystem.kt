@@ -25,6 +25,8 @@ internal data class Emission(
     val speed: Spread,
     val lifetime: Spread,
     val gravity: Float = 0f,
+    /** A sideways acceleration, such as wind: positive pushes right. */
+    val gravityX: Float = 0f,
     /** Fraction of velocity kept after one second. 1 keeps it all. */
     val drag: Float = 1f,
     val spin: Spread = Spread(0f),
@@ -102,6 +104,7 @@ internal class ParticleSystem(
             val active = (age[i] - delay[i]).coerceIn(0f, lifetime[i]) - (before - delay[i]).coerceIn(0f, lifetime[i])
             if (active > 0f) {
                 vy[i] += emission.gravity * active
+                vx[i] += emission.gravityX * active
                 vx[i] *= keep
                 vy[i] *= keep
                 x[i] += vx[i] * active

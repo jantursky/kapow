@@ -12,6 +12,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.EdgeSide
 import com.jantursky.kapow.conditionalEffect
 import com.jantursky.kapow.samples.design.KapowCaption
 import com.jantursky.kapow.samples.design.KapowShapes
@@ -24,12 +25,17 @@ fun FlameExample(
     onFire: Boolean,
     days: Int,
     height: Dp,
+    intensity: Float = 1f,
+    wind: Float = 0f,
+    edge: EdgeSide = EdgeSide.Top,
 ) {
     Column(
         Modifier
             .width(140.dp)
-            .conditionalEffect(onFire, ConditionalEffect.flame(height = height))
-            .clip(KapowShapes.control)
+            .conditionalEffect(
+                onFire,
+                ConditionalEffect.flame(height = height, intensity = intensity, wind = wind, edge = edge),
+            ).clip(KapowShapes.control)
             .background(KapowTheme.colors.panel)
             .padding(vertical = 14.dp),
         horizontalAlignment = Alignment.CenterHorizontally,

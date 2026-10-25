@@ -37,6 +37,12 @@ fun Pot(onStove: Boolean) {
 | Parameter | Default | Description |
 | --- | --- | --- |
 | `color` | `Color(0xFF8A8A8A)` | Color of the smoke. |
+| `rate` | `1f` | How often puffs come, as a factor: 2 is twice as many. Must be positive. |
+| `size` | `10.dp` | Radius of a puff at its start. Must be positive. |
+| `opacity` | `0.7f` | How opaque a puff gets at most, above 0 and up to 1. |
+| `wind` | `0f` | A sideways push in dp per second squared. Positive blows to the right. |
+| `physics` | `ParticlePhysics.Default` | How the particles launch and move: cone, speed, lifetime, gravity, drag, size, spin, fade, start and end scale and emission area. Parts left out keep the effect's own values; blend mode and color pick are ignored. `EmissionArea.Edge(...)` moves the source to another edge. |
+| `seed` | `0` | The start of the random numbers that place and shape the puffs. The same seed gives the same smoke. |
 
 ## Reduced motion
 

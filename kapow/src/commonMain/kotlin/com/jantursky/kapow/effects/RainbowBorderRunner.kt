@@ -1,12 +1,16 @@
 package com.jantursky.kapow.effects
 
+import androidx.compose.animation.core.Easing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import kotlin.time.Duration
 
 /**
@@ -33,12 +37,19 @@ internal fun turnedSweepStops(
     return stops.toTypedArray()
 }
 
-/** An outline of [shape] stroked with a sweep of [colors] that turns once every [duration]. */
+/**
+ * An outline of [shape] stroked with a sweep of [colors] that turns once every [duration], [clockwise] or not,
+ * with the turn eased by [easing], drawn at [alpha] with a halo [glow] wide around the stroke.
+ */
 internal class RainbowBorderRunner(
     private val colors: List<Color>,
     private val width: Dp,
     shape: Shape,
     private val duration: Duration,
+    private val clockwise: Boolean = true,
+    private val easing: Easing = LinearEasing,
+    private val alpha: Float = 1f,
+    private val glow: Dp = 0.dp,
 ) : FadingLoopRunner() {
     private val outline = ShapeOutline(shape)
 
@@ -48,8 +59,28 @@ internal class RainbowBorderRunner(
         if (s <= 0f) return
         val stroke = width.toPx()
         outline.update(this, stroke / 2)
-        val phase = if (isReduced) 0f else loopPhase(time, duration.inWholeMilliseconds / 1000.0)
-        val brush = Brush.sweepGradient(*turnedSweepStops(colors, phase), center = center)
-        drawPath(outline.path, brush, alpha = s, style = Stroke(stroke))
+        val turn = if (isReduced) 0f else easing.transform(loopPhase(time, duration.inWholeMilliseconds / 1000.0))
+        val brush = Brush.sweepGradient(*turnedSweepStops(colors, if (clockwise) turn else -turn), center = center)
+        if (glow > 0.dp) {
+            val halo = glow.toPx()
+            drawPath(
+                outline.path,
+                brush,
+                alpha = s * alpha * GLOW_OUTER,
+                style = Stroke(stroke + 2 * halo, cap = StrokeCap.Round),
+            )
+            drawPath(
+                outline.path,
+                brush,
+                alpha = s * alpha * GLOW_INNER,
+                style = Stroke(stroke + halo, cap = StrokeCap.Round),
+            )
+        }
+        drawPath(outline.path, brush, alpha = s * alpha, style = Stroke(stroke))
+    }
+
+    private companion object {
+        const val GLOW_OUTER = 0.12f
+        const val GLOW_INNER = 0.2f
     }
 }

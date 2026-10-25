@@ -40,6 +40,12 @@ fun DownloadCard(progress: () -> Float) {
 | --- | --- | --- |
 | `color` | `Color(0x993D7BFF)` | Tint of the liquid. Its alpha sets how much of the element shows through; the default is cobalt at 60 %. |
 | `wave` | `4.dp` | Height of the surface wave. 0 gives a flat surface. Must not be negative. |
+| `direction` | `FillDirection.Up` | The way the liquid rises: `Up`, `Down`, `Left` or `Right`. `Left` and `Right` are absolute, not relative to the layout direction. |
+| `waves` | `1.5f` | How many waves are across the surface. Must be positive. |
+| `roll` | `3f` | How many wave lengths the surface rolls sideways over the whole progress. 0 keeps the waves still. |
+| `colorRamp` | `null` | The liquid's colors from progress 0 to 1, blended in between. Null keeps `color`. Must not be empty. |
+| `foam` | `0.dp` | Width of a line that rides the surface. `0.dp` draws none. |
+| `foamColor` | `Color.White` | Color of the foam line. |
 
 ## Reduced motion
 

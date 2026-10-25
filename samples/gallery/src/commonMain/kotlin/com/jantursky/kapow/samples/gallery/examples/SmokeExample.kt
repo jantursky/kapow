@@ -20,11 +20,13 @@ import com.jantursky.kapow.samples.design.KapowText
 fun SmokeExample(
     hot: Boolean,
     color: Color,
+    rate: Float = 1f,
+    wind: Float = 0f,
 ) {
     Box(
         Modifier
             .size(width = 160.dp, height = 100.dp)
-            .conditionalEffect(hot, ConditionalEffect.smoke(color))
+            .conditionalEffect(hot, ConditionalEffect.smoke(color, rate = rate, wind = wind))
             .clip(KapowShapes.control)
             .background(KapowEffectColors.coral),
         contentAlignment = Alignment.Center,

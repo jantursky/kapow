@@ -22,13 +22,25 @@ fun MarchingAntsExample(
     selected: Boolean,
     dash: Dp,
     speed: Dp,
+    clockwise: Boolean = true,
+    roundCaps: Boolean = false,
+    dashOffset: Dp = 0.dp,
 ) {
     val shape = RoundedCornerShape(12.dp)
     Canvas(
         Modifier
             .size(width = 220.dp, height = 150.dp)
-            .conditionalEffect(selected, ConditionalEffect.marchingAnts(shape = shape, dash = dash, speed = speed))
-            .clip(shape),
+            .conditionalEffect(
+                selected,
+                ConditionalEffect.marchingAnts(
+                    shape = shape,
+                    dash = dash,
+                    speed = speed,
+                    clockwise = clockwise,
+                    roundCaps = roundCaps,
+                    dashOffset = dashOffset,
+                ),
+            ).clip(shape),
     ) {
         // A sunset over two hills, standing in for the picture.
         drawRect(

@@ -37,6 +37,9 @@ fun RevealCard(progress: () -> Float) {
 | Parameter | Default | Description |
 | --- | --- | --- |
 | `origin` | `TransformOrigin.Center` | The point the circle grows from, as a fraction of the element's size. `TransformOrigin(0f, 0f)` is the top left corner. |
+| `softEdge` | `0.dp` | How wide the soft edge of the circle is. `0.dp` gives a hard edge. The element is fully shown at 1 whatever the edge. It applies to the round iris, not to a custom `shape`. |
+| `shape` | `null` | Reveals through this shape, grown from `origin`, instead of a circle. Null is a circle. |
+| `invert` | `false` | Hides the element inside the iris instead: it is fully shown at 0 and gone at 1. |
 
 ## Reduced motion
 

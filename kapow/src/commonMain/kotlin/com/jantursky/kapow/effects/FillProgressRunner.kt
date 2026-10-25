@@ -3,11 +3,17 @@ package com.jantursky.kapow.effects
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.layer.CompositingStrategy
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.FillDirection
 import com.jantursky.kapow.internal.ProgressRunner
 import kotlin.math.PI
 import kotlin.math.ceil
@@ -36,11 +42,13 @@ internal fun fillSurface(
     progress: Float,
     amplitude: Float,
     phase: Float = 0f,
+    waves: Float = WAVES,
+    roll: Float = ROLL,
 ): Float {
     val p = progress.coerceIn(0f, 1f)
     val level = height * (1f - p)
     val a = fillAmplitude(p, amplitude)
-    val angle = 2 * PI.toFloat() * (x / width * WAVES + p * ROLL) + phase
+    val angle = 2 * PI.toFloat() * (x / width * waves + p * roll) + phase
     return level + a * sin(angle)
 }
 
@@ -50,13 +58,34 @@ private const val WAVE_EASE = 0.08f
 private const val WAVES = 1.5f
 private const val ROLL = 3f
 
-/** A tinted liquid that fills the element from the bottom up to the progress, with a wave on its surface. */
+/** The turn, in degrees, that makes a liquid filling upward fill in [direction] instead. */
+internal fun fillRotation(direction: FillDirection): Float =
+    when (direction) {
+        FillDirection.Up -> 0f
+        FillDirection.Down -> 180f
+        FillDirection.Right -> 90f
+        FillDirection.Left -> -90f
+    }
+
+/**
+ * A tinted liquid that fills the element from one side up to the progress, with a wave on its surface. It rises
+ * in [direction], has [waves] waves across and rolls them [roll] wave lengths over the whole progress. The
+ * liquid's color is [color], or follows [colorRamp] with the progress. A [foam] wide line in [foamColor] rides
+ * its surface.
+ */
 internal class FillProgressRunner(
     private val color: Color,
     private val wave: Dp,
+    private val direction: FillDirection = FillDirection.Up,
+    private val waves: Float = WAVES,
+    private val roll: Float = ROLL,
+    private val colorRamp: List<Color>? = null,
+    private val foam: Dp = 0.dp,
+    private val foamColor: Color = Color.White,
 ) : ProgressRunner() {
     private val front = Path()
     private val back = Path()
+    private val surface = Path()
 
     override val needsLayer: Boolean get() = true
 
@@ -69,28 +98,66 @@ internal class FillProgressRunner(
         drawContent()
         val p = progress().coerceIn(0f, 1f)
         if (p <= 0f) return
-        val amplitude = wave.toPx()
-        // A paler wave behind, out of step with the front one, gives the surface some depth.
-        liquid(back, p, amplitude, PI.toFloat())
-        drawPath(back, color, alpha = 0.5f, blendMode = BlendMode.SrcAtop)
-        liquid(front, p, amplitude, 0f)
-        drawPath(front, color, blendMode = BlendMode.SrcAtop)
+        if (direction == FillDirection.Up) {
+            drawLiquid(p, size.width, size.height)
+            return
+        }
+        // Every other direction is the upward fill turned around the center, on a stage of the turned size.
+        val turned = direction == FillDirection.Left || direction == FillDirection.Right
+        val w = if (turned) size.height else size.width
+        val h = if (turned) size.width else size.height
+        rotate(fillRotation(direction), pivot = center) {
+            translate(center.x - w / 2, center.y - h / 2) { drawLiquid(p, w, h) }
+        }
     }
 
-    private fun DrawScope.liquid(
+    private fun DrawScope.drawLiquid(
+        p: Float,
+        w: Float,
+        h: Float,
+    ) {
+        val amplitude = wave.toPx()
+        val tint = if (colorRamp != null) rampColor(colorRamp, p) else color
+        // A paler wave behind, out of step with the front one, gives the surface some depth.
+        liquid(back, p, amplitude, PI.toFloat(), w, h)
+        drawPath(back, tint, alpha = 0.5f, blendMode = BlendMode.SrcAtop)
+        liquid(front, p, amplitude, 0f, w, h, surface)
+        drawPath(front, tint, blendMode = BlendMode.SrcAtop)
+        if (foam > 0.dp) {
+            drawPath(
+                surface,
+                foamColor,
+                alpha = FOAM_ALPHA,
+                style = Stroke(foam.toPx(), cap = StrokeCap.Round),
+                blendMode = BlendMode.SrcAtop,
+            )
+        }
+    }
+
+    private fun liquid(
         path: Path,
         progress: Float,
         amplitude: Float,
         phase: Float,
+        w: Float,
+        h: Float,
+        line: Path? = null,
     ) {
-        val w = size.width
-        val h = size.height
         val steps = ceil(w / STEP_PX).toInt().coerceAtLeast(1)
         path.rewind()
+        line?.rewind()
         path.moveTo(0f, h)
         for (i in 0..steps) {
             val x = w * i / steps
-            path.lineTo(x, fillSurface(x, w, h, progress, amplitude, phase))
+            val y = fillSurface(x, w, h, progress, amplitude, phase, waves, roll)
+            path.lineTo(x, y)
+            if (line != null) {
+                if (i == 0) {
+                    line.moveTo(x, y)
+                } else {
+                    line.lineTo(x, y)
+                }
+            }
         }
         path.lineTo(w, h)
         path.close()
@@ -98,5 +165,6 @@ internal class FillProgressRunner(
 
     private companion object {
         const val STEP_PX = 6f
+        const val FOAM_ALPHA = 0.85f
     }
 }

@@ -7,6 +7,7 @@ import androidx.compose.ui.unit.Dp
 import com.jantursky.kapow.ParticleShape
 import com.jantursky.kapow.internal.ConditionalRunner
 import com.jantursky.kapow.internal.EffectContext
+import com.jantursky.kapow.internal.atSpeed
 import com.jantursky.kapow.internal.awaitFrameTime
 import com.jantursky.kapow.particles.Emission
 import com.jantursky.kapow.particles.ParticleBatch
@@ -21,38 +22,44 @@ import kotlin.math.sqrt
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * One sparkle that stays put somewhere over an element [width] × [height] px, or up to half a sparkle ([sizePx]
- * across) past its edges.
+ * One sparkle that stays put somewhere over an element [width] × [height] px, or up to [padding] px (by default
+ * half a sparkle, [sizePx] across) past its edges, twinkling for a time in [lifetime] seconds.
  */
 internal fun sparkleEmission(
     width: Float,
     height: Float,
     sizePx: Float,
+    padding: Float = sizePx / 2,
+    lifetime: ClosedFloatingPointRange<Float> = SPARKLE_LIFE_MIN..SPARKLE_LIFE_MAX,
 ): Emission =
     Emission(
         count = 1,
         angle = Spread(0f),
         speed = Spread(0f),
-        lifetime = Spread(SPARKLE_LIFE_MIN, SPARKLE_LIFE_MAX),
+        lifetime = Spread(lifetime.start, lifetime.endInclusive),
         spin = Spread(-60f, 60f),
         rotation = Spread(-20f, 20f),
         scale = Spread(0.6f, 1f),
-        offsetX = Spread(-width / 2 - sizePx / 2, width / 2 + sizePx / 2),
-        offsetY = Spread(-height / 2 - sizePx / 2, height / 2 + sizePx / 2),
+        offsetX = Spread(-width / 2 - padding, width / 2 + padding),
+        offsetY = Spread(-height / 2 - padding, height / 2 + padding),
     )
 
 /** How long to wait between sparkles so about [count] twinkle at once. */
-internal fun sparkleInterval(count: Int): Float = (SPARKLE_LIFE_MIN + SPARKLE_LIFE_MAX) / 2 / count.coerceAtLeast(1)
+internal fun sparkleInterval(
+    count: Int,
+    lifetime: ClosedFloatingPointRange<Float> = SPARKLE_LIFE_MIN..SPARKLE_LIFE_MAX,
+): Float = (lifetime.start + lifetime.endInclusive) / 2 / count.coerceAtLeast(1)
 
 /** A sparkle is bright for most of its twinkle, fading only as it gets small. */
 internal fun twinkleOpacity(progress: Float): Float = sqrt(twinkle(progress))
 
-/** A four-point star in [colors] used in turn, [sizePx] across, over a soft glow of its color. */
+/** A four-point star (or another [shape]) in [colors] used in turn, [sizePx] across, over a soft glow of its color. */
 internal fun sparklePainter(
     colors: List<Color>,
     sizePx: Float,
+    shape: ParticleShape = ParticleShape.Sparkle,
 ): ParticlePainter {
-    val star = shapePainter(ParticleShape.Sparkle, colors, sizePx)
+    val star = shapePainter(shape, colors, sizePx)
     val glows =
         colors.map {
             Brush.radialGradient(
@@ -75,9 +82,13 @@ internal class SparklesRunner(
     private val colors: List<Color>,
     private val size: Dp,
     private val count: Int,
+    private val lifetime: ClosedFloatingPointRange<Float> = SPARKLE_LIFE_MIN..SPARKLE_LIFE_MAX,
+    private val areaPadding: Dp = size / 2,
+    private val shape: ParticleShape = ParticleShape.Sparkle,
+    firstSeed: Int = 0,
 ) : ConditionalRunner() {
     private var job: Job? = null
-    private var seed = 0
+    private var seed = firstSeed
 
     override fun setActive(
         context: EffectContext,
@@ -86,8 +97,10 @@ internal class SparklesRunner(
         job?.cancel()
         if (!active || context.isReducedMotion()) return
         val sizePx = with(context.density) { size.toPx() }
-        val painter = sparklePainter(colors, sizePx)
-        val interval = (sparkleInterval(count) * 1000).toInt().milliseconds
+        val paddingPx = with(context.density) { areaPadding.toPx() }
+        val painter = sparklePainter(colors, sizePx, shape)
+        val speed = context.speed
+        val interval = (sparkleInterval(count, lifetime) * 1000 / speed).toInt().milliseconds
         job =
             context.scope.launch {
                 while (isActive) {
@@ -97,7 +110,10 @@ internal class SparklesRunner(
                     val n = seed++
                     val batch =
                         ParticleBatch(
-                            ParticleSystem(sparkleEmission(width, height, sizePx), n),
+                            ParticleSystem(
+                                sparkleEmission(width, height, sizePx, paddingPx, lifetime).atSpeed(speed),
+                                n,
+                            ),
                             ParticlePainter { i, alpha -> with(painter) { drawParticle(n + i, alpha) } },
                             opacity = ::twinkleOpacity,
                             growth = ::twinkle,

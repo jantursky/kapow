@@ -32,13 +32,28 @@ fun BorderBeamExample(
     color: Color,
     width: Dp,
     lap: Duration,
+    beams: Int = 1,
+    clockwise: Boolean = true,
+    tailFade: Float = 1.5f,
+    trackAlpha: Float = 0.18f,
 ) {
     val shape = RoundedCornerShape(20.dp)
     Row(
         Modifier
             .width(240.dp)
-            .conditionalEffect(recording, ConditionalEffect.borderBeam(color, width, shape, duration = lap))
-            .clip(shape)
+            .conditionalEffect(
+                recording,
+                ConditionalEffect.borderBeam(
+                    color,
+                    width,
+                    shape,
+                    duration = lap,
+                    trackAlpha = trackAlpha,
+                    beams = beams,
+                    clockwise = clockwise,
+                    tailFade = tailFade,
+                ),
+            ).clip(shape)
             .background(KapowTheme.colors.panel)
             .padding(20.dp),
         horizontalArrangement = Arrangement.spacedBy(14.dp),

@@ -38,6 +38,12 @@ fun SodaTile(fresh: Boolean) {
 | --- | --- | --- |
 | `color` | `Color(0xFF9ED8FF)` | Color of the bubbles' rim and their faint fill. |
 | `size` | `10.dp` | Diameter of the largest bubble. |
+| `rate` | `1f` | How often bubbles come, as a factor: 2 is twice as many. Must be positive. |
+| `wobble` | `3.dp` | How wide a bubble sways from side to side. Must not be negative. |
+| `pop` | `true` | Whether a bubble swells and pops at the end of its life. Without it the bubble thins out gently. |
+| `colorVariation` | `0f` | How much the bubbles differ in tint, from 0 (all `color`) to 1. |
+| `physics` | `ParticlePhysics.Default` | How the particles launch and move: cone, speed, lifetime, gravity, drag, size, spin, fade, start and end scale and emission area. Parts left out keep the effect's own values; blend mode and color pick are ignored. The lifetime sets how high the bubbles rise. |
+| `seed` | `0` | The start of the random numbers that place and shape the bubbles. |
 
 ## Reduced motion
 

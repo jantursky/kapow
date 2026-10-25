@@ -9,7 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.ProgressEffect
 import com.jantursky.kapow.progressEffect
@@ -22,11 +24,14 @@ import com.jantursky.kapow.samples.design.KapowText
 fun ProgressIrisExample(
     progress: Float,
     origin: TransformOrigin,
+    softEdge: Dp = 0.dp,
+    shape: Shape? = null,
+    invert: Boolean = false,
 ) {
     Box(
         Modifier
             .size(width = 240.dp, height = 160.dp)
-            .progressEffect(ProgressEffect.iris(origin)) { progress }
+            .progressEffect(ProgressEffect.iris(origin, softEdge, shape, invert)) { progress }
             .clip(KapowShapes.card)
             .background(Brush.linearGradient(listOf(KapowEffectColors.amber, KapowEffectColors.coral))),
         contentAlignment = Alignment.Center,

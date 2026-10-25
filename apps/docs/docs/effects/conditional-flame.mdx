@@ -39,7 +39,14 @@ fun StreakCounter(onFire: Boolean) {
 | Parameter | Default | Description |
 | --- | --- | --- |
 | `colors` | `ConditionalEffect.FlameColors` | The colors a puff goes through, from birth to end. At least two; let the last one be transparent so puffs burn out. |
-| `height` | `40.dp` | About how high the flames reach above the element. Puffs are sized from it too. |
+| `height` | `40.dp` | About how high the flames reach away from the element. Puffs are sized from it too. |
+| `width` | `null` | Width of the base of the flames. Null takes about a fifth of the edge, at most half the height. |
+| `intensity` | `1f` | How dense the flames are, as a factor: 2 is twice as many puffs. Must be positive. |
+| `wind` | `0f` | A sideways push in dp per second squared along the edge. Positive blows to the right (down for a side edge). |
+| `edge` | `EdgeSide.Top` | The edge the flames burn from. `Start` and `End` follow the layout direction. |
+| `flicker` | `1f` | How fast the flames sway, as a factor. Must not be negative. |
+| `physics` | `ParticlePhysics.Default` | How the particles launch and move: cone, speed, lifetime, gravity, drag, size, spin, fade, start and end scale and emission area. Parts left out keep the effect's own values; blend mode and color pick are ignored. |
+| `seed` | `0` | The start of the random numbers that place and shape the puffs. |
 
 `FlameColors` is yellow, amber, coral and a transparent deep red. Pass blues for a gas flame.
 

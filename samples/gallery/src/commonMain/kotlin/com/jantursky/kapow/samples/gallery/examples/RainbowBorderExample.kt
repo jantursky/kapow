@@ -24,6 +24,9 @@ fun RainbowBorderExample(
     highlighted: Boolean,
     width: Dp,
     turn: Duration,
+    clockwise: Boolean = true,
+    glow: Dp = 0.dp,
+    alpha: Float = 1f,
 ) {
     val shape = RoundedCornerShape(20.dp)
     Column(
@@ -31,7 +34,14 @@ fun RainbowBorderExample(
             .width(220.dp)
             .conditionalEffect(
                 highlighted,
-                ConditionalEffect.rainbowBorder(width = width, shape = shape, duration = turn),
+                ConditionalEffect.rainbowBorder(
+                    width = width,
+                    shape = shape,
+                    duration = turn,
+                    clockwise = clockwise,
+                    alpha = alpha,
+                    glow = glow,
+                ),
             ).clip(shape)
             .background(KapowTheme.colors.panel)
             .padding(20.dp),

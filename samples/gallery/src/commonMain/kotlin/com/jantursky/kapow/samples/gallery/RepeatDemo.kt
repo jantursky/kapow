@@ -18,17 +18,30 @@ import kotlin.time.Duration.Companion.seconds
 internal fun RepeatDemo() {
     var unread by remember { mutableStateOf(true) }
     var seconds by remember { mutableFloatStateOf(1f) }
+    var maxCount by remember { mutableFloatStateOf(0f) }
+    var jitter by remember { mutableFloatStateOf(0f) }
+    var delay by remember { mutableFloatStateOf(0f) }
     val duration = (seconds * 1000).roundToInt().milliseconds
     ExampleScaffold(
         autoplay =
             Autoplay({ if (unread) maxOf(4.seconds, duration * 3) else 1.5.seconds }, startsOn = true) {
                 unread = !unread
             },
-        stage = { RepeatExample(unread, duration) },
+        stage = {
+            RepeatExample(
+                unread,
+                duration,
+                (delay * 1000).roundToInt().milliseconds,
+                maxCount.roundToInt().takeIf {
+                    it >
+                        0
+                },
+                jitter,
+            )
+        },
         code = {
-            conditionalEffectCode(
-                call(
-                    "ConditionalEffect.repeat",
+            val args =
+                listOfNotNull(
                     "" to
                         call(
                             "ChangeEffect.pulse",
@@ -37,13 +50,30 @@ internal fun RepeatDemo() {
                             "style" to "PulseStyle.Fill",
                         ),
                     "every" to duration.kt(),
-                ),
-                "unread",
-            )
+                    ("initialDelay" to (delay * 1000).roundToInt().milliseconds.kt()).takeIf { delay != 0f },
+                    ("maxCount" to maxCount.roundToInt()).takeIf { maxCount.roundToInt() > 0 },
+                    ("jitter" to jitter.kt()).takeIf { jitter != 0f },
+                )
+            conditionalEffectCode(call("ConditionalEffect.repeat", *args.toTypedArray()), "unread")
         },
         controls = {
             PrimaryPill("Toggle", onClick = { unread = !unread })
             LabeledSlider("Every", "${seconds.oneDecimal()} s", seconds, { seconds = it }, 0.1f..3f)
+            LabeledSlider("Start after", "${delay.oneDecimal()} s", delay, { delay = it }, 0f..2f)
+            LabeledSlider(
+                "Max plays",
+                if (maxCount.roundToInt() ==
+                    0
+                ) {
+                    "no limit"
+                } else {
+                    "${maxCount.roundToInt()}"
+                },
+                maxCount,
+                { maxCount = it },
+                0f..10f,
+            )
+            LabeledSlider("Jitter", "${(jitter * 100).roundToInt()} %", jitter, { jitter = it }, 0f..1f)
         },
     )
 }

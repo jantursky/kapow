@@ -1,14 +1,25 @@
 package com.jantursky.kapow.effects
 
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.EdgeSide
+import com.jantursky.kapow.ParticlePhysics
 import com.jantursky.kapow.internal.ConditionalRunner
 import com.jantursky.kapow.internal.EffectContext
+import com.jantursky.kapow.internal.applyTo
+import com.jantursky.kapow.internal.atSpeed
 import com.jantursky.kapow.internal.awaitFrameTime
+import com.jantursky.kapow.internal.emitterOrigin
+import com.jantursky.kapow.internal.growthCurve
+import com.jantursky.kapow.internal.opacityCurve
+import com.jantursky.kapow.internal.scaledInterval
 import com.jantursky.kapow.particles.Emission
 import com.jantursky.kapow.particles.ParticleBatch
 import com.jantursky.kapow.particles.ParticlePainter
@@ -20,24 +31,51 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
 
-/** A few puffs from the middle of the top edge of an element [width] px wide, rising about [height] px. */
+/**
+ * A few puffs from the middle of an element's edge that is [width] px long, rising about [height] px away from it.
+ * [edge] says which edge burns, [flameWidth] px (or by default about a fifth of the edge) is the width of the
+ * base, [wind] pushes the flames sideways in px per second squared and [flicker] speeds up their sway.
+ */
 internal fun flameEmission(
     width: Float,
     height: Float,
-): Emission =
-    Emission(
+    edge: EdgeSide = EdgeSide.Top,
+    flameWidth: Float? = null,
+    wind: Float = 0f,
+    flicker: Float = 1f,
+    rtl: Boolean = false,
+): Emission {
+    val half = if (flameWidth != null) flameWidth / 2f else minOf(width * 0.22f, height * 0.5f)
+    val base = height * 0.08f
+    val vertical = edge == EdgeSide.Top || edge == EdgeSide.Bottom
+    val left = (edge == EdgeSide.Start) != rtl && !vertical
+    val angle =
+        when {
+            edge == EdgeSide.Top -> -90f
+            edge == EdgeSide.Bottom -> 90f
+            left -> 180f
+            else -> 0f
+        }
+    return Emission(
         count = 3,
-        angle = Spread(-90f - 6f, -90f + 6f),
+        angle = Spread(angle - 6f, angle + 6f),
         speed = Spread(height * 0.9f, height * 1.4f),
         lifetime = Spread(0.45f, 0.75f),
-        gravity = -height,
+        gravity = if (vertical) (if (edge == EdgeSide.Top) -height else height) else wind,
+        gravityX = if (vertical) wind else (if (left) -height else height),
         scale = Spread(0.75f, 1.1f),
-        offsetX = Spread(-minOf(width * 0.22f, height * 0.5f), minOf(width * 0.22f, height * 0.5f)),
-        offsetY = Spread(height * 0.08f),
+        offsetX = if (vertical) Spread(-half, half) else Spread(if (left) base else -base),
+        offsetY =
+            if (vertical) {
+                Spread(if (edge == EdgeSide.Top) base else -base)
+            } else {
+                Spread(-half, half)
+            },
         stagger = 0.02f,
-        wobble = height * 0.05f,
-        wobbleRate = 3f,
+        wobble = if (vertical) height * 0.05f else 0f,
+        wobbleRate = 3f * flicker,
     )
+}
 
 /**
  * The flame painter only learns a puff's opacity, so the batch hands it the life left instead (1 to 0, see
@@ -69,6 +107,7 @@ internal fun flameGrowth(progress: Float): Float = 1f - 0.7f * progress.coerceIn
 internal fun flamePainter(
     colors: List<Color>,
     radiusPx: Float,
+    sideways: Boolean = false,
 ): ParticlePainter {
     val brushes =
         Array(FLAME_SHADES) { k ->
@@ -86,7 +125,7 @@ internal fun flamePainter(
         val alpha = flameOpacity(progress)
         if (alpha > 0f) {
             // Taller than wide, so the overlapping puffs read as tongues rather than a cloud.
-            scale(1f, FLAME_STRETCH, pivot = Offset.Zero) {
+            scale(if (sideways) FLAME_STRETCH else 1f, if (sideways) 1f else FLAME_STRETCH, pivot = Offset.Zero) {
                 drawCircle(brushes[(progress * (FLAME_SHADES - 1)).roundToInt()], radiusPx, Offset.Zero, alpha)
             }
         }
@@ -96,13 +135,20 @@ internal fun flamePainter(
 private const val FLAME_SHADES = 24
 private const val FLAME_STRETCH = 1.6f
 
-/** Procedural flames above the element while active. Reduced motion shows none. */
+/** Procedural flames along an edge of the element while active. Reduced motion shows none. */
 internal class FlameRunner(
     private val colors: List<Color>,
     private val height: Dp,
+    private val width: Dp? = null,
+    private val intensity: Float = 1f,
+    private val wind: Float = 0f,
+    private val edge: EdgeSide = EdgeSide.Top,
+    private val flicker: Float = 1f,
+    private val physics: ParticlePhysics = ParticlePhysics.Default,
+    firstSeed: Int = 0,
 ) : ConditionalRunner() {
     private var job: Job? = null
-    private var seed = 0
+    private var seed = firstSeed
 
     override fun setActive(
         context: EffectContext,
@@ -111,21 +157,43 @@ internal class FlameRunner(
         job?.cancel()
         if (!active || context.isReducedMotion()) return
         val reach = with(context.density) { height.toPx() }
-        val painter = flamePainter(colors, reach * 0.22f)
+        val baseWidth = with(context.density) { width?.toPx() }
+        val windPx = with(context.density) { wind.dp.toPx() }
+        val vertical = edge == EdgeSide.Top || edge == EdgeSide.Bottom
+        val painter = flamePainter(colors, reach * 0.22f, sideways = !vertical)
+        val fade = physics.opacityCurve(::flameLife)
+        val grow = physics.growthCurve(::flameGrowth)
+        val speed = context.speed
+        val interval = scaledInterval(INTERVAL, intensity * speed)
+        val rtl = context.layoutDirection == LayoutDirection.Rtl
         job =
             context.scope.launch {
                 while (isActive) {
-                    val width = context.size.width.toFloat()
-                    val batch =
-                        ParticleBatch(
-                            ParticleSystem(flameEmission(width, reach), seed++),
-                            painter,
-                            opacity = ::flameLife,
-                            growth = ::flameGrowth,
+                    val w = context.size.width.toFloat()
+                    val h = context.size.height.toFloat()
+                    val emission =
+                        physics
+                            .applyTo(
+                                flameEmission(if (vertical) w else h, reach, edge, baseWidth, windPx, flicker, rtl),
+                                context.density.density,
+                                Size(w, h),
+                                context.layoutDirection,
+                            ).atSpeed(speed)
+                    val batch = ParticleBatch(ParticleSystem(emission, seed++), painter, opacity = fade, growth = grow)
+                    val start = (edge == EdgeSide.Start) != rtl
+                    batch.origin =
+                        physics.emitterOrigin(
+                            w,
+                            h,
+                            when {
+                                edge == EdgeSide.Top -> Offset(w / 2f, 0f)
+                                edge == EdgeSide.Bottom -> Offset(w / 2f, h)
+                                start -> Offset(0f, h / 2f)
+                                else -> Offset(w, h / 2f)
+                            },
                         )
-                    batch.origin = Offset(width / 2f, 0f)
                     context.emit(batch)
-                    awaitFrameTime(INTERVAL)
+                    awaitFrameTime(interval)
                 }
             }
     }

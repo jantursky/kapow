@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.ParticleShape
 import com.jantursky.kapow.conditionalEffect
 import com.jantursky.kapow.samples.design.KapowEffectColors
 import com.jantursky.kapow.samples.design.KapowShapes
@@ -24,6 +25,9 @@ fun ConditionalSparklesExample(
     isNew: Boolean,
     count: Int,
     size: Dp,
+    lifetime: Float = 1f,
+    shape: ParticleShape = ParticleShape.Sparkle,
+    seed: Int = 0,
 ) {
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
         KapowText("Smart folders", style = KapowTheme.type.subheading)
@@ -33,8 +37,16 @@ fun ConditionalSparklesExample(
             color = Color.Black,
             modifier =
                 Modifier
-                    .conditionalEffect(isNew, ConditionalEffect.sparkles(count = count, size = size))
-                    .clip(KapowShapes.pill)
+                    .conditionalEffect(
+                        isNew,
+                        ConditionalEffect.sparkles(
+                            count = count,
+                            size = size,
+                            lifetime = 0.8f * lifetime..1.3f * lifetime,
+                            shape = shape,
+                            seed = seed,
+                        ),
+                    ).clip(KapowShapes.pill)
                     .background(if (isNew) KapowEffectColors.amber else KapowTheme.colors.hairline)
                     .padding(horizontal = 12.dp, vertical = 4.dp),
         )

@@ -19,24 +19,28 @@ internal fun SpotlightDemo() {
     var showTip by remember { mutableStateOf(true) }
     var dim by remember { mutableFloatStateOf(0.6f) }
     var softness by remember { mutableFloatStateOf(24f) }
+    var ring by remember { mutableFloatStateOf(0f) }
+    var breathe by remember { mutableFloatStateOf(0f) }
     ExampleScaffold(
         autoplay = Autoplay({ if (showTip) 3.5.seconds else 1.5.seconds }, startsOn = true) { showTip = !showTip },
-        stage = { SpotlightExample(showTip, dim, softness.dp) },
+        stage = { SpotlightExample(showTip, dim, softness.dp, ring.dp, breathe.dp) },
         code = {
-            conditionalEffectCode(
-                call(
-                    "ConditionalEffect.spotlight",
+            val args =
+                listOfNotNull(
                     "color" to "Color.Black.copy(alpha = ${dim.kt()})",
                     "shape" to "CircleShape",
                     "softness" to softness.dp.kt(),
-                ),
-                "showTip",
-            )
+                    ("ring" to ring.dp.kt()).takeIf { ring != 0f },
+                    ("breathe" to breathe.dp.kt()).takeIf { breathe != 0f },
+                )
+            conditionalEffectCode(call("ConditionalEffect.spotlight", *args.toTypedArray()), "showTip")
         },
         controls = {
             PrimaryPill("Toggle", onClick = { showTip = !showTip })
             LabeledSlider("Dim", "${(dim * 100).roundToInt()} %", dim, { dim = it }, 0.2f..0.9f)
             LabeledSlider("Softness", "${softness.roundToInt()} dp", softness, { softness = it }, 0f..64f)
+            LabeledSlider("Ring", "${ring.roundToInt()} dp", ring, { ring = it }, 0f..6f)
+            LabeledSlider("Breathe", "${breathe.roundToInt()} dp", breathe, { breathe = it }, 0f..12f)
         },
     )
 }

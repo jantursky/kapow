@@ -23,12 +23,24 @@ fun ConditionalGlowExample(
     color: Color,
     radius: Dp,
     shape: Shape,
+    strength: Float = 0.7f,
+    breathe: Float = 0f,
+    brighten: Float = 0.25f,
 ) {
     Box(
         Modifier
             .size(width = 220.dp, height = 120.dp)
-            .conditionalEffect(selected, ConditionalEffect.glow(color, radius, shape))
-            .clip(shape)
+            .conditionalEffect(
+                selected,
+                ConditionalEffect.glow(
+                    color,
+                    radius,
+                    shape,
+                    strength = strength,
+                    breathe = breathe,
+                    brighten = brighten,
+                ),
+            ).clip(shape)
             .background(KapowTheme.colors.panel),
         contentAlignment = Alignment.Center,
     ) {
