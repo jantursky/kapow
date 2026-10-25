@@ -1,13 +1,13 @@
 ---
 title: "Text: counter"
-description: A number that counts through the values in between and settles exactly on the new one.
+description: A number whose digits roll, or that counts through the values in between, and settles exactly on the new value.
 ---
 
-`KapowCounter` shows a whole number. The first composition shows it as it is. When the value changes, the number moves to the new one over a short time and ends exactly on it.
+`KapowCounter` shows a whole number. The first composition shows it as it is. When the value changes, the digits roll to the new one, or the number counts to it, over a short time and ends exactly on it.
 
 ## Usage
 
-The sample shows a score that counts up when it changes. The `format` function runs for every in-between value, so it can add separators or units.
+The sample shows a score whose digits roll when it changes. Use `CounterMode.Count` to count through the values in between instead. `format` adds separators or units.
 
 ```kotlin
 import androidx.compose.runtime.Composable
@@ -22,7 +22,7 @@ fun Score(score: Long) {
     KapowCounter(
         value = score,
         style = TextStyle(fontSize = 40.sp),
-        mode = CounterMode.Count,
+        mode = CounterMode.Roll,
         format = { "$it pts" },
         duration = 800.milliseconds,
     )
@@ -36,10 +36,10 @@ fun Score(score: Long) {
 | `value` | | The value to show. |
 | `modifier` | `Modifier` | Modifier for the counter. |
 | `style` | `TextStyle.Default` | Text style. |
-| `mode` | `CounterMode.Count` | `Count` counts through the values in between. |
-| `format` | `{ it.toString() }` | Turns a value into the text to show. Called for every in-between value. |
+| `mode` | `CounterMode.Roll` | `Roll` rolls each digit that changes. `Count` counts through the values in between. |
+| `format` | `{ it.toString() }` | Turns a value into the text to show. In `Count` mode it is called for every in-between value, in `Roll` mode for the old and the new value. |
 | `duration` | `600.milliseconds` | How long the move takes. Must not be negative. |
-| `easing` | `FastOutSlowInEasing` | The curve of the move. |
+| `easing` | `FastOutSlowInEasing` | The curve of the move. In `Roll` mode it applies to each digit. |
 
 ## Reduced motion
 
@@ -50,8 +50,9 @@ The new value appears at once.
 - The first composition shows the value without animating. Only changes after that move.
 - While the number moves, the counter is as wide as the wider of the old and the new text, aligned to the end, so its neighbors stay put. When the move ends, it takes the width of the new text.
 - Screen readers read the new value as soon as it is set, never a value in between.
-- The move is monotonic and ends exactly on the new value, also for values near the limits of `Long`.
-- A change during a move continues from the value currently shown.
+- In `Roll` mode the texts of the old and the new value line up on their last character. A digit that changes rolls out and the new one rolls in, upward when the value goes up and downward when it goes down. The slots start one after the other from the right. A separator, a sign, or a digit that appears or goes away cross-fades, and slots that do not change stay still. Going from 9 to 10 rolls the 9 into 0 and fades the 1 in.
+- In `Count` mode the move is monotonic and ends exactly on the new value, also for values near the limits of `Long`.
+- A change during a move starts from the value currently shown in `Count` mode, and from the value the last move was heading to in `Roll` mode.
 - Frames do not recompose anything. A value change recomposes the caller once.
 - A font with tabular figures, or a monospaced font, keeps the digits from shifting while they change.
 

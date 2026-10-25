@@ -22,7 +22,7 @@ private val steps = longArrayOf(1, 7, 120, 1_850, 99_999, -40, 12, 3)
 internal fun CounterDemo() {
     var value by remember { mutableLongStateOf(1_280) }
     var step by remember { mutableLongStateOf(0) }
-    var mode by remember { mutableStateOf(CounterMode.Count) }
+    var mode by remember { mutableStateOf(CounterMode.Roll) }
     var millis by remember { mutableFloatStateOf(700f) }
     val duration = millis.roundToInt().milliseconds
 

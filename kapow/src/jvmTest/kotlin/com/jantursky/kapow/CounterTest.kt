@@ -162,6 +162,81 @@ class CounterTest {
         }
 
     @Test
+    fun rollShowsTheValueAtOnceThenMovesAndSettlesOnTheNewOne() =
+        runEffectTest {
+            value = 199
+            scene(mode = CounterMode.Roll)
+            val before = capture().darkPixels()
+            assertTrue(before > 50)
+            value = 200
+            mainClock.advanceTimeBy(160)
+            val middle = capture()
+            mainClock.advanceTimeBy(1200)
+            val after = capture()
+            assertTrue(middle.differsFrom(after), "the digits are still rolling in the middle")
+            onNodeWithTag("counter").assertTextEquals("200")
+            assertTrue(after.matches(stillFrame(200)), "settled on exactly the new text")
+        }
+
+    @Test
+    fun rollWorksDownwardAndAcrossAChangeOfLength() =
+        runEffectTest {
+            value = 10
+            scene(mode = CounterMode.Roll)
+            val wide = size()
+            value = 9
+            mainClock.advanceTimeBy(100)
+            assertEquals(wide, size(), "the old width is kept while rolling")
+            mainClock.advanceTimeBy(1200)
+            assertTrue(size().width < wide.width)
+            assertTrue(capture().matches(stillFrame(9)))
+        }
+
+    @Test
+    fun rollReducedMotionJumps() =
+        runEffectTest {
+            scene(KapowMotion.Reduced, CounterMode.Roll)
+            value = 200
+            mainClock.advanceTimeByFrame()
+            mainClock.advanceTimeByFrame()
+            assertTrue(capture().matches(stillFrame(200)))
+        }
+
+    @Test
+    fun rollFramesDoNotRecompose() =
+        runEffectTest {
+            scene(mode = CounterMode.Roll)
+            mainClock.advanceTimeByFrame()
+            val before = counter.count
+            value = 4321
+            repeat(60) { mainClock.advanceTimeByFrame() }
+            assertTrue(counter.count - before <= 1)
+        }
+
+    /** The counter showing [shown] from the first composition, so it never animates. */
+    private fun stillFrame(shown: Long): ImageBitmap {
+        lateinit var image: ImageBitmap
+        runEffectTest {
+            setEffectContent {
+                Box(Modifier.fillMaxSize().background(Color.White)) {
+                    KapowCounter(shown, style = TextStyle(color = Color.Black, fontSize = 32.sp))
+                }
+            }
+            image = capture()
+        }
+        return image
+    }
+
+    private fun ImageBitmap.differsFrom(other: ImageBitmap): Boolean = !matches(other)
+
+    private fun ImageBitmap.matches(other: ImageBitmap): Boolean {
+        for (x in 0 until minOf(width, other.width)) {
+            for (y in 0 until minOf(height, other.height) / 2) if (colorAt(x, y) != other.colorAt(x, y)) return false
+        }
+        return true
+    }
+
+    @Test
     fun parametersAreChecked() =
         runEffectTest {
             assertFailsWith<IllegalArgumentException> {
