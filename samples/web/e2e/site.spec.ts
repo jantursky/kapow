@@ -178,6 +178,10 @@ const LIVE = [
   'conditional-flame',
   'conditional-grayscale',
   'conditional-spotlight',
+  'conditional-shimmer',
+  'conditional-breathe',
+  'conditional-ping',
+  'conditional-confetti-rain',
   'progress-iris',
   'transition-iris',
   'transition-clock',
@@ -214,6 +218,7 @@ const LIVE = [
   'text-typewriter',
   'text-counter',
   'more-tilt',
+  'more-skeleton',
 ]
 
 for (const id of LIVE) {

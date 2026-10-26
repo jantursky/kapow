@@ -1,0 +1,65 @@
+---
+title: "More: skeleton"
+description: A shimmering placeholder over an element while it loads, revealed in place when loading ends.
+---
+
+`Modifier.kapowSkeleton` covers an element with a placeholder while `loading` is true, then fades the placeholder away to reveal the content. The content is measured and placed the whole time, so nothing moves when the data arrives. Lay out the real composables with dummy data and they become the shape of the skeleton.
+
+## Usage
+
+The sample covers an avatar and a name while a profile loads.
+
+```kotlin
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.kapowSkeleton
+
+@Composable
+fun ProfileRow(avatar: Painter, name: String, loading: Boolean) {
+    Row {
+        Image(
+            painter = avatar,
+            contentDescription = null,
+            modifier = Modifier.size(48.dp).kapowSkeleton(loading, shape = CircleShape),
+        )
+        Text(name, Modifier.kapowSkeleton(loading))
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `loading` | none | Whether the placeholder covers the content. |
+| `shape` | `RoundedCornerShape(8.dp)` | The shape of the placeholder. Give it the shape of the content, such as a circle for an avatar. |
+| `color` | `Color(0xFFD9DCE3)` | The fill of the placeholder. With an alpha below 1 the content shows through. |
+| `shimmer` | `true` | Whether a band of light keeps sweeping across the placeholder. |
+| `shimmerColor` | `Color.White.copy(alpha = 0.5f)` | The band. Its alpha is how bright the band gets at its middle. |
+| `angle` | `20f` | Direction the band travels, in degrees clockwise from pointing right. |
+| `duration` | `1500.milliseconds` | How long one sweep takes. |
+| `revealDuration` | `300.milliseconds` | How long the placeholder takes to fade away. |
+| `revealEasing` | `FastOutSlowInEasing` | The curve of that fade. |
+
+## Reduced motion
+
+The placeholder is still, with no shimmer, and the reveal is a plain cross-fade.
+
+## Notes
+
+- An element that is first composed with `loading` set to false shows its content at once, with no placeholder and no reveal.
+- The shimmer stops by itself once the placeholder is gone, so a loaded list costs nothing.
+- Nothing recomposes while the placeholder shimmers or fades.
+- The placeholder is drawn, not announced. Mark the element as busy yourself if a screen reader should hear that it is loading.
+- For a shimmer over your own placeholder blocks, use [`ConditionalEffect.shimmer`](/effects/conditional-shimmer).
+
+## Live example
+
+<include example="more-skeleton">../_snippets/live-example.mdx</include>

@@ -37,6 +37,10 @@ export default defineMeta({
     'conditional-flame',
     'conditional-grayscale',
     'conditional-spotlight',
+    'conditional-shimmer',
+    'conditional-breathe',
+    'conditional-ping',
+    'conditional-confetti-rain',
     'progress-shine',
     'progress-glow',
     'progress-iris',
@@ -62,5 +66,6 @@ export default defineMeta({
     'text-typewriter',
     'text-counter',
     'more-tilt',
+    'more-skeleton',
   ],
 })

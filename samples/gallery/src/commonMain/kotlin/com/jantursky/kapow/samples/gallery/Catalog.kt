@@ -256,6 +256,34 @@ val entries: List<Entry> =
             Example("SpotlightExample.kt") { SpotlightDemo() },
         ),
         Entry(
+            "conditional-shimmer",
+            Group.Conditional,
+            "Shimmer",
+            "A band of light sweeps the element again and again while a condition holds.",
+            Example("ShimmerExample.kt") { ShimmerDemo() },
+        ),
+        Entry(
+            "conditional-breathe",
+            Group.Conditional,
+            "Breathe",
+            "The element swells and settles slowly while a condition holds.",
+            Example("BreatheExample.kt") { BreatheDemo() },
+        ),
+        Entry(
+            "conditional-ping",
+            Group.Conditional,
+            "Ping",
+            "Rings grow out of the element's outline and fade while a condition holds.",
+            Example("PingExample.kt") { PingDemo() },
+        ),
+        Entry(
+            "conditional-confetti-rain",
+            Group.Conditional,
+            "Confetti rain",
+            "Confetti keeps falling from the element's top edge while a condition holds.",
+            Example("ConfettiRainExample.kt") { ConfettiRainDemo() },
+        ),
+        Entry(
             "progress-shine",
             Group.Progress,
             "Shine",
@@ -457,6 +485,13 @@ val entries: List<Entry> =
             "Tilt",
             "The element tilts in 3D toward the pointer, with a light sheen.",
             Example("TiltExample.kt") { TiltDemo() },
+        ),
+        Entry(
+            "more-skeleton",
+            Group.More,
+            "Skeleton",
+            "A shimmering placeholder over the content that fades away when loading ends.",
+            Example("SkeletonExample.kt") { SkeletonDemo() },
         ),
     )
 

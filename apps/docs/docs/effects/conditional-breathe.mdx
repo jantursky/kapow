@@ -1,0 +1,59 @@
+---
+title: "Conditional: breathe"
+description: The element swells and settles slowly, and can float, while a condition is true.
+---
+
+Breathe grows an element a little and lets it shrink back, on a slow smooth loop, for as long as a condition holds. Optionally it floats up and down as well. Use it to say that something is alive: a microphone that is listening, a call to action, a device that is syncing. When the condition turns false the element settles back to rest on a spring, with no jump.
+
+## Usage
+
+The sample breathes a card while an assistant is listening.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.conditionalEffect
+
+@Composable
+fun ListeningCard(listening: Boolean) {
+    Box(
+        Modifier
+            .size(width = 180.dp, height = 120.dp)
+            .conditionalEffect(listening, ConditionalEffect.breathe())
+            .clip(RoundedCornerShape(18.dp))
+            .background(Color(0xFF6B62F2)),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `scale` | `1.04f` | How large the element gets at the fullest breath, as a factor of its size. At least 1. |
+| `float` | `0.dp` | How far the element rises at the fullest breath. `0.dp` keeps it in place. |
+| `duration` | `3.seconds` | How long one breath, in and out, takes. |
+
+## Reduced motion
+
+The element does not move.
+
+## Notes
+
+- The scale and float are applied to the element's graphics layer, so nothing is laid out again and neighbors do not move.
+- The breath starts from rest, so the element never jumps when the condition turns true.
+- When the condition turns false the element settles back on a critically damped spring. Set `fadeIn` or `fadeOut` to ease with a plain animation of that length instead.
+- `speed` makes the breath faster or slower.
+- Nothing recomposes while the element breathes.
+
+## Live example
+
+<include example="conditional-breathe">../_snippets/live-example.mdx</include>
