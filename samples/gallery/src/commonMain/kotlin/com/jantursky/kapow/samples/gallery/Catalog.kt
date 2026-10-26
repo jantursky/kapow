@@ -270,6 +270,13 @@ val entries: List<Entry> =
             Example("PingExample.kt") { PingDemo() },
         ),
         Entry(
+            "conditional-confetti-rain",
+            Group.Conditional,
+            "Confetti rain",
+            "Confetti keeps falling from the element's top edge while a condition holds.",
+            Example("ConfettiRainExample.kt") { ConfettiRainDemo() },
+        ),
+        Entry(
             "progress-shine",
             Group.Progress,
             "Shine",

@@ -15,6 +15,7 @@ import com.jantursky.kapow.effects.BorderBeamRunner
 import com.jantursky.kapow.effects.BreatheRunner
 import com.jantursky.kapow.effects.BubblesRunner
 import com.jantursky.kapow.effects.ConditionalGlowRunner
+import com.jantursky.kapow.effects.ConfettiRainRunner
 import com.jantursky.kapow.effects.FlameRunner
 import com.jantursky.kapow.effects.GrayscaleRunner
 import com.jantursky.kapow.effects.MarchingAntsRunner
@@ -738,6 +739,36 @@ public abstract class ConditionalEffect internal constructor() {
         }
 
         private const val MAX_PING_RINGS = 8
+
+        /**
+         * Confetti that keeps raining from the element's top edge, tumbling and fading as it falls, while the
+         * condition holds. When it turns false no new pieces start and the ones in the air fall out and expire.
+         *
+         * The pieces are particles: a [KapowParticleLayer] above the element lets them fall past clipping parents,
+         * which would otherwise cut them off at the element's bounds. At most 200 pieces are in the air at once,
+         * however high the [density]. With reduced motion none fall. [physics] sets the launch cone, speed,
+         * lifetime (how far they fall), gravity, drag, size, spin, fade, scale, emission area, blend mode and color
+         * pick.
+         *
+         * @param colors the colors of the pieces, taken in turn or at random as [physics] picks.
+         * @param density how many pieces start each second. The cap of 200 in the air holds the rain back when this
+         *   is higher than the pieces can fall out.
+         * @param size the width of a small piece. Ribbons are thinner and longer.
+         * @param physics how the pieces launch and fall.
+         * @param seed the start of the random numbers that place and shape the pieces.
+         */
+        public fun confettiRain(
+            colors: List<Color> = ParticleContent.DefaultColors,
+            density: Float = 24f,
+            size: Dp = 8.dp,
+            physics: ParticlePhysics = ParticlePhysics.Default,
+            seed: Int = 0,
+        ): ConditionalEffect {
+            require(colors.isNotEmpty()) { "colors must not be empty" }
+            require(density > 0f && density.isFinite()) { "density must be positive" }
+            require(size > 0.dp) { "size must be positive" }
+            return ConfettiRain(colors, density, size, physics, seed)
+        }
     }
 
     internal data class Repeat(
@@ -957,5 +988,15 @@ public abstract class ConditionalEffect internal constructor() {
     ) : ConditionalEffect() {
         override fun createRunner(): ConditionalRunner =
             PingRunner(color, shape, rings, scale, duration.toDouble(DurationUnit.SECONDS), width)
+    }
+
+    internal data class ConfettiRain(
+        val colors: List<Color>,
+        val density: Float,
+        val size: Dp,
+        val physics: ParticlePhysics,
+        val seed: Int,
+    ) : ConditionalEffect() {
+        override fun createRunner(): ConditionalRunner = ConfettiRainRunner(colors, density, size, physics, seed)
     }
 }

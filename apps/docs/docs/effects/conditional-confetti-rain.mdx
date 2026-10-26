@@ -1,0 +1,57 @@
+---
+title: "Conditional: confetti rain"
+description: Confetti keeps falling from an element's top edge, tumbling and fading, while a condition is true.
+---
+
+Confetti rain lets small rectangles and ribbons fall from the top edge of an element for as long as a condition holds. They tumble as they drop, flutter sideways a little and fade out. Use it for a celebration that lasts: a goal that is reached, a winning screen, a level that is cleared.
+
+## Usage
+
+The sample rains confetti over a card while a goal is reached.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.conditionalEffect
+
+@Composable
+fun GoalCard(reached: Boolean) {
+    Box(
+        Modifier
+            .size(width = 200.dp, height = 110.dp)
+            .conditionalEffect(reached, ConditionalEffect.confettiRain())
+            .background(Color(0xFFF3F4F8)),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `colors` | `ParticleContent.DefaultColors` | The colors of the pieces, taken in turn or at random as `physics` picks. Must not be empty. |
+| `density` | `24f` | How many pieces start each second. |
+| `size` | `8.dp` | The width of a small piece. Ribbons are thinner and longer. |
+| `physics` | `ParticlePhysics.Default` | How the pieces launch and fall: cone, speed, lifetime, gravity, drag, size, spin, fade, scale, emission area, blend mode and color pick. |
+| `seed` | `0` | The start of the random numbers that place and shape the pieces. |
+
+## Reduced motion
+
+No pieces fall.
+
+## Notes
+
+- The pieces are particles. They draw through a [particle layer](/guides/particle-layer) when one is above the element, so they can fall past a clipping parent. Without one they draw around the element.
+- At most 200 pieces are in the air at once. A higher `density` than the pieces can fall out at is held back by that cap, so the work stays bounded however long the rain runs.
+- When the condition turns false no new pieces start, and the pieces in the air fall out and expire. After the last one is gone nothing runs.
+- Pieces do not follow the element if it moves.
+
+## Live example
+
+<include example="conditional-confetti-rain">../_snippets/live-example.mdx</include>

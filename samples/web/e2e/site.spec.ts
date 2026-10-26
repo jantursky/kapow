@@ -181,6 +181,7 @@ const LIVE = [
   'conditional-shimmer',
   'conditional-breathe',
   'conditional-ping',
+  'conditional-confetti-rain',
   'progress-iris',
   'transition-iris',
   'transition-clock',
