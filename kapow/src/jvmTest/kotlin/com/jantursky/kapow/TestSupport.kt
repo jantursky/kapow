@@ -10,6 +10,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.PixelMap
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.platform.LocalDensity
@@ -68,11 +69,14 @@ fun SolidElement(
 @OptIn(ExperimentalTestApi::class)
 fun ComposeUiTest.capture(): ImageBitmap = onRoot().captureToImage()
 
+// Reading the pixels copies the whole image, so tests that look at many pixels of one capture read them once.
+private val pixelMaps = java.util.Collections.synchronizedMap(java.util.WeakHashMap<ImageBitmap, PixelMap>())
+
 /** The color at ([x], [y]) of an image. */
 fun ImageBitmap.colorAt(
     x: Int,
     y: Int,
-): Color = toPixelMap()[x, y]
+): Color = pixelMaps.getOrPut(this) { toPixelMap() }[x, y]
 
 /** Brightness from 0 to 1, enough to tell a highlight from the base color. */
 val Color.luminance: Float get() = 0.2126f * red + 0.7152f * green + 0.0722f * blue
