@@ -12,12 +12,14 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.effects.BorderBeamRunner
+import com.jantursky.kapow.effects.BreatheRunner
 import com.jantursky.kapow.effects.BubblesRunner
 import com.jantursky.kapow.effects.ConditionalGlowRunner
 import com.jantursky.kapow.effects.FlameRunner
 import com.jantursky.kapow.effects.GrayscaleRunner
 import com.jantursky.kapow.effects.MarchingAntsRunner
 import com.jantursky.kapow.effects.OrbitRunner
+import com.jantursky.kapow.effects.PingRunner
 import com.jantursky.kapow.effects.PushDownRunner
 import com.jantursky.kapow.effects.RainbowBorderRunner
 import com.jantursky.kapow.effects.RepeatRunner
@@ -680,6 +682,62 @@ public abstract class ConditionalEffect internal constructor() {
             require(!pause.isNegative()) { "pause must not be negative" }
             return Shimmer(color, angle, duration, bandWidth, softness, pause, blendMode)
         }
+
+        /**
+         * A slow swell: the element grows a little and shrinks back on a smooth loop, and can float up and down, while
+         * the condition holds. It eases in when the condition turns true and settles back to rest on a spring when it
+         * turns false, with no jump. Use it to say that something is alive, such as a mic that is listening.
+         *
+         * The scale and float are applied to the element's graphics layer, so nothing is laid out again. With reduced
+         * motion the element does not move.
+         *
+         * @param scale how large the element gets at the fullest breath, as a factor of its size. Must be at least 1.
+         * @param float how far the element rises at the fullest breath. 0 keeps it in place.
+         * @param duration how long one breath, in and out, takes.
+         */
+        public fun breathe(
+            scale: Float = 1.04f,
+            float: Dp = 0.dp,
+            duration: Duration = 3.seconds,
+        ): ConditionalEffect {
+            require(scale >= 1f && scale.isFinite()) { "scale must be at least 1" }
+            require(float >= 0.dp) { "float must not be negative" }
+            require(duration.isPositive()) { "duration must be positive" }
+            return Breathe(scale, float, duration)
+        }
+
+        /**
+         * Rings that keep growing out of the element's outline and fading, like a radar ping or a live indicator,
+         * while the condition holds. The rings follow the element's [shape] and are born evenly, one every
+         * `duration / rings`. When the condition turns false no new ring starts and the rings in flight finish
+         * (`fadeOut(...)` fades them out instead).
+         *
+         * The rings are drawn behind the element. With reduced motion one faint ring stays still around the element
+         * while the condition holds.
+         *
+         * @param color the color of the rings.
+         * @param shape the shape of the element, which the rings follow.
+         * @param rings how many rings are alive at once.
+         * @param scale how large a ring is when it is gone, as a factor of the element's size. Must be above 1.
+         * @param duration how long a ring takes to grow and fade.
+         * @param width the stroke width of the rings.
+         */
+        public fun ping(
+            color: Color = Color(0xFF6B62F2),
+            shape: Shape = RectangleShape,
+            rings: Int = 2,
+            scale: Float = 1.6f,
+            duration: Duration = 1600.milliseconds,
+            width: Dp = 2.dp,
+        ): ConditionalEffect {
+            require(rings in 1..MAX_PING_RINGS) { "rings must be between 1 and $MAX_PING_RINGS" }
+            require(scale > 1f && scale.isFinite()) { "scale must be above 1" }
+            require(duration.isPositive()) { "duration must be positive" }
+            require(width > 0.dp) { "width must be positive" }
+            return Ping(color, shape, rings, scale, duration, width)
+        }
+
+        private const val MAX_PING_RINGS = 8
     }
 
     internal data class Repeat(
@@ -878,5 +936,26 @@ public abstract class ConditionalEffect internal constructor() {
                 softness,
                 blendMode,
             )
+    }
+
+    internal data class Breathe(
+        val scale: Float,
+        val float: Dp,
+        val duration: Duration,
+    ) : ConditionalEffect() {
+        override fun createRunner(): ConditionalRunner =
+            BreatheRunner(scale, float, duration.toDouble(DurationUnit.SECONDS))
+    }
+
+    internal data class Ping(
+        val color: Color,
+        val shape: Shape,
+        val rings: Int,
+        val scale: Float,
+        val duration: Duration,
+        val width: Dp,
+    ) : ConditionalEffect() {
+        override fun createRunner(): ConditionalRunner =
+            PingRunner(color, shape, rings, scale, duration.toDouble(DurationUnit.SECONDS), width)
     }
 }

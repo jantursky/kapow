@@ -256,6 +256,20 @@ val entries: List<Entry> =
             Example("ShimmerExample.kt") { ShimmerDemo() },
         ),
         Entry(
+            "conditional-breathe",
+            Group.Conditional,
+            "Breathe",
+            "The element swells and settles slowly while a condition holds.",
+            Example("BreatheExample.kt") { BreatheDemo() },
+        ),
+        Entry(
+            "conditional-ping",
+            Group.Conditional,
+            "Ping",
+            "Rings grow out of the element's outline and fade while a condition holds.",
+            Example("PingExample.kt") { PingDemo() },
+        ),
+        Entry(
             "progress-shine",
             Group.Progress,
             "Shine",

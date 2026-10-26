@@ -1,0 +1,59 @@
+---
+title: "Conditional: ping"
+description: Rings grow out of an element's outline and fade, again and again, while a condition is true.
+---
+
+Ping sends rings out of an element's outline while a condition holds, like a radar ping or a live indicator. Each ring grows to a set size while it fades away, and the rings are born evenly one after another. The rings follow the element's shape. Use it for a live broadcast, a recording, a location that is being found, or a notification that wants attention.
+
+## Usage
+
+The sample pings a round button while a broadcast is live.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.conditionalEffect
+
+@Composable
+fun LiveButton(live: Boolean) {
+    Box(
+        Modifier
+            .size(96.dp)
+            .conditionalEffect(live, ConditionalEffect.ping(Color(0xFFFF6B5A), shape = CircleShape))
+            .background(Color(0xFFE5484D), CircleShape),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `color` | `Color(0xFF6B62F2)` | Color of the rings. |
+| `shape` | `RectangleShape` | The element's shape, which the rings follow. |
+| `rings` | `2` | How many rings are alive at once, from 1 to 8. A new one is born every `duration / rings`. |
+| `scale` | `1.6f` | How large a ring is when it is gone, as a factor of the element's size. Above 1. |
+| `duration` | `1600.milliseconds` | How long a ring takes to grow and fade. |
+| `width` | `2.dp` | Stroke width of the rings. |
+
+## Reduced motion
+
+One faint ring stays still around the element while the condition holds.
+
+## Notes
+
+- The rings are drawn behind the element, so a ring emerges from its edge.
+- When the condition turns false no new ring starts and the rings in flight finish. Set `fadeOut` to fade them out at once instead.
+- A ring that grows past the element's bounds is cut off by a clipping parent. Give the element room, or place the effect above the clip.
+- Nothing recomposes while the rings move.
+
+## Live example
+
+<include example="conditional-ping">../_snippets/live-example.mdx</include>
