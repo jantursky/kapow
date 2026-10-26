@@ -4,6 +4,8 @@ All notable changes to `io.github.jantursky:kapow` and its companion artifacts a
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-26
+
 ### Added
 
 - New effects: `ChangeEffect.hearts`; `ConditionalEffect.shimmer`, `breathe`, `ping` and `confettiRain`; `Modifier.kapowSkeleton(loading)`, a shimmering placeholder over always-laid-out content that fades away when loading ends; `KapowTypewriter` (typed or scrambled text with an optional cursor); `KapowCounter` (digits that roll, or a number that counts); `Modifier.kapowTilt` (3D tilt toward the pointer with a light sheen).
@@ -31,5 +33,6 @@ All notable changes to `io.github.jantursky:kapow` and its companion artifacts a
 - `kapow-multihaptic` (`io.github.jantursky:kapow-multihaptic`): `rememberMultihapticFeedback()` plays feedback events as haptics through multihaptic.
 - Targets: Android (minSdk 23), iOS, JVM and wasmJs. The core needs only Compose runtime, foundation, UI and animation. Not yet checked on an Android or iOS device, or in Firefox and Safari.
 
-[Unreleased]: https://github.com/jantursky/kapow/compare/1.0.0...HEAD
+[Unreleased]: https://github.com/jantursky/kapow/compare/1.1.0...HEAD
+[1.1.0]: https://github.com/jantursky/kapow/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/jantursky/kapow/releases/tag/1.0.0
