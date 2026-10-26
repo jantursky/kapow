@@ -1,6 +1,6 @@
 ---
 title: Composables and modifiers
-description: changeEffect, conditionalEffect, progressEffect, kapowTransition, KapowAnimatedVisibility, KapowParticleLayer, isReducedMotion, hingeEffect and rememberMultihapticFeedback.
+description: changeEffect, conditionalEffect, progressEffect, kapowTransition, KapowAnimatedVisibility, KapowParticleLayer, KapowTypewriter, KapowCounter, kapowTilt, kapowSkeleton, isReducedMotion, hingeEffect and rememberMultihapticFeedback.
 ---
 
 Everything is in the package `com.jantursky.kapow`, except `hingeEffect` (`com.jantursky.kapow.crease`) and `rememberMultihapticFeedback` (`com.jantursky.kapow.multihaptic`).
@@ -17,7 +17,7 @@ public fun Modifier.changeEffect(
 ): Modifier
 ```
 
-Plays `effect` each time `value` changes to a value not equal to the previous one. Nothing plays on the first composition. While `isEnabled` is false, changes are recorded but play nothing. `feedback` is sent to `LocalKapowFeedback` each time the effect plays, also with reduced motion. See [Change effects](/guides/change-effects).
+Plays `effect` each time `value` changes to a value not equal to the previous one. The effect's own wrappers (`delay`, `cooldown`, `times`, `speed`, `reducedMotion`) apply. Nothing plays on the first composition. While `isEnabled` is false, changes are recorded but play nothing. `feedback` is sent to `LocalKapowFeedback` each time the effect plays, also with reduced motion. See [Change effects](/guides/change-effects).
 
 ## conditionalEffect
 
@@ -29,7 +29,7 @@ public fun Modifier.conditionalEffect(
 ): Modifier
 ```
 
-Keeps `effect` on while `condition` is true, starting on the first composition if it already is. When the condition turns false the effect winds down and the element returns to its normal look. See [Conditional effects](/guides/conditional-effects).
+Keeps `effect` on while `condition` is true, starting on the first composition if it already is. When the condition turns false the effect winds down and the element returns to its normal look. `fadeIn`, `fadeOut`, `startDelay`, `speed` and `reducedMotion` on the effect tune that. See [Conditional effects](/guides/conditional-effects).
 
 ## progressEffect
 
@@ -41,7 +41,7 @@ public fun Modifier.progressEffect(
 ): Modifier
 ```
 
-Draws `effect` at `progress`, a value from 0 to 1 (clamped). The lambda is read while drawing, so a progress backed by state updates the effect without recomposition. See [Progress effects](/guides/progress-effects).
+Draws `effect` at `progress`, a value from 0 to 1 (clamped). Use `ProgressEffect.curve` and `smoothed` to shape or smooth it. The lambda is read while drawing, so a progress backed by state updates the effect without recomposition. See [Progress effects](/guides/progress-effects).
 
 ## kapowTransition
 
@@ -87,6 +87,92 @@ public fun KapowParticleLayer(
 
 Draws the particles of every Kapow effect inside `content` on top of it, so parents that clip their children do not cut them off. Put it high in the tree. Without one, particles draw around the element that emits them. Particles start where the element was when the effect fired and do not follow it afterwards. See [Particle layer](/guides/particle-layer).
 
+## KapowTypewriter
+
+```kotlin
+@Composable
+public fun KapowTypewriter(
+    text: String,
+    modifier: Modifier = Modifier,
+    style: TextStyle = TextStyle.Default,
+    mode: TypewriterMode = TypewriterMode.Type,
+    charsPerSecond: Float = 30f,
+    startDelay: Duration = Duration.ZERO,
+    cursor: TypewriterCursor? = null,
+    punctuationPause: Duration = Duration.ZERO,
+    glyphs: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=?",
+    glyphRate: Duration = 40.milliseconds,
+    seed: Int = 0,
+)
+```
+
+Text that reveals itself over time. It measures the full `text` first and sizes itself to it, so nothing around it moves while it types. The reveal restarts when `text` or a timing parameter changes. Screen readers read the full text. With reduced motion the full text shows at once, without a cursor. `glyphs` and `glyphRate` apply to `TypewriterMode.Scramble`. See [KapowTypewriter](/effects/text-typewriter) and [TypewriterMode and TypewriterCursor](/reference/types).
+
+## KapowCounter
+
+```kotlin
+@Composable
+public fun KapowCounter(
+    value: Long,
+    modifier: Modifier = Modifier,
+    style: TextStyle = TextStyle.Default,
+    mode: CounterMode = CounterMode.Roll,
+    format: (Long) -> String = { it.toString() },
+    duration: Duration = 600.milliseconds,
+    easing: Easing = FastOutSlowInEasing,
+)
+```
+
+A number that animates to a new value. The first composition shows `value` at once. When it changes, the number rolls or counts to the new value over `duration` and settles on exactly that value. Screen readers read the new value, never one in between. With reduced motion the new value appears at once. See [KapowCounter](/effects/text-counter).
+
+## kapowTilt
+
+```kotlin
+@Stable
+public fun Modifier.kapowTilt(
+    maxAngle: Float = 12f,
+    sheen: Color? = Color.White.copy(alpha = 0.35f),
+    enabled: Boolean = true,
+    perspective: Dp = 8.dp,
+    damping: Float = 0.6f,
+): Modifier
+```
+
+Tilts the element in 3D toward a hovering mouse or a pressed finger, by at most `maxAngle` degrees, and springs it back when the pointer leaves or lifts. `sheen` is a soft highlight that moves opposite to the tilt, and null draws none. The modifier only watches pointer events and never consumes them. With `enabled` false, or with reduced motion, the element stays flat and draws no sheen. See [kapowTilt](/effects/more-tilt).
+
+## kapowSkeleton
+
+```kotlin
+@Stable
+public fun Modifier.kapowSkeleton(
+    loading: Boolean,
+    shape: Shape = RoundedCornerShape(8.dp),
+    color: Color = Color(0xFFD9DCE3),
+    shimmer: Boolean = true,
+    shimmerColor: Color = Color.White.copy(alpha = 0.5f),
+    angle: Float = 20f,
+    duration: Duration = 1500.milliseconds,
+    revealDuration: Duration = 300.milliseconds,
+    revealEasing: Easing = FastOutSlowInEasing,
+): Modifier
+```
+
+Covers the element with a placeholder while `loading` is true and reveals it when `loading` turns false. The content is always measured and placed, so its size and position do not change between the two. An element first composed with `loading` false shows its content at once. With reduced motion the placeholder is still, with no shimmer, and the reveal is a plain cross-fade. See [kapowSkeleton](/effects/more-skeleton).
+
+## KapowStagger
+
+```kotlin
+public object KapowStagger {
+    public fun delay(
+        index: Int,
+        step: Duration = 50.milliseconds,
+        max: Duration = 500.milliseconds,
+    ): Duration
+}
+```
+
+Returns `index * step`, never above `max`. Pass it to `ChangeEffect.delay`, `KapowEnter.delay` or `KapowExit.delay` so the items of a list start one after another. See [Stagger](/effects/transition-stagger).
+
 ## isReducedMotion
 
 ```kotlin
@@ -94,7 +180,7 @@ Draws the particles of every Kapow effect inside `content` on top of it, so pare
 public fun isReducedMotion(): Boolean
 ```
 
-Whether effects here play their reduced version: `LocalKapowMotion` when it is `Full` or `Reduced`, otherwise the platform setting. See [Reduced motion](/guides/reduced-motion).
+Whether effects here play their reduced version: `LocalKapowMotion` when it is `Full` or `Reduced`, otherwise the platform setting. A `reducedMotion(...)` wrapper on one effect changes what that effect does, not this value. See [Reduced motion](/guides/reduced-motion).
 
 ## hingeEffect
 

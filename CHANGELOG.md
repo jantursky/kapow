@@ -4,6 +4,18 @@ All notable changes to `io.github.jantursky:kapow` and its companion artifacts a
 
 ## [Unreleased]
 
+### Added
+
+- New effects: `ChangeEffect.hearts`; `ConditionalEffect.shimmer`, `breathe`, `ping` and `confettiRain`; `Modifier.kapowSkeleton(loading)`, a shimmering placeholder over always-laid-out content that fades away when loading ends; `KapowTypewriter` (typed or scrambled text with an optional cursor); `KapowCounter` (digits that roll, or a number that counts); `Modifier.kapowTilt` (3D tilt toward the pointer with a light sheen).
+- Many more options on every existing effect: all 17 change effects, 13 conditional effects, 5 progress effects and the transitions (soft edges, directions, easing, seeds, brushes, counts, sizes and more). The defaults draw what they drew before.
+- `ParticlePhysics` and `EmissionArea` for direction, spread, speed, gravity, drag, lifetime, size, spin, fade and where particles start, on the particle effects.
+- Wrappers that work on any effect: `ChangeEffect.cooldown`, `times`, `speed`, `reducedMotion`; `ConditionalEffect.fadeIn`, `fadeOut`, `startDelay`, `speed`, `reducedMotion`; `ProgressEffect.curve`, `smoothed`, `reducedMotion`; `KapowEnter` and `KapowExit` `.delay`, `.easing`, `.reducedMotion`. `ReducedMotionMode` chooses the reduced-motion behavior of one effect.
+- `KapowStagger.delay(index)` for cascading entrances and effects in lists.
+
+### Changed
+
+- Factories that gained options keep their 1.0.0 signatures as hidden overloads, so code and binaries built against 1.0.0 keep working.
+
 ## [1.0.0] - 2026-10-24
 
 ### Added

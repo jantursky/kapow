@@ -5,6 +5,7 @@ export default defineMeta({
   order: 3,
   pages: [
     'change-effects',
+    'tuning-effects',
     'conditional-effects',
     'progress-effects',
     'transitions',

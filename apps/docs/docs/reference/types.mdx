@@ -1,9 +1,9 @@
 ---
 title: Types
-description: ChangeEffect, ConditionalEffect, ProgressEffect, KapowEnter, KapowExit, ParticleContent, KapowMotion, KapowFeedback and their related types.
+description: ChangeEffect, ConditionalEffect, ProgressEffect, KapowEnter, KapowExit, ParticlePhysics, ParticleContent, ReducedMotionMode, KapowMotion, KapowFeedback, KapowStagger and their related types.
 ---
 
-All types are in `com.jantursky.kapow`. The effect classes have internal constructors: you create effects only through the factories on their companions, which lets future versions add effects and parameters without breaking binary compatibility. Effects are compared by value, so creating one inline in a composable is fine.
+All types are in `com.jantursky.kapow`. The effect classes have internal constructors: you create effects only through the factories on their companions, which lets future versions add effects and parameters without breaking binary compatibility. Every parameter after the first few has a default that reproduces the look of 1.0.0, so existing calls compile and look the same. Effects are compared by value, so creating one inline in a composable is fine.
 
 ## ChangeEffect
 
@@ -12,66 +12,257 @@ An effect that plays once each time a watched value changes. Attach it with `Mod
 ```kotlin
 public abstract class ChangeEffect {
     public fun delay(delay: Duration): ChangeEffect
+    public fun cooldown(cooldown: Duration): ChangeEffect
+    public fun times(count: Int, gap: Duration = Duration.ZERO): ChangeEffect
+    public fun speed(multiplier: Float): ChangeEffect
+    public fun reducedMotion(mode: ReducedMotionMode): ChangeEffect
 
     public companion object {
-        public fun spray(particles: ParticleContent = ParticleContent.shape(), count: Int = 11): ChangeEffect
-        public fun rise(particles: ParticleContent = ParticleContent.text("+1")): ChangeEffect
-        public fun shine(angle: Float = 45f, duration: Duration = 1.seconds, color: Color = Color.White): ChangeEffect
+        public fun spray(
+            particles: ParticleContent = ParticleContent.shape(),
+            count: Int = 11,
+            physics: ParticlePhysics = ParticlePhysics.Default,
+            origin: TransformOrigin = TransformOrigin.Center,
+            rotation: ClosedFloatingPointRange<Float> = -30f..30f,
+            seed: Int = 0,
+        ): ChangeEffect
+        public fun rise(
+            particles: ParticleContent = ParticleContent.text("+1"),
+            distance: Dp = Dp.Unspecified,
+            duration: Duration = 1200.milliseconds,
+            drift: Float = 0f,
+            wobble: Dp = 4.dp,
+            startOffset: DpOffset = DpOffset.Zero,
+            scaleIn: Float = 0.4f,
+            scaleOut: Float = 1f,
+            fade: Easing? = null,
+            label: ((Any?) -> String)? = null,
+            anchor: TransformOrigin = TransformOrigin(0.5f, 0f),
+        ): ChangeEffect
+        public fun shine(
+            angle: Float = 45f,
+            duration: Duration = 1.seconds,
+            color: Color = Color.White,
+            easing: Easing = FastOutSlowInEasing,
+            bandWidth: Float = 0.6f,
+            softness: Float = 1f,
+            peakAlpha: Float = 0.8f,
+            blendMode: BlendMode = BlendMode.SrcAtop,
+            bands: Int = 1,
+            bandSpacing: Float = 1.5f,
+            reverse: Boolean = false,
+        ): ChangeEffect
         public fun pulse(
             shape: Shape = RectangleShape,
             color: Color = Color(0xFF6B62F2),
             style: PulseStyle = PulseStyle.Stroke(),
             count: Int = 1,
+            brush: Brush? = null,
+            reach: Dp = Dp.Unspecified,
+            duration: Duration? = null,
+            interval: Duration = 200.milliseconds,
+            easing: Easing = LinearEasing,
+            startInset: Dp = 0.dp,
+            fade: Easing? = null,
         ): ChangeEffect
-        public fun glow(color: Color = Color(0xFF6B62F2), radius: Dp = 16.dp, shape: Shape = RectangleShape): ChangeEffect
-        public fun spin(axis: SpinAxis = SpinAxis.Y, rate: SpinRate = SpinRate.Default): ChangeEffect
-        public fun confettiPop(colors: List<Color> = ParticleContent.DefaultColors, count: Int = 28): ChangeEffect
+        public fun glow(
+            color: Color = Color(0xFF6B62F2),
+            radius: Dp = 16.dp,
+            shape: Shape = RectangleShape,
+            intensity: Float = 1f,
+            spread: Dp = 0.dp,
+            offset: DpOffset = DpOffset.Zero,
+            innerGlow: Float = 0f,
+            flare: Duration? = null,
+            decay: Duration? = null,
+            stackLimit: Float = 1.5f,
+        ): ChangeEffect
+        public fun spin(
+            axis: SpinAxis = SpinAxis.Y,
+            rate: SpinRate = SpinRate.Default,
+            turns: Int? = null,
+            duration: Duration? = null,
+            easing: Easing = FastOutSlowInEasing,
+            reverse: Boolean = false,
+            pivot: TransformOrigin = TransformOrigin.Center,
+            cameraDistance: Dp = 12.dp,
+            shading: Float = 0.35f,
+            overshoot: Float = 0.35f,
+        ): ChangeEffect
+        public fun confettiPop(
+            colors: List<Color> = ParticleContent.DefaultColors,
+            count: Int = 28,
+            physics: ParticlePhysics = ParticlePhysics.Default,
+            ribbonRatio: Float = 1f / 3f,
+            pieceSize: Dp = 7.dp,
+            origin: TransformOrigin = TransformOrigin.Center,
+            seed: Int = 0,
+        ): ChangeEffect
+        public fun hearts(
+            color: Color = Color(0xFFFF4D6D),
+            count: Int = 6,
+            physics: ParticlePhysics = ParticlePhysics.Default,
+            seed: Int = 0,
+            bigHeart: Boolean = true,
+            bigHeartScale: Float = 1f,
+            overshoot: Float = 1f,
+            smallColors: List<Color> = emptyList(),
+            heartSize: Dp = 14.dp,
+            origin: TransformOrigin = TransformOrigin.Center,
+        ): ChangeEffect
         public fun trace(
             shape: Shape = RectangleShape,
             color: Color = Color(0xFF6B62F2),
             width: Dp = 3.dp,
             duration: Duration = 1.seconds,
+            tail: Float = 0.4f,
+            clockwise: Boolean = true,
+            startAt: Float = 0f,
+            laps: Int = 1,
+            easing: Easing = FastOutSlowInEasing,
+            headGlow: Float = 1f,
+            brush: Brush? = null,
         ): ChangeEffect
-        public fun strike(color: Color = Color(0xFF6B62F2), width: Dp = 2.dp, hold: Duration = 600.milliseconds): ChangeEffect
-        public fun stamp(scale: Float = 1.3f, dustColor: Color = Color(0xFFB0B0B0)): ChangeEffect
-        public fun glitch(duration: Duration = 300.milliseconds, offset: Dp = 6.dp): ChangeEffect
+        public fun strike(
+            color: Color = Color(0xFF6B62F2),
+            width: Dp = 2.dp,
+            hold: Duration = 600.milliseconds,
+            direction: StrikeDirection = StrikeDirection.Reading,
+            drawDuration: Duration = 260.milliseconds,
+            easing: Easing = FastOutSlowInEasing,
+            offset: Float = 0f,
+            cap: StrokeCap = StrokeCap.Butt,
+            waveAmplitude: Dp = 0.dp,
+            waveLength: Dp = 12.dp,
+            lines: Int = 1,
+            lineSpacing: Dp = 6.dp,
+            brush: Brush? = null,
+        ): ChangeEffect
+        public fun stamp(
+            scale: Float = 1.3f,
+            dustColor: Color = Color(0xFFB0B0B0),
+            duration: Duration = 560.milliseconds,
+            squash: Float = 0.1f,
+            rebound: Float = 1f,
+            dustCount: Int = 5,
+            dustSize: Dp = 8.dp,
+            dustSpread: Float = 1f,
+            tilt: Float = 0f,
+            origin: TransformOrigin = TransformOrigin.Center,
+            seed: Int = 0,
+        ): ChangeEffect
+        public fun glitch(
+            duration: Duration = 300.milliseconds,
+            offset: Dp = 6.dp,
+            sliceHeight: ClosedFloatingPointRange<Float> = 0.08f..0.3f,
+            channelColors: List<Color> = listOf(Color.Red, Color.Green, Color.Blue),
+            jumpChance: Float = 0.5f,
+            jitterRate: Float = 20f,
+            seed: Int = 0,
+        ): ChangeEffect
         public fun ripple(
             color: Color = Color(0x66FFFFFF),
             shape: Shape = RectangleShape,
             origin: TransformOrigin = TransformOrigin.Center,
             duration: Duration = 600.milliseconds,
+            rings: Int = 1,
+            ringWidth: Dp = Dp.Unspecified,
+            maxRadius: Dp = Dp.Unspecified,
+            ringSpacing: Float = 0.2f,
+            easing: Easing = LinearEasing,
         ): ChangeEffect
-        public fun flash(color: Color = Color.White, duration: Duration = 400.milliseconds): ChangeEffect
-        public fun burst(color: Color = Color(0xFFFFB547), spikes: Int = 12): ChangeEffect
-        public fun speedLines(color: Color = Color(0xFF6B62F2), count: Int = 12): ChangeEffect
-        public fun sparkle(color: Color = Color.White, count: Int = 6): ChangeEffect
-        public fun fireworks(colors: List<Color> = ParticleContent.DefaultColors, count: Int = 28): ChangeEffect
+        public fun flash(
+            color: Color = Color.White,
+            duration: Duration = 400.milliseconds,
+            peak: Float = 0.85f,
+            blendMode: BlendMode = BlendMode.SrcAtop,
+            strobes: Int = 1,
+            shape: Shape? = null,
+        ): ChangeEffect
+        public fun burst(
+            color: Color = Color(0xFFFFB547),
+            spikes: Int = 12,
+            sizeScale: Float = 1f,
+            coreColor: Color = Color.Unspecified,
+            rotation: Float = 14f,
+            overshoot: Float = 0.15f,
+            innerRatio: Float = 0.72f,
+            anchor: TransformOrigin = TransformOrigin.Center,
+            inFront: Boolean = false,
+            outline: Dp = 0.dp,
+            outlineColor: Color = Color(0xFF1B1B1F),
+            duration: Duration = 600.milliseconds,
+            seed: Int = 0,
+        ): ChangeEffect
+        public fun speedLines(
+            color: Color = Color(0xFF6B62F2),
+            count: Int = 12,
+            length: Dp = Dp.Unspecified,
+            thickness: Dp = 3.dp,
+            innerRadius: Dp = 6.dp,
+            taper: Float = 0f,
+            directions: SpeedLineDirections = SpeedLineDirections.All,
+            duration: Duration = 500.milliseconds,
+            easing: Easing = LinearEasing,
+            seed: Int = 0,
+        ): ChangeEffect
+        public fun sparkle(
+            color: Color = Color.White,
+            count: Int = 6,
+            size: Dp = Dp.Unspecified,
+            duration: Duration = 800.milliseconds,
+            spread: Float = 1f,
+            spin: ClosedFloatingPointRange<Float> = -90f..90f,
+            shape: ParticleShape = ParticleShape.Sparkle,
+            seed: Int = 0,
+        ): ChangeEffect
+        public fun fireworks(
+            colors: List<Color> = ParticleContent.DefaultColors,
+            count: Int = 28,
+            rocketHeight: Dp = 100.dp,
+            rocketDuration: Duration = 450.milliseconds,
+            burstRadius: Dp = Dp.Unspecified,
+            trailLength: Float = 1f,
+            particleSize: Dp = 7.dp,
+            origin: TransformOrigin = TransformOrigin(0.5f, 0f),
+            physics: ParticlePhysics = ParticlePhysics.Default,
+            seed: Int = 0,
+        ): ChangeEffect
     }
 }
 ```
 
+The wrappers return a new `ChangeEffect` and can be chained in any order. They are described in [Tuning effects](/guides/tuning-effects).
+
 | Member | Description |
 | --- | --- |
 | `delay(delay)` | Plays this effect `delay` after the change instead of right away. `delay` must not be negative. |
-| `spray(particles, count)` | A burst of `count` particles that fan upward from the element, grow, then fade. |
-| `rise(particles)` | One particle per change, such as a "+1", that floats up from the element and fades. |
-| `shine(angle, duration, color)` | A soft band of light that sweeps across the element's drawn pixels. `angle` is in degrees clockwise from pointing right, and 45 sweeps from the top left to the bottom right. |
-| `pulse(shape, color, style, count)` | Rings or fills in `shape` that grow outward behind the element and fade. A change sends `count` pulses, 0.2 s apart. |
-| `glow(color, radius, shape)` | A colored halo in `shape` that flares up and fades. Quick repeated changes make it stronger, up to a limit. |
-| `spin(axis, rate)` | Spins the element one or more full turns and settles where it started. Changes mid-spin add speed. |
-| `confettiPop(colors, count)` | A short pop of `count` confetti pieces in `colors` that burst from the element, tumble and fall away. |
-| `trace(shape, color, width, duration)` | A comet-like stroke that runs once around the outline of `shape`, clockwise from the top, then disappears. |
-| `strike(color, width, hold)` | A line that draws across the middle of the element, stays for `hold`, then fades out. |
-| `stamp(scale, dustColor)` | Drops the element from `scale` times its size like a rubber stamp, with a squash on impact and dust at its base. `scale` must be at least 1. |
-| `glitch(duration, offset)` | Splits the element into offset color channels and shifts horizontal slices of it for `duration`, then snaps back. |
-| `ripple(color, shape, origin, duration)` | An ink ripple that spreads from `origin` across the element, inside `shape`, and fades. |
-| `flash(color, duration)` | The element's own pixels flash `color` and fade back. |
-| `burst(color, spikes)` | A comic star burst with `spikes` points pops out behind the element and fades. `spikes` is at least 3. |
-| `speedLines(color, count)` | `count` comic action lines fly outward from the element's edges and vanish. |
-| `sparkle(color, count)` | `count` four-point stars twinkle over the element, one after another. |
-| `fireworks(colors, count)` | A spark climbs from the element, then bursts into `count` sparks that fall and fade. |
+| `cooldown(cooldown)` | Ignores changes that arrive sooner than `cooldown` after the last one that played, instead of the effect's own cooldown. Must not be negative. |
+| `times(count, gap)` | Plays the effect `count` times for each change, `gap` apart. Changes that arrive while the series runs are ignored. `count` must be positive. |
+| `speed(multiplier)` | Plays the effect at `multiplier` times the pace: 2 takes half as long, 0.5 twice as long. Must be positive. Repeated calls multiply. |
+| `reducedMotion(mode)` | Chooses what the effect does under reduced motion, instead of its own fallback. See [ReducedMotionMode](#reducedmotionmode). |
+| `spray(particles, count, ...)` | A burst of `count` particles that fan upward from the element, grow, then fade. `physics` sets the launch, `origin` where they start, `rotation` their starting angle. |
+| `rise(particles, ...)` | One particle per change, such as a "+1", that floats up from the element and fades. `label` builds the text from the changed value. |
+| `shine(angle, duration, color, ...)` | A soft band of light that sweeps across the element's drawn pixels. `angle` is in degrees clockwise from pointing right, and 45 sweeps from the top left to the bottom right. `bands` sends several bands in a row. |
+| `pulse(shape, color, style, count, ...)` | Rings or fills in `shape` that grow outward behind the element and fade. A change sends `count` pulses, `interval` apart (0.2 s by default). `brush` replaces `color`. |
+| `glow(color, radius, shape, ...)` | A colored halo in `shape` that flares up and fades. Quick repeated changes make it stronger, up to `stackLimit`. |
+| `spin(axis, rate, ...)` | Spins the element one or more full turns and settles where it started. Changes mid-spin add speed. `turns` and `duration` replace `rate`. |
+| `confettiPop(colors, count, ...)` | A short pop of `count` confetti pieces in `colors` that burst from the element, tumble and fall away. |
+| `hearts(color, count, ...)` | A large heart pops over the element with an overshoot and fades while `count` small hearts float up, like a like button. |
+| `trace(shape, color, width, duration, ...)` | A comet-like stroke with a fading `tail` that runs around the outline of `shape`, clockwise from the top by default, then disappears. |
+| `strike(color, width, hold, ...)` | A line that draws across the middle of the element, stays for `hold`, then fades out. `lines`, `waveAmplitude` and `brush` change its look. |
+| `stamp(scale, dustColor, ...)` | Drops the element from `scale` times its size like a rubber stamp, with a squash on impact and dust at its base. `scale` must be at least 1. |
+| `glitch(duration, offset, ...)` | Splits the element into offset color channels and shifts horizontal slices of it for `duration`, then snaps back. |
+| `ripple(color, shape, origin, duration, ...)` | An ink ripple that spreads from `origin` across the element, inside `shape`, and fades. `rings` sends several. |
+| `flash(color, duration, ...)` | The element's own pixels flash `color` and fade back. `strobes` flashes more than once. |
+| `burst(color, spikes, ...)` | A comic star burst with `spikes` points pops out behind the element and fades. `spikes` is at least 3. |
+| `speedLines(color, count, ...)` | `count` comic action lines fly outward from the element's edges and vanish. `directions` limits them to horizontal or vertical. |
+| `sparkle(color, count, ...)` | `count` four-point stars twinkle over the element, one after another. `shape` swaps the star for another `ParticleShape`. |
+| `fireworks(colors, count, ...)` | A spark climbs from the element, then bursts into `count` sparks that fall and fade. |
 
-### PulseStyle, SpinAxis, SpinRate
+The parameters left out of the table are listed on each [effect page](/effects). The defaults, including `ParticlePhysics.Default`, give the 1.0.0 look. Effects that scatter things take a `seed`: the same `seed` gives the same pattern, and each change takes the next seed in turn.
+
+### PulseStyle, SpinAxis, SpinRate, SpeedLineDirections, StrikeDirection
 
 ```kotlin
 public sealed class PulseStyle {
@@ -82,9 +273,13 @@ public sealed class PulseStyle {
 public enum class SpinAxis { X, Y, Z }
 
 public enum class SpinRate { Default, Fast }
+
+public enum class SpeedLineDirections { All, Horizontal, Vertical }
+
+public enum class StrikeDirection { Reading, Reverse, Vertical }
 ```
 
-`PulseStyle` chooses whether `pulse` draws rings or filled shapes. `SpinAxis.Y` turns like a coin on a table and `Z` like a wheel.
+`PulseStyle` chooses whether `pulse` draws rings or filled shapes. `SpinAxis.Y` turns like a coin on a table and `Z` like a wheel. `SpeedLineDirections` limits where `speedLines` fly: all the way around, left and right, or up and down. `StrikeDirection.Reading` draws the line in the reading direction of the layout, `Reverse` against it and `Vertical` from top to bottom.
 
 ## ConditionalEffect
 
@@ -92,21 +287,63 @@ An effect that stays on while a condition is true. Attach it with `Modifier.cond
 
 ```kotlin
 public abstract class ConditionalEffect {
+    public fun fadeIn(duration: Duration): ConditionalEffect
+    public fun fadeOut(duration: Duration): ConditionalEffect
+    public fun startDelay(delay: Duration): ConditionalEffect
+    public fun speed(multiplier: Float): ConditionalEffect
+    public fun reducedMotion(mode: ReducedMotionMode): ConditionalEffect
+
     public companion object {
         public val MinRepeatInterval: Duration
-
-        public fun repeat(effect: ChangeEffect, every: Duration): ConditionalEffect
-        public fun glow(color: Color = Color(0xFF6B62F2), radius: Dp = 16.dp, shape: Shape = RectangleShape): ConditionalEffect
-        public fun pushDown(scale: Float = 0.95f): ConditionalEffect
-        public fun smoke(color: Color = Color(0xFF8A8A8A)): ConditionalEffect
         public val RainbowColors: List<Color>
         public val FlameColors: List<Color>
+
+        public fun repeat(
+            effect: ChangeEffect,
+            every: Duration,
+            initialDelay: Duration = Duration.ZERO,
+            maxCount: Int? = null,
+            jitter: Float = 0f,
+            seed: Int = 0,
+        ): ConditionalEffect
+        public fun glow(
+            color: Color = Color(0xFF6B62F2),
+            radius: Dp = 16.dp,
+            shape: Shape = RectangleShape,
+            strength: Float = 0.7f,
+            breathe: Float = 0f,
+            period: Duration = 2.seconds,
+            brighten: Float = 0.25f,
+        ): ConditionalEffect
+        public fun pushDown(
+            scale: Float = 0.95f,
+            damping: Float = 0.6f,
+            stiffness: Float = 500f,
+            dim: Float = 0f,
+            translation: Dp = 0.dp,
+            origin: TransformOrigin = TransformOrigin.Center,
+        ): ConditionalEffect
+        public fun smoke(
+            color: Color = Color(0xFF8A8A8A),
+            rate: Float = 1f,
+            size: Dp = 10.dp,
+            opacity: Float = 0.7f,
+            wind: Float = 0f,
+            physics: ParticlePhysics = ParticlePhysics.Default,
+            seed: Int = 0,
+        ): ConditionalEffect
         public fun borderBeam(
             color: Color = Color(0xFF6B62F2),
             width: Dp = 2.dp,
             shape: Shape = RectangleShape,
             length: Float = 0.25f,
             duration: Duration = 2.seconds,
+            brush: Brush? = null,
+            trackAlpha: Float = 0.18f,
+            beams: Int = 1,
+            clockwise: Boolean = true,
+            glow: Float = 1f,
+            tailFade: Float = 1.5f,
         ): ConditionalEffect
         public fun marchingAnts(
             color: Color = Color.White,
@@ -116,32 +353,106 @@ public abstract class ConditionalEffect {
             dash: Dp = 6.dp,
             gap: Dp = 4.dp,
             speed: Dp = 24.dp,
+            brush: Brush? = null,
+            clockwise: Boolean = true,
+            roundCaps: Boolean = false,
+            dashOffset: Dp = 0.dp,
         ): ConditionalEffect
         public fun rainbowBorder(
             colors: List<Color> = RainbowColors,
             width: Dp = 3.dp,
             shape: Shape = RectangleShape,
             duration: Duration = 3.seconds,
+            clockwise: Boolean = true,
+            easing: Easing = LinearEasing,
+            alpha: Float = 1f,
+            glow: Dp = 0.dp,
         ): ConditionalEffect
         public fun sparkles(
             colors: List<Color> = listOf(Color(0xFFFFF1C2), Color(0xFFFFB547)),
             size: Dp = 18.dp,
             count: Int = 4,
+            lifetime: ClosedFloatingPointRange<Float> = 0.8f..1.3f,
+            areaPadding: Dp = size / 2,
+            shape: ParticleShape = ParticleShape.Sparkle,
+            seed: Int = 0,
         ): ConditionalEffect
         public fun orbit(
             colors: List<Color> = ParticleContent.DefaultColors,
             count: Int = 3,
             size: Dp = 8.dp,
             duration: Duration = 2.5.seconds,
+            radius: Float = 1.6f,
+            tilt: Float = -17.188734f,
+            clockwise: Boolean = true,
+            depthScale: Float = 0.55f,
+            content: ParticleContent? = null,
+            trail: Int = 4,
         ): ConditionalEffect
-        public fun bubbles(color: Color = Color(0xFF9ED8FF), size: Dp = 10.dp): ConditionalEffect
-        public fun flame(colors: List<Color> = FlameColors, height: Dp = 40.dp): ConditionalEffect
-        public fun grayscale(amount: Float = 1f): ConditionalEffect
+        public fun bubbles(
+            color: Color = Color(0xFF9ED8FF),
+            size: Dp = 10.dp,
+            rate: Float = 1f,
+            wobble: Dp = 3.dp,
+            pop: Boolean = true,
+            colorVariation: Float = 0f,
+            physics: ParticlePhysics = ParticlePhysics.Default,
+            seed: Int = 0,
+        ): ConditionalEffect
+        public fun flame(
+            colors: List<Color> = FlameColors,
+            height: Dp = 40.dp,
+            width: Dp? = null,
+            intensity: Float = 1f,
+            wind: Float = 0f,
+            edge: EdgeSide = EdgeSide.Top,
+            flicker: Float = 1f,
+            physics: ParticlePhysics = ParticlePhysics.Default,
+            seed: Int = 0,
+        ): ConditionalEffect
+        public fun grayscale(
+            amount: Float = 1f,
+            tint: Color? = null,
+            dim: Float = 0f,
+        ): ConditionalEffect
         public fun spotlight(
             color: Color = Color(0x99000000),
             shape: Shape = RectangleShape,
             padding: Dp = 8.dp,
             softness: Dp = 24.dp,
+            ring: Dp = 0.dp,
+            ringColor: Color = Color.White,
+            breathe: Dp = 0.dp,
+            period: Duration = 1500.milliseconds,
+        ): ConditionalEffect
+        public fun shimmer(
+            color: Color = Color.White.copy(alpha = 0.4f),
+            angle: Float = 20f,
+            duration: Duration = 1500.milliseconds,
+            bandWidth: Float = 0.4f,
+            softness: Float = 1f,
+            pause: Duration = 400.milliseconds,
+            blendMode: BlendMode = BlendMode.SrcAtop,
+        ): ConditionalEffect
+        public fun breathe(
+            scale: Float = 1.04f,
+            float: Dp = 0.dp,
+            duration: Duration = 3.seconds,
+        ): ConditionalEffect
+        public fun ping(
+            color: Color = Color(0xFF6B62F2),
+            shape: Shape = RectangleShape,
+            rings: Int = 2,
+            scale: Float = 1.6f,
+            duration: Duration = 1600.milliseconds,
+            width: Dp = 2.dp,
+        ): ConditionalEffect
+        public fun confettiRain(
+            colors: List<Color> = ParticleContent.DefaultColors,
+            density: Float = 24f,
+            size: Dp = 8.dp,
+            physics: ParticlePhysics = ParticlePhysics.Default,
+            seed: Int = 0,
         ): ConditionalEffect
     }
 }
@@ -149,20 +460,32 @@ public abstract class ConditionalEffect {
 
 | Member | Description |
 | --- | --- |
+| `fadeIn(duration)` | How long the effect takes to fade in when the condition turns true, instead of its own fade. Must not be negative. |
+| `fadeOut(duration)` | How long the effect takes to fade out when the condition turns false, instead of its own fade. Must not be negative. |
+| `startDelay(delay)` | Waits `delay` after the condition turns true before the effect starts. Must not be negative. |
+| `speed(multiplier)` | Runs the effect at `multiplier` times the pace: 2 is twice as fast. Must be positive. Repeated calls multiply. |
+| `reducedMotion(mode)` | Chooses what the effect does under reduced motion, instead of its own fallback. See [ReducedMotionMode](#reducedmotionmode). |
 | `MinRepeatInterval` | The shortest interval `repeat` accepts, 1/15 s. Shorter ones are raised to it. |
-| `repeat(effect, every)` | Plays `effect` as soon as the condition turns true, then every `every` while it stays true. |
-| `glow(color, radius, shape)` | A steady halo in `shape` that fades in while the condition holds. |
-| `pushDown(scale)` | Scales the element down slightly, as if pressed, and springs back when the condition ends. `scale` must be positive. |
-| `smoke(color)` | Soft particles that rise from the top of the element, like smoke. |
-| `borderBeam(color, width, shape, length, duration)` | A bright segment, `length` of the outline long, travels around `shape` once every `duration`. |
-| `marchingAnts(color, gapColor, width, shape, dash, gap, speed)` | A dashed outline around `shape` whose dashes move, like a selection. |
-| `rainbowBorder(colors, width, shape, duration)` | An outline stroked with a sweep gradient of `colors` that turns once every `duration`. |
-| `sparkles(colors, size, count)` | Four-point stars keep twinkling over and around the element, about `count` at a time. |
-| `orbit(colors, count, size, duration)` | `count` particles circle the element on an ellipse, smaller and fainter behind it. |
-| `bubbles(color, size)` | Small bubbles keep rising from the top edge, wobbling and fading. |
-| `flame(colors, height)` | Procedural flames about `height` tall above the element. |
-| `grayscale(amount)` | The element desaturates by `amount`, from 0 to 1. |
-| `spotlight(color, shape, padding, softness)` | Everything around the element dims with `color`, leaving `shape` plus `padding` lit, with a soft edge. Later siblings still draw on top. |
+| `RainbowColors`, `FlameColors` | The default colors of `rainbowBorder` and `flame`. |
+| `repeat(effect, every, ...)` | Plays `effect` as soon as the condition turns true (or after `initialDelay`), then every `every` while it stays true. `maxCount` stops after that many plays and `jitter` varies the interval. |
+| `glow(color, radius, shape, ...)` | A steady halo in `shape` that fades in while the condition holds. `breathe` makes it pulse. |
+| `pushDown(scale, ...)` | Scales the element down slightly, as if pressed, and springs back when the condition ends. `scale` must be positive. |
+| `smoke(color, ...)` | Soft particles that rise from the top of the element, like smoke. |
+| `borderBeam(color, width, shape, length, duration, ...)` | A bright segment, `length` of the outline long, travels around `shape` once every `duration`. `beams` sends several. |
+| `marchingAnts(color, gapColor, width, shape, dash, gap, speed, ...)` | A dashed outline around `shape` whose dashes move, like a selection. |
+| `rainbowBorder(colors, width, shape, duration, ...)` | An outline stroked with a sweep gradient of `colors` that turns once every `duration`. |
+| `sparkles(colors, size, count, ...)` | Four-point stars keep twinkling over and around the element, about `count` at a time. |
+| `orbit(colors, count, size, duration, ...)` | `count` particles circle the element on an ellipse, smaller and fainter behind it. |
+| `bubbles(color, size, ...)` | Small bubbles keep rising from the top edge, wobbling and fading. |
+| `flame(colors, height, ...)` | Procedural flames about `height` tall above the element. `edge` moves them to another side. |
+| `grayscale(amount, ...)` | The element desaturates by `amount`, from 0 to 1. |
+| `spotlight(color, shape, padding, softness, ...)` | Everything around the element dims with `color`, leaving `shape` plus `padding` lit, with a soft edge. Later siblings still draw on top. |
+| `shimmer(color, angle, duration, ...)` | A band of light sweeps the element's pixels again and again, with a `pause` between sweeps. |
+| `breathe(scale, float, duration)` | The element swells by `scale` and settles on a slow loop, and can float up and down. It rests on a spring when the condition ends. |
+| `ping(color, shape, rings, scale, duration, width)` | Rings grow out of the element's outline to `scale` times its size and fade, one every `duration / rings`. |
+| `confettiRain(colors, density, size, ...)` | Confetti keeps falling from the element's top edge, tumbling and fading, about `density` pieces a second, with at most 200 in the air. |
+
+The parameters left out of the table are listed on each [effect page](/effects).
 
 ## ProgressEffect
 
@@ -170,23 +493,72 @@ An effect drawn at a progress you control, from 0 to 1. Attach it with `Modifier
 
 ```kotlin
 public abstract class ProgressEffect {
+    public fun curve(easing: Easing): ProgressEffect
+    public fun smoothed(
+        dampingRatio: Float = Spring.DampingRatioNoBouncy,
+        stiffness: Float = Spring.StiffnessMedium,
+    ): ProgressEffect
+    public fun reducedMotion(mode: ReducedMotionMode): ProgressEffect
+
     public companion object {
-        public fun shine(angle: Float = 45f, color: Color = Color.White): ProgressEffect
-        public fun glow(color: Color = Color(0xFF6B62F2), radius: Dp = 16.dp, shape: Shape = RectangleShape): ProgressEffect
-        public fun iris(origin: TransformOrigin = TransformOrigin.Center): ProgressEffect
-        public fun fill(color: Color = Color(0x993D7BFF), wave: Dp = 4.dp): ProgressEffect
-        public fun trace(shape: Shape = RectangleShape, color: Color = Color(0xFF6B62F2), width: Dp = 3.dp): ProgressEffect
+        public fun shine(
+            angle: Float = 45f,
+            color: Color = Color.White,
+            bandWidth: Float = 0.6f,
+            softness: Float = 1f,
+            bands: Int = 1,
+            bandSpacing: Float = 0.3f,
+            blendMode: BlendMode = BlendMode.SrcAtop,
+        ): ProgressEffect
+        public fun glow(
+            color: Color = Color(0xFF6B62F2),
+            radius: Dp = 16.dp,
+            shape: Shape = RectangleShape,
+            alphaCurve: Easing? = null,
+            colorRamp: List<Color>? = null,
+        ): ProgressEffect
+        public fun iris(
+            origin: TransformOrigin = TransformOrigin.Center,
+            softEdge: Dp = 0.dp,
+            shape: Shape? = null,
+            invert: Boolean = false,
+        ): ProgressEffect
+        public fun fill(
+            color: Color = Color(0x993D7BFF),
+            wave: Dp = 4.dp,
+            direction: FillDirection = FillDirection.Up,
+            waves: Float = 1.5f,
+            roll: Float = 3f,
+            colorRamp: List<Color>? = null,
+            foam: Dp = 0.dp,
+            foamColor: Color = Color.White,
+        ): ProgressEffect
+        public fun trace(
+            shape: Shape = RectangleShape,
+            color: Color = Color(0xFF6B62F2),
+            width: Dp = 3.dp,
+            brush: Brush? = null,
+            clockwise: Boolean = true,
+            start: Float = 0f,
+            tail: Float = 1f,
+            cap: StrokeCap = StrokeCap.Round,
+        ): ProgressEffect
     }
 }
+
+public enum class FillDirection { Up, Down, Right, Left }
 ```
 
 | Member | Description |
 | --- | --- |
-| `shine(angle, color)` | A band of light whose position across the element follows the progress. |
-| `glow(color, radius, shape)` | A halo whose strength follows the progress. |
-| `iris(origin)` | A circular reveal from `origin` whose radius follows the progress. |
-| `fill(color, wave)` | A liquid in `color` that fills the element's pixels from the bottom up to the progress, with a wave `wave` high on its surface. |
-| `trace(shape, color, width)` | The outline of `shape` drawn as a stroke, clockwise from the top, up to the progress. |
+| `curve(easing)` | Shapes the progress with `easing` before the effect draws it. |
+| `smoothed(dampingRatio, stiffness)` | Follows the progress with a spring instead of jumping to it, so a progress that changes in steps still moves smoothly. It runs in the draw phase and does not recompose. |
+| `reducedMotion(mode)` | With `ReducedMotionMode.Nothing` the effect draws nothing under reduced motion. Other modes change nothing. |
+| `shine(angle, color, ...)` | A band of light whose position across the element follows the progress. |
+| `glow(color, radius, shape, ...)` | A halo whose strength follows the progress. `colorRamp` changes its color along the way. |
+| `iris(origin, ...)` | A circular reveal from `origin` whose radius follows the progress. `invert` hides the element instead. |
+| `fill(color, wave, direction, ...)` | A liquid in `color` that fills the element's pixels up to the progress, with a wave `wave` high on its surface. `direction` is a `FillDirection`. |
+| `trace(shape, color, width, ...)` | The outline of `shape` drawn as a stroke, clockwise from the top, up to the progress. |
 
 ## KapowEnter
 
@@ -194,56 +566,125 @@ How content appears inside an `AnimatedVisibility` or `AnimatedContent`. Apply i
 
 ```kotlin
 public class KapowEnter {
+    public fun delay(delay: Duration): KapowEnter
+    public fun easing(easing: Easing): KapowEnter
+    public fun reducedMotion(mode: ReducedMotionMode): KapowEnter
+
     public companion object {
         public val None: KapowEnter
 
-        public fun iris(origin: TransformOrigin = TransformOrigin.Center, duration: Duration = 450.milliseconds): KapowEnter
-        public fun clock(origin: TransformOrigin = TransformOrigin.Center, duration: Duration = 450.milliseconds): KapowEnter
-        public fun wipe(angle: Float = 0f, duration: Duration = 450.milliseconds): KapowEnter
-        public fun glare(angle: Float = 45f, color: Color = Color.White, duration: Duration = 450.milliseconds): KapowEnter
+        public fun iris(
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 450.milliseconds,
+            softEdge: Dp = 0.dp,
+        ): KapowEnter
+        public fun clock(
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 450.milliseconds,
+            softEdge: Dp = 0.dp,
+            counterClockwise: Boolean = false,
+        ): KapowEnter
+        public fun wipe(
+            angle: Float = 0f,
+            duration: Duration = 450.milliseconds,
+            softEdge: Dp = 0.dp,
+        ): KapowEnter
+        public fun glare(
+            angle: Float = 45f,
+            color: Color = Color.White,
+            duration: Duration = 450.milliseconds,
+            softEdge: Dp = 0.dp,
+            width: Dp = Dp.Unspecified,
+            intensity: Float = 1f,
+        ): KapowEnter
         public fun blinds(
             slatWidth: Dp = 10.dp,
             orientation: BlindsOrientation = BlindsOrientation.Horizontal,
             staggered: Boolean = false,
             duration: Duration = 450.milliseconds,
+            slatCount: Int? = null,
+            staggerAmount: Float = 1f,
+            reverse: Boolean = false,
         ): KapowEnter
-        public fun anvil(duration: Duration = 1400.milliseconds): KapowEnter
-        public fun pop(color: Color = Color(0xFF6B62F2), duration: Duration = 1200.milliseconds): KapowEnter
-        public fun dissolve(cellSize: Dp = 12.dp, duration: Duration = 600.milliseconds): KapowEnter
+        public fun anvil(
+            duration: Duration = 1400.milliseconds,
+            dropHeight: Dp = Dp.Unspecified,
+            shake: Float = 1f,
+            dustColor: Color = Color(0xFFB0B0B0),
+            dustCount: Int = 6,
+        ): KapowEnter
+        public fun pop(
+            color: Color = Color(0xFF6B62F2),
+            duration: Duration = 1200.milliseconds,
+            overshoot: Float = 1f,
+            ringCount: Int = 1,
+            particleCount: Int = 12,
+            physics: ParticlePhysics = ParticlePhysics.Default,
+        ): KapowEnter
+        public fun dissolve(
+            cellSize: Dp = 12.dp,
+            duration: Duration = 600.milliseconds,
+            cellShape: CellShape = CellShape.Square,
+            softness: Float = 0f,
+            seed: Int = 31,
+        ): KapowEnter
         public fun curtain(
             orientation: BlindsOrientation = BlindsOrientation.Vertical,
             duration: Duration = 450.milliseconds,
+            split: Float = 0.5f,
         ): KapowEnter
         public fun shapeIris(
             shape: Shape = StarShape(),
             origin: TransformOrigin = TransformOrigin.Center,
             duration: Duration = 600.milliseconds,
+            rotation: Float = 0f,
+            scale: Float = 1f,
         ): KapowEnter
-        public fun checker(cellSize: Dp = 24.dp, duration: Duration = 600.milliseconds): KapowEnter
-        public fun tear(angle: Float = 0f, toothSize: Dp = 12.dp, duration: Duration = 500.milliseconds): KapowEnter
-        public fun blob(origin: TransformOrigin = TransformOrigin.Center, duration: Duration = 600.milliseconds): KapowEnter
+        public fun checker(
+            cellSize: Dp = 24.dp,
+            duration: Duration = 600.milliseconds,
+            order: CheckerOrder = CheckerOrder.Together,
+            seed: Int = 41,
+        ): KapowEnter
+        public fun tear(
+            angle: Float = 0f,
+            toothSize: Dp = 12.dp,
+            duration: Duration = 500.milliseconds,
+            roughness: Float = 0.4f,
+            rimColor: Color = Color.White.copy(alpha = 0.75f),
+        ): KapowEnter
+        public fun blob(
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+            points: Int = 9,
+            wobble: Float = 0.25f,
+            seed: Int = 53,
+        ): KapowEnter
     }
 }
 ```
 
 | Member | Description |
 | --- | --- |
+| `delay(delay)` | Starts the transition `delay` after the content becomes visible. The content stays hidden until then. `delay` must not be negative. |
+| `easing(easing)` | Shapes the transition's progress with `easing` instead of its own curve. |
+| `reducedMotion(mode)` | Chooses the reduced-motion behavior. `Default` and `Fade` fade the content in over the transition's duration. `Nothing` and `EndState` show it at once, without a delay. |
 | `None` | No Kapow transition. Content appears with whatever stock transition the caller set. |
-| `iris(origin, duration)` | A circle that grows from `origin` until it covers the content. |
-| `clock(origin, duration)` | A sweep around `origin`, clockwise from 12 o'clock, like a clock hand. |
-| `wipe(angle, duration)` | A straight edge that moves across the content in the direction of `angle` (degrees, 0 is rightward). |
-| `glare(angle, color, duration)` | A `wipe` with a bright streak of `color` running along its edge. |
-| `blinds(slatWidth, orientation, staggered, duration)` | Slats that open like venetian blinds. With `staggered`, slats nearer the top (or start) open first. `slatWidth` is at least 5 dp. |
-| `anvil(duration)` | The content drops in from above, lands with a shake and kicks up dust. |
-| `pop(color, duration)` | The content pops in with an overshoot while a ring and a burst of particles of `color` go off behind it. |
-| `dissolve(cellSize, duration)` | The content appears as a random grid of squares `cellSize` wide. `cellSize` is at least 2 dp. |
-| `curtain(orientation, duration)` | Two halves slide apart to reveal the content. |
-| `shapeIris(shape, origin, duration)` | Like `iris`, through any `shape`, such as a `StarShape`, growing from `origin`. |
-| `checker(cellSize, duration)` | A checkerboard of `cellSize` cells that fills in two waves. |
-| `tear(angle, toothSize, duration)` | A `wipe` whose edge is a torn zigzag with teeth `toothSize` deep. |
-| `blob(origin, duration)` | An organic wobbly blob that grows from `origin` until it covers the content. |
+| `iris(origin, duration, softEdge)` | A circle that grows from `origin` until it covers the content. |
+| `clock(origin, duration, ...)` | A sweep around `origin`, clockwise from 12 o'clock, like a clock hand. `counterClockwise` turns the other way. |
+| `wipe(angle, duration, softEdge)` | A straight edge that moves across the content in the direction of `angle` (degrees, 0 is rightward). |
+| `glare(angle, color, duration, ...)` | A `wipe` with a bright streak of `color` running along its edge. |
+| `blinds(slatWidth, orientation, staggered, duration, ...)` | Slats that open like venetian blinds. With `staggered`, slats nearer the top (or start) open first. `slatWidth` is at least 5 dp. |
+| `anvil(duration, ...)` | The content drops in from above, lands with a shake and kicks up dust. |
+| `pop(color, duration, ...)` | The content pops in with an overshoot while a ring and a burst of particles of `color` go off behind it. |
+| `dissolve(cellSize, duration, ...)` | The content appears as a seeded random grid of cells `cellSize` wide. `cellSize` is at least 2 dp. |
+| `curtain(orientation, duration, split)` | Two halves slide apart to reveal the content. |
+| `shapeIris(shape, origin, duration, ...)` | Like `iris`, through any `shape`, such as a `StarShape`, growing from `origin`. |
+| `checker(cellSize, duration, order, seed)` | A checkerboard of `cellSize` cells that fills in waves, in the `order` you pick. |
+| `tear(angle, toothSize, duration, ...)` | A `wipe` whose edge is a torn zigzag with teeth `toothSize` deep. |
+| `blob(origin, duration, ...)` | An organic wobbly blob that grows from `origin` until it covers the content. |
 
-Every `duration` must be positive.
+Every `duration` must be positive. With reduced motion and no override, every transition fades.
 
 ## KapowExit
 
@@ -251,64 +692,156 @@ How content disappears inside an `AnimatedVisibility` or `AnimatedContent`. Mask
 
 ```kotlin
 public class KapowExit {
+    public fun delay(delay: Duration): KapowExit
+    public fun easing(easing: Easing): KapowExit
+    public fun reducedMotion(mode: ReducedMotionMode): KapowExit
+
     public companion object {
         public val None: KapowExit
 
-        public fun iris(origin: TransformOrigin = TransformOrigin.Center, duration: Duration = 450.milliseconds): KapowExit
-        public fun clock(origin: TransformOrigin = TransformOrigin.Center, duration: Duration = 450.milliseconds): KapowExit
-        public fun wipe(angle: Float = 0f, duration: Duration = 450.milliseconds): KapowExit
-        public fun glare(angle: Float = 45f, color: Color = Color.White, duration: Duration = 450.milliseconds): KapowExit
+        public fun iris(
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 450.milliseconds,
+            softEdge: Dp = 0.dp,
+        ): KapowExit
+        public fun clock(
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 450.milliseconds,
+            softEdge: Dp = 0.dp,
+            counterClockwise: Boolean = false,
+        ): KapowExit
+        public fun wipe(
+            angle: Float = 0f,
+            duration: Duration = 450.milliseconds,
+            softEdge: Dp = 0.dp,
+        ): KapowExit
+        public fun glare(
+            angle: Float = 45f,
+            color: Color = Color.White,
+            duration: Duration = 450.milliseconds,
+            softEdge: Dp = 0.dp,
+            width: Dp = Dp.Unspecified,
+            intensity: Float = 1f,
+        ): KapowExit
         public fun blinds(
             slatWidth: Dp = 10.dp,
             orientation: BlindsOrientation = BlindsOrientation.Horizontal,
             staggered: Boolean = false,
             duration: Duration = 450.milliseconds,
+            slatCount: Int? = null,
+            staggerAmount: Float = 1f,
+            reverse: Boolean = false,
         ): KapowExit
-        public fun poof(color: Color = Color(0xFFC2C2C2), duration: Duration = 400.milliseconds): KapowExit
-        public fun dissolve(cellSize: Dp = 12.dp, duration: Duration = 600.milliseconds): KapowExit
+        public fun poof(
+            color: Color = Color(0xFFC2C2C2),
+            duration: Duration = 400.milliseconds,
+            puffCount: Int = 10,
+            puffSize: Dp = 28.dp,
+            direction: Float? = null,
+        ): KapowExit
+        public fun dissolve(
+            cellSize: Dp = 12.dp,
+            duration: Duration = 600.milliseconds,
+            cellShape: CellShape = CellShape.Square,
+            softness: Float = 0f,
+            seed: Int = 31,
+        ): KapowExit
         public fun curtain(
             orientation: BlindsOrientation = BlindsOrientation.Vertical,
             duration: Duration = 450.milliseconds,
+            split: Float = 0.5f,
         ): KapowExit
         public fun shapeIris(
             shape: Shape = StarShape(),
             origin: TransformOrigin = TransformOrigin.Center,
             duration: Duration = 600.milliseconds,
+            rotation: Float = 0f,
+            scale: Float = 1f,
         ): KapowExit
-        public fun checker(cellSize: Dp = 24.dp, duration: Duration = 600.milliseconds): KapowExit
-        public fun tear(angle: Float = 0f, toothSize: Dp = 12.dp, duration: Duration = 500.milliseconds): KapowExit
-        public fun blob(origin: TransformOrigin = TransformOrigin.Center, duration: Duration = 600.milliseconds): KapowExit
-        public fun shatter(shards: Int = 24, duration: Duration = 900.milliseconds): KapowExit
-        public fun disintegrate(color: Color = Color.Unspecified, duration: Duration = 1500.milliseconds): KapowExit
+        public fun checker(
+            cellSize: Dp = 24.dp,
+            duration: Duration = 600.milliseconds,
+            order: CheckerOrder = CheckerOrder.Together,
+            seed: Int = 41,
+        ): KapowExit
+        public fun tear(
+            angle: Float = 0f,
+            toothSize: Dp = 12.dp,
+            duration: Duration = 500.milliseconds,
+            roughness: Float = 0.4f,
+            rimColor: Color = Color.White.copy(alpha = 0.75f),
+        ): KapowExit
+        public fun blob(
+            origin: TransformOrigin = TransformOrigin.Center,
+            duration: Duration = 600.milliseconds,
+            points: Int = 9,
+            wobble: Float = 0.25f,
+            seed: Int = 53,
+        ): KapowExit
+        public fun shatter(
+            shards: Int = 24,
+            duration: Duration = 900.milliseconds,
+            gravity: Float = 1f,
+            spin: Float = 1f,
+            impact: TransformOrigin = TransformOrigin.Center,
+            seed: Int = 61,
+        ): KapowExit
+        public fun disintegrate(
+            color: Color = Color.Unspecified,
+            duration: Duration = 1500.milliseconds,
+            particleSize: Dp = 3.dp,
+            wind: Float = 0f,
+        ): KapowExit
     }
 }
 ```
 
 | Member | Description |
 | --- | --- |
+| `delay(delay)` | Starts the transition `delay` after the content is asked to go. The content stays fully shown until then. `delay` must not be negative. |
+| `easing(easing)` | Shapes the transition's progress with `easing`, so an ease-in curve starts the exit slowly. |
+| `reducedMotion(mode)` | Chooses the reduced-motion behavior. `Default` and `Fade` fade the content out over the transition's duration. `Nothing` and `EndState` remove it at once, without a delay. |
 | `None` | No Kapow transition. Content disappears with whatever stock transition the caller set. |
-| `iris(origin, duration)` | A circle that shrinks toward `origin`. |
-| `clock(origin, duration)` | A sweep around `origin` that takes the content away, counterclockwise back to 12 o'clock. |
-| `wipe(angle, duration)` | A straight edge that covers the content, moving against `angle`. |
-| `glare(angle, color, duration)` | A `wipe` with a bright streak of `color` along its edge. |
-| `blinds(slatWidth, orientation, staggered, duration)` | Slats that close like venetian blinds. |
-| `poof(color, duration)` | The content vanishes at once in a puff of smoke of `color`. |
-| `dissolve(cellSize, duration)` | The content vanishes as a random grid of squares. |
-| `curtain(orientation, duration)` | Two halves slide shut over the content. |
-| `shapeIris(shape, origin, duration)` | Like `iris`, through any `shape`, shrinking toward `origin`. |
-| `checker(cellSize, duration)` | A checkerboard that empties in two waves. |
-| `tear(angle, toothSize, duration)` | A torn-edge `wipe` that covers the content. |
-| `blob(origin, duration)` | An organic blob that shrinks toward `origin`. |
-| `shatter(shards, duration)` | The content breaks into `shards` triangular pieces that fall, turn and fade. |
-| `disintegrate(color, duration)` | A band sweeps across and turns the content into drifting dust, in the content's colors where the platform can read them, otherwise in `color` or light gray. |
+| `iris(origin, duration, softEdge)` | A circle that shrinks toward `origin`. |
+| `clock(origin, duration, ...)` | A sweep around `origin` that takes the content away, counterclockwise back to 12 o'clock. |
+| `wipe(angle, duration, softEdge)` | A straight edge that covers the content, moving against `angle`. |
+| `glare(angle, color, duration, ...)` | A `wipe` with a bright streak of `color` along its edge. |
+| `blinds(slatWidth, orientation, staggered, duration, ...)` | Slats that close like venetian blinds. |
+| `poof(color, duration, ...)` | The content vanishes at once in a puff of smoke of `color`. |
+| `dissolve(cellSize, duration, ...)` | The content vanishes as a seeded random grid of cells. |
+| `curtain(orientation, duration, split)` | Two halves slide shut over the content. |
+| `shapeIris(shape, origin, duration, ...)` | Like `iris`, through any `shape`, shrinking toward `origin`. |
+| `checker(cellSize, duration, order, seed)` | A checkerboard that empties in waves. |
+| `tear(angle, toothSize, duration, ...)` | A torn-edge `wipe` that covers the content. |
+| `blob(origin, duration, ...)` | An organic blob that shrinks toward `origin`. |
+| `shatter(shards, duration, ...)` | The content breaks into `shards` triangular pieces that fall, turn and fade. |
+| `disintegrate(color, duration, ...)` | A band sweeps across and turns the content into drifting dust, in the content's colors where the platform can read them, otherwise in `color` or light gray. |
 
-### BlindsOrientation
+### BlindsOrientation, CellShape, CheckerOrder
 
 ```kotlin
 public enum class BlindsOrientation { Horizontal, Vertical }
+
+public enum class CellShape { Square, Circle, Hexagon }
+
+public enum class CheckerOrder { Together, Diagonal, Random, Spiral }
 ```
 
-The direction of the slats in `blinds` and of the split in `curtain`.
+`BlindsOrientation` is the direction of the slats in `blinds` and of the split in `curtain`. `CellShape` is the shape of the cells of `dissolve`. `CheckerOrder` is the order in which the squares of `checker` open: both colors in two waves, in a diagonal sweep, in a seeded random order, or in a spiral from the center.
+
+### KapowStagger
+
+```kotlin
+public object KapowStagger {
+    public fun delay(
+        index: Int,
+        step: Duration = 50.milliseconds,
+        max: Duration = 500.milliseconds,
+    ): Duration
+}
+```
+
+`delay` returns `index * step`, never above `max`. Pass it to `ChangeEffect.delay`, `KapowEnter.delay` or `KapowExit.delay` so the items of a list start one after another. See [Stagger](/effects/transition-stagger).
 
 ### StarShape
 
@@ -347,15 +880,108 @@ public enum class ParticleShape { Circle, Square, Star, Heart, Sparkle }
 | `painter(painter, size, tint)` | A `Painter` drawn at `size`, optionally tinted. Remember the painter so it is not recreated. |
 | `text(text, style)` | A short label such as "+1". |
 
+## TypewriterMode, TypewriterCursor, CounterMode
+
+The types of `KapowTypewriter` and `KapowCounter`, which are listed under [Composables and modifiers](/reference/composables).
+
+```kotlin
+public enum class TypewriterMode { Type, Scramble }
+
+public class TypewriterCursor {
+    public companion object {
+        public fun bar(
+            color: Color = Color.Unspecified,
+            width: Dp = 2.dp,
+            blink: Duration = 530.milliseconds,
+            hideWhenDone: Boolean = false,
+        ): TypewriterCursor
+    }
+}
+
+public enum class CounterMode { Count, Roll }
+```
+
+| Member | Description |
+| --- | --- |
+| `TypewriterMode.Type` | Characters appear one after another from the start. |
+| `TypewriterMode.Scramble` | Every character starts as a random glyph and resolves to the real one, left to right. Each character keeps its own slot, so the layout never shifts. |
+| `TypewriterCursor.bar(color, width, blink, hideWhenDone)` | A vertical bar the height of the line. It stays solid while characters appear, then blinks, or goes away when `hideWhenDone` is true. `Color.Unspecified` uses the text color. |
+| `CounterMode.Count` | The number counts through the values in between, formatted again on every frame. |
+| `CounterMode.Roll` | Each digit rolls out of its slot and the new one rolls in, upward when the value goes up and downward when it goes down. |
+
+## ParticlePhysics
+
+How the particles of an effect launch and move. Effects that emit particles take it as `physics`. Every part is optional: a part left out keeps the effect's own value, so `ParticlePhysics.Default` changes nothing. Parts an effect has no use for are ignored.
+
+```kotlin
+public class ParticlePhysics {
+    public companion object {
+        public val Default: ParticlePhysics
+
+        public fun of(
+            direction: Float? = null,
+            spread: Float? = null,
+            speed: ClosedFloatingPointRange<Float>? = null,
+            gravity: Float? = null,
+            drag: Float? = null,
+            lifetime: ClosedFloatingPointRange<Float>? = null,
+            size: ClosedFloatingPointRange<Float>? = null,
+            spin: ClosedFloatingPointRange<Float>? = null,
+            startScale: Float? = null,
+            endScale: Float? = null,
+            fade: Easing? = null,
+            emission: EmissionArea? = null,
+            blendMode: BlendMode? = null,
+            colorPick: ColorPick? = null,
+        ): ParticlePhysics
+    }
+}
+
+public sealed class EmissionArea {
+    public data object Point : EmissionArea()
+    public data class Edge(val side: EdgeSide) : EmissionArea()
+    public data object Rect : EmissionArea()
+}
+
+public enum class EdgeSide { Top, Bottom, Start, End }
+
+public enum class ColorPick { Sequential, Random }
+```
+
+| Member | Description |
+| --- | --- |
+| `Default` | Changes nothing: every effect keeps its own launch and motion. |
+| `of(...)` | Sets the parts you name. Angles are in degrees clockwise from pointing right, so -90 is straight up. |
+| `EmissionArea.Point` | Every particle starts at the effect's origin. |
+| `EmissionArea.Edge(side)` | Particles start spread along one edge of the element. |
+| `EmissionArea.Rect` | Particles start anywhere inside the element's bounds. |
+| `EdgeSide` | A side of the element. `Start` and `End` follow the layout direction. |
+| `ColorPick` | How particles take their color from the list: `Sequential` in order, `Random` from the effect's seed. |
+
+See [Tuning effects](/guides/tuning-effects).
+
 ## Reduced motion
 
 ```kotlin
 public enum class KapowMotion { System, Full, Reduced }
 
 public val LocalKapowMotion: ProvidableCompositionLocal<KapowMotion>
+
+public enum class ReducedMotionMode { Default, Nothing, EndState, Fade }
 ```
 
-`LocalKapowMotion` overrides the reduced-motion setting for part of the tree. It defaults to `KapowMotion.System`, which follows the platform. `Full` always plays full effects. `Reduced` always plays the reduced version. See [Reduced motion](/guides/reduced-motion).
+`LocalKapowMotion` overrides the reduced-motion setting for part of the tree. It defaults to `KapowMotion.System`, which follows the platform. `Full` always plays full effects. `Reduced` always plays the reduced version.
+
+`ReducedMotionMode` is what one effect does under reduced motion, chosen with the `reducedMotion(...)` wrapper of a change, conditional or progress effect, or of `KapowEnter` and `KapowExit`:
+
+| Mode | Behavior |
+| --- | --- |
+| `Default` | The effect's own fallback. |
+| `Nothing` | The effect draws nothing. Feedback events still fire. |
+| `EndState` | The effect's final look appears at once, without motion. Effects that end at rest draw nothing. |
+| `Fade` | The effect's final look fades in and out over a short time instead of moving. |
+
+See [Reduced motion](/guides/reduced-motion).
 
 ## Feedback
 

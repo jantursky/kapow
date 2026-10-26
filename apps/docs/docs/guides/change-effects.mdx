@@ -1,6 +1,6 @@
 ---
 title: Change effects
-description: How a change effect decides to play, and what equality, isEnabled, cooldown and delay do.
+description: How a change effect decides to play, and what equality, isEnabled, cooldown, delay, times, speed and reducedMotion do.
 ---
 
 A change effect plays once each time a value you watch changes. You attach it with `Modifier.changeEffect(value, effect)`.
@@ -21,7 +21,7 @@ fun Score(score: Int) {
 }
 ```
 
-The effects are `shine`, `pulse`, `glow`, `spray`, `rise`, `spin`, `ripple`, `flash`, `burst`, `speedLines`, `sparkle`, `fireworks`, `confettiPop`, `trace`, `strike`, `stamp` and `glitch`. The [effects overview](/effects) has one line on each.
+The effects are `shine`, `pulse`, `glow`, `spray`, `rise`, `spin`, `ripple`, `flash`, `burst`, `speedLines`, `sparkle`, `fireworks`, `confettiPop`, `hearts`, `trace`, `strike`, `stamp` and `glitch`. The [effects overview](/effects) has one line on each, and [Tuning effects](/guides/tuning-effects) covers the options they share.
 
 ## When it plays
 
@@ -86,9 +86,9 @@ Some effects ignore a change that arrives too soon after the last one they accep
 | `shine` | half of its `duration` |
 | `pulse` | 0.2 s for each pulse after the first (`count - 1`) |
 | `trace` | half of its `duration` |
-| `glow`, `spray`, `rise`, `spin`, `ripple`, `flash`, `burst`, `speedLines`, `sparkle`, `fireworks`, `confettiPop`, `strike`, `stamp`, `glitch` | none |
+| `glow`, `spray`, `rise`, `spin`, `ripple`, `flash`, `burst`, `speedLines`, `sparkle`, `fireworks`, `confettiPop`, `hearts`, `strike`, `stamp`, `glitch` | none |
 
-With the default 1 s `shine`, two changes 0.2 s apart play one sweep. The effects without a cooldown play on every change: `rise` floats two labels for two quick changes, `glow` gets stronger up to a limit, and `spin` adds speed.
+`.cooldown(...)` replaces the effect's own cooldown, as the next section shows. With the default 1 s `shine`, two changes 0.2 s apart play one sweep. The effects without a cooldown play on every change: `rise` floats two labels for two quick changes, `glow` gets stronger up to a limit, and `spin` adds speed.
 
 ## Delaying an effect
 
@@ -110,6 +110,45 @@ fun Reward(coins: Int) {
     )
 }
 ```
+
+## Cooldown, times, speed and reduced motion
+
+Four more wrappers work on any change effect. Each returns a new `ChangeEffect`, and they can be chained in any order.
+
+| Wrapper | What it does |
+| --- | --- |
+| `.cooldown(duration)` | Ignores a change that arrives sooner than `duration` after the last one that played. It replaces the effect's own cooldown, so `.cooldown(Duration.ZERO)` turns it off. |
+| `.times(count, gap)` | Plays the effect `count` times for each change, `gap` apart. Changes that arrive while the series runs are ignored. |
+| `.speed(multiplier)` | Plays the effect at `multiplier` times the pace: 2 takes half as long, 0.5 twice as long. Repeated calls multiply. |
+| `.reducedMotion(mode)` | Chooses what the effect does under reduced motion. See [Reduced motion](/guides/reduced-motion). |
+
+```kotlin
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.ReducedMotionMode
+import com.jantursky.kapow.changeEffect
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
+
+@Composable
+fun Likes(likes: Int) {
+    BasicText(
+        text = "$likes",
+        modifier = Modifier.changeEffect(
+            likes,
+            ChangeEffect.pulse()
+                .cooldown(2.seconds)
+                .times(count = 2, gap = 150.milliseconds)
+                .speed(1.5f)
+                .reducedMotion(ReducedMotionMode.Nothing),
+        ),
+    )
+}
+```
+
+A count or a multiplier that is not positive, or a negative duration, throws when you build the effect.
 
 ## Feedback
 

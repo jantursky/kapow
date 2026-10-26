@@ -49,6 +49,15 @@ On Android, both checks matter. Turning "Remove animations" on sets the animator
 | `strike` | The line appears whole instead of drawing across, then holds and fades. |
 | `stamp` | No drop, no squash and no dust. The element briefly brightens. |
 | `glitch` | No split and no shifted slices. The element briefly brightens. |
+| `hearts` | One heart fades in and out in place. No small hearts. |
+| `shimmer` | No band travels. The element is lightened evenly while the condition holds. |
+| `breathe` | The element does not move. |
+| `ping` | No growing rings. One faint ring stays still around the element while the condition holds. |
+| `confettiRain` | No pieces fall. |
+| `kapowSkeleton` | The placeholder is still, with no shimmer, and the reveal is a plain cross-fade. |
+| `KapowTypewriter` | The full text shows at once, without a cursor. |
+| `KapowCounter` | The new value appears at once. |
+| `kapowTilt` | The element stays flat and draws no sheen. |
 | Progress `fill` | Drawn at the progress you pass, like every progress effect. |
 | Progress `trace` | Drawn at the progress you pass, like every progress effect. |
 | Mask transitions: `iris`, `clock`, `wipe`, `glare`, `blinds`, `dissolve`, `curtain`, `shapeIris`, `checker`, `tear`, `blob` | A crossfade over the same duration or shorter, with no mask. |
@@ -57,6 +66,37 @@ On Android, both checks matter. Turning "Remove animations" on sets the animator
 Feedback calls are not affected. A haptic you asked for still fires under reduced motion.
 
 The [effects pages](/effects) list the reduced behavior of every effect, including `repeat`, `pushDown` and the progress effects.
+
+## Choosing the behavior per effect
+
+Each effect has its own quiet version, listed above. To choose another one for a single effect, call `reducedMotion(mode)` on it, on change, conditional and progress effects and on `KapowEnter` and `KapowExit`. The `ReducedMotionMode` values are:
+
+- `Default` keeps the effect's own fallback. It is what you get without the wrapper.
+- `Nothing` draws nothing and sends no work to the frame loop. Feedback events still fire.
+- `EndState` shows the effect's final look at once, without motion. Effects that end at rest draw nothing.
+- `Fade` fades the final look in and out over a short time instead of moving.
+
+For transitions, `Default` and `Fade` fade the content, and `Nothing` and `EndState` show or remove it at once, without a delay. For progress effects only `Nothing` has an effect. The mode applies only while reduced motion is on; with full motion it changes nothing.
+
+```kotlin
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.ReducedMotionMode
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun Score(score: Int) {
+    BasicText(
+        text = "$score",
+        modifier = Modifier.changeEffect(
+            score,
+            ChangeEffect.confettiPop().reducedMotion(ReducedMotionMode.Nothing),
+        ),
+    )
+}
+```
 
 ## Overriding the setting
 

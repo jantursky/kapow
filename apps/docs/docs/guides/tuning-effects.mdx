@@ -1,0 +1,119 @@
+---
+title: Tuning effects
+description: Shape particles with ParticlePhysics and EmissionArea, make randomness reproducible with seeds, set easing and brushes, and wrap any effect to change its timing and reduced-motion behavior.
+---
+
+Every effect has a default look. Since 1.0.0 each one also takes options to change it. This page covers the options that work the same way across effects.
+
+## Defaults keep the 1.0.0 look
+
+Every new parameter has a default that reproduces what the effect did in 1.0.0. Code that compiled against 1.0.0 still compiles and looks the same. Old signatures stay in the binary, so a library built against 1.0.0 keeps working with the new version. You change a parameter only when you want a different look.
+
+## Particle physics
+
+Effects that emit particles take a `physics` parameter: `spray`, `confettiPop`, `hearts` and `fireworks` on change effects, `smoke`, `bubbles`, `flame` and `confettiRain` on conditional effects, and `KapowEnter.pop`. `ParticlePhysics.of(...)` sets the launch and motion of the particles. Every part is optional, and a part you leave out keeps the effect's own value. `ParticlePhysics.Default` changes nothing.
+
+| Part | Meaning |
+| --- | --- |
+| `direction`, `spread` | The launch heading and the width of the cone, in degrees clockwise from pointing right. -90 is straight up. |
+| `speed`, `lifetime` | A range each particle picks from: its launch speed and how long it lives. |
+| `gravity`, `drag` | Pull downward and the braking of the particle's speed. |
+| `size`, `spin` | A range for the particle's size and its turning speed. |
+| `startScale`, `endScale` | The size factor at the start and at the end of a particle's life. |
+| `fade` | An easing that maps life progress to how far the particle has faded. |
+| `emission` | Where particles start. See below. |
+| `blendMode`, `colorPick` | How particles blend, and whether they take colors in order or at random. |
+
+An effect ignores the parts it has no use for. The effect's page says which ones it reads.
+
+### Emission area
+
+`EmissionArea` decides where particles start, centered on the effect's own origin and sized to the element:
+
+- `EmissionArea.Point` starts every particle at the origin.
+- `EmissionArea.Edge(side)` spreads them along one edge. `EdgeSide` is `Top`, `Bottom`, `Start` or `End`, and `Start` and `End` follow the layout direction.
+- `EmissionArea.Rect` starts them anywhere inside the element's bounds.
+
+```kotlin
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.EdgeSide
+import com.jantursky.kapow.EmissionArea
+import com.jantursky.kapow.ParticlePhysics
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun Score(score: Int) {
+    BasicText(
+        text = "$score",
+        modifier = Modifier.changeEffect(
+            score,
+            ChangeEffect.spray(
+                count = 18,
+                physics = ParticlePhysics.of(
+                    direction = -90f,
+                    spread = 40f,
+                    gravity = 600f,
+                    emission = EmissionArea.Edge(EdgeSide.Top),
+                ),
+            ),
+        ),
+    )
+}
+```
+
+Create the `ParticlePhysics` once if you reuse it, for example in a `remember` block.
+
+## Seeds
+
+Effects with random parts take a `seed`: the scatter of `spray`, `confettiPop`, `hearts`, `fireworks`, `burst`, `speedLines`, `sparkle`, `stamp` and `glitch`, and the conditional `smoke`, `bubbles`, `flame`, `sparkles`, `confettiRain` and `repeat` (for its jitter). Transitions with a random pattern take one too: `dissolve`, `checker`, `blob` and `shatter`, and `KapowTypewriter` for its scrambled glyphs.
+
+The same `seed` gives the same pattern every time and on every platform. The default is 0 for the effects, and a fixed value for the transitions. For a change effect, each change takes the next seed in turn, so the sprays differ from one another but the whole sequence is the same on every run. Use a fixed `seed` in screenshot tests and previews. Leave it alone otherwise.
+
+## Easing and brushes
+
+Many effects take an `easing`. It shapes how the effect moves over its duration: `shine`, `pulse`, `spin`, `ripple`, `speedLines`, `trace`, `strike`, `rainbowBorder` and `KapowCounter` have one, and `KapowEnter` and `KapowExit` take it through `.easing(...)`. Pass any Compose `Easing`, such as `FastOutSlowInEasing` or a `CubicBezierEasing`. `ProgressEffect.curve(easing)` does the same for a progress effect.
+
+Effects that draw an outline or a ring take a `brush` instead of a plain color: `pulse`, `trace`, `strike`, `borderBeam`, `marchingAnts` and the progress `trace`. A `Brush` such as a linear or sweep gradient replaces `color`. Effects that blend with the element, such as `shine`, `flash` and `shimmer`, take a `blendMode`.
+
+```kotlin
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun Highlight(count: Int) {
+    BasicText(
+        text = "$count",
+        modifier = Modifier.changeEffect(
+            count,
+            ChangeEffect.trace(
+                brush = Brush.sweepGradient(listOf(Color.Magenta, Color.Cyan, Color.Magenta)),
+                easing = CubicBezierEasing(0.2f, 0f, 0f, 1f),
+            ),
+        ),
+    )
+}
+```
+
+## Wrappers
+
+Every effect type has wrappers that change when and how it plays. Each returns a new effect, so they chain. They are the same on every effect of a type:
+
+| Type | Wrappers |
+| --- | --- |
+| `ChangeEffect` | `delay`, `cooldown`, `times`, `speed`, `reducedMotion` |
+| `ConditionalEffect` | `fadeIn`, `fadeOut`, `startDelay`, `speed`, `reducedMotion` |
+| `ProgressEffect` | `curve`, `smoothed`, `reducedMotion` |
+| `KapowEnter`, `KapowExit` | `delay`, `easing`, `reducedMotion` |
+
+The guides explain them: [change effects](/guides/change-effects), [conditional effects](/guides/conditional-effects), [progress effects](/guides/progress-effects) and [transitions](/guides/transitions). `reducedMotion(mode)` takes a `ReducedMotionMode` and is covered in [Reduced motion](/guides/reduced-motion). `KapowStagger.delay(index)` builds delays for the items of a list, as [Stagger](/effects/transition-stagger) shows.
+
+Effects are compared by value, wrappers included, so building one inline in a composable is fine. A lambda such as `rise(label = ...)` is compared by identity: remember it, or a new lambda makes the effect unequal each time.

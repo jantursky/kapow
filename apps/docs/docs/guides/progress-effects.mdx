@@ -15,6 +15,35 @@ The effects are `shine`, `glow`, `iris`, `fill` and `trace`:
 | `ProgressEffect.fill()` | no liquid | the whole element is tinted |
 | `ProgressEffect.trace()` | no outline | the closed outline |
 
+## Curve and smoothing
+
+Two wrappers change how the progress reaches the effect. Both return a new `ProgressEffect`.
+
+- `.curve(easing)` shapes the progress with an easing before the effect draws it, so a linear scroll can start slowly.
+- `.smoothed(dampingRatio, stiffness)` follows the progress with a spring instead of jumping to it. A progress that changes in steps, such as a download in chunks, then moves smoothly. The spring runs in the draw phase and does not recompose.
+
+```kotlin
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ProgressEffect
+import com.jantursky.kapow.progressEffect
+
+@Composable
+fun DownloadFill(progress: Float) {
+    Box(
+        Modifier
+            .size(120.dp)
+            .progressEffect(ProgressEffect.fill().curve(FastOutSlowInEasing).smoothed()) { progress },
+    )
+}
+```
+
+The sample passes a captured `Float` because the progress changes in steps and the spring smooths it. For a value that changes every frame, read state inside the lambda as described below.
+
 ## Driven by scroll
 
 ```kotlin
@@ -58,4 +87,4 @@ The `kapow-crease` artifact builds on this: `Modifier.hingeEffect` feeds the hin
 
 ## Reduced motion
 
-Progress effects follow the progress you give them, so Kapow does not animate them on its own. If the progress itself moves a lot (a fast scroll, say), check `isReducedMotion()` and decide what to show. See [Reduced motion](/guides/reduced-motion).
+Progress effects follow the progress you give them, so Kapow does not animate them on its own. If the progress itself moves a lot (a fast scroll, say), check `isReducedMotion()` and decide what to show. `.reducedMotion(ReducedMotionMode.Nothing)` makes one effect draw nothing under reduced motion; the other modes change nothing. See [Reduced motion](/guides/reduced-motion).

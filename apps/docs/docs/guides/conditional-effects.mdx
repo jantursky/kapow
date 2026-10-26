@@ -1,11 +1,11 @@
 ---
 title: Conditional effects
-description: Effects that stay on while a Boolean is true, and how repeat plays a change effect on a timer.
+description: Effects that stay on while a Boolean is true, how repeat plays a change effect on a timer, and how fadeIn, fadeOut, startDelay, speed and reducedMotion tune them.
 ---
 
 A conditional effect runs while a condition is true. `Modifier.conditionalEffect(condition, effect)` starts the effect when the condition becomes true, including on first composition, and winds it down when the condition becomes false. The element then returns to its normal look.
 
-The effects are `repeat`, `glow`, `pushDown`, `smoke`, `borderBeam`, `marchingAnts`, `rainbowBorder`, `sparkles`, `orbit`, `bubbles`, `flame`, `grayscale` and `spotlight`.
+The effects are `repeat`, `glow`, `pushDown`, `smoke`, `borderBeam`, `marchingAnts`, `rainbowBorder`, `sparkles`, `orbit`, `bubbles`, `flame`, `grayscale`, `spotlight`, `shimmer`, `breathe`, `ping` and `confettiRain`.
 
 ## Glow
 
@@ -103,6 +103,22 @@ The element fades to gray through a color filter on a layer of its own, the look
 
 Dims everything around the element and leaves its shape clear, with a soft edge, as an onboarding tip does. The element draws the scrim itself, far past its bounds, so content drawn after it stays on top and clipping parents cut it off. See [spotlight](/effects/conditional-spotlight).
 
+## Shimmer
+
+A band of light sweeps the element's drawn pixels again and again, with a pause between sweeps, the look of a loading placeholder. See [shimmer](/effects/conditional-shimmer).
+
+## Breathe
+
+The element swells a little and settles back on a slow loop, and can float up and down, to say that something is alive. When the condition ends it rests on a spring with no jump. See [breathe](/effects/conditional-breathe).
+
+## Ping
+
+Rings grow out of the element's outline and fade, like a radar ping or a live indicator, in the element's shape. When the condition ends the rings in flight finish. See [ping](/effects/conditional-ping).
+
+## Confetti rain
+
+Confetti keeps falling from the element's top edge, tumbling and fading, with at most 200 pieces in the air. It is made of particles, so a [particle layer](/guides/particle-layer) lets it fall past clipping parents. See [confetti rain](/effects/conditional-confetti-rain).
+
 ## Repeat
 
 `ConditionalEffect.repeat(effect, every)` plays a [change effect](/guides/change-effects) as soon as the condition becomes true and then once every `every` while it stays true. It is how you make a badge pulse or a button shine every few seconds.
@@ -133,3 +149,48 @@ Things to know:
 - Intervals shorter than 1/15 s are raised to 1/15 s. The floor is `ConditionalEffect.MinRepeatInterval`.
 - When the condition turns false no further repetitions are scheduled. A repetition that is already playing finishes.
 - The wrapped change effect keeps its own cooldown. A `shine` with a 1 s duration has a 0.5 s cooldown, so repeating it every 0.2 s still plays it about every 0.5 s.
+
+## Fade, delay, speed and reduced motion
+
+Four wrappers work on any conditional effect, `repeat` included. Each returns a new `ConditionalEffect`.
+
+| Wrapper | What it does |
+| --- | --- |
+| `.fadeIn(duration)` | How long the effect takes to fade in when the condition turns true, instead of its own fade. |
+| `.fadeOut(duration)` | How long the effect takes to fade out when the condition turns false, instead of its own fade. |
+| `.startDelay(delay)` | Waits `delay` after the condition turns true before the effect starts. |
+| `.speed(multiplier)` | Runs the effect at `multiplier` times the pace: 2 is twice as fast. Repeated calls multiply. |
+| `.reducedMotion(mode)` | Chooses what the effect does under reduced motion. See [Reduced motion](/guides/reduced-motion). |
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.ReducedMotionMode
+import com.jantursky.kapow.conditionalEffect
+import kotlin.time.Duration.Companion.milliseconds
+
+@Composable
+fun LiveBadge(live: Boolean) {
+    Box(
+        Modifier
+            .size(48.dp)
+            .background(Color.DarkGray)
+            .conditionalEffect(
+                live,
+                ConditionalEffect.ping()
+                    .startDelay(500.milliseconds)
+                    .fadeOut(300.milliseconds)
+                    .speed(0.8f)
+                    .reducedMotion(ReducedMotionMode.Nothing),
+            ),
+    )
+}
+```
+
+See [Tuning effects](/guides/tuning-effects) for the options all effects share.
