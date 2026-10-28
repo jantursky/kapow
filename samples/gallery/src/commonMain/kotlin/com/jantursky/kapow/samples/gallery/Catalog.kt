@@ -459,6 +459,20 @@ val entries: List<Entry> =
             Example("HingeExample.kt") { HingeDemo() },
         ),
         Entry(
+            "more-trigger",
+            Group.More,
+            "Trigger",
+            "Fire a change effect from code, such as a click, with no value to watch.",
+            Example("TriggerExample.kt") { TriggerDemo() },
+        ),
+        Entry(
+            "more-interaction",
+            Group.More,
+            "Interaction",
+            "Keep an effect on while the element is pressed, hovered or focused.",
+            Example("InteractionExample.kt") { InteractionDemo() },
+        ),
+        Entry(
             "more-feedback",
             Group.More,
             "Feedback",

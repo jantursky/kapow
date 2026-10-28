@@ -4,6 +4,16 @@ All notable changes to `io.github.jantursky:kapow` and its companion artifacts a
 
 ## [Unreleased]
 
+### Added
+
+- `KapowTrigger` and `rememberKapowTrigger()`: `Modifier.changeEffect(trigger, effect)` plays the effect each time `trigger.fire()` is called, from a click or any event, without a value to watch and without recomposing.
+- Effects that follow an `InteractionSource`: `Modifier.conditionalEffect(interactionSource, interaction, effect)` runs while the element is pressed, hovered, focused or dragged (`KapowInteraction`), and `Modifier.changeEffect(interactionSource, interaction, effect)` plays each time that interaction starts.
+- `Modifier.edgeEffect(condition, edge, effect)` plays when a Boolean turns true or false (`KapowEdge`), and `playOnStart` on `changeEffect`, `edgeEffect` and triggers plays the effect on the first composition.
+
+### Changed
+
+- `androidx.compose.foundation` is now an `api` dependency of the core, because `InteractionSource` is part of the new signatures. `changeEffect(value, …)` gained `playOnStart`; its 1.1.0 signature stays as a hidden overload.
+
 ## [1.1.0] - 2026-10-26
 
 ### Added

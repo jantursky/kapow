@@ -1,0 +1,59 @@
+---
+title: "Interaction"
+description: Keep an effect on while the element is pressed, hovered, focused or dragged, or play it each time that starts.
+---
+
+`Modifier.conditionalEffect(interactionSource, interaction, effect)` keeps a conditional effect on while the interaction holds. `Modifier.changeEffect(interactionSource, interaction, effect)` plays a change effect each time it starts. Both read the source without recomposing. See the [triggers guide](/guides/triggers).
+
+## Usage
+
+```kotlin
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.KapowInteraction
+import com.jantursky.kapow.conditionalEffect
+
+@Composable
+fun GlowOnHover(onClick: () -> Unit) {
+    val source = remember { MutableInteractionSource() }
+    Box(
+        Modifier
+            .size(160.dp)
+            .conditionalEffect(source, KapowInteraction.Hovered, ConditionalEffect.glow(Color.Magenta))
+            .hoverable(source)
+            .clickable(interactionSource = source, indication = null, onClick = onClick),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `interactionSource` | | The source the element's `hoverable`, `focusable` or `clickable` reports to. |
+| `interaction` | | `Pressed`, `Hovered`, `Focused` or `Dragged`. |
+| `effect` | | A `ConditionalEffect`, or a `ChangeEffect` for the change overload. |
+| `isEnabled`, `feedback` | `true`, `null` | Change overload only, as for `changeEffect(value, …)`. |
+
+## Reduced motion
+
+The effect follows its own reduced-motion behavior.
+
+## Notes
+
+- Hover needs a mouse and never happens on a phone. Focus needs a `focusable` element.
+- A source does not replay what happened before the element was composed, so an element that appears under a resting mouse starts idle.
+- Giving the element a different source winds the effect down and follows the new one.
+
+## Live example
+
+<include example="more-interaction">../_snippets/live-example.mdx</include>

@@ -67,5 +67,7 @@ export default defineMeta({
     'text-counter',
     'more-tilt',
     'more-skeleton',
+    'more-trigger',
+    'more-interaction',
   ],
 })

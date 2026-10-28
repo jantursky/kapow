@@ -1,0 +1,103 @@
+---
+title: Triggers and interactions
+description: Play an effect from a click or an event, follow press, hover and focus, and choose when the first composition plays.
+---
+
+`changeEffect(value, effect)` needs a value that changes. Three more ways to start an effect cover the cases where there is no such value.
+
+## Fire it yourself
+
+A `KapowTrigger` plays the effect each time you call `fire()`, from a click handler, a view model event or anywhere else. Firing never recomposes anything, and a second `fire()` plays again even though nothing in state changed.
+
+```kotlin
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+import com.jantursky.kapow.rememberKapowTrigger
+
+@Composable
+fun Party() {
+    val trigger = rememberKapowTrigger()
+    Box(
+        Modifier
+            .size(80.dp)
+            .changeEffect(trigger, ChangeEffect.confettiPop())
+            .clickable { trigger.fire() },
+    )
+}
+```
+
+- One trigger can drive several elements. Each one plays its own effect.
+- Fires that arrive within one frame play once. For spacing, put `.cooldown(…)` on the effect.
+- A fire that happens before the element is composed plays nothing later.
+- `isEnabled`, `feedback`, `.delay(…)`, `.times(…)` and the other wrappers work as for a value.
+
+## Follow press, hover and focus
+
+Pass an `InteractionSource` and say which interaction counts: `Pressed`, `Hovered`, `Focused` or `Dragged`. A conditional effect stays on while the interaction holds. A change effect plays once each time it starts.
+
+```kotlin
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.KapowInteraction
+import com.jantursky.kapow.changeEffect
+import com.jantursky.kapow.conditionalEffect
+
+@Composable
+fun Card(onClick: () -> Unit) {
+    val source = remember { MutableInteractionSource() }
+    Box(
+        Modifier
+            .size(160.dp)
+            .conditionalEffect(source, KapowInteraction.Hovered, ConditionalEffect.glow(Color.Magenta))
+            .changeEffect(source, KapowInteraction.Pressed, ChangeEffect.pulse())
+            .hoverable(source)
+            .focusable(interactionSource = source)
+            .clickable(interactionSource = source, indication = null, onClick = onClick),
+    )
+}
+```
+
+Interactions are read without recomposing. A source does not replay what happened before the element was composed, so an element that appears under a resting mouse starts idle and reacts to the next event. Hover needs a mouse, so it never happens on a phone, and focus needs a `focusable` element.
+
+## Rising and falling edges
+
+`edgeEffect` plays when a Boolean turns true (`KapowEdge.Rising`) or false (`KapowEdge.Falling`), and ignores the other direction. It suits a success sparkle when `isSaved` turns true, or a shake when `isValid` turns false.
+
+```kotlin
+import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.KapowEdge
+import com.jantursky.kapow.edgeEffect
+
+@Composable
+fun SavedBadge(isSaved: Boolean) {
+    Box(Modifier.edgeEffect(isSaved, KapowEdge.Rising, ChangeEffect.sparkle()))
+}
+```
+
+## Play on the first composition
+
+By default nothing plays when an element first appears. Set `playOnStart = true` on `changeEffect`, on a trigger or on `edgeEffect` for a welcome sparkle or a reveal. It plays once per element, not again when a lazy list reuses the item for other content, and an `edgeEffect` only plays it when the condition already matches the edge.
+
+## Remember your effects
+
+Build an effect once. An effect created inside a composable is equal to the last one when its parameters are equal, so the usual `ChangeEffect.spray()` call is fine. One that captures a lambda, such as a `label`, is a new effect on each recomposition and restarts the running one: wrap it in `remember`.

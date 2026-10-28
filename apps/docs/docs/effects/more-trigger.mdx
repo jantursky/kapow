@@ -1,0 +1,56 @@
+---
+title: "Trigger"
+description: Play a change effect from code, such as a click or an event, with no value to watch.
+---
+
+`Modifier.changeEffect(trigger, effect)` plays the effect each time you call `trigger.fire()`. It is the way to start an effect from a click, a view model event or a button elsewhere on the screen. See the [triggers guide](/guides/triggers) for interactions, edges and `playOnStart`.
+
+## Usage
+
+```kotlin
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.ParticleContent
+import com.jantursky.kapow.ParticleShape
+import com.jantursky.kapow.changeEffect
+import com.jantursky.kapow.rememberKapowTrigger
+
+@Composable
+fun LikeButton() {
+    val trigger = rememberKapowTrigger()
+    Box(
+        Modifier
+            .size(64.dp)
+            .changeEffect(trigger, ChangeEffect.spray(ParticleContent.shape(ParticleShape.Heart)))
+            .clickable { trigger.fire() },
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `trigger` | | The `KapowTrigger` from `rememberKapowTrigger()`. Several elements may share one. |
+| `effect` | | Any `ChangeEffect`, with its `.delay`, `.cooldown`, `.times`, `.speed` and `.reducedMotion`. |
+| `isEnabled` | `true` | While false, fires play nothing and send no feedback. |
+| `feedback` | `null` | A `KapowFeedbackEvent` sent each time the effect plays. |
+| `playOnStart` | `false` | Plays once when the element first appears. |
+
+## Reduced motion
+
+The effect follows its own reduced-motion behavior, exactly as when a value changes.
+
+## Notes
+
+- `fire()` can be called from any thread and never recomposes.
+- Fires within one frame play once, and a fire from before the element was composed plays nothing.
+
+## Live example
+
+<include example="more-trigger">../_snippets/live-example.mdx</include>
