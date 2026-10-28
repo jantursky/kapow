@@ -211,9 +211,18 @@ public final class com/jantursky/kapow/EdgeSide : java/lang/Enum {
 }
 
 public final class com/jantursky/kapow/EffectModifiersKt {
-	public static final fun changeEffect (Landroidx/compose/ui/Modifier;Ljava/lang/Object;Lcom/jantursky/kapow/ChangeEffect;ZLcom/jantursky/kapow/KapowFeedbackEvent;)Landroidx/compose/ui/Modifier;
+	public static final fun changeEffect (Landroidx/compose/ui/Modifier;Landroidx/compose/foundation/interaction/InteractionSource;Lcom/jantursky/kapow/KapowInteraction;Lcom/jantursky/kapow/ChangeEffect;ZLcom/jantursky/kapow/KapowFeedbackEvent;)Landroidx/compose/ui/Modifier;
+	public static final fun changeEffect (Landroidx/compose/ui/Modifier;Lcom/jantursky/kapow/KapowTrigger;Lcom/jantursky/kapow/ChangeEffect;ZLcom/jantursky/kapow/KapowFeedbackEvent;Z)Landroidx/compose/ui/Modifier;
+	public static final synthetic fun changeEffect (Landroidx/compose/ui/Modifier;Ljava/lang/Object;Lcom/jantursky/kapow/ChangeEffect;ZLcom/jantursky/kapow/KapowFeedbackEvent;)Landroidx/compose/ui/Modifier;
+	public static final fun changeEffect (Landroidx/compose/ui/Modifier;Ljava/lang/Object;Lcom/jantursky/kapow/ChangeEffect;ZLcom/jantursky/kapow/KapowFeedbackEvent;Z)Landroidx/compose/ui/Modifier;
+	public static synthetic fun changeEffect$default (Landroidx/compose/ui/Modifier;Landroidx/compose/foundation/interaction/InteractionSource;Lcom/jantursky/kapow/KapowInteraction;Lcom/jantursky/kapow/ChangeEffect;ZLcom/jantursky/kapow/KapowFeedbackEvent;ILjava/lang/Object;)Landroidx/compose/ui/Modifier;
+	public static synthetic fun changeEffect$default (Landroidx/compose/ui/Modifier;Lcom/jantursky/kapow/KapowTrigger;Lcom/jantursky/kapow/ChangeEffect;ZLcom/jantursky/kapow/KapowFeedbackEvent;ZILjava/lang/Object;)Landroidx/compose/ui/Modifier;
 	public static synthetic fun changeEffect$default (Landroidx/compose/ui/Modifier;Ljava/lang/Object;Lcom/jantursky/kapow/ChangeEffect;ZLcom/jantursky/kapow/KapowFeedbackEvent;ILjava/lang/Object;)Landroidx/compose/ui/Modifier;
+	public static synthetic fun changeEffect$default (Landroidx/compose/ui/Modifier;Ljava/lang/Object;Lcom/jantursky/kapow/ChangeEffect;ZLcom/jantursky/kapow/KapowFeedbackEvent;ZILjava/lang/Object;)Landroidx/compose/ui/Modifier;
+	public static final fun conditionalEffect (Landroidx/compose/ui/Modifier;Landroidx/compose/foundation/interaction/InteractionSource;Lcom/jantursky/kapow/KapowInteraction;Lcom/jantursky/kapow/ConditionalEffect;)Landroidx/compose/ui/Modifier;
 	public static final fun conditionalEffect (Landroidx/compose/ui/Modifier;ZLcom/jantursky/kapow/ConditionalEffect;)Landroidx/compose/ui/Modifier;
+	public static final fun edgeEffect (Landroidx/compose/ui/Modifier;ZLcom/jantursky/kapow/KapowEdge;Lcom/jantursky/kapow/ChangeEffect;ZLcom/jantursky/kapow/KapowFeedbackEvent;Z)Landroidx/compose/ui/Modifier;
+	public static synthetic fun edgeEffect$default (Landroidx/compose/ui/Modifier;ZLcom/jantursky/kapow/KapowEdge;Lcom/jantursky/kapow/ChangeEffect;ZLcom/jantursky/kapow/KapowFeedbackEvent;ZILjava/lang/Object;)Landroidx/compose/ui/Modifier;
 	public static final fun progressEffect (Landroidx/compose/ui/Modifier;Lcom/jantursky/kapow/ProgressEffect;Lkotlin/jvm/functions/Function0;)Landroidx/compose/ui/Modifier;
 }
 
@@ -265,6 +274,14 @@ public final class com/jantursky/kapow/FillDirection : java/lang/Enum {
 
 public final class com/jantursky/kapow/KapowCounterKt {
 	public static final fun KapowCounter-uXu1xCo (JLandroidx/compose/ui/Modifier;Landroidx/compose/ui/text/TextStyle;Lcom/jantursky/kapow/CounterMode;Lkotlin/jvm/functions/Function1;JLandroidx/compose/animation/core/Easing;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class com/jantursky/kapow/KapowEdge : java/lang/Enum {
+	public static final field Falling Lcom/jantursky/kapow/KapowEdge;
+	public static final field Rising Lcom/jantursky/kapow/KapowEdge;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/jantursky/kapow/KapowEdge;
+	public static fun values ()[Lcom/jantursky/kapow/KapowEdge;
 }
 
 public final class com/jantursky/kapow/KapowEnter {
@@ -483,6 +500,16 @@ public final class com/jantursky/kapow/KapowFeedbackEvent$Warning : com/jantursk
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/jantursky/kapow/KapowInteraction : java/lang/Enum {
+	public static final field Dragged Lcom/jantursky/kapow/KapowInteraction;
+	public static final field Focused Lcom/jantursky/kapow/KapowInteraction;
+	public static final field Hovered Lcom/jantursky/kapow/KapowInteraction;
+	public static final field Pressed Lcom/jantursky/kapow/KapowInteraction;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/jantursky/kapow/KapowInteraction;
+	public static fun values ()[Lcom/jantursky/kapow/KapowInteraction;
+}
+
 public final class com/jantursky/kapow/KapowMotion : java/lang/Enum {
 	public static final field Full Lcom/jantursky/kapow/KapowMotion;
 	public static final field Reduced Lcom/jantursky/kapow/KapowMotion;
@@ -511,6 +538,15 @@ public final class com/jantursky/kapow/KapowStagger {
 public final class com/jantursky/kapow/KapowTiltKt {
 	public static final fun kapowTilt-Yer7ZAE (Landroidx/compose/ui/Modifier;FLandroidx/compose/ui/graphics/Color;ZFF)Landroidx/compose/ui/Modifier;
 	public static synthetic fun kapowTilt-Yer7ZAE$default (Landroidx/compose/ui/Modifier;FLandroidx/compose/ui/graphics/Color;ZFFILjava/lang/Object;)Landroidx/compose/ui/Modifier;
+}
+
+public final class com/jantursky/kapow/KapowTrigger {
+	public static final field $stable I
+	public final fun fire ()V
+}
+
+public final class com/jantursky/kapow/KapowTriggerKt {
+	public static final fun rememberKapowTrigger (Landroidx/compose/runtime/Composer;I)Lcom/jantursky/kapow/KapowTrigger;
 }
 
 public final class com/jantursky/kapow/KapowTypewriterKt {

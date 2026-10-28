@@ -45,7 +45,7 @@ kotlin {
             api(libs.compose.runtime)
             api(libs.compose.ui)
             api(libs.compose.animation)
-            implementation(libs.compose.foundation)
+            api(libs.compose.foundation)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

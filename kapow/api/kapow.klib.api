@@ -90,6 +90,30 @@ final enum class com.jantursky.kapow/FillDirection : kotlin/Enum<com.jantursky.k
     final fun values(): kotlin/Array<com.jantursky.kapow/FillDirection> // com.jantursky.kapow/FillDirection.values|values#static(){}[0]
 }
 
+final enum class com.jantursky.kapow/KapowEdge : kotlin/Enum<com.jantursky.kapow/KapowEdge> { // com.jantursky.kapow/KapowEdge|null[0]
+    enum entry Falling // com.jantursky.kapow/KapowEdge.Falling|null[0]
+    enum entry Rising // com.jantursky.kapow/KapowEdge.Rising|null[0]
+
+    final val entries // com.jantursky.kapow/KapowEdge.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.jantursky.kapow/KapowEdge> // com.jantursky.kapow/KapowEdge.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.jantursky.kapow/KapowEdge // com.jantursky.kapow/KapowEdge.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.jantursky.kapow/KapowEdge> // com.jantursky.kapow/KapowEdge.values|values#static(){}[0]
+}
+
+final enum class com.jantursky.kapow/KapowInteraction : kotlin/Enum<com.jantursky.kapow/KapowInteraction> { // com.jantursky.kapow/KapowInteraction|null[0]
+    enum entry Dragged // com.jantursky.kapow/KapowInteraction.Dragged|null[0]
+    enum entry Focused // com.jantursky.kapow/KapowInteraction.Focused|null[0]
+    enum entry Hovered // com.jantursky.kapow/KapowInteraction.Hovered|null[0]
+    enum entry Pressed // com.jantursky.kapow/KapowInteraction.Pressed|null[0]
+
+    final val entries // com.jantursky.kapow/KapowInteraction.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.jantursky.kapow/KapowInteraction> // com.jantursky.kapow/KapowInteraction.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.jantursky.kapow/KapowInteraction // com.jantursky.kapow/KapowInteraction.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.jantursky.kapow/KapowInteraction> // com.jantursky.kapow/KapowInteraction.values|values#static(){}[0]
+}
+
 final enum class com.jantursky.kapow/KapowMotion : kotlin/Enum<com.jantursky.kapow/KapowMotion> { // com.jantursky.kapow/KapowMotion|null[0]
     enum entry Full // com.jantursky.kapow/KapowMotion.Full|null[0]
     enum entry Reduced // com.jantursky.kapow/KapowMotion.Reduced|null[0]
@@ -390,6 +414,10 @@ final class com.jantursky.kapow/KapowExit { // com.jantursky.kapow/KapowExit|nul
     }
 }
 
+final class com.jantursky.kapow/KapowTrigger { // com.jantursky.kapow/KapowTrigger|null[0]
+    final fun fire() // com.jantursky.kapow/KapowTrigger.fire|fire(){}[0]
+}
+
 final class com.jantursky.kapow/ParticlePhysics { // com.jantursky.kapow/ParticlePhysics|null[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.jantursky.kapow/ParticlePhysics.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.jantursky.kapow/ParticlePhysics.hashCode|hashCode(){}[0]
@@ -578,6 +606,7 @@ final val com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Selection$s
 final val com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Success$stableprop // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Success$stableprop|#static{}com_jantursky_kapow_KapowFeedbackEvent_Success$stableprop[0]
 final val com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Warning$stableprop // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Warning$stableprop|#static{}com_jantursky_kapow_KapowFeedbackEvent_Warning$stableprop[0]
 final val com.jantursky.kapow/com_jantursky_kapow_KapowStagger$stableprop // com.jantursky.kapow/com_jantursky_kapow_KapowStagger$stableprop|#static{}com_jantursky_kapow_KapowStagger$stableprop[0]
+final val com.jantursky.kapow/com_jantursky_kapow_KapowTrigger$stableprop // com.jantursky.kapow/com_jantursky_kapow_KapowTrigger$stableprop|#static{}com_jantursky_kapow_KapowTrigger$stableprop[0]
 final val com.jantursky.kapow/com_jantursky_kapow_ParticleContent$stableprop // com.jantursky.kapow/com_jantursky_kapow_ParticleContent$stableprop|#static{}com_jantursky_kapow_ParticleContent$stableprop[0]
 final val com.jantursky.kapow/com_jantursky_kapow_ParticlePhysics$stableprop // com.jantursky.kapow/com_jantursky_kapow_ParticlePhysics$stableprop|#static{}com_jantursky_kapow_ParticlePhysics$stableprop[0]
 final val com.jantursky.kapow/com_jantursky_kapow_ProgressEffect$stableprop // com.jantursky.kapow/com_jantursky_kapow_ProgressEffect$stableprop|#static{}com_jantursky_kapow_ProgressEffect$stableprop[0]
@@ -603,8 +632,13 @@ final val com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Tear$stableprop
 final val com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Wipe$stableprop // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Wipe$stableprop|#static{}com_jantursky_kapow_TransitionKind_Wipe$stableprop[0]
 final val com.jantursky.kapow/com_jantursky_kapow_TypewriterCursor$stableprop // com.jantursky.kapow/com_jantursky_kapow_TypewriterCursor$stableprop|#static{}com_jantursky_kapow_TypewriterCursor$stableprop[0]
 
+final fun (androidx.compose.ui/Modifier).com.jantursky.kapow/changeEffect(androidx.compose.foundation.interaction/InteractionSource, com.jantursky.kapow/KapowInteraction, com.jantursky.kapow/ChangeEffect, kotlin/Boolean = ..., com.jantursky.kapow/KapowFeedbackEvent? = ...): androidx.compose.ui/Modifier // com.jantursky.kapow/changeEffect|changeEffect@androidx.compose.ui.Modifier(androidx.compose.foundation.interaction.InteractionSource;com.jantursky.kapow.KapowInteraction;com.jantursky.kapow.ChangeEffect;kotlin.Boolean;com.jantursky.kapow.KapowFeedbackEvent?){}[0]
+final fun (androidx.compose.ui/Modifier).com.jantursky.kapow/changeEffect(com.jantursky.kapow/KapowTrigger, com.jantursky.kapow/ChangeEffect, kotlin/Boolean = ..., com.jantursky.kapow/KapowFeedbackEvent? = ..., kotlin/Boolean = ...): androidx.compose.ui/Modifier // com.jantursky.kapow/changeEffect|changeEffect@androidx.compose.ui.Modifier(com.jantursky.kapow.KapowTrigger;com.jantursky.kapow.ChangeEffect;kotlin.Boolean;com.jantursky.kapow.KapowFeedbackEvent?;kotlin.Boolean){}[0]
 final fun (androidx.compose.ui/Modifier).com.jantursky.kapow/changeEffect(kotlin/Any?, com.jantursky.kapow/ChangeEffect, kotlin/Boolean = ..., com.jantursky.kapow/KapowFeedbackEvent? = ...): androidx.compose.ui/Modifier // com.jantursky.kapow/changeEffect|changeEffect@androidx.compose.ui.Modifier(kotlin.Any?;com.jantursky.kapow.ChangeEffect;kotlin.Boolean;com.jantursky.kapow.KapowFeedbackEvent?){}[0]
+final fun (androidx.compose.ui/Modifier).com.jantursky.kapow/changeEffect(kotlin/Any?, com.jantursky.kapow/ChangeEffect, kotlin/Boolean = ..., com.jantursky.kapow/KapowFeedbackEvent? = ..., kotlin/Boolean = ...): androidx.compose.ui/Modifier // com.jantursky.kapow/changeEffect|changeEffect@androidx.compose.ui.Modifier(kotlin.Any?;com.jantursky.kapow.ChangeEffect;kotlin.Boolean;com.jantursky.kapow.KapowFeedbackEvent?;kotlin.Boolean){}[0]
+final fun (androidx.compose.ui/Modifier).com.jantursky.kapow/conditionalEffect(androidx.compose.foundation.interaction/InteractionSource, com.jantursky.kapow/KapowInteraction, com.jantursky.kapow/ConditionalEffect): androidx.compose.ui/Modifier // com.jantursky.kapow/conditionalEffect|conditionalEffect@androidx.compose.ui.Modifier(androidx.compose.foundation.interaction.InteractionSource;com.jantursky.kapow.KapowInteraction;com.jantursky.kapow.ConditionalEffect){}[0]
 final fun (androidx.compose.ui/Modifier).com.jantursky.kapow/conditionalEffect(kotlin/Boolean, com.jantursky.kapow/ConditionalEffect): androidx.compose.ui/Modifier // com.jantursky.kapow/conditionalEffect|conditionalEffect@androidx.compose.ui.Modifier(kotlin.Boolean;com.jantursky.kapow.ConditionalEffect){}[0]
+final fun (androidx.compose.ui/Modifier).com.jantursky.kapow/edgeEffect(kotlin/Boolean, com.jantursky.kapow/KapowEdge, com.jantursky.kapow/ChangeEffect, kotlin/Boolean = ..., com.jantursky.kapow/KapowFeedbackEvent? = ..., kotlin/Boolean = ...): androidx.compose.ui/Modifier // com.jantursky.kapow/edgeEffect|edgeEffect@androidx.compose.ui.Modifier(kotlin.Boolean;com.jantursky.kapow.KapowEdge;com.jantursky.kapow.ChangeEffect;kotlin.Boolean;com.jantursky.kapow.KapowFeedbackEvent?;kotlin.Boolean){}[0]
 final fun (androidx.compose.ui/Modifier).com.jantursky.kapow/kapowSkeleton(kotlin/Boolean, androidx.compose.ui.graphics/Shape = ..., androidx.compose.ui.graphics/Color = ..., kotlin/Boolean = ..., androidx.compose.ui.graphics/Color = ..., kotlin/Float = ..., kotlin.time/Duration = ..., kotlin.time/Duration = ..., androidx.compose.animation.core/Easing = ...): androidx.compose.ui/Modifier // com.jantursky.kapow/kapowSkeleton|kapowSkeleton@androidx.compose.ui.Modifier(kotlin.Boolean;androidx.compose.ui.graphics.Shape;androidx.compose.ui.graphics.Color;kotlin.Boolean;androidx.compose.ui.graphics.Color;kotlin.Float;kotlin.time.Duration;kotlin.time.Duration;androidx.compose.animation.core.Easing){}[0]
 final fun (androidx.compose.ui/Modifier).com.jantursky.kapow/kapowTilt(kotlin/Float = ..., androidx.compose.ui.graphics/Color? = ..., kotlin/Boolean = ..., androidx.compose.ui.unit/Dp = ..., kotlin/Float = ...): androidx.compose.ui/Modifier // com.jantursky.kapow/kapowTilt|kapowTilt@androidx.compose.ui.Modifier(kotlin.Float;androidx.compose.ui.graphics.Color?;kotlin.Boolean;androidx.compose.ui.unit.Dp;kotlin.Float){}[0]
 final fun (androidx.compose.ui/Modifier).com.jantursky.kapow/kapowTransition(androidx.compose.animation/AnimatedVisibilityScope, com.jantursky.kapow/KapowEnter?, com.jantursky.kapow/KapowExit?, com.jantursky.kapow/KapowFeedbackEvent?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): androidx.compose.ui/Modifier // com.jantursky.kapow/kapowTransition|kapowTransition@androidx.compose.ui.Modifier(androidx.compose.animation.AnimatedVisibilityScope;com.jantursky.kapow.KapowEnter?;com.jantursky.kapow.KapowExit?;com.jantursky.kapow.KapowFeedbackEvent?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
@@ -633,6 +667,7 @@ final fun com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Selection$s
 final fun com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Success$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Success$stableprop_getter|com_jantursky_kapow_KapowFeedbackEvent_Success$stableprop_getter(){}[0]
 final fun com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Warning$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_KapowFeedbackEvent_Warning$stableprop_getter|com_jantursky_kapow_KapowFeedbackEvent_Warning$stableprop_getter(){}[0]
 final fun com.jantursky.kapow/com_jantursky_kapow_KapowStagger$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_KapowStagger$stableprop_getter|com_jantursky_kapow_KapowStagger$stableprop_getter(){}[0]
+final fun com.jantursky.kapow/com_jantursky_kapow_KapowTrigger$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_KapowTrigger$stableprop_getter|com_jantursky_kapow_KapowTrigger$stableprop_getter(){}[0]
 final fun com.jantursky.kapow/com_jantursky_kapow_ParticleContent$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_ParticleContent$stableprop_getter|com_jantursky_kapow_ParticleContent$stableprop_getter(){}[0]
 final fun com.jantursky.kapow/com_jantursky_kapow_ParticlePhysics$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_ParticlePhysics$stableprop_getter|com_jantursky_kapow_ParticlePhysics$stableprop_getter(){}[0]
 final fun com.jantursky.kapow/com_jantursky_kapow_ProgressEffect$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_ProgressEffect$stableprop_getter|com_jantursky_kapow_ProgressEffect$stableprop_getter(){}[0]
@@ -658,3 +693,4 @@ final fun com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Tear$stableprop
 final fun com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Wipe$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_TransitionKind_Wipe$stableprop_getter|com_jantursky_kapow_TransitionKind_Wipe$stableprop_getter(){}[0]
 final fun com.jantursky.kapow/com_jantursky_kapow_TypewriterCursor$stableprop_getter(): kotlin/Int // com.jantursky.kapow/com_jantursky_kapow_TypewriterCursor$stableprop_getter|com_jantursky_kapow_TypewriterCursor$stableprop_getter(){}[0]
 final fun com.jantursky.kapow/isReducedMotion(androidx.compose.runtime/Composer?, kotlin/Int): kotlin/Boolean // com.jantursky.kapow/isReducedMotion|isReducedMotion(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+final fun com.jantursky.kapow/rememberKapowTrigger(androidx.compose.runtime/Composer?, kotlin/Int): com.jantursky.kapow/KapowTrigger // com.jantursky.kapow/rememberKapowTrigger|rememberKapowTrigger(androidx.compose.runtime.Composer?;kotlin.Int){}[0]

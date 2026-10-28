@@ -1,5 +1,6 @@
 package com.jantursky.kapow
 
+import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
@@ -10,23 +11,33 @@ import com.jantursky.kapow.internal.ChangeRunner
 import com.jantursky.kapow.internal.ConditionalRunner
 import com.jantursky.kapow.internal.EffectContext
 import com.jantursky.kapow.internal.EffectNode
+import com.jantursky.kapow.internal.InteractionFire
+import com.jantursky.kapow.internal.InteractionTracker
 import com.jantursky.kapow.internal.ProgressRunner
+import com.jantursky.kapow.internal.TriggerFire
 import com.jantursky.kapow.internal.TriggerGate
+import com.jantursky.kapow.internal.TriggerSource
 import com.jantursky.kapow.internal.TunedContext
 import com.jantursky.kapow.internal.awaitFrameTime
 import com.jantursky.kapow.internal.skipsForReducedMotion
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 
 /**
  * Plays [effect] each time [value] changes to a value not equal to the previous one. Nothing plays on the first
- * composition. While [isEnabled] is false, changes are recorded but play nothing.
+ * composition unless [playOnStart] is true. While [isEnabled] is false, changes are recorded but play nothing.
+ *
+ * Build the [effect] once and remember it when it is created inside a composable: a new effect that is equal to the
+ * old one costs nothing, but one with a new lambda restarts the running effect.
  *
  * ```
  * Text("$likes", Modifier.changeEffect(likes, ChangeEffect.spray()))
  * ```
  *
  * @param feedback asked of the [LocalKapowFeedback] handler each time the effect plays, also with reduced motion.
+ * @param playOnStart plays the effect once when the element first appears, for a welcome sparkle or a reveal.
  */
 @Stable
 public fun Modifier.changeEffect(
@@ -34,7 +45,72 @@ public fun Modifier.changeEffect(
     effect: ChangeEffect,
     isEnabled: Boolean = true,
     feedback: KapowFeedbackEvent? = null,
-): Modifier = this then ChangeEffectElement(value, effect, isEnabled, feedback)
+    playOnStart: Boolean = false,
+): Modifier = this then ChangeEffectElement(value, effect, isEnabled, feedback, playOnStart, null, null)
+
+// Kept for binaries compiled against 1.1.0.
+@Deprecated("Use the overload with playOnStart.", level = DeprecationLevel.HIDDEN)
+public fun Modifier.changeEffect(
+    value: Any?,
+    effect: ChangeEffect,
+    isEnabled: Boolean = true,
+    feedback: KapowFeedbackEvent? = null,
+): Modifier = changeEffect(value, effect, isEnabled, feedback, false)
+
+/**
+ * Plays [effect] each time [trigger] is fired, from a click handler or any other code, with no value to watch. Firing
+ * does not recompose. Fires that arrive within one frame play once, and fires from before the element was composed
+ * play nothing. See [KapowTrigger].
+ *
+ * @param playOnStart plays the effect once when the element first appears.
+ */
+@Stable
+public fun Modifier.changeEffect(
+    trigger: KapowTrigger,
+    effect: ChangeEffect,
+    isEnabled: Boolean = true,
+    feedback: KapowFeedbackEvent? = null,
+    playOnStart: Boolean = false,
+): Modifier = this then ChangeEffectElement(Unit, effect, isEnabled, feedback, playOnStart, null, TriggerFire(trigger))
+
+/**
+ * Plays [effect] each time [interaction] starts on [interactionSource]: when the element is pressed, hovered, focused
+ * or dragged. It plays once per start, not while the interaction holds. Interactions are read without recomposing.
+ * An interaction that began before the element was composed is not seen.
+ */
+@Stable
+public fun Modifier.changeEffect(
+    interactionSource: InteractionSource,
+    interaction: KapowInteraction,
+    effect: ChangeEffect,
+    isEnabled: Boolean = true,
+    feedback: KapowFeedbackEvent? = null,
+): Modifier =
+    this then
+        ChangeEffectElement(
+            Unit,
+            effect,
+            isEnabled,
+            feedback,
+            false,
+            null,
+            InteractionFire(interactionSource, interaction),
+        )
+
+/**
+ * Plays [effect] when [condition] turns true ([KapowEdge.Rising]) or false ([KapowEdge.Falling]), and not for the
+ * other direction. Nothing plays on the first composition unless [playOnStart] is true and the condition already
+ * matches the edge.
+ */
+@Stable
+public fun Modifier.edgeEffect(
+    condition: Boolean,
+    edge: KapowEdge,
+    effect: ChangeEffect,
+    isEnabled: Boolean = true,
+    feedback: KapowFeedbackEvent? = null,
+    playOnStart: Boolean = false,
+): Modifier = this then ChangeEffectElement(condition, effect, isEnabled, feedback, playOnStart, edge, null)
 
 /**
  * Keeps [effect] on while [condition] is true, starting on the first composition if it already is. When the
@@ -44,7 +120,19 @@ public fun Modifier.changeEffect(
 public fun Modifier.conditionalEffect(
     condition: Boolean,
     effect: ConditionalEffect,
-): Modifier = this then ConditionalEffectElement(condition, effect)
+): Modifier = this then ConditionalEffectElement(condition, effect, null)
+
+/**
+ * Keeps [effect] on while [interaction] is active on [interactionSource] (pressed, hovered, focused or dragged) and
+ * winds it down when the interaction ends. Interactions are read without recomposing. An interaction that began
+ * before the element was composed is not seen, so the effect starts with the next one.
+ */
+@Stable
+public fun Modifier.conditionalEffect(
+    interactionSource: InteractionSource,
+    interaction: KapowInteraction,
+    effect: ConditionalEffect,
+): Modifier = this then ConditionalEffectElement(false, effect, InteractionFire(interactionSource, interaction))
 
 /**
  * Draws [effect] at [progress], a value from 0 to 1 (clamped). The lambda is read while drawing, so a progress
@@ -61,11 +149,15 @@ private data class ChangeEffectElement(
     val effect: ChangeEffect,
     val isEnabled: Boolean,
     val feedback: KapowFeedbackEvent?,
+    val playOnStart: Boolean,
+    val edge: KapowEdge?,
+    val source: TriggerSource?,
 ) : ModifierNodeElement<ChangeEffectNode>() {
-    override fun create(): ChangeEffectNode = ChangeEffectNode(value, effect, isEnabled, feedback)
+    override fun create(): ChangeEffectNode =
+        ChangeEffectNode(value, effect, isEnabled, feedback, playOnStart, edge, source)
 
     override fun update(node: ChangeEffectNode) {
-        node.update(value, effect, isEnabled, feedback)
+        node.update(value, effect, isEnabled, feedback, playOnStart, edge, source)
     }
 
     override fun InspectorInfo.inspectableProperties() {
@@ -74,6 +166,9 @@ private data class ChangeEffectElement(
         properties["effect"] = effect
         properties["isEnabled"] = isEnabled
         properties["feedback"] = feedback
+        properties["playOnStart"] = playOnStart
+        properties["edge"] = edge
+        properties["source"] = source
     }
 }
 
@@ -160,13 +255,34 @@ internal class ChangeEffectNode(
     private var effect: ChangeEffect,
     private var isEnabled: Boolean,
     private var feedback: KapowFeedbackEvent?,
+    private var playOnStart: Boolean,
+    private var edge: KapowEdge?,
+    private var source: TriggerSource?,
 ) : EffectNode<ChangeRunner>(effect.plan().effect.createRunner()) {
     private val gate = TriggerGate()
 
     // Set when the node is reused for other content: the next value it sees belongs to that content and is no change.
     private var isReused = false
 
+    private var hasStarted = false
+    private var collection: Job? = null
+
     override fun newRunner(): ChangeRunner = effect.plan().effect.createRunner()
+
+    override fun onAttach() {
+        super.onAttach()
+        startCollecting()
+        if (playOnStart && !hasStarted) {
+            hasStarted = true
+            if (isEnabled && matchesEdge(value)) trigger()
+        }
+    }
+
+    override fun onDetach() {
+        collection?.cancel()
+        collection = null
+        super.onDetach()
+    }
 
     override fun onReset() {
         super.onReset()
@@ -183,6 +299,9 @@ internal class ChangeEffectNode(
         effect: ChangeEffect,
         isEnabled: Boolean,
         feedback: KapowFeedbackEvent?,
+        playOnStart: Boolean,
+        edge: KapowEdge?,
+        source: TriggerSource?,
     ) {
         if (effect != this.effect) {
             this.effect = effect
@@ -190,10 +309,30 @@ internal class ChangeEffectNode(
         }
         this.feedback = feedback
         this.isEnabled = isEnabled
-        val changed = value != this.value && !isReused
+        this.playOnStart = playOnStart
+        this.edge = edge
+        if (source != this.source) {
+            this.source = source
+            if (isAttached) startCollecting()
+        }
+        val changed = value != this.value && !isReused && matchesEdge(value)
         this.value = value
         isReused = false
         if (changed && isEnabled && isAttached) trigger()
+    }
+
+    /** True when there is no edge, or [value] is the Boolean the edge waits for. */
+    private fun matchesEdge(value: Any?): Boolean = edge == null || value == (edge == KapowEdge.Rising)
+
+    // Started undispatched, so the source sees the state at attach and misses nothing after it.
+    private fun startCollecting() {
+        collection?.cancel()
+        collection = null
+        val source = source ?: return
+        collection =
+            coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
+                source.collect { if (isEnabled) trigger() }
+            }
     }
 
     /** Plays the effect once, subject to its cooldown and delay. Shared with [ConditionalEffect.repeat]. */
@@ -218,29 +357,43 @@ internal class ChangeEffectNode(
 private data class ConditionalEffectElement(
     val condition: Boolean,
     val effect: ConditionalEffect,
+    val interaction: InteractionFire?,
 ) : ModifierNodeElement<ConditionalEffectNode>() {
-    override fun create(): ConditionalEffectNode = ConditionalEffectNode(condition, effect)
+    override fun create(): ConditionalEffectNode = ConditionalEffectNode(condition, effect, interaction)
 
     override fun update(node: ConditionalEffectNode) {
-        node.update(condition, effect)
+        node.update(condition, effect, interaction)
     }
 
     override fun InspectorInfo.inspectableProperties() {
         name = "conditionalEffect"
         properties["condition"] = condition
         properties["effect"] = effect
+        properties["interaction"] = interaction
     }
 }
 
 internal class ConditionalEffectNode(
     private var condition: Boolean,
     private var effect: ConditionalEffect,
+    private var interaction: InteractionFire?,
 ) : EffectNode<ConditionalRunner>(effect.createRunner()) {
+    private var collection: Job? = null
+
     override fun newRunner(): ConditionalRunner = effect.createRunner()
 
     override fun onAttach() {
         super.onAttach()
         if (condition) runner.setActive(this, true)
+        startCollecting()
+    }
+
+    override fun onDetach() {
+        collection?.cancel()
+        collection = null
+        // The tracked interaction is gone with the collection, so the next attach starts idle.
+        if (interaction != null) condition = false
+        super.onDetach()
     }
 
     override fun onReset() {
@@ -251,15 +404,38 @@ internal class ConditionalEffectNode(
     fun update(
         condition: Boolean,
         effect: ConditionalEffect,
+        interaction: InteractionFire?,
     ) {
+        val sourceChanged = interaction != this.interaction
+        this.interaction = interaction
+        // With an interaction the node follows the source itself and the condition passed in is a placeholder.
+        val target = if (interaction == null) condition else !sourceChanged && this.condition
         if (effect != this.effect) {
             this.effect = effect
             replaceRunner()
-            if (condition && isAttached) runner.setActive(this, true)
-        } else if (condition != this.condition && isAttached) {
-            runner.setActive(this, condition)
+            if (target && isAttached) runner.setActive(this, true)
+        } else if (target != this.condition && isAttached) {
+            runner.setActive(this, target)
         }
-        this.condition = condition
+        this.condition = target
+        if (sourceChanged && isAttached) startCollecting()
+    }
+
+    // Started undispatched, so no interaction is missed after attach. One that began earlier is not replayed.
+    private fun startCollecting() {
+        collection?.cancel()
+        collection = null
+        val source = interaction ?: return
+        val tracker = InteractionTracker(source.interaction)
+        collection =
+            coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
+                source.source.interactions.collect {
+                    if (tracker.onInteraction(it) && tracker.isActive != condition) {
+                        condition = tracker.isActive
+                        runner.setActive(this@ConditionalEffectNode, condition)
+                    }
+                }
+            }
     }
 }
 
