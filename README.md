@@ -52,10 +52,10 @@ Compose already animates layout, alpha and transforms well, and libraries like a
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("io.github.jantursky:kapow:1.1.0")
+            implementation("io.github.jantursky:kapow:1.2.0")
             // Optional:
-            implementation("io.github.jantursky:kapow-crease:1.1.0")
-            implementation("io.github.jantursky:kapow-multihaptic:1.1.0")
+            implementation("io.github.jantursky:kapow-crease:1.2.0")
+            implementation("io.github.jantursky:kapow-multihaptic:1.2.0")
         }
     }
 }
