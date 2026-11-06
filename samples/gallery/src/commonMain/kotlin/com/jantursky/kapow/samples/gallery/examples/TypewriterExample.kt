@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnnounce
 import com.jantursky.kapow.KapowTypewriter
 import com.jantursky.kapow.TypewriterCursor
 import com.jantursky.kapow.TypewriterMode
@@ -28,5 +29,6 @@ fun TypewriterExample(
         charsPerSecond = charsPerSecond,
         cursor = if (cursor) TypewriterCursor.bar(color = KapowTheme.colors.action) else null,
         punctuationPause = punctuationPause,
+        announce = KapowAnnounce.Polite,
     )
 }

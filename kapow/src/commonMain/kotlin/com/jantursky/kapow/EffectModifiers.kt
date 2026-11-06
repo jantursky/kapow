@@ -24,6 +24,7 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Plays [effect] each time [value] changes to a value not equal to the previous one. Nothing plays on the first
@@ -172,6 +173,9 @@ private data class ChangeEffectElement(
     }
 }
 
+/** The shortest time between two flashes under a limit of [maxFlashesPerSecond]. */
+internal fun flashInterval(maxFlashesPerSecond: Int): Duration = 1.seconds / maxFlashesPerSecond.coerceAtLeast(1)
+
 /** An effect with its wrappers peeled off: how, and how often, to play the innermost one. */
 internal data class ChangePlan(
     val effect: ChangeEffect,
@@ -184,6 +188,19 @@ internal data class ChangePlan(
 ) {
     /** Changes inside this window after an accepted one are ignored: the cooldown, or the whole series. */
     val gateWindow: Duration get() = maxOf(cooldown, gap * (times - 1))
+
+    /** Whether the innermost effect flashes. */
+    val isFlashing: Boolean get() = effect.isFlashing
+
+    /**
+     * This plan under a flash limit of [maxFlashesPerSecond]: for a flashing effect the cooldown and the gap of a
+     * series are at least 1/limit seconds. Other plans and no limit leave it as it is.
+     */
+    fun limitedTo(maxFlashesPerSecond: Int?): ChangePlan {
+        if (maxFlashesPerSecond == null || !isFlashing) return this
+        val interval = flashInterval(maxFlashesPerSecond)
+        return copy(cooldown = maxOf(cooldown, interval), gap = maxOf(gap, interval))
+    }
 
     /** [context] with this plan's speed and reduced-motion mode, for the runner. */
     fun contextFor(context: EffectContext): EffectContext =
@@ -337,7 +354,7 @@ internal class ChangeEffectNode(
 
     /** Plays the effect once, subject to its cooldown and delay. Shared with [ConditionalEffect.repeat]. */
     fun trigger() {
-        val plan = effect.plan()
+        val plan = effect.plan().limitedTo(maxFlashesPerSecond)
         val runner = runner
         val event = feedback
         val changed = value

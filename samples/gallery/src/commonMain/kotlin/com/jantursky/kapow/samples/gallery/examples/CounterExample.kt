@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.jantursky.kapow.CounterMode
+import com.jantursky.kapow.KapowAnnounce
 import com.jantursky.kapow.KapowCounter
 import com.jantursky.kapow.samples.design.KapowTheme
 import kotlin.time.Duration
@@ -26,6 +27,7 @@ fun CounterExample(
         mode = mode,
         format = ::groupThousands,
         duration = duration,
+        announce = KapowAnnounce.Polite,
     )
 }
 

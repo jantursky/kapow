@@ -1,0 +1,99 @@
+---
+title: Accessibility
+description: What Kapow exposes to screen readers and keyboards, how to announce counters and typed text, how to cap flashing, and what stays decorative.
+---
+
+Kapow draws effects. Most of them are decoration and should stay invisible to assistive technology. A few composables and modifiers carry content, and those expose it. This page lists what each piece does, the options that exist, and what Kapow does not claim.
+
+## What each piece exposes
+
+| Piece | Semantics | Option |
+| --- | --- | --- |
+| `changeEffect`, `conditionalEffect`, progress effects | None. They add no node, no focus target and no action. | None. |
+| `kapowSkeleton` | Nothing by default. With `loadingDescription` set, while loading: one node whose state description is that text, and its descendants hidden. | `loadingDescription` |
+| `KapowCounter` | The formatted value as text. Never a value in between. | `announce` |
+| `KapowTypewriter` | The full text from the first frame, never the part revealed so far. | `announce` |
+| `kapowTilt` | None. It takes no focus and ignores keys. | Decorative and pointer-only. |
+| Transitions | The content's own semantics, while it is composed. | None. |
+
+## Saying that something is loading
+
+A skeleton covers dummy content. Without a description, a screen reader reads the dummy content. Give `loadingDescription` and it reads the description as the state of the element instead, and the dummy content is hidden until `loading` is false:
+
+```kotlin
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.jantursky.kapow.kapowSkeleton
+
+@Composable
+fun ProfileName(name: String, loading: Boolean) {
+    BasicText(
+        text = name,
+        modifier = Modifier.kapowSkeleton(loading, loadingDescription = "Loading profile"),
+    )
+}
+```
+
+The description changes nothing that is drawn, measured or placed. Do not set it on content that never finishes loading, because it hides that content.
+
+## Announcing a counter or a typed text
+
+By default `KapowCounter` and `KapowTypewriter` expose their text and say nothing when it changes, so a score that ticks every second does not talk over the screen reader. Turn announcing on where the change matters:
+
+```kotlin
+import androidx.compose.runtime.Composable
+import com.jantursky.kapow.KapowAnnounce
+import com.jantursky.kapow.KapowCounter
+import com.jantursky.kapow.KapowTypewriter
+
+@Composable
+fun Results(score: Long, message: String) {
+    KapowCounter(score, announce = KapowAnnounce.Polite)
+    KapowTypewriter(message, announce = KapowAnnounce.Polite)
+}
+```
+
+- `KapowAnnounce.Polite` makes the text a polite live region: the screen reader reads it when it has finished what it is saying.
+- The counter announces only after the value has stopped changing for 500 ms, so a fast count is announced once, with its last value.
+- The typewriter announces the full text at once, never letter by letter.
+- Reduced motion does not change what is announced.
+
+## Capping flashing
+
+Some effects flash: `flash`, `glitch`, a `repeat` of one of them, and the rings of `ping`. Provide `LocalKapowMaxFlashesPerSecond` to cap how often they do, for everything below the provider:
+
+```kotlin
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import com.jantursky.kapow.KapowWcagMaxFlashesPerSecond
+import com.jantursky.kapow.LocalKapowMaxFlashesPerSecond
+
+@Composable
+fun FlashSafe(content: @Composable () -> Unit) {
+    CompositionLocalProvider(
+        LocalKapowMaxFlashesPerSecond provides KapowWcagMaxFlashesPerSecond,
+        content = content,
+    )
+}
+```
+
+With a limit of N:
+
+- A flashing change effect ignores a trigger that comes less than 1/N seconds after the last one that played. The trigger is dropped, not queued, so the limit never delays a play.
+- `flash` lowers `strobes` to the number that fits in its duration, and at least one stays.
+- `repeat` of a flashing effect starts its plays at least 1/N seconds apart.
+- `ping` starts its rings at least 1/N seconds apart.
+- `glitch` changes its look at most N times a second. At 3 it is a slow stutter. If that is not what you want, give it `reducedMotion(ReducedMotionMode.Fade)`.
+
+Effects that only move or emit particles, such as `spray`, `rise`, `confettiPop` and `fireworks`, are not limited.
+
+The limit is off by default, because turning it on changes what existing apps draw. It is a cap on the rate. It does not measure how bright a flash is or how much of the screen it covers, so it is not a claim of conformance with WCAG 2.3.1. Treat it as a safety net, and look at your own flashes too.
+
+## Reduced motion
+
+Every effect has a quiet version for people who turn motion off. See [Reduced motion](/guides/reduced-motion) for where the setting comes from on each target and how to override it, including on the desktop.
+
+## Tilt is decorative
+
+`kapowTilt` follows a mouse or a finger. It adds nothing to semantics, takes no focus and ignores keyboard and accessibility actions, so it never moves for someone who uses neither. To show a state on keyboard focus, follow focus with an effect, as the [tilt page](/effects/more-tilt) shows.

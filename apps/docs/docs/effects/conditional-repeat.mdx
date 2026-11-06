@@ -59,6 +59,10 @@ Each repetition plays the wrapped effect's reduced version.
 - The wrapped effect keeps its cooldown. If `every` is shorter than the cooldown, some repetitions are skipped.
 - You can wrap a [delayed](/effects/change-delay) effect.
 
+## Flash safety
+
+When the repeated effect flashes (`flash`, `glitch`), `LocalKapowMaxFlashesPerSecond` set to N starts the plays at least 1/N seconds apart, even when `every` is shorter. Effects that only move or emit particles are not paced. Off by default. The limit is a cap on the rate, not a claim of WCAG 2.3.1 conformance. See the [accessibility guide](/guides/accessibility).
+
 ## Live example
 
 <include example="conditional-repeat">../_snippets/live-example.mdx</include>

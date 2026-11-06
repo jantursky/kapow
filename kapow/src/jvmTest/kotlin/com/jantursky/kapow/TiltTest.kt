@@ -2,6 +2,7 @@ package com.jantursky.kapow
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,12 +16,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performMouseInput
+import androidx.compose.ui.test.pressKey
+import androidx.compose.ui.test.printToString
 import androidx.compose.ui.unit.dp
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -190,6 +197,72 @@ class TiltTest {
             hover(20f, 150f)
             repeat(60) { mainClock.advanceTimeByFrame() }
             assertTrue(counter.count - before <= 1)
+        }
+
+    private var tilted by mutableStateOf(true)
+
+    // Two focusable boxes, the first inside a card that tilts while [tilted] is true, and a clickable inside it.
+    private fun ComposeUiTest.accessibleScene() {
+        setEffectContent {
+            Box(Modifier.fillMaxSize().background(Color.White)) {
+                Box(
+                    Modifier
+                        .offset(100.dp, 100.dp)
+                        .size(200.dp)
+                        .testTag("card")
+                        .then(if (tilted) Modifier.kapowTilt(maxAngle = 25f) else Modifier)
+                        .background(Cobalt),
+                ) {
+                    Box(Modifier.size(50.dp).testTag("first").focusable())
+                }
+                Box(
+                    Modifier
+                        .offset(0.dp, 350.dp)
+                        .size(40.dp)
+                        .testTag("second")
+                        .focusable(),
+                )
+            }
+        }
+    }
+
+    private fun ComposeUiTest.tab() {
+        onRoot().performKeyInput { pressKey(Key.Tab) }
+        mainClock.advanceTimeByFrame()
+    }
+
+    @Test
+    fun theSemanticsTreeIsTheSameWithAndWithoutTilt() =
+        runEffectTest {
+            accessibleScene()
+            mainClock.advanceTimeByFrame()
+            val with = onRoot().printToString()
+            tilted = false
+            mainClock.advanceTimeByFrame()
+            assertEquals(onRoot().printToString(), with)
+        }
+
+    @Test
+    fun theFocusOrderIsTheSameWithAndWithoutTilt() =
+        runEffectTest {
+            accessibleScene()
+            mainClock.advanceTimeByFrame()
+            tab()
+            onNodeWithTag("first").assertIsFocused()
+            tab()
+            onNodeWithTag("second").assertIsFocused()
+        }
+
+    @Test
+    fun focusDoesNotTiltTheElement() =
+        runEffectTest {
+            accessibleScene()
+            mainClock.advanceTimeByFrame()
+            val flat = capture()
+            tab()
+            onNodeWithTag("first").assertIsFocused()
+            mainClock.advanceTimeBy(1500)
+            assertTrue(capture().matches(flat), "the angle stays zero on keyboard focus")
         }
 
     @Test

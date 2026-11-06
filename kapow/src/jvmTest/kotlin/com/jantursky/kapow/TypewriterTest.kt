@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertTextEquals
@@ -33,6 +35,7 @@ class TypewriterTest {
         motion: KapowMotion = KapowMotion.Full,
         cursor: TypewriterCursor? = null,
         mode: TypewriterMode = TypewriterMode.Type,
+        announce: KapowAnnounce = KapowAnnounce.Off,
     ) {
         setEffectContent(motion) {
             Box(Modifier.fillMaxSize().background(Color.White)) {
@@ -44,6 +47,7 @@ class TypewriterTest {
                     mode = mode,
                     charsPerSecond = 20f,
                     cursor = cursor,
+                    announce = announce,
                 )
             }
         }
@@ -54,6 +58,38 @@ class TypewriterTest {
         for (x in 0 until width) for (y in 0 until height / 2) if (colorAt(x, y).luminance < 0.5f) n++
         return n
     }
+
+    private fun ComposeUiTest.liveRegion() =
+        onNodeWithTag("tw").fetchSemanticsNode().config.let {
+            if (SemanticsProperties.LiveRegion in it) it[SemanticsProperties.LiveRegion] else null
+        }
+
+    @Test
+    fun byDefaultThereIsNoLiveRegion() =
+        runEffectTest {
+            scene()
+            assertEquals(null, liveRegion())
+        }
+
+    @Test
+    fun announcingExposesTheFullTextWhileItTypes() =
+        runEffectTest {
+            scene(announce = KapowAnnounce.Polite)
+            mainClock.advanceTimeBy(200)
+            assertEquals(LiveRegionMode.Polite, liveRegion())
+            onNodeWithTag("tw").assertTextEquals("The quick brown fox")
+            text = "Hello, Kapow."
+            mainClock.advanceTimeByFrame()
+            onNodeWithTag("tw").assertTextEquals("Hello, Kapow.")
+        }
+
+    @Test
+    fun reducedMotionAnnouncesTheSameText() =
+        runEffectTest {
+            scene(KapowMotion.Reduced, announce = KapowAnnounce.Polite)
+            onNodeWithTag("tw").assertTextEquals("The quick brown fox")
+            assertEquals(LiveRegionMode.Polite, liveRegion())
+        }
 
     private fun ComposeUiTest.size(): IntSize = onNodeWithTag("tw").fetchSemanticsNode().size
 

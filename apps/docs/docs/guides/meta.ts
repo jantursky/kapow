@@ -12,6 +12,7 @@ export default defineMeta({
     'transitions',
     'particle-layer',
     'reduced-motion',
+    'accessibility',
     'feedback',
     'hinge',
     'performance',

@@ -22,9 +22,13 @@ import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.node.CompositionLocalConsumerModifierNode
 import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.node.SemanticsModifierNode
 import androidx.compose.ui.node.currentValueOf
 import androidx.compose.ui.node.invalidateDraw
+import androidx.compose.ui.node.invalidateSemantics
 import androidx.compose.ui.platform.InspectorInfo
+import androidx.compose.ui.semantics.SemanticsPropertyReceiver
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.effects.shimmerProgress
@@ -55,8 +59,11 @@ import kotlin.time.DurationUnit
  * Column(Modifier.kapowSkeleton(loading)) { Text(title) }
  * ```
  *
- * The placeholder is not part of the element's semantics; mark the element as busy yourself if a screen reader
- * should hear that it is loading.
+ * The placeholder is not part of the element's semantics. Give [loadingDescription] and, while [loading] is true,
+ * the element is exposed to assistive technology as one node whose state description is that text, and the dummy
+ * content under it is hidden; when loading ends the content's own semantics are back. Without a description the
+ * semantics are left alone. The description changes nothing that is drawn, measured or placed. Do not set one on
+ * content that never finishes loading, because it hides that content from screen readers.
  *
  * @param loading Whether the placeholder covers the content.
  * @param shape The shape of the placeholder. Give it the shape of the content, such as a circle for an avatar, so
@@ -68,6 +75,8 @@ import kotlin.time.DurationUnit
  * @param duration How long one sweep takes. Must be positive.
  * @param revealDuration How long the placeholder takes to fade away. Must not be negative.
  * @param revealEasing The curve of that fade.
+ * @param loadingDescription What a screen reader hears while [loading] is true, such as "Loading profile", or null
+ * to leave the semantics as they are.
  */
 @Stable
 public fun Modifier.kapowSkeleton(
@@ -80,6 +89,7 @@ public fun Modifier.kapowSkeleton(
     duration: Duration = 1500.milliseconds,
     revealDuration: Duration = 300.milliseconds,
     revealEasing: Easing = FastOutSlowInEasing,
+    loadingDescription: String? = null,
 ): Modifier {
     require(duration.isPositive()) { "duration must be positive" }
     require(!revealDuration.isNegative()) { "revealDuration must not be negative" }
@@ -94,8 +104,24 @@ public fun Modifier.kapowSkeleton(
             duration,
             revealDuration,
             revealEasing,
+            loadingDescription,
         )
 }
+
+// Kept for binaries compiled against 1.2.0.
+@Deprecated("Use the overload with loadingDescription.", level = DeprecationLevel.HIDDEN)
+public fun Modifier.kapowSkeleton(
+    loading: Boolean,
+    shape: Shape = RoundedCornerShape(8.dp),
+    color: Color = Color(0xFFD9DCE3),
+    shimmer: Boolean = true,
+    shimmerColor: Color = Color.White.copy(alpha = 0.5f),
+    angle: Float = 20f,
+    duration: Duration = 1500.milliseconds,
+    revealDuration: Duration = 300.milliseconds,
+    revealEasing: Easing = FastOutSlowInEasing,
+): Modifier =
+    kapowSkeleton(loading, shape, color, shimmer, shimmerColor, angle, duration, revealDuration, revealEasing, null)
 
 private data class SkeletonElement(
     val loading: Boolean,
@@ -107,6 +133,7 @@ private data class SkeletonElement(
     val duration: Duration,
     val revealDuration: Duration,
     val revealEasing: Easing,
+    val loadingDescription: String?,
 ) : ModifierNodeElement<SkeletonNode>() {
     override fun create(): SkeletonNode = SkeletonNode(this)
 
@@ -117,6 +144,7 @@ private data class SkeletonElement(
     override fun InspectorInfo.inspectableProperties() {
         name = "kapowSkeleton"
         properties["loading"] = loading
+        properties["loadingDescription"] = loadingDescription
         properties["shape"] = shape
         properties["color"] = color
         properties["shimmer"] = shimmer
@@ -131,6 +159,7 @@ private class SkeletonNode(
     private var config: SkeletonElement,
 ) : Modifier.Node(),
     DrawModifierNode,
+    SemanticsModifierNode,
     CompositionLocalConsumerModifierNode {
     // How much of the placeholder is left: 1 while loading, 0 once revealed.
     private var cover = Animatable(if (config.loading) 1f else 0f)
@@ -146,6 +175,14 @@ private class SkeletonNode(
 
     override val shouldAutoInvalidate: Boolean get() = false
 
+    private val describing: Boolean get() = config.loading && config.loadingDescription != null
+
+    override val shouldClearDescendantSemantics: Boolean get() = describing
+
+    override fun SemanticsPropertyReceiver.applySemantics() {
+        if (describing) stateDescription = config.loadingDescription.orEmpty()
+    }
+
     private fun isReduced(): Boolean =
         resolveReducedMotion(currentValueOf(LocalKapowMotion), coroutineScope.coroutineContext.durationScale)
 
@@ -154,6 +191,9 @@ private class SkeletonNode(
         config = next
         if (next.shimmerColor != previous.shimmerColor) stops = shineStops(next.shimmerColor, peak = 1f)
         if (next.shape != previous.shape) outline = null
+        if (next.loading != previous.loading || next.loadingDescription != previous.loadingDescription) {
+            invalidateSemantics()
+        }
         if (next.loading != previous.loading) {
             val target = if (next.loading) 1f else 0f
             val reduced = isReduced()

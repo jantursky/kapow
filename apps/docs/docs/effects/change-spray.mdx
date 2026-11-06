@@ -62,6 +62,10 @@ No particles are emitted. The element brightens briefly. With `reducedMotion(Red
 - A `painter` should be remembered.
 - Particles that are in flight do not follow the element if it moves or scrolls.
 
+## Flash safety
+
+`spray` moves particles and does not flash, so `LocalKapowMaxFlashesPerSecond` does not limit it. Only the effects that flash are limited: `flash`, `glitch` and `repeat` of one of them, plus the rings of `ping`. See the [accessibility guide](/guides/accessibility).
+
 ## Live example
 
 <include example="change-spray">../_snippets/live-example.mdx</include>

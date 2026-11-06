@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertTextEquals
@@ -32,6 +34,7 @@ class CounterTest {
     private fun ComposeUiTest.scene(
         motion: KapowMotion = KapowMotion.Full,
         mode: CounterMode = CounterMode.Count,
+        announce: KapowAnnounce = KapowAnnounce.Off,
     ) {
         setEffectContent(motion) {
             Box(Modifier.fillMaxSize().background(Color.White)) {
@@ -46,6 +49,7 @@ class CounterTest {
                         it.toString()
                     },
                     duration = 500.milliseconds,
+                    announce = announce,
                 )
             }
         }
@@ -108,6 +112,60 @@ class CounterTest {
             value = 5000
             mainClock.advanceTimeByFrame()
             onNodeWithTag("counter").assertTextEquals("5000")
+        }
+
+    private fun ComposeUiTest.liveRegion() =
+        onNodeWithTag("counter").fetchSemanticsNode().config.let {
+            if (SemanticsProperties.LiveRegion in it) it[SemanticsProperties.LiveRegion] else null
+        }
+
+    @Test
+    fun byDefaultThereIsNoLiveRegion() =
+        runEffectTest {
+            scene()
+            assertEquals(null, liveRegion())
+        }
+
+    @Test
+    fun aFastCountIsAnnouncedOnceAfterItSettles() =
+        runEffectTest {
+            scene(announce = KapowAnnounce.Polite)
+            assertEquals(LiveRegionMode.Polite, liveRegion())
+            val seen = mutableListOf<String>()
+            repeat(20) {
+                value += 100
+                mainClock.advanceTimeBy(100)
+                seen +=
+                    onNodeWithTag("counter")
+                        .fetchSemanticsNode()
+                        .config[SemanticsProperties.Text]
+                        .first()
+                        .text
+            }
+            assertEquals(setOf("0"), seen.toSet(), "nothing is announced while the value keeps changing")
+            mainClock.advanceTimeBy(600)
+            onNodeWithTag("counter").assertTextEquals("2000")
+        }
+
+    @Test
+    fun oneChangeIsAnnouncedAfterTheSettleDelay() =
+        runEffectTest {
+            scene(announce = KapowAnnounce.Polite)
+            value = 42
+            mainClock.advanceTimeBy(200)
+            onNodeWithTag("counter").assertTextEquals("0")
+            mainClock.advanceTimeBy(400)
+            onNodeWithTag("counter").assertTextEquals("42")
+        }
+
+    @Test
+    fun reducedMotionAnnouncesTheSameText() =
+        runEffectTest {
+            scene(KapowMotion.Reduced, announce = KapowAnnounce.Polite)
+            value = 42
+            mainClock.advanceTimeBy(700)
+            onNodeWithTag("counter").assertTextEquals("42")
+            assertEquals(LiveRegionMode.Polite, liveRegion())
         }
 
     @Test

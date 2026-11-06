@@ -44,6 +44,7 @@ fun Greeting(text: String) {
 | `glyphs` | `A-Z 0-9 # % & * + = ?` | Where `Scramble` takes its random glyphs from. Must not be empty. |
 | `glyphRate` | `40.milliseconds` | How often the scrambled glyphs change. Must be positive. |
 | `seed` | `0` | Seeds the random glyphs: the same seed scrambles the same way every time. |
+| `announce` | `KapowAnnounce.Off` | `KapowAnnounce.Polite` makes the full text a polite live region, announced once when it is set. |
 
 ## Reduced motion
 
@@ -52,7 +53,7 @@ The full text shows at once, without a cursor.
 ## Notes
 
 - The size never changes: the whole text is measured up front and the reveal is drawn inside that space. Long text wraps to the width it is given, and wraps the same way from the first character.
-- Screen readers read the full text from the first frame, not the part revealed so far.
+- Screen readers read the full text from the first frame, not the part revealed so far. By default nothing is announced when the text changes. With `announce = KapowAnnounce.Polite` the full text is a polite live region and is announced once, never letter by letter. Reduced motion does not change what is announced.
 - Progress is read only while drawing, so typing does not recompose the screen.
 - The cursor stays solid while characters appear and blinks once the text is complete. `hideWhenDone = true` removes it instead.
 - In `Scramble` mode every character has a fixed slot the size of the final character, and the random glyph is centered in it, so nothing shifts. It looks best in a monospaced font, where all glyphs are as wide as the slot. Spaces and line breaks are never scrambled.

@@ -17,6 +17,8 @@ import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowWcagMaxFlashesPerSecond
+import com.jantursky.kapow.LocalKapowMaxFlashesPerSecond
 import com.jantursky.kapow.LocalKapowMotion
 import com.jantursky.kapow.samples.design.KapowText
 import com.jantursky.kapow.samples.design.KapowTheme
@@ -127,7 +129,10 @@ internal fun watchGrid() {
 internal fun OverviewGrid() {
     KapowTheme(darkTheme = pageIsDark.value) {
         // No haptics here: a screenful of examples would buzz all the time.
-        CompositionLocalProvider(LocalKapowMotion provides pageMotion.value) {
+        CompositionLocalProvider(
+            LocalKapowMotion provides pageMotion.value,
+            LocalKapowMaxFlashesPerSecond provides if (pageFlashSafe.value) KapowWcagMaxFlashesPerSecond else null,
+        ) {
             Box(Modifier.fillMaxSize().background(KapowTheme.colors.canvas)) {
                 if (pageEntry.value == null) GridItems()
             }

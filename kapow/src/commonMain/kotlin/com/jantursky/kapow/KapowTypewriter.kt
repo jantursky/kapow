@@ -13,6 +13,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.AnnotatedString
@@ -112,6 +114,9 @@ public class TypewriterCursor internal constructor(
  * @param glyphs The characters [TypewriterMode.Scramble] picks its random glyphs from. Must not be empty.
  * @param glyphRate How often the scrambled glyphs change in [TypewriterMode.Scramble]. Must be positive.
  * @param seed Seeds the random glyphs, so the same seed scrambles the same way every time.
+ * @param announce Whether a screen reader is told when the text changes. With [KapowAnnounce.Polite] the full text is
+ * a polite live region, announced once as soon as it is set, never letter by letter. Reduced motion does not change
+ * what is announced.
  */
 @Composable
 public fun KapowTypewriter(
@@ -126,6 +131,7 @@ public fun KapowTypewriter(
     glyphs: String = DEFAULT_GLYPHS,
     glyphRate: Duration = 40.milliseconds,
     seed: Int = 0,
+    announce: KapowAnnounce = KapowAnnounce.Off,
 ) {
     require(charsPerSecond > 0f && charsPerSecond.isFinite()) { "charsPerSecond must be positive" }
     require(!startDelay.isNegative()) { "startDelay must not be negative" }
@@ -152,8 +158,10 @@ public fun KapowTypewriter(
         content = {},
         modifier =
             modifier
-                .semantics { this.text = AnnotatedString(text) }
-                .drawBehind {
+                .semantics {
+                    this.text = AnnotatedString(text)
+                    if (announce == KapowAnnounce.Polite) liveRegion = LiveRegionMode.Polite
+                }.drawBehind {
                     val layout = measured.layout ?: return@drawBehind
                     val elapsed = clock.longValue
                     val count =
@@ -263,3 +271,35 @@ private fun DrawScope.drawCursor(
 }
 
 private val Color.isSpecified: Boolean get() = this != Color.Unspecified
+
+// Kept for binaries compiled against 1.2.0.
+@Deprecated("Use the overload with announce.", level = DeprecationLevel.HIDDEN)
+@Composable
+public fun KapowTypewriter(
+    text: String,
+    modifier: Modifier = Modifier,
+    style: TextStyle = TextStyle.Default,
+    mode: TypewriterMode = TypewriterMode.Type,
+    charsPerSecond: Float = 30f,
+    startDelay: Duration = Duration.ZERO,
+    cursor: TypewriterCursor? = null,
+    punctuationPause: Duration = Duration.ZERO,
+    glyphs: String = DEFAULT_GLYPHS,
+    glyphRate: Duration = 40.milliseconds,
+    seed: Int = 0,
+) {
+    KapowTypewriter(
+        text,
+        modifier,
+        style,
+        mode,
+        charsPerSecond,
+        startDelay,
+        cursor,
+        punctuationPause,
+        glyphs,
+        glyphRate,
+        seed,
+        KapowAnnounce.Off,
+    )
+}

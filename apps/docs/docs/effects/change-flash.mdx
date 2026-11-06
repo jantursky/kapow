@@ -56,6 +56,10 @@ Nothing moves in this effect either way, so the flash still plays, but at 35 % i
 - While the flash shows, the element is drawn into its own offscreen layer. At rest it costs nothing extra.
 - Works the same on every target. No blur or shader is involved.
 
+## Flash safety
+
+`flash` is a flashing effect. Provide `LocalKapowMaxFlashesPerSecond` (or the constant `KapowWcagMaxFlashesPerSecond`, 3) and a change that comes less than 1/N seconds after the last one that played is ignored, never queued. `strobes` is lowered to the number that fits in `duration` at N flashes a second, and at least one stays. Off by default. The limit is a cap on the rate: it does not measure brightness or area, so it is not a claim of WCAG 2.3.1 conformance. See the [accessibility guide](/guides/accessibility).
+
 ## Live example
 
 <include example="change-flash">../_snippets/live-example.mdx</include>

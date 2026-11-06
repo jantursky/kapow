@@ -37,6 +37,47 @@ fun TiltCard(onClick: () -> Unit) {
 
 Put `kapowTilt` before the `clip` and `background` that make up the look of the element, so they turn with it.
 
+## Decorative and pointer-only
+
+The tilt is decoration for a mouse or a finger. It adds nothing to the semantics tree, takes no focus, and reacts to no key, focus or accessibility action, so the angle never changes for someone using a keyboard or a screen reader. Anything the tilt shows that matters must show some other way.
+
+To give keyboard users the same cue, follow focus with an effect. The sample glows while the card has focus:
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.conditionalEffect
+import com.jantursky.kapow.kapowTilt
+
+@Composable
+fun FocusableTiltCard(onClick: () -> Unit) {
+    val interactions = remember { MutableInteractionSource() }
+    val focused by interactions.collectIsFocusedAsState()
+    Box(
+        Modifier
+            .size(240.dp, 150.dp)
+            .conditionalEffect(focused, ConditionalEffect.glow(shape = RoundedCornerShape(16.dp)))
+            .kapowTilt(maxAngle = 12f)
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color(0xFF6B62F2))
+            .clickable(interactionSource = interactions, indication = null, onClick = onClick),
+    )
+}
+```
+
 ## Parameters
 
 | Parameter | Default | Description |

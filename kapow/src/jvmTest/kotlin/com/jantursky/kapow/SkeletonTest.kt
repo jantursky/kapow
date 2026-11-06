@@ -4,15 +4,19 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import io.github.takahirom.roborazzi.captureRoboImage
@@ -26,6 +30,7 @@ import kotlin.time.Duration.Companion.milliseconds
 class SkeletonTest {
     private var loading by mutableStateOf(true)
     private val counter = CompositionCounter()
+    private var description by mutableStateOf<String?>(null)
     private val gray = Color(0xFF808080)
 
     private fun androidx.compose.ui.test.ComposeUiTest.scene(
@@ -132,6 +137,58 @@ class SkeletonTest {
             loading = false
             repeat(60) { mainClock.advanceTimeByFrame() }
             assertTrue(counter.count - before <= 1, "recomposed ${counter.count - before} times")
+        }
+
+    private fun androidx.compose.ui.test.ComposeUiTest.labelScene(text: String?) {
+        description = text
+        setEffectContent {
+            Box(Modifier.fillMaxSize().background(Color.White)) {
+                Box(
+                    Modifier
+                        .testTag("skeleton")
+                        .offset(150.dp, 150.dp)
+                        .kapowSkeleton(loading, shimmer = false, loadingDescription = description),
+                ) {
+                    BasicText("Placeholder")
+                }
+            }
+        }
+    }
+
+    @Test
+    fun aDescriptionIsTheStateWhileLoadingAndTheDummyTextIsHidden() =
+        runEffectTest {
+            labelScene("Loading profile")
+            mainClock.advanceTimeBy(100)
+            val node = onNodeWithTag("skeleton").fetchSemanticsNode()
+            assertEquals("Loading profile", node.config[SemanticsProperties.StateDescription])
+            onNodeWithText("Placeholder").assertDoesNotExist()
+            loading = false
+            mainClock.advanceTimeBy(100)
+            onNodeWithText("Placeholder").assertExists()
+            assertTrue(SemanticsProperties.StateDescription !in onNodeWithTag("skeleton").fetchSemanticsNode().config)
+        }
+
+    @Test
+    fun withoutADescriptionTheSemanticsAreUnchanged() =
+        runEffectTest {
+            labelScene(null)
+            mainClock.advanceTimeBy(100)
+            onNodeWithText("Placeholder").assertExists()
+            assertTrue(SemanticsProperties.StateDescription !in onNodeWithTag("skeleton").fetchSemanticsNode().config)
+        }
+
+    @Test
+    fun aDescriptionDrawsTheSamePixelsAtTheSameSize() =
+        runEffectTest {
+            labelScene(null)
+            mainClock.advanceTimeBy(200)
+            val without = capture()
+            val sizeWithout = onNodeWithTag("skeleton").fetchSemanticsNode().size
+            description = "Loading profile"
+            mainClock.advanceTimeBy(200)
+            assertEquals(sizeWithout, onNodeWithTag("skeleton").fetchSemanticsNode().size)
+            assertEquals(0, capture().pixelsDifferentFrom(without))
         }
 
     @Test

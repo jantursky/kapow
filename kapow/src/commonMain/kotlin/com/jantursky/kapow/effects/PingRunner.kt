@@ -27,6 +27,9 @@ import kotlin.math.floor
  *
  * A ring is only born when the effect is on: not after [offAt] seconds and before [onAt] seconds, so rings in
  * flight when the condition turns false finish and no new one starts.
+ *
+ * With a [spacing] longer than `duration / rings` the rings are born that far apart, and each waits out the rest
+ * of its turn after it is gone before it is born again.
  */
 internal fun pingPhase(
     time: Double,
@@ -35,12 +38,15 @@ internal fun pingPhase(
     index: Int,
     offAt: Double = Double.POSITIVE_INFINITY,
     onAt: Double = Double.POSITIVE_INFINITY,
+    spacing: Double = duration / rings,
 ): Float? {
     if (duration <= 0.0 || rings <= 0) return null
-    val first = index * duration / rings
+    val first = index * spacing
     if (time < first) return null
-    val born = first + floor((time - first) / duration) * duration
+    val period = spacing * rings
+    val born = first + floor((time - first) / period) * period
     if (born > offAt && born < onAt) return null
+    if (time - born > duration) return null
     return ((time - born) / duration).toFloat().coerceIn(0f, 1f)
 }
 
@@ -79,6 +85,7 @@ internal class PingRunner(
     private var onAt = Double.POSITIVE_INFINITY
     private var reduced by mutableStateOf(false)
     private var hidden = false
+    private var spacing = duration / rings
 
     override fun ContentDrawScope.drawEffect() {
         val k = level.value
@@ -89,7 +96,7 @@ internal class PingRunner(
             } else {
                 val time = clock.seconds
                 for (i in 0 until rings) {
-                    val phase = pingPhase(time, duration, rings, i, offAt, onAt) ?: continue
+                    val phase = pingPhase(time, duration, rings, i, offAt, onAt, spacing) ?: continue
                     drawRing(phase, k * pingAlpha(phase), stroke)
                 }
             }
@@ -130,6 +137,10 @@ internal class PingRunner(
             return
         }
         if (active) {
+            // The clock runs at the effect's speed, so the spacing in clock seconds grows with it.
+            val limit = context.maxFlashesPerSecond
+            spacing =
+                maxOf(duration / rings, if (limit == null) 0.0 else context.speed / limit.coerceAtLeast(1).toDouble())
             if (clock.isRunning) {
                 onAt = clock.seconds
             } else {

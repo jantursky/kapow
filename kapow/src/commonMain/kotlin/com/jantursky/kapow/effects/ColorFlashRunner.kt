@@ -60,10 +60,11 @@ internal class ColorFlashRunner(
     private var maskSize = Size.Unspecified
     private var maskDirection: LayoutDirection? = null
     private var peak = fullPeak
+    private var activeStrobes = strobes
     private var job: Job? = null
 
     private val strength: Float
-        get() = if (progress.value < 1f) flashStrength(strobeProgress(progress.value, strobes)) * peak else 0f
+        get() = if (progress.value < 1f) flashStrength(strobeProgress(progress.value, activeStrobes)) * peak else 0f
 
     override val needsLayer: Boolean get() = true
 
@@ -102,6 +103,10 @@ internal class ColorFlashRunner(
         if (context.isReducedMotion() && !context.showsReducedStandIn()) return
         peak = if (context.isReducedMotion()) minOf(REDUCED_PEAK, fullPeak) else fullPeak
         val millis = duration.at(context.speed).inWholeMilliseconds.toInt()
+        // Under a flash limit the strobes that fit in the time are the ones that stay, and at least one does.
+        val limit = context.maxFlashesPerSecond
+        activeStrobes =
+            if (limit == null) strobes else minOf(strobes, (limit.coerceAtLeast(1) * millis / 1000).coerceAtLeast(1))
         job =
             context.scope.launch {
                 progress.snapTo(0f)

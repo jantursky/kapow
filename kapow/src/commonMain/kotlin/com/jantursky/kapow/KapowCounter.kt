@@ -7,6 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
@@ -18,6 +19,8 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.AnnotatedString
@@ -33,6 +36,7 @@ import com.jantursky.kapow.text.countValue
 import com.jantursky.kapow.text.rollDirection
 import com.jantursky.kapow.text.rollSlots
 import com.jantursky.kapow.text.slotProgress
+import kotlinx.coroutines.delay
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -73,6 +77,9 @@ public enum class CounterMode {
  * on state that changes.
  * @param duration How long the move takes. Must not be negative.
  * @param easing The curve of the move. In [CounterMode.Roll] it applies to each slot.
+ * @param announce Whether a screen reader is told when the value changes. With [KapowAnnounce.Polite] the counter is
+ * a polite live region whose text is the formatted value, updated only after the value has stopped changing for half
+ * a second, so a fast count is announced once, with its last value. Reduced motion does not change what is announced.
  */
 @Composable
 public fun KapowCounter(
@@ -83,6 +90,7 @@ public fun KapowCounter(
     format: (Long) -> String = { it.toString() },
     duration: Duration = 600.milliseconds,
     easing: Easing = FastOutSlowInEasing,
+    announce: KapowAnnounce = KapowAnnounce.Off,
 ) {
     require(!duration.isNegative()) { "duration must not be negative" }
     val measurer = rememberTextMeasurer(cacheSize = 32)
@@ -101,12 +109,26 @@ public fun KapowCounter(
         // The move is over: the width goes back to the width of the new text.
         state.from = state.target
     }
+    val announcing = announce == KapowAnnounce.Polite
+    val settled = remember { mutableStateOf(format(value)) }
+    if (announcing) {
+        LaunchedEffect(value) {
+            delay(ANNOUNCE_SETTLE_MILLIS)
+            settled.value = format(value)
+        }
+    }
     Layout(
         content = {},
         modifier =
             modifier
-                .semantics { this.text = AnnotatedString(format(value)) }
-                .drawBehind {
+                .semantics {
+                    if (announcing) {
+                        this.text = AnnotatedString(settled.value)
+                        liveRegion = LiveRegionMode.Polite
+                    } else {
+                        this.text = AnnotatedString(format(value))
+                    }
+                }.drawBehind {
                     if (mode == CounterMode.Roll && state.from != state.target) {
                         drawRolling(state, format, style, easing, measurer)
                     } else {
@@ -127,6 +149,21 @@ public fun KapowCounter(
         ) {
         }
     }
+}
+
+// Kept for binaries compiled against 1.2.0.
+@Deprecated("Use the overload with announce.", level = DeprecationLevel.HIDDEN)
+@Composable
+public fun KapowCounter(
+    value: Long,
+    modifier: Modifier = Modifier,
+    style: TextStyle = TextStyle.Default,
+    mode: CounterMode = CounterMode.Roll,
+    format: (Long) -> String = { it.toString() },
+    duration: Duration = 600.milliseconds,
+    easing: Easing = FastOutSlowInEasing,
+) {
+    KapowCounter(value, modifier, style, mode, format, duration, easing, KapowAnnounce.Off)
 }
 
 /** How much of the duration goes to starting the slots one after the other. */

@@ -59,6 +59,9 @@ internal interface EffectContext {
     /** What to do under reduced motion, set by `reducedMotion(...)`. Runners honor [ReducedMotionMode.EndState] and [ReducedMotionMode.Fade]. */
     val reducedMotionMode: ReducedMotionMode get() = ReducedMotionMode.Default
 
+    /** The flash limit that applies here, from `LocalKapowMaxFlashesPerSecond`; null means none. */
+    val maxFlashesPerSecond: Int? get() = null
+
     /** How long a conditional effect fades in, when `fadeIn(...)` set it; null leaves the effect's own. */
     val fadeIn: Duration? get() = null
 

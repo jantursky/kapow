@@ -61,6 +61,10 @@ Nothing splits or shifts. The element brightens briefly. With `reducedMotion(Red
 - Semi-transparent edges, such as anti-aliased text on a transparent background, can look slightly darker while the glitch runs.
 - There is no cooldown. A change during a glitch starts a new one.
 
+## Flash safety
+
+`glitch` changes its look up to 20 times a second, so it is a flashing effect. With `LocalKapowMaxFlashesPerSecond` set to N, it changes its look at most N times a second, and a change that comes less than 1/N seconds after the last play is ignored, never queued. At 3 the glitch becomes a slow stutter; use `reducedMotion(ReducedMotionMode.Fade)` if that is not what you want. Off by default. The limit is a cap on the rate, not a claim of WCAG 2.3.1 conformance. See the [accessibility guide](/guides/accessibility).
+
 ## Live example
 
 <include example="change-glitch">../_snippets/live-example.mdx</include>

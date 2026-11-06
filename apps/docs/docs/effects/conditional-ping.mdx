@@ -54,6 +54,10 @@ One faint ring stays still around the element while the condition holds.
 - A ring that grows past the element's bounds is cut off by a clipping parent. Give the element room, or place the effect above the clip.
 - Nothing recomposes while the rings move.
 
+## Flash safety
+
+With `LocalKapowMaxFlashesPerSecond` set to N, rings are born at least 1/N seconds apart. A ring that has finished waits for its turn before it is born again, so a limit of 3 with the default rings can leave gaps between rings. Off by default. The limit is a cap on the rate, not a claim of WCAG 2.3.1 conformance. See the [accessibility guide](/guides/accessibility).
+
 ## Live example
 
 <include example="conditional-ping">../_snippets/live-example.mdx</include>

@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.toIntSize
 import com.jantursky.kapow.KapowFeedbackEvent
 import com.jantursky.kapow.LocalKapowFeedback
+import com.jantursky.kapow.LocalKapowMaxFlashesPerSecond
 import com.jantursky.kapow.LocalKapowMotion
 import com.jantursky.kapow.durationScale
 import com.jantursky.kapow.particles.LocalParticleHost
@@ -66,6 +67,8 @@ internal abstract class EffectNode<R : EffectRunner>(
 
     override fun isReducedMotion(): Boolean =
         resolveReducedMotion(currentValueOf(LocalKapowMotion), coroutineScope.coroutineContext.durationScale)
+
+    override val maxFlashesPerSecond: Int? get() = currentValueOf(LocalKapowMaxFlashesPerSecond)
 
     override fun emit(batch: ParticleBatch) {
         val emitter = coordinates

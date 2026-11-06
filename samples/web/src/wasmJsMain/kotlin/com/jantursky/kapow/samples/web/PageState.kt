@@ -21,6 +21,9 @@ internal val pageIsDark = mutableStateOf(readPageIsDark())
 /** The reduced-motion select in the nav, as `LocalKapowMotion` wants it. */
 internal val pageMotion = mutableStateOf(readPageMotion())
 
+/** The "Flash safe" checkbox in the nav: whether Kapow caps flashing at three a second. */
+internal val pageFlashSafe = mutableStateOf(readPageFlashSafe())
+
 /** The "Haptics" checkbox in the nav: whether effects ask the browser to vibrate. */
 internal val pageHaptics = mutableStateOf(readPageHaptics())
 
@@ -45,6 +48,8 @@ private fun readPageMotion(): KapowMotion =
 
 private fun readPageHaptics(): Boolean = (document.getElementById("haptics") as? HTMLInputElement)?.checked == true
 
+private fun readPageFlashSafe(): Boolean = (document.getElementById("flash-safe") as? HTMLInputElement)?.checked == true
+
 private fun readPageEntry(): Entry? = entryById(window.location.hash.removePrefix("#"))
 
 /** Keeps the states above in step with the page. */
@@ -60,6 +65,7 @@ internal fun watchPage() {
             )
     }
     document.getElementById("motion")?.addEventListener("change", { pageMotion.value = readPageMotion() })
+    document.getElementById("flash-safe")?.addEventListener("change", { pageFlashSafe.value = readPageFlashSafe() })
     document.getElementById("haptics")?.addEventListener("change", { pageHaptics.value = readPageHaptics() })
     document.querySelectorAll(".autoplay").asList().forEach { button ->
         button.addEventListener(

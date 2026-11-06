@@ -125,6 +125,50 @@ On JVM desktop there is nothing to follow, so this is the way to offer an in-app
 
 If you override to `Full`, you are playing motion for a user who asked for none. Do it for a preview or a demo, not for the app.
 
+## JVM desktop
+
+A desktop window has no system setting to follow, so offer one in your app and feed it to `LocalKapowMotion`. The sample keeps the choice in a checkbox row and provides it to everything below:
+
+```kotlin
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import com.jantursky.kapow.KapowMotion
+import com.jantursky.kapow.LocalKapowMotion
+
+@Composable
+fun DesktopApp(content: @Composable () -> Unit) {
+    // Read this from your own settings store, so the choice survives a restart.
+    var reduceMotion by remember { mutableStateOf(false) }
+    Column {
+        Row(
+            Modifier.toggleable(
+                value = reduceMotion,
+                role = Role.Switch,
+                onValueChange = { reduceMotion = it },
+            ),
+        ) {
+            BasicText(if (reduceMotion) "Reduce motion: on" else "Reduce motion: off")
+        }
+        CompositionLocalProvider(
+            LocalKapowMotion provides if (reduceMotion) KapowMotion.Reduced else KapowMotion.System,
+            content = content,
+        )
+    }
+}
+```
+
+`System` is the right default: on the desktop it means full motion today, and it follows the platform wherever a system source exists. A user who turned motion off in an operating system setting cannot be detected on the JVM, which is why the in-app switch matters.
+
 ## Reading it yourself
 
 `isReducedMotion()` is a composable that returns the value effects here would use. It resolves `LocalKapowMotion` first, then the platform. Use it to match your own animations to Kapow's.

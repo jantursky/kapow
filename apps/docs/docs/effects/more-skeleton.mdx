@@ -29,7 +29,7 @@ fun ProfileRow(avatar: Painter, name: String, loading: Boolean) {
             contentDescription = null,
             modifier = Modifier.size(48.dp).kapowSkeleton(loading, shape = CircleShape),
         )
-        BasicText(name, Modifier.kapowSkeleton(loading))
+        BasicText(name, Modifier.kapowSkeleton(loading, loadingDescription = "Loading profile"))
     }
 }
 ```
@@ -47,6 +47,7 @@ fun ProfileRow(avatar: Painter, name: String, loading: Boolean) {
 | `duration` | `1500.milliseconds` | How long one sweep takes. |
 | `revealDuration` | `300.milliseconds` | How long the placeholder takes to fade away. |
 | `revealEasing` | `FastOutSlowInEasing` | The curve of that fade. |
+| `loadingDescription` | `null` | What a screen reader hears while `loading` is true. The element becomes one node with this state description and the dummy content under it is hidden. `null` leaves the semantics alone. |
 
 ## Reduced motion
 
@@ -57,7 +58,7 @@ The placeholder is still, with no shimmer, and the reveal is a plain cross-fade.
 - An element that is first composed with `loading` set to false shows its content at once, with no placeholder and no reveal.
 - The shimmer stops by itself once the placeholder is gone, so a loaded list costs nothing.
 - Nothing recomposes while the placeholder shimmers or fades.
-- The placeholder is drawn, not announced. Mark the element as busy yourself if a screen reader should hear that it is loading.
+- The placeholder is drawn, not announced. Give `loadingDescription` if a screen reader should hear that the element is loading. While loading, its dummy content is hidden from assistive technology, and when loading ends the content's own semantics are back. The description changes nothing that is drawn, measured or placed. Do not set it on content that never finishes loading, because that hides the content from screen readers.
 - For a shimmer over your own placeholder blocks, use [`ConditionalEffect.shimmer`](/effects/conditional-shimmer).
 
 ## Live example

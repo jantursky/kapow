@@ -44,6 +44,11 @@ import kotlinx.coroutines.launch
  *
  * With [enabled] false, or with reduced motion, the element stays flat and draws no sheen.
  *
+ * The tilt is decorative and pointer-only. It adds nothing to semantics, takes no focus and reacts to no key,
+ * focus or accessibility action, so the element's angle never changes for a keyboard or screen reader user. To show
+ * the same state on focus, use an effect that follows focus instead, such as
+ * `conditionalEffect(focused, ConditionalEffect.glow())` with `focused` from `collectIsFocusedAsState`.
+ *
  * ```
  * Card(Modifier.kapowTilt(maxAngle = 10f)) { ... }
  * ```

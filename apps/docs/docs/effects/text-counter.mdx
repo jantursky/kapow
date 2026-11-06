@@ -40,6 +40,7 @@ fun Score(score: Long) {
 | `format` | `{ it.toString() }` | Turns a value into the text to show. In `Count` mode it is called for every in-between value, in `Roll` mode for the old and the new value. |
 | `duration` | `600.milliseconds` | How long the move takes. Must not be negative. |
 | `easing` | `FastOutSlowInEasing` | The curve of the move. In `Roll` mode it applies to each digit. |
+| `announce` | `KapowAnnounce.Off` | `KapowAnnounce.Polite` makes the counter a polite live region, announced once after the value has stopped changing for 500 ms. |
 
 ## Reduced motion
 
@@ -49,7 +50,7 @@ The new value appears at once.
 
 - The first composition shows the value without animating. Only changes after that move.
 - While the number moves, the counter is as wide as the wider of the old and the new text, aligned to the end, so its neighbors stay put. When the move ends, it takes the width of the new text.
-- Screen readers read the new value as soon as it is set, never a value in between.
+- The counter exposes its text to screen readers, never a value in between. By default the new value is exposed as soon as it is set and nothing is announced. With `announce = KapowAnnounce.Polite` the counter is a polite live region: its text updates only after the value has stopped changing for 500 ms, so a fast count is announced once, with the last value. Reduced motion does not change what is announced.
 - In `Roll` mode the texts of the old and the new value line up on their last character. A digit that changes rolls out and the new one rolls in, upward when the value goes up and downward when it goes down. The slots start one after the other from the right. A separator, a sign, or a digit that appears or goes away cross-fades, and slots that do not change stay still. Going from 9 to 10 rolls the 9 into 0 and fades the 1 in.
 - In `Count` mode the move is monotonic and ends exactly on the new value, also for values near the limits of `Long`.
 - A change during a move starts from the value currently shown in `Count` mode, and from the value the last move was heading to in `Roll` mode.

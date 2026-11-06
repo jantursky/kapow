@@ -272,8 +272,22 @@ public final class com/jantursky/kapow/FillDirection : java/lang/Enum {
 	public static fun values ()[Lcom/jantursky/kapow/FillDirection;
 }
 
+public final class com/jantursky/kapow/FlashSafetyKt {
+	public static final field KapowWcagMaxFlashesPerSecond I
+	public static final fun getLocalKapowMaxFlashesPerSecond ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+}
+
+public final class com/jantursky/kapow/KapowAnnounce : java/lang/Enum {
+	public static final field Off Lcom/jantursky/kapow/KapowAnnounce;
+	public static final field Polite Lcom/jantursky/kapow/KapowAnnounce;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/jantursky/kapow/KapowAnnounce;
+	public static fun values ()[Lcom/jantursky/kapow/KapowAnnounce;
+}
+
 public final class com/jantursky/kapow/KapowCounterKt {
-	public static final fun KapowCounter-uXu1xCo (JLandroidx/compose/ui/Modifier;Landroidx/compose/ui/text/TextStyle;Lcom/jantursky/kapow/CounterMode;Lkotlin/jvm/functions/Function1;JLandroidx/compose/animation/core/Easing;Landroidx/compose/runtime/Composer;II)V
+	public static final fun KapowCounter-Q4fo6ws (JLandroidx/compose/ui/Modifier;Landroidx/compose/ui/text/TextStyle;Lcom/jantursky/kapow/CounterMode;Lkotlin/jvm/functions/Function1;JLandroidx/compose/animation/core/Easing;Lcom/jantursky/kapow/KapowAnnounce;Landroidx/compose/runtime/Composer;II)V
+	public static final synthetic fun KapowCounter-uXu1xCo (JLandroidx/compose/ui/Modifier;Landroidx/compose/ui/text/TextStyle;Lcom/jantursky/kapow/CounterMode;Lkotlin/jvm/functions/Function1;JLandroidx/compose/animation/core/Easing;Landroidx/compose/runtime/Composer;II)V
 }
 
 public final class com/jantursky/kapow/KapowEdge : java/lang/Enum {
@@ -524,8 +538,10 @@ public final class com/jantursky/kapow/KapowParticleLayerKt {
 }
 
 public final class com/jantursky/kapow/KapowSkeletonKt {
-	public static final fun kapowSkeleton-ZbVJ3Wg (Landroidx/compose/ui/Modifier;ZLandroidx/compose/ui/graphics/Shape;JZJFJJLandroidx/compose/animation/core/Easing;)Landroidx/compose/ui/Modifier;
+	public static final synthetic fun kapowSkeleton-ZbVJ3Wg (Landroidx/compose/ui/Modifier;ZLandroidx/compose/ui/graphics/Shape;JZJFJJLandroidx/compose/animation/core/Easing;)Landroidx/compose/ui/Modifier;
 	public static synthetic fun kapowSkeleton-ZbVJ3Wg$default (Landroidx/compose/ui/Modifier;ZLandroidx/compose/ui/graphics/Shape;JZJFJJLandroidx/compose/animation/core/Easing;ILjava/lang/Object;)Landroidx/compose/ui/Modifier;
+	public static final fun kapowSkeleton-hieETsI (Landroidx/compose/ui/Modifier;ZLandroidx/compose/ui/graphics/Shape;JZJFJJLandroidx/compose/animation/core/Easing;Ljava/lang/String;)Landroidx/compose/ui/Modifier;
+	public static synthetic fun kapowSkeleton-hieETsI$default (Landroidx/compose/ui/Modifier;ZLandroidx/compose/ui/graphics/Shape;JZJFJJLandroidx/compose/animation/core/Easing;Ljava/lang/String;ILjava/lang/Object;)Landroidx/compose/ui/Modifier;
 }
 
 public final class com/jantursky/kapow/KapowStagger {
@@ -550,7 +566,8 @@ public final class com/jantursky/kapow/KapowTriggerKt {
 }
 
 public final class com/jantursky/kapow/KapowTypewriterKt {
-	public static final fun KapowTypewriter-2_baoQY (Ljava/lang/String;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/text/TextStyle;Lcom/jantursky/kapow/TypewriterMode;FJLcom/jantursky/kapow/TypewriterCursor;JLjava/lang/String;JILandroidx/compose/runtime/Composer;III)V
+	public static final synthetic fun KapowTypewriter-2_baoQY (Ljava/lang/String;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/text/TextStyle;Lcom/jantursky/kapow/TypewriterMode;FJLcom/jantursky/kapow/TypewriterCursor;JLjava/lang/String;JILandroidx/compose/runtime/Composer;III)V
+	public static final fun KapowTypewriter-mqQgmaQ (Ljava/lang/String;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/text/TextStyle;Lcom/jantursky/kapow/TypewriterMode;FJLcom/jantursky/kapow/TypewriterCursor;JLjava/lang/String;JILcom/jantursky/kapow/KapowAnnounce;Landroidx/compose/runtime/Composer;III)V
 }
 
 public final class com/jantursky/kapow/MotionKt {

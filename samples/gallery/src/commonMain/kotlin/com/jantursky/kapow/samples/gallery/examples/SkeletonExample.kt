@@ -51,7 +51,12 @@ fun SkeletonExample(
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             KapowText(
                 "Maya Okafor",
-                Modifier.kapowSkeleton(loading, shimmer = shimmer, revealDuration = revealDuration),
+                Modifier.kapowSkeleton(
+                    loading,
+                    shimmer = shimmer,
+                    revealDuration = revealDuration,
+                    loadingDescription = "Loading profile",
+                ),
                 color = Ink,
             )
             KapowText(

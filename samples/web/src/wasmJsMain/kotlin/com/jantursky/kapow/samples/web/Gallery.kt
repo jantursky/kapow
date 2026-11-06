@@ -2,7 +2,9 @@ package com.jantursky.kapow.samples.web
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import com.jantursky.kapow.KapowWcagMaxFlashesPerSecond
 import com.jantursky.kapow.LocalKapowFeedback
+import com.jantursky.kapow.LocalKapowMaxFlashesPerSecond
 import com.jantursky.kapow.LocalKapowMotion
 import com.jantursky.kapow.multihaptic.rememberMultihapticFeedback
 import com.jantursky.kapow.samples.design.KapowTheme
@@ -15,6 +17,7 @@ internal fun Gallery() {
         val haptics = rememberMultihapticFeedback()
         CompositionLocalProvider(
             LocalKapowMotion provides pageMotion.value,
+            LocalKapowMaxFlashesPerSecond provides if (pageFlashSafe.value) KapowWcagMaxFlashesPerSecond else null,
             LocalKapowFeedback provides if (pageHaptics.value) haptics else null,
         ) {
             // The overview has no stage.

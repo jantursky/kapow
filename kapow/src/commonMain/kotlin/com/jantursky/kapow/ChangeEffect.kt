@@ -50,6 +50,9 @@ public abstract class ChangeEffect internal constructor() {
 
     internal abstract fun createRunner(): ChangeRunner
 
+    /** Whether this effect flashes, so a flash limit applies to it. Wrappers answer for the effect they wrap. */
+    internal open val isFlashing: Boolean get() = false
+
     /** Plays this effect [delay] after the change instead of right away. */
     public fun delay(delay: Duration): ChangeEffect {
         require(!delay.isNegative()) { "delay must not be negative" }
@@ -968,6 +971,7 @@ public abstract class ChangeEffect internal constructor() {
         val delay: Duration,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = effect.cooldown
+        override val isFlashing: Boolean get() = effect.isFlashing
 
         // The node unwraps delays and waits itself, so the wrapped effect's runner does the drawing.
         override fun createRunner(): ChangeRunner = effect.createRunner()
@@ -982,6 +986,7 @@ public abstract class ChangeEffect internal constructor() {
         val mode: ReducedMotionMode?,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = customCooldown ?: effect.cooldown
+        override val isFlashing: Boolean get() = effect.isFlashing
 
         override fun createRunner(): ChangeRunner = effect.createRunner()
     }
@@ -1142,6 +1147,7 @@ public abstract class ChangeEffect internal constructor() {
         val shape: Shape?,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
+        override val isFlashing: Boolean get() = true
 
         override fun createRunner(): ChangeRunner = ColorFlashRunner(color, duration, peak, blendMode, strobes, shape)
     }
@@ -1393,6 +1399,7 @@ public abstract class ChangeEffect internal constructor() {
         val seed: Int,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
+        override val isFlashing: Boolean get() = true
 
         override fun createRunner(): ChangeRunner =
             GlitchRunner(

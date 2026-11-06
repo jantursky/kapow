@@ -108,6 +108,7 @@ internal class GlitchRunner(
     private var seed = firstSeed
     private var frame: Frame? = null
     private var frameStep = -1
+    private var looksPerSecond = jitterRate
 
     override fun ContentDrawScope.drawEffect() {
         val graphics = graphics
@@ -161,7 +162,7 @@ internal class GlitchRunner(
         height: Float,
         offset: Float,
     ): Frame {
-        val step = (t * duration.inWholeMilliseconds / 1000f / (1f / jitterRate)).toInt()
+        val step = (t * duration.inWholeMilliseconds / 1000f / (1f / looksPerSecond)).toInt()
         val cached = frame
         if (cached != null && step == frameStep) return cached
         frameStep = step
@@ -197,6 +198,8 @@ internal class GlitchRunner(
         }
         seed++
         frameStep = -1
+        looksPerSecond =
+            context.maxFlashesPerSecond?.let { minOf(jitterRate, it.coerceAtLeast(1).toFloat()) } ?: jitterRate
         val millis = duration.at(context.speed).inWholeMilliseconds.toInt()
         job =
             context.scope.launch {

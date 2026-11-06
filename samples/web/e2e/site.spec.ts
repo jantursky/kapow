@@ -120,6 +120,18 @@ test('the reduced motion switch offers system, off and on', async ({ page }) => 
   await expect(motion).toHaveValue('reduced')
 })
 
+test('the flash safe switch is off by default and can be turned on', async ({ page }) => {
+  const errors = collectErrors(page)
+  await page.goto('/#change-flash')
+  await ready(page)
+  const flashSafe = page.getByLabel('Flash safe')
+  await expect(flashSafe).not.toBeChecked()
+  await flashSafe.check()
+  await expect(flashSafe).toBeChecked()
+  await page.waitForTimeout(500)
+  expect(errors).toEqual([])
+})
+
 test('haptics are off by default and firing with them on raises no errors', async ({ page }) => {
   const errors = collectErrors(page)
   await page.goto('/#change-shine')

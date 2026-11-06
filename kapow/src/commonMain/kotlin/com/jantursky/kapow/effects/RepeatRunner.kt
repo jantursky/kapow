@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import com.jantursky.kapow.ChangeEffect
 import com.jantursky.kapow.ConditionalEffect
+import com.jantursky.kapow.flashInterval
 import com.jantursky.kapow.internal.ChangeRunner
 import com.jantursky.kapow.internal.ConditionalRunner
 import com.jantursky.kapow.internal.EffectContext
@@ -60,6 +61,13 @@ internal class RepeatRunner(
     ) {
         job?.cancel()
         if (!active) return
+        val plan = plan.limitedTo(context.maxFlashesPerSecond)
+        val minimum =
+            if (plan.isFlashing) {
+                context.maxFlashesPerSecond?.let { maxOf(ConditionalEffect.MinRepeatInterval, flashInterval(it)) }
+            } else {
+                null
+            } ?: ConditionalEffect.MinRepeatInterval
         val random = Random(seed)
         val pace = context.speed.toDouble()
         job =
@@ -77,7 +85,7 @@ internal class RepeatRunner(
                     played++
                     if (maxCount != null && played >= maxCount) break
                     val unit = if (jitter > 0f) random.nextFloat() * 2f - 1f else 0f
-                    awaitFrameTime(repeatWait(every / pace, jitter, unit, ConditionalEffect.MinRepeatInterval))
+                    awaitFrameTime(repeatWait(every / pace, jitter, unit, minimum))
                 }
             }
     }
