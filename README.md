@@ -52,10 +52,10 @@ Compose already animates layout, alpha and transforms well, and libraries like a
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("io.github.jantursky:kapow:1.2.0")
+            implementation("io.github.jantursky:kapow:1.3.0")
             // Optional:
-            implementation("io.github.jantursky:kapow-crease:1.2.0")
-            implementation("io.github.jantursky:kapow-multihaptic:1.2.0")
+            implementation("io.github.jantursky:kapow-crease:1.3.0")
+            implementation("io.github.jantursky:kapow-multihaptic:1.3.0")
         }
     }
 }
@@ -128,7 +128,7 @@ The [gallery](https://kapow-demo.vercel.app) runs every effect in the browser, c
 3. Effects that need the element's own pixels, such as the shine band or a mask, draw it into an offscreen layer and blend on top with `SrcAtop` or cut with `DstOut` (`effects/Shine.kt`, `transitions/Masks.kt`). That works the same on every target and on Android 6, with no shaders.
 4. Particles are small struct-of-arrays systems stepped by the frame clock and capped at 1/30 s per step (`particles/`). An effect hands its batch to the nearest `KapowParticleLayer` with its position in the layer's coordinates, or draws it itself when there is none.
 5. Transitions animate a progress value on the `AnimatedVisibilityScope`'s own transition (`Transitions.kt`). That is why `AnimatedVisibility` and `AnimatedContent` keep the content until an exit has finished, even though Compose's `EnterTransition` and `ExitTransition` can't be extended.
-6. Reduced motion is read from the platform: the animator duration scale on Android, Reduce Motion on iOS, `prefers-reduced-motion` in the browser (`platform/ReducedMotion.kt`). `LocalKapowMotion` overrides it. Moving effects then become a short brighten or fade.
+6. Reduced motion is read from the platform: the animator duration scale on Android, Reduce Motion on iOS, `prefers-reduced-motion` in the browser (`platform/ReducedMotion.kt`). `LocalKapowMotion` overrides it. Moving effects then become a short brighten or fade. `KapowCounter`, `KapowTypewriter` and `kapowSkeleton` can announce themselves to screen readers, and `LocalKapowMaxFlashesPerSecond` caps flashing (see the [accessibility guide](https://kapow-docs.vercel.app/guides/accessibility)).
 
 ## Prior art
 
@@ -155,7 +155,7 @@ A search of the web and GitHub in October 2026 found no port of Pow to Compose. 
 | --- | --- | --- | --- | --- |
 | Android 6+ (API 23) | all | Android 12+, stacked outlines before | animator duration scale | Robolectric; not yet on a device |
 | iOS | all | yes | Reduce Motion | simulator tests; not yet on a device |
-| JVM desktop | all | yes | none, use `LocalKapowMotion` | tests and screenshots |
+| JVM desktop | all | yes | none, use `LocalKapowMotion` ([guide](https://kapow-docs.vercel.app/guides/reduced-motion)) | tests and screenshots |
 | wasmJs | all | yes | `prefers-reduced-motion` | Chromium via Playwright; not yet Firefox or Safari |
 
 Built with Kotlin 2.4 and Compose Multiplatform 1.12.

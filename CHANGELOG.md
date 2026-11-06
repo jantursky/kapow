@@ -4,6 +4,20 @@ All notable changes to `io.github.jantursky:kapow` and its companion artifacts a
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-11-06
+
+### Added
+
+- `loadingDescription` on `Modifier.kapowSkeleton`: while loading, the element is exposed as one node whose state description is the text, and the dummy content under it is hidden from assistive technology.
+- `KapowAnnounce` and the `announce` parameter of `KapowCounter` and `KapowTypewriter`: `KapowAnnounce.Polite` makes the text a polite live region. The counter announces its value once, 500 ms after it stops changing; the typewriter announces the full text at once.
+- `LocalKapowMaxFlashesPerSecond` and `KapowWcagMaxFlashesPerSecond` (3): an opt-in cap on flashing for a subtree. `flash`, `glitch` and `repeat` of one of them ignore triggers closer than 1/N seconds, `flash` lowers its strobes, `ping` starts its rings at least 1/N seconds apart and `glitch` changes its look at most N times a second. A rate cap, not a WCAG 2.3.1 conformance claim.
+- An accessibility guide, a JVM desktop section in the reduced-motion guide, and a note on the tilt page that `kapowTilt` is decorative and pointer-only, with a focus-driven alternative.
+- A "Flash safe" switch in the web gallery's bar.
+
+### Changed
+
+- `kapowSkeleton`, `KapowCounter` and `KapowTypewriter` gain a trailing parameter. The 1.2.0 signatures stay as hidden overloads, so existing binaries and sources keep working.
+
 ## [1.2.0] - 2026-10-28
 
 ### Added
@@ -45,7 +59,8 @@ All notable changes to `io.github.jantursky:kapow` and its companion artifacts a
 - `kapow-multihaptic` (`io.github.jantursky:kapow-multihaptic`): `rememberMultihapticFeedback()` plays feedback events as haptics through multihaptic.
 - Targets: Android (minSdk 23), iOS, JVM and wasmJs. The core needs only Compose runtime, foundation, UI and animation. Not yet checked on an Android or iOS device, or in Firefox and Safari.
 
-[Unreleased]: https://github.com/jantursky/kapow/compare/1.2.0...HEAD
+[Unreleased]: https://github.com/jantursky/kapow/compare/1.3.0...HEAD
+[1.3.0]: https://github.com/jantursky/kapow/compare/1.2.0...1.3.0
 [1.2.0]: https://github.com/jantursky/kapow/compare/1.1.0...1.2.0
 [1.1.0]: https://github.com/jantursky/kapow/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/jantursky/kapow/releases/tag/1.0.0
