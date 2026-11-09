@@ -19,6 +19,8 @@ Attach with `Modifier.changeEffect(value, effect)`. They play once each time `va
 | [`spray`](/effects/change-spray) | A burst of particles fans upward from the element, grows, then fades. |
 | [`rise`](/effects/change-rise) | One particle per change, such as "+1", floats up from the element and fades. |
 | [`spin`](/effects/change-spin) | The element turns one or more full turns and settles where it started. |
+| [`shake`](/effects/change-shake) | The element swings back and forth with swings that shrink to nothing, like a wrong password. |
+| [`jump`](/effects/change-jump) | The element hops up and lands with a squash, once per hop. |
 | [`ripple`](/effects/change-ripple) | An ink ripple spreads from a point across the element, inside its shape, and fades. |
 | [`flash`](/effects/change-flash) | The element's own pixels flash a color and fade back. |
 | [`burst`](/effects/change-burst) | A spiky comic star burst pops out behind the element and fades. |
@@ -83,6 +85,11 @@ Attach with `Modifier.kapowTransition(scope, enter, exit)` inside `AnimatedVisib
 | [`blinds`](/effects/transition-blinds) | yes | yes | Slats open or close like venetian blinds, optionally staggered. |
 | [`pop`](/effects/transition-pop) | yes | no | The content scales in with an overshoot while a ring and a burst of particles go off behind it. |
 | [`anvil`](/effects/transition-anvil) | yes | no | The content drops in from above, lands with a shake and kicks up dust. |
+| [`boing`](/effects/transition-boing) | yes | yes | The content scales in with a springy squash and stretch, or winds up and shrinks away. |
+| [`blur`](/effects/transition-blur) | yes | yes | The content comes into focus as it fades in, and out of focus as it fades out. |
+| [`flicker`](/effects/transition-flicker) | yes | yes | The content stutters on and off within a safe flash rate, then stays. |
+| [`skid`](/effects/transition-skid) | yes | yes | The content slides in past its place and settles with a lean, or slides out across an edge. |
+| [`rotate3D`](/effects/transition-rotate3d) | yes | yes | The content turns around an axis between edge-on and facing the viewer. |
 | [`poof`](/effects/transition-poof) | no | yes | The content vanishes at once in a puff of smoke. |
 | [`dissolve`](/effects/transition-dissolve) | yes | yes | A random grid of small squares turns the content on, or off, one square at a time. |
 | [`curtain`](/effects/transition-curtain) | yes | yes | Two halves part from the middle like a stage curtain, or close to hide the content. |

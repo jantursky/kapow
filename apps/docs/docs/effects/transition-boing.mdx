@@ -1,0 +1,60 @@
+---
+title: "Transition: boing"
+description: Content scales in with a springy squash and stretch.
+---
+
+Boing scales content from nothing, past its size, and lets it wobble to rest. On exit it winds up and shrinks away. Use it for stickers, badges and playful confirmations.
+
+## Usage
+
+The sample boings a sticker in and shrinks it out again.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+
+@Composable
+fun Sticker(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        enter = KapowEnter.boing(),
+        exit = KapowExit.boing(),
+    ) {
+        Box(Modifier.size(width = 180.dp, height = 110.dp).background(Color(0xFF3D7BFF)))
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `duration` | `700.milliseconds` | How long the transition takes. Must be positive. |
+| `overshoot` | `1f` | How far the content grows past its size, as a factor. 0 settles without passing it. Must not be negative. |
+| `squash` | `0.5f` | How much the content stretches and squashes while it wobbles, from 0 (not at all) to 1. |
+| `origin` | `TransformOrigin.Center` | The point the content scales from or toward, as fractions of its size. |
+
+Every transition also has `.delay(...)`, `.easing(...)` and `.reducedMotion(...)`. See [Stagger](/effects/transition-stagger).
+
+
+## Reduced motion
+
+The transition becomes a fade over the same duration or shorter. Nothing scales.
+
+## Notes
+
+- `KapowEnter.boing(...)` and `KapowExit.boing(...)` take the same parameters. The exit is the reverse of the enter.
+- While the content is bigger than its size it is taller and thinner, and while smaller it is wider and flatter. With `squash = 0` it only scales.
+- The scale is applied to the content's layer, so it does not change layout. The container keeps the content until the exit has finished.
+
+## Live example
+
+<include example="transition-boing">../_snippets/live-example.mdx</include>

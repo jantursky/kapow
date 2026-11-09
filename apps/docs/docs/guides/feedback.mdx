@@ -16,7 +16,7 @@ Kapow does not make haptics or sound itself. Effects can ask for one, and you de
 | `Success`, `Warning`, `Error` | an outcome |
 | `Custom(name)` | anything your handler understands, such as a sound named `"coin"` |
 
-Pass one to an effect with its `feedback` parameter. It is sent each time the effect plays, and also when motion is reduced.
+Kapow itself makes no haptics. For haptics on Android, iOS, the JVM and the browser, add the `kapow-multihaptic` artifact (below); it maps every event here. Pass one to an effect with its `feedback` parameter. It is sent each time the effect plays, and also when motion is reduced.
 
 ```kotlin
 import androidx.compose.foundation.text.BasicText

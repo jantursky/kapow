@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSpecified
 import com.jantursky.kapow.transitions.SHATTER_SEED
+import com.jantursky.kapow.transitions.flickerSteps
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -50,6 +51,10 @@ internal val DEFAULT_TEAR_RIM: Color = Color.White.copy(alpha = 0.75f)
 
 internal const val DEFAULT_DISSOLVE_SEED = 31
 internal const val DEFAULT_CHECKER_SEED = 41
+internal const val DEFAULT_FLICKER_SEED = 61
+
+/** The edge a [KapowEnter.skid] comes from or a [KapowExit.skid] leaves across. */
+public enum class SkidEdge { Left, Right, Top, Bottom }
 
 /**
  * How content appears inside an `AnimatedVisibility` or `AnimatedContent`. Apply it with [kapowTransition] or
@@ -278,6 +283,112 @@ public class KapowEnter internal constructor(
         )
         public fun anvil(duration: Duration = 1400.milliseconds): KapowEnter =
             anvil(duration, Dp.Unspecified, 1f, Color(0xFFB0B0B0), 6)
+
+        /**
+         * The content scales in from nothing with a springy squash and stretch: it passes its full size, wobbles
+         * and settles. With reduced motion it fades in instead.
+         *
+         * @param duration how long the transition takes, 700 ms by default.
+         * @param overshoot how far the content grows past its size, as a factor: 0 settles without passing it, 1 is
+         *   the usual overshoot, more passes it further.
+         * @param squash how much the content stretches and squashes while it wobbles, from 0 (not at all) to 1.
+         * @param origin the point the content scales from, as fractions of its size.
+         */
+        public fun boing(
+            duration: Duration = 700.milliseconds,
+            overshoot: Float = 1f,
+            squash: Float = 0.5f,
+            origin: TransformOrigin = TransformOrigin.Center,
+        ): KapowEnter =
+            KapowEnter(
+                TransitionKind.Boing(overshoot.checkedOvershoot(), squash.checkedSquash(), origin),
+                duration.checked(),
+            )
+
+        /**
+         * The content comes into focus while it fades in. Where the platform cannot blur, such as Android below 12
+         * (API 31), it fades and scales in over the same duration instead. With reduced motion it fades in.
+         *
+         * @param duration how long the transition takes, 500 ms by default.
+         * @param radius the blur radius the content starts with.
+         * @param scale the size the content starts at where the platform cannot blur, from 0.1 to 1.
+         */
+        public fun blur(
+            duration: Duration = 500.milliseconds,
+            radius: Dp = 16.dp,
+            scale: Float = 0.9f,
+        ): KapowEnter =
+            KapowEnter(TransitionKind.Blur(radius.checkedBlur(), scale.checkedBlurScale()), duration.checked())
+
+        /**
+         * The content stutters on and off like a failing light, then stays on. The sequence is seeded, so it is the
+         * same every time and on every target, and it never flashes more than three times in a second: a short
+         * [duration] or a high [steps] merges steps. Flashing content can harm people who are sensitive to it, so
+         * use it sparingly. With reduced motion it fades in instead.
+         *
+         * @param duration how long the transition takes, 800 ms by default.
+         * @param steps how many on and off steps there are at most, from 2 to 30.
+         * @param seed the seed of the step lengths.
+         * @param dim how visible the content is in the off steps, from 0 (hidden) to 1.
+         */
+        public fun flicker(
+            duration: Duration = 800.milliseconds,
+            steps: Int = 8,
+            seed: Int = DEFAULT_FLICKER_SEED,
+            dim: Float = 0f,
+        ): KapowEnter =
+            KapowEnter(
+                TransitionKind.Flicker(steps.checkedCount(2..30, "steps"), seed, dim.checkedDim(), duration.checked()),
+                duration.checked(),
+            )
+
+        /**
+         * The content slides in from [edge], passes its place, and settles with a slight lean. With reduced motion
+         * it fades in instead.
+         *
+         * @param edge the edge the content comes from.
+         * @param duration how long the transition takes, 600 ms by default.
+         * @param overshoot how far the content passes its place, as a factor: 0 settles without passing it, 1 is the
+         *   usual overshoot.
+         * @param lean how many degrees the content tilts at the start, in the direction it travels. 0 keeps it upright.
+         */
+        public fun skid(
+            edge: SkidEdge = SkidEdge.Left,
+            duration: Duration = 600.milliseconds,
+            overshoot: Float = 1f,
+            lean: Float = 8f,
+        ): KapowEnter =
+            KapowEnter(TransitionKind.Skid(edge, overshoot.checkedOvershoot(), lean.checkedLean()), duration.checked())
+
+        /**
+         * The content turns around [axis] from edge-on to facing the viewer, getting lighter as it turns. With
+         * reduced motion it fades in instead.
+         *
+         * @param axis the axis the content turns around: X or Y. Z is not allowed, since content turning around Z
+         *   stays flat to the viewer.
+         * @param duration how long the transition takes, 600 ms by default.
+         * @param degrees the angle the content starts at, from 1 to 180. 90 starts edge-on.
+         * @param cameraDistance how far the viewer is from the content. Closer makes the turn more dramatic.
+         * @param shading how dark the content is when edge-on, from 0 (not at all) to 1.
+         */
+        public fun rotate3D(
+            axis: SpinAxis = SpinAxis.Y,
+            duration: Duration = 600.milliseconds,
+            degrees: Float = 90f,
+            cameraDistance: Dp = 12.dp,
+            shading: Float = 0.35f,
+        ): KapowEnter {
+            require(axis != SpinAxis.Z) { "axis must be X or Y" }
+            return KapowEnter(
+                TransitionKind.Rotate3D(
+                    axis,
+                    degrees.checkedDegrees(),
+                    cameraDistance.checkedCamera(),
+                    shading.checkedShading(),
+                ),
+                duration.checked(),
+            )
+        }
 
         /**
          * The content pops in with an overshoot while a ring and a burst of particles of [color] go off behind it.
@@ -682,6 +793,109 @@ public class KapowExit internal constructor(
         ): KapowExit = blinds(slatWidth, orientation, staggered, duration, null, 1f, false)
 
         /**
+         * The content winds up and shrinks to nothing with a springy squash and stretch, the reverse of
+         * [KapowEnter.boing]. With reduced motion it fades out instead.
+         *
+         * @param duration how long the transition takes, 700 ms by default.
+         * @param overshoot how far the content swells before it shrinks, as in [KapowEnter.boing].
+         * @param squash how much the content stretches and squashes, as in [KapowEnter.boing].
+         * @param origin the point the content shrinks toward, as fractions of its size.
+         */
+        public fun boing(
+            duration: Duration = 700.milliseconds,
+            overshoot: Float = 1f,
+            squash: Float = 0.5f,
+            origin: TransformOrigin = TransformOrigin.Center,
+        ): KapowExit =
+            KapowExit(
+                TransitionKind.Boing(overshoot.checkedOvershoot(), squash.checkedSquash(), origin),
+                duration.checked(),
+            )
+
+        /**
+         * The content goes out of focus while it fades out. Where the platform cannot blur, such as Android below
+         * 12 (API 31), it fades and scales out instead. With reduced motion it fades out.
+         *
+         * @param duration how long the transition takes, 500 ms by default.
+         * @param radius the blur radius the content ends with.
+         * @param scale the size the content ends at where the platform cannot blur, from 0.1 to 1.
+         */
+        public fun blur(
+            duration: Duration = 500.milliseconds,
+            radius: Dp = 16.dp,
+            scale: Float = 0.9f,
+        ): KapowExit =
+            KapowExit(TransitionKind.Blur(radius.checkedBlur(), scale.checkedBlurScale()), duration.checked())
+
+        /**
+         * The content stutters on and off like a failing light, then goes out. It never flashes more than three
+         * times in a second, as for [KapowEnter.flicker], which also has the warning about flashing content. With
+         * reduced motion it fades out instead.
+         *
+         * @param duration how long the transition takes, 800 ms by default.
+         * @param steps how many on and off steps there are at most, from 2 to 30.
+         * @param seed the seed of the step lengths.
+         * @param dim how visible the content is in the off steps, from 0 (hidden) to 1.
+         */
+        public fun flicker(
+            duration: Duration = 800.milliseconds,
+            steps: Int = 8,
+            seed: Int = DEFAULT_FLICKER_SEED,
+            dim: Float = 0f,
+        ): KapowExit =
+            KapowExit(
+                TransitionKind.Flicker(steps.checkedCount(2..30, "steps"), seed, dim.checkedDim(), duration.checked()),
+                duration.checked(),
+            )
+
+        /**
+         * The content slides out across [edge] with a slight lean. With reduced motion it fades out instead.
+         *
+         * @param edge the edge the content leaves across. A skid that enters from the left leaves across the right
+         *   by default.
+         * @param duration how long the transition takes, 600 ms by default.
+         * @param overshoot how far the content backs off before it leaves, as a factor: 0 leaves at once, 1 is the
+         *   usual wind-up.
+         * @param lean how many degrees the content tilts as it leaves, in the direction it travels.
+         */
+        public fun skid(
+            edge: SkidEdge = SkidEdge.Right,
+            duration: Duration = 600.milliseconds,
+            overshoot: Float = 1f,
+            lean: Float = 8f,
+        ): KapowExit =
+            KapowExit(TransitionKind.Skid(edge, overshoot.checkedOvershoot(), lean.checkedLean()), duration.checked())
+
+        /**
+         * The content turns around [axis] from facing the viewer to edge-on, getting darker as it turns. With
+         * reduced motion it fades out instead.
+         *
+         * @param axis the axis the content turns around: X or Y.
+         * @param duration how long the transition takes, 600 ms by default.
+         * @param degrees the angle the content ends at, from 1 to 180. 90 ends edge-on.
+         * @param cameraDistance how far the viewer is from the content.
+         * @param shading how dark the content is when edge-on, from 0 (not at all) to 1.
+         */
+        public fun rotate3D(
+            axis: SpinAxis = SpinAxis.Y,
+            duration: Duration = 600.milliseconds,
+            degrees: Float = 90f,
+            cameraDistance: Dp = 12.dp,
+            shading: Float = 0.35f,
+        ): KapowExit {
+            require(axis != SpinAxis.Z) { "axis must be X or Y" }
+            return KapowExit(
+                TransitionKind.Rotate3D(
+                    axis,
+                    degrees.checkedDegrees(),
+                    cameraDistance.checkedCamera(),
+                    shading.checkedShading(),
+                ),
+                duration.checked(),
+            )
+        }
+
+        /**
          * The content vanishes at once in a puff of smoke of [color]. With reduced motion it fades out instead,
          * with no smoke.
          *
@@ -1062,6 +1276,46 @@ private fun Dp.checkedTooth(): Dp {
     return this
 }
 
+private fun Float.checkedSquash(): Float {
+    require(this in 0f..1f) { "squash must be between 0 and 1" }
+    return this
+}
+
+private fun Dp.checkedBlur(): Dp {
+    require(this > 0.dp && value.isFinite()) { "radius must be positive" }
+    return this
+}
+
+private fun Float.checkedBlurScale(): Float {
+    require(this in 0.1f..1f) { "scale must be between 0.1 and 1" }
+    return this
+}
+
+private fun Float.checkedDim(): Float {
+    require(this in 0f..1f) { "dim must be between 0 and 1" }
+    return this
+}
+
+private fun Float.checkedLean(): Float {
+    require(isFinite() && this in -45f..45f) { "lean must be between -45 and 45 degrees" }
+    return this
+}
+
+private fun Float.checkedDegrees(): Float {
+    require(this in 1f..180f) { "degrees must be from 1 to 180" }
+    return this
+}
+
+private fun Dp.checkedCamera(): Dp {
+    require(this > 0.dp && value.isFinite()) { "cameraDistance must be positive" }
+    return this
+}
+
+private fun Float.checkedShading(): Float {
+    require(this in 0f..1f) { "shading must be between 0 and 1" }
+    return this
+}
+
 internal sealed class TransitionKind {
     data object None : TransitionKind()
 
@@ -1167,5 +1421,39 @@ internal sealed class TransitionKind {
         val duration: Duration,
         val particleSize: Dp = 3.dp,
         val wind: Float = 0f,
+    ) : TransitionKind()
+
+    data class Boing(
+        val overshoot: Float,
+        val squash: Float,
+        val origin: TransformOrigin,
+    ) : TransitionKind()
+
+    data class Blur(
+        val radius: Dp,
+        val scale: Float,
+    ) : TransitionKind()
+
+    data class Flicker(
+        val steps: Int,
+        val seed: Int,
+        val dim: Float,
+        val duration: Duration,
+    ) : TransitionKind() {
+        /** Where each step ends, as a share of the transition. Worked out once; not part of equality. */
+        val ends: List<Float> by lazy { flickerSteps(seed, steps, duration) }
+    }
+
+    data class Skid(
+        val edge: SkidEdge,
+        val overshoot: Float,
+        val lean: Float,
+    ) : TransitionKind()
+
+    data class Rotate3D(
+        val axis: SpinAxis,
+        val degrees: Float,
+        val cameraDistance: Dp,
+        val shading: Float,
     ) : TransitionKind()
 }

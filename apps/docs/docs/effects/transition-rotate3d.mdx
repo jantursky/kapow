@@ -1,0 +1,62 @@
+---
+title: "Transition: rotate 3D"
+description: Content turns around an axis from edge-on to facing the viewer.
+---
+
+Rotate 3D turns content around the X or Y axis from edge-on to facing you, getting lighter as it turns, and back again on exit. Use it for cards, tiles and flip-style reveals.
+
+## Usage
+
+The sample turns a card into view around the vertical axis.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+import com.jantursky.kapow.SpinAxis
+
+@Composable
+fun Card(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        enter = KapowEnter.rotate3D(axis = SpinAxis.Y),
+        exit = KapowExit.rotate3D(axis = SpinAxis.Y),
+    ) {
+        Box(Modifier.size(width = 180.dp, height = 110.dp).background(Color(0xFF3D7BFF)))
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `axis` | `SpinAxis.Y` | The axis the content turns around. `X` turns top over bottom, `Y` turns like a door. `Z` is not allowed and throws, since content turning around Z stays flat to the viewer. |
+| `duration` | `600.milliseconds` | How long the transition takes. Must be positive. |
+| `degrees` | `90f` | The angle the content starts (enter) or ends (exit) at, from 1 to 180. 90 is edge-on. |
+| `cameraDistance` | `12.dp` | How far the viewer is from the content. Closer makes the turn more dramatic. Must be positive. |
+| `shading` | `0.35f` | How dark the content is when edge-on, from 0 (not at all) to 1. |
+
+Every transition also has `.delay(...)`, `.easing(...)` and `.reducedMotion(...)`. See [Stagger](/effects/transition-stagger).
+
+
+## Reduced motion
+
+The transition becomes a fade over the same duration or shorter. Nothing turns.
+
+## Notes
+
+- The turn is applied to the content's layer, so it does not change layout.
+- The same `SpinAxis` as [spin](/effects/change-spin). The darkening makes the turn read as a solid card.
+- At 90 degrees the content is edge-on and invisible, so the first and last frames are nearly empty.
+
+## Live example
+
+<include example="transition-rotate3d">../_snippets/live-example.mdx</include>

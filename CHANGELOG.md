@@ -4,6 +4,11 @@ All notable changes to `io.github.jantursky:kapow` and its companion artifacts a
 
 ## [Unreleased]
 
+### Added
+
+- `ChangeEffect.shake` (swings that shrink to nothing along `ShakeAxis.Horizontal`, `Vertical` or `Both`, with an optional tilt) and `ChangeEffect.jump` (one to five hops with a squash on landing).
+- Transitions `boing`, `blur`, `flicker`, `skid` and `rotate3D` on `KapowEnter` and `KapowExit`, and `SkidEdge`. `blur` fades and scales where layers cannot blur, such as Android below 12. `flicker` is seeded and never makes more than three flashes in a second.
+
 ## [1.3.0] - 2026-11-06
 
 ### Added

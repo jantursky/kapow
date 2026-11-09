@@ -139,6 +139,10 @@ private fun spec(
             tween(millis, wait, easing ?: LinearEasing)
         }
 
+        kind is TransitionKind.Boing || kind is TransitionKind.Skid || kind is TransitionKind.Flicker -> {
+            tween(millis, wait, easing ?: LinearEasing)
+        }
+
         kind is TransitionKind.Shatter || kind is TransitionKind.Disintegrate -> {
             tween(millis, wait, easing ?: LinearEasing)
         }

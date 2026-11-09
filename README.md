@@ -108,12 +108,12 @@ fun Post(likes: Int, hasUnread: Boolean, showToast: Boolean) {
 
 There are three kinds of effect, each a plain modifier:
 
-- `Modifier.changeEffect(value, effect)` plays once when `value` changes: `spray`, `rise`, `shine`, `pulse`, `glow`, `spin`, `ripple`, `flash`, `burst`, `speedLines`, `sparkle`, `fireworks`, `confettiPop`, `hearts`, `trace`, `strike`, `stamp` and `glitch`, with `.delay(…)`, `.cooldown(…)`, `.times(…)`, `.speed(…)` and `.reducedMotion(…)` on any of them.
+- `Modifier.changeEffect(value, effect)` plays once when `value` changes: `spray`, `rise`, `shine`, `pulse`, `glow`, `spin`, `shake`, `jump`, `ripple`, `flash`, `burst`, `speedLines`, `sparkle`, `fireworks`, `confettiPop`, `hearts`, `trace`, `strike`, `stamp` and `glitch`, with `.delay(…)`, `.cooldown(…)`, `.times(…)`, `.speed(…)` and `.reducedMotion(…)` on any of them.
 - `Modifier.changeEffect(trigger, effect)` plays each time you call `trigger.fire()` on a `rememberKapowTrigger()`, with no value to watch; `Modifier.changeEffect(interactionSource, interaction, effect)` plays each time a press, hover, focus or drag starts, and `Modifier.edgeEffect(condition, edge, effect)` plays when a Boolean turns true or false. `playOnStart` plays on the first composition.
 - `Modifier.conditionalEffect(condition, effect)` runs while `condition` is true: `glow`, `pushDown`, `smoke`, `borderBeam`, `marchingAnts`, `rainbowBorder`, `sparkles`, `orbit`, `bubbles`, `flame`, `grayscale`, `spotlight`, `shimmer`, `breathe`, `ping`, `confettiRain`, and `repeat(changeEffect, every)`, with `.fadeIn(…)`, `.fadeOut(…)`, `.startDelay(…)`, `.speed(…)` and `.reducedMotion(…)` on any of them. `Modifier.conditionalEffect(interactionSource, interaction, effect)` runs while the element is pressed, hovered, focused or dragged.
 - `Modifier.progressEffect(effect) { progress }` draws `shine`, `glow`, `iris`, `fill` or `trace` at a progress you supply, such as a scroll offset, with `.curve(…)` and `.smoothed()` to shape it. `kapow-crease` uses it for `Modifier.hingeEffect(effect)`.
 
-Transitions are `KapowEnter` and `KapowExit` values: `iris`, `clock`, `wipe`, `glare`, `blinds`, `dissolve`, `curtain`, `shapeIris`, `checker`, `tear` and `blob` both ways, `anvil` and `pop` to enter, and `poof`, `shatter` and `disintegrate` to exit. Every transition also takes `.delay(…)`, `.easing(…)` and `.reducedMotion(…)`, and `KapowStagger.delay(index)` cascades the items of a list. Use `KapowAnimatedVisibility`, or `Modifier.kapowTransition(this, enter, exit)` inside `AnimatedVisibility` or `AnimatedContent`. Change effects and transitions take an optional `KapowFeedbackEvent` for haptics or sound; see the [feedback guide](https://kapow-docs.vercel.app/guides/feedback).
+Transitions are `KapowEnter` and `KapowExit` values: `iris`, `clock`, `wipe`, `glare`, `blinds`, `dissolve`, `curtain`, `shapeIris`, `checker`, `tear`, `blob`, `boing`, `blur`, `flicker`, `skid` and `rotate3D` both ways, `anvil` and `pop` to enter, and `poof`, `shatter` and `disintegrate` to exit. Every transition also takes `.delay(…)`, `.easing(…)` and `.reducedMotion(…)`, and `KapowStagger.delay(index)` cascades the items of a list. Use `KapowAnimatedVisibility`, or `Modifier.kapowTransition(this, enter, exit)` inside `AnimatedVisibility` or `AnimatedContent`. Change effects and transitions take an optional `KapowFeedbackEvent` for haptics or sound; see the [feedback guide](https://kapow-docs.vercel.app/guides/feedback).
 
 Beyond effects on a modifier there are a few more pieces: `Modifier.kapowSkeleton(loading)` covers content with a shimmering placeholder and reveals it when loading ends, `KapowTypewriter` types or unscrambles text, `KapowCounter` rolls or counts a number to its new value, and `Modifier.kapowTilt()` tilts an element in 3D toward the pointer. Every effect has many more options than the defaults show; particle effects take a `ParticlePhysics` for direction, speed, gravity, lifetime and more. The [effect pages](https://kapow-docs.vercel.app/effects) list them all.
 
@@ -133,7 +133,7 @@ The [gallery](https://kapow-demo.vercel.app) runs every effect in the browser, c
 ## Prior art
 
 - [Pow](https://github.com/EmergeTools/Pow) (SwiftUI, MIT): the model for Kapow's change effects, conditional effects and transitions. Some timings, springs and geometry are derived from it and credited in [NOTICE](NOTICE). Kapow doesn't aim to look exactly like Pow.
-- [animate-compose](https://github.com/nomanr/animate-compose) (Kotlin Multiplatform): more than 90 animate.css-style presets such as bounce, shake, flip and slide. Kapow leaves these transform-only animations to it.
+- [animate-compose](https://github.com/nomanr/animate-compose) (Kotlin Multiplatform): more than 90 animate.css-style presets such as bounce, shake, flip and slide. Kapow's `shake`, `jump`, `boing` and `skid` play when a value changes or content comes and goes, with a fixed set of options. Transform animations with no value or visibility trigger, and the other presets, stay with it.
 - [Composed](https://github.com/w2sv/Composed) (Compose Multiplatform): a shake controller and a staggered grid entrance. [shaker](https://github.com/taewooyo/shaker) is a spring shake for Android only.
 - [ConfettiKit](https://github.com/vinceglb/ConfettiKit) (Kotlin Multiplatform port of Konfetti) and [ParticleEmitter](https://github.com/PiotrPrus/ParticleEmitter): confetti and a general particle engine. Kapow's particles are a few presets tied to an element, not an engine. [ExplodingComposable](https://github.com/omkar-tenkale/ExplodingComposable) explodes a composable into dust, Android only.
 - [compose-shimmer](https://github.com/valentinilk/compose-shimmer): a looping placeholder shimmer. Kapow's `shine` plays once on a change.
@@ -144,6 +144,7 @@ A search of the web and GitHub in October 2026 found no port of Pow to Compose. 
 ## Not covered yet
 
 - No shaders. Compose Multiplatform has no common shader API, and every effect here works without one. Glow uses a blurred layer where blur exists and stacked outlines on Android before 12.
+- Pow's `vanish`, `flip`, `swoosh`, `move`, `snapshot` and film exposure transitions. `vanish` is close to `disintegrate` with different options, and the others need shared bounds or a captured bitmap.
 - No sprite or image-sequence effects. Smoke, dust and the poof are drawn procedurally, so they don't look like Pow's sprites.
 - Glow follows the element's `Shape`, not the alpha of its content.
 - In-flight particles don't follow content that scrolls after they were emitted.
@@ -196,6 +197,16 @@ CI runs on every push and pull request: formatting, the binary API check, the te
       <br><sub>Open-source repositories &amp; code</sub>
     </td>
     <td align="center" valign="top" width="33%">
+      <a href="https://podcasttotranscript.com/?utm_source=kapow&amp;utm_medium=readme&amp;utm_campaign=other-projects&amp;utm_content=podcast-to-transcript" target="_blank" rel="noopener noreferrer">
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="https://apptiary.com/projects/icons/podcasttotranscript-dark.svg">
+          <img src="https://apptiary.com/projects/icons/podcasttotranscript-light.svg" alt="Podcast To Transcript" width="48" height="48">
+        </picture>
+        <br><b>Podcast To Transcript</b>
+      </a>
+      <br><sub>Podcast transcripts, summaries &amp; chapters</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
       <a href="https://loupekit.com/?utm_source=kapow&amp;utm_medium=readme&amp;utm_campaign=other-projects&amp;utm_content=loupekit" target="_blank" rel="noopener noreferrer">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="https://apptiary.com/projects/icons/loupekit-light.svg">
@@ -205,6 +216,8 @@ CI runs on every push and pull request: formatting, the binary API check, the te
       </a>
       <br><sub>Tech stack, design tokens, AI code checker</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://textarray.com/?utm_source=kapow&amp;utm_medium=readme&amp;utm_campaign=other-projects&amp;utm_content=textarray" target="_blank" rel="noopener noreferrer">
         <picture>
@@ -215,8 +228,6 @@ CI runs on every push and pull request: formatting, the binary API check, the te
       </a>
       <br><sub>Online text transformation tool</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://addonhive.com/?utm_source=kapow&amp;utm_medium=readme&amp;utm_campaign=other-projects&amp;utm_content=addonhive" target="_blank" rel="noopener noreferrer">
         <picture>
@@ -228,7 +239,7 @@ CI runs on every push and pull request: formatting, the binary API check, the te
       <br><sub>Addons &amp; integrations hub</sub>
     </td>
     <td align="center" valign="top" width="33%">
-      <a href="https://apptiary.com/mobile/?utm_source=kapow&amp;utm_medium=readme&amp;utm_campaign=other-projects&amp;utm_content=mobile-games-and-apps" target="_blank" rel="noopener noreferrer">
+      <a href="https://apptiary.com/mobile/games/?utm_source=kapow&amp;utm_medium=readme&amp;utm_campaign=other-projects&amp;utm_content=mobile-games-and-apps" target="_blank" rel="noopener noreferrer">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="https://apptiary.com/projects/icons/stores-dark-v2.svg">
           <img src="https://apptiary.com/projects/icons/stores-light-v2.svg" alt="Mobile Games &amp; Apps" width="48" height="48">
@@ -237,6 +248,8 @@ CI runs on every push and pull request: formatting, the binary API check, the te
       </a>
       <br><sub>Android &amp; iOS Applications</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://jantursky.com/?utm_source=kapow&amp;utm_medium=readme&amp;utm_campaign=other-projects&amp;utm_content=and-more" target="_blank" rel="noopener noreferrer">
         <picture>

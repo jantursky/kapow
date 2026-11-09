@@ -1,0 +1,57 @@
+---
+title: "Change: jump"
+description: The element hops up and lands with a squash when a value changes.
+---
+
+Jump lifts the element and brings it back down, once per hop, flattening it a little on each landing. Use it to say "look here": a new message badge, a button that wants a tap.
+
+## Usage
+
+The sample hops a badge each time a message arrives.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun MessageBadge(unread: Int) {
+    Box(
+        Modifier
+            .size(width = 140.dp, height = 56.dp)
+            .background(Color(0xFFFFB547))
+            .changeEffect(unread, ChangeEffect.jump(hops = 2)),
+    )
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `height` | `24.dp` | How high the element rises. Must not be negative. |
+| `hops` | `1` | How many hops there are, from 1 to 5. |
+| `squash` | `0.5f` | How much the element flattens on landing, from 0 (not at all) to 1. |
+| `duration` | `null` | How long the whole jump takes, hops included. Null takes 450 ms for each hop. |
+| `easing` | `LinearEasing` | The curve of the whole jump. |
+
+## Reduced motion
+
+The element does not move. It brightens briefly. With `reducedMotion(ReducedMotionMode.EndState)` nothing shows at all, since the effect ends at rest.
+
+## Notes
+
+- The element rests in its normal place and size after the last hop.
+- The squash is anchored at the element's bottom edge, so it flattens against the ground.
+- A change while the element is in the air starts a new jump from the current height.
+- The movement is applied to the element's layer, so it does not change layout. A clipping parent can still cut off the rise, so leave room above or draw the element inside a [particle layer](/guides/particle-layer).
+
+## Live example
+
+<include example="change-jump">../_snippets/live-example.mdx</include>

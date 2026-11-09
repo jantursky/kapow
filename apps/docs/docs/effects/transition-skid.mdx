@@ -1,0 +1,61 @@
+---
+title: "Transition: skid"
+description: Content slides in past its place and settles with a slight lean.
+---
+
+Skid slides content in from an edge, carries it a little past its place and settles it with a slight lean. On exit it slides out across an edge. Use it for toasts, banners and cards that arrive with some momentum.
+
+## Usage
+
+The sample skids a toast in from the left and out across the right.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+import com.jantursky.kapow.SkidEdge
+
+@Composable
+fun Toast(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        enter = KapowEnter.skid(edge = SkidEdge.Left),
+        exit = KapowExit.skid(edge = SkidEdge.Right),
+    ) {
+        Box(Modifier.size(width = 180.dp, height = 110.dp).background(Color(0xFF3D7BFF)))
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `edge` | `SkidEdge.Left` for an enter, `SkidEdge.Right` for an exit | The edge the content comes from or leaves across: `Left`, `Right`, `Top` or `Bottom`. |
+| `duration` | `600.milliseconds` | How long the transition takes. Must be positive. |
+| `overshoot` | `1f` | How far the content passes its place, as a factor. 0 settles without passing it. Must not be negative. |
+| `lean` | `8f` | How many degrees the content tilts at the start, in the direction it travels, from -45 to 45. It leans only for `Left` and `Right`. |
+
+Every transition also has `.delay(...)`, `.easing(...)` and `.reducedMotion(...)`. See [Stagger](/effects/transition-stagger).
+
+
+## Reduced motion
+
+The transition becomes a fade over the same duration or shorter. Nothing moves.
+
+## Notes
+
+- The default exit edge is the opposite of the default enter edge, so a skid goes through the content from left to right.
+- The content travels one of its own widths (or heights) and is cut by any clipping parent, so it appears to come from outside the edge.
+- The movement is applied to the content's layer, so it does not change layout. The container keeps the content until the exit has finished.
+
+## Live example
+
+<include example="transition-skid">../_snippets/live-example.mdx</include>

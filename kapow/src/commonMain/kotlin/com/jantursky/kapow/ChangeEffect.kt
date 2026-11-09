@@ -21,10 +21,12 @@ import com.jantursky.kapow.effects.FireworksRunner
 import com.jantursky.kapow.effects.GlitchRunner
 import com.jantursky.kapow.effects.GlowRunner
 import com.jantursky.kapow.effects.HeartsRunner
+import com.jantursky.kapow.effects.JumpRunner
 import com.jantursky.kapow.effects.OutlineRoute
 import com.jantursky.kapow.effects.PulseRunner
 import com.jantursky.kapow.effects.RippleRunner
 import com.jantursky.kapow.effects.RiseRunner
+import com.jantursky.kapow.effects.ShakeRunner
 import com.jantursky.kapow.effects.ShineRunner
 import com.jantursky.kapow.effects.SparkleRunner
 import com.jantursky.kapow.effects.SpeedLinesRunner
@@ -375,6 +377,61 @@ public abstract class ChangeEffect internal constructor() {
             axis: SpinAxis = SpinAxis.Y,
             rate: SpinRate = SpinRate.Default,
         ): ChangeEffect = spin(axis, rate, null)
+
+        /**
+         * Shakes the element back and forth with swings that shrink to nothing, like a "no" or a wrong password. It
+         * ends at rest in its place. A change during a shake starts a new one from where the element is. With
+         * reduced motion it does not move; the element brightens briefly instead.
+         *
+         * @param axis the direction of the swings.
+         * @param distance how far the first swing goes from the resting place.
+         * @param swings how many back-and-forth swings there are, from 1 to 20.
+         * @param rotation how many degrees the element tilts at the first swing. 0 keeps it upright.
+         * @param duration how long the shake takes.
+         * @param decay how fast the swings shrink: 1 shrinks them evenly, more shrinks them quickly at the start.
+         * @param easing the curve of the whole shake. The default runs it evenly.
+         */
+        public fun shake(
+            axis: ShakeAxis = ShakeAxis.Horizontal,
+            distance: Dp = 8.dp,
+            swings: Int = 4,
+            rotation: Float = 0f,
+            duration: Duration = 500.milliseconds,
+            decay: Float = 1f,
+            easing: Easing = LinearEasing,
+        ): ChangeEffect {
+            require(distance >= 0.dp && distance.value.isFinite()) { "distance must not be negative" }
+            require(swings in 1..20) { "swings must be from 1 to 20" }
+            require(rotation.isFinite()) { "rotation must be a number" }
+            require(duration.isPositive()) { "duration must be positive" }
+            require(decay >= 0f && decay.isFinite()) { "decay must not be negative" }
+            return Shake(axis, distance, swings, rotation, duration, decay, easing)
+        }
+
+        /**
+         * Hops the element up and lands it back in its place, once per hop, squashing it a little on each landing.
+         * A change during a jump starts a new one from the current height. With reduced motion it does not move;
+         * the element brightens briefly instead.
+         *
+         * @param height how high the element rises.
+         * @param hops how many hops there are, from 1 to 5. The [duration] covers all of them.
+         * @param squash how much the element flattens on landing, from 0 (not at all) to 1.
+         * @param duration how long the whole jump takes. Null takes 450 ms for each hop.
+         * @param easing the curve of the whole jump. The default runs it evenly.
+         */
+        public fun jump(
+            height: Dp = 24.dp,
+            hops: Int = 1,
+            squash: Float = 0.5f,
+            duration: Duration? = null,
+            easing: Easing = LinearEasing,
+        ): ChangeEffect {
+            require(height >= 0.dp && height.value.isFinite()) { "height must not be negative" }
+            require(hops in 1..5) { "hops must be from 1 to 5" }
+            require(squash in 0f..1f) { "squash must be between 0 and 1" }
+            require(duration == null || duration.isPositive()) { "duration must be positive" }
+            return Jump(height, hops, squash, duration ?: (450.milliseconds * hops), easing)
+        }
 
         /**
          * An ink ripple that spreads from [origin] until it covers the element, clipped to the element's [shape],
@@ -1121,6 +1178,33 @@ public abstract class ChangeEffect internal constructor() {
             SpinRunner(axis, rate, turns, duration, easing, reverse, pivot, cameraDistance, shading, overshoot)
     }
 
+    internal data class Shake(
+        val axis: ShakeAxis,
+        val distance: Dp,
+        val swings: Int,
+        val rotation: Float,
+        val duration: Duration,
+        val decay: Float,
+        val easing: Easing,
+    ) : ChangeEffect() {
+        override val cooldown: Duration get() = Duration.ZERO
+
+        override fun createRunner(): ChangeRunner =
+            ShakeRunner(axis, distance, swings, rotation, duration, decay, easing)
+    }
+
+    internal data class Jump(
+        val height: Dp,
+        val hops: Int,
+        val squash: Float,
+        val duration: Duration,
+        val easing: Easing,
+    ) : ChangeEffect() {
+        override val cooldown: Duration get() = Duration.ZERO
+
+        override fun createRunner(): ChangeRunner = JumpRunner(height, hops, squash, duration, easing)
+    }
+
     internal data class Ripple(
         val color: Color,
         val shape: Shape,
@@ -1427,6 +1511,18 @@ public sealed class PulseStyle {
 
 /** The axis a [ChangeEffect.spin] turns around. Y turns like a coin on a table, Z like a wheel. */
 public enum class SpinAxis { X, Y, Z }
+
+/** The direction of the swings of a [ChangeEffect.shake]. */
+public enum class ShakeAxis {
+    /** Side to side. */
+    Horizontal,
+
+    /** Up and down. */
+    Vertical,
+
+    /** Both ways at once, along the diagonal. */
+    Both,
+}
 
 /** How fast a [ChangeEffect.spin] starts. */
 public enum class SpinRate { Default, Fast }

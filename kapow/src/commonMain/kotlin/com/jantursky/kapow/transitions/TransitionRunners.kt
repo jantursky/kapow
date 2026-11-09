@@ -5,7 +5,10 @@ package com.jantursky.kapow.transitions
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -16,6 +19,8 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSpecified
 import com.jantursky.kapow.ParticleShape
+import com.jantursky.kapow.SkidEdge
+import com.jantursky.kapow.SpinAxis
 import com.jantursky.kapow.TransitionKind
 import com.jantursky.kapow.internal.EffectContext
 import com.jantursky.kapow.internal.TransitionRunner
@@ -28,11 +33,15 @@ import com.jantursky.kapow.particles.ParticleSystem
 import com.jantursky.kapow.particles.Spread
 import com.jantursky.kapow.particles.puffPainter
 import com.jantursky.kapow.particles.shapePainter
+import com.jantursky.kapow.platform.blurSupported
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.pow
 import kotlin.math.sin
 
 internal fun createRunner(
@@ -78,6 +87,56 @@ internal fun popRing(
     progress: Float,
 ): Float = (progress - index * POP_RING_GAP) / POP_RING
 
+/**
+ * The boing's scale at [progress]: a damped spring from 0 that passes 1 by up to about 15 % times [overshoot],
+ * dips below it once and settles at exactly 1. The two numbers are the horizontal and vertical scale: with [squash]
+ * above 0 the content is taller and thinner while it is bigger than its size, and wider and flatter while smaller.
+ */
+internal fun boingScale(
+    progress: Float,
+    overshoot: Float = 1f,
+    squash: Float = 0f,
+): Offset {
+    val p = progress.coerceIn(0f, 1f)
+    val wave = cos(BOING_WAVES * PI.toFloat() * p)
+    // Growing past the end is scaled by the overshoot; coming back under it is not.
+    val swing = (1f - p).pow(2) * if (wave < 0f) wave * overshoot * BOING_OVERSHOOT else wave
+    val s = 1f - swing
+    val d = s - 1f
+    return Offset(s * (1f - squash * 0.5f * d), s * (1f + squash * 0.5f * d))
+}
+
+/**
+ * How far the skid's content is from its place at [progress], as a share of its size along the direction of travel:
+ * -1 is a whole size before it (just outside), 0 is in place, and above 0 is past it by [overshoot].
+ */
+internal fun skidOffset(
+    progress: Float,
+    overshoot: Float = 1f,
+): Float {
+    val x = progress.coerceIn(0f, 1f) - 1f
+    val c = 1.7f * overshoot
+    return (c + 1f) * x * x * x + c * x * x
+}
+
+/** The angle the rotate3D content is turned at [progress], from [degrees] when hidden to 0 when facing the viewer. */
+internal fun rotate3DAngle(
+    progress: Float,
+    degrees: Float,
+): Float = degrees * (1f - progress.coerceIn(0f, 1f))
+
+/** The blur radius at [progress], from [radius] when hidden to 0 when shown. */
+internal fun blurRadius(
+    progress: Float,
+    radius: Float,
+): Float = radius * (1f - progress.coerceIn(0f, 1f))
+
+private const val BOING_WAVES = 2.5f
+private const val BOING_OVERSHOOT = 0.42f
+
+/** Whether a layer can blur here. Replaced in tests to check the fallback. */
+internal var canBlur: () -> Boolean = ::blurSupported
+
 internal const val MAX_POP_RINGS = 5
 private const val ANVIL_FALL = 0.1f
 private const val POP_GROW = 0.35f
@@ -117,6 +176,14 @@ private class KindRunner(
         layer.translationX = 0f
         layer.translationY = 0f
         layer.alpha = 1f
+        layer.scaleX = 1f
+        layer.scaleY = 1f
+        layer.rotationX = 0f
+        layer.rotationY = 0f
+        layer.rotationZ = 0f
+        layer.renderEffect = null
+        layer.pivotOffset = Offset.Unspecified
+        if (p > 0f && p < 1f) configureTransform(layer, kind, p)
         if (kind is TransitionKind.Anvil) {
             val shake = anvilShake(p)
             val drop = if (kind.dropHeight.isSpecified) kind.dropHeight.toPx() else max(size.height * 2f, 200.dp.toPx())
@@ -125,6 +192,63 @@ private class KindRunner(
         }
         val part = if (entering()) enterPart else exitPart
         if (part != null && p > 0f && p < 1f) part.configureLayer(layer, p)
+    }
+
+    /** The layer transform of the kinds that move, scale, turn or blur the whole content. */
+    private fun DrawScope.configureTransform(
+        layer: GraphicsLayer,
+        kind: TransitionKind,
+        p: Float,
+    ) {
+        when (kind) {
+            is TransitionKind.Boing -> {
+                val scale = boingScale(p, kind.overshoot, kind.squash)
+                layer.pivotOffset =
+                    Offset(size.width * kind.origin.pivotFractionX, size.height * kind.origin.pivotFractionY)
+                layer.scaleX = scale.x
+                layer.scaleY = scale.y
+            }
+
+            is TransitionKind.Skid -> {
+                val offset = skidOffset(p, kind.overshoot)
+                // Travelling away from the edge it came from: right from the left edge, down from the top.
+                val sign = if (kind.edge == SkidEdge.Left || kind.edge == SkidEdge.Top) 1f else -1f
+                if (kind.edge == SkidEdge.Left || kind.edge == SkidEdge.Right) {
+                    layer.translationX = sign * offset * size.width
+                } else {
+                    layer.translationY = sign * offset * size.height
+                }
+                layer.rotationZ =
+                    kind.lean * (1f - p) * sign *
+                    (if (kind.edge == SkidEdge.Left || kind.edge == SkidEdge.Right) 1f else 0f)
+            }
+
+            is TransitionKind.Rotate3D -> {
+                val angle = rotate3DAngle(p, kind.degrees)
+                if (kind.axis == SpinAxis.X) layer.rotationX = angle else layer.rotationY = angle
+                layer.cameraDistance = kind.cameraDistance.toPx()
+                if (kind.shading > 0f) layer.compositingStrategy = CompositingStrategy.Offscreen
+            }
+
+            is TransitionKind.Blur -> {
+                if (canBlur()) {
+                    val radius = blurRadius(p, kind.radius.toPx())
+                    if (radius > 0.5f) layer.renderEffect = BlurEffect(radius, radius, TileMode.Decal)
+                    layer.alpha = p
+                } else {
+                    layer.alpha = p
+                    val scale = kind.scale + (1f - kind.scale) * p
+                    layer.scaleX = scale
+                    layer.scaleY = scale
+                }
+            }
+
+            is TransitionKind.Flicker -> {
+                layer.alpha = if (flickerOn(kind.ends, p)) 1f else kind.dim
+            }
+
+            else -> {}
+        }
     }
 
     override fun ContentDrawScope.drawEffect() {
@@ -176,6 +300,19 @@ private class KindRunner(
 
             // The content goes at once; the puff is all that is left.
             is TransitionKind.Poof -> {}
+
+            is TransitionKind.Rotate3D -> {
+                drawContent()
+                if (kind.shading > 0f) {
+                    val shade = kind.shading * (1f - abs(cos(rotate3DAngle(p, kind.degrees) * PI.toFloat() / 180f)))
+                    drawRect(Color.Black, alpha = shade, blendMode = BlendMode.SrcAtop)
+                }
+            }
+
+            // The layer carries all of these.
+            is TransitionKind.Boing, is TransitionKind.Skid, is TransitionKind.Blur, is TransitionKind.Flicker -> {
+                drawContent()
+            }
 
             TransitionKind.None, is TransitionKind.Anvil -> {
                 drawContent()

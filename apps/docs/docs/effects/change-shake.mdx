@@ -1,0 +1,100 @@
+---
+title: "Change: shake"
+description: The element shakes back and forth and settles when a value changes.
+---
+
+Shake swings the element along an axis with swings that shrink to nothing. Use it to say "no": a wrong password, a rejected coupon or a form that failed to submit.
+
+## Usage
+
+The sample shakes a password field each time the number of failed attempts goes up.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun PasswordField(failedAttempts: Int) {
+    Box(
+        Modifier
+            .size(width = 240.dp, height = 56.dp)
+            .background(Color(0xFFFF6B5A))
+            .changeEffect(failedAttempts, ChangeEffect.shake()),
+    )
+}
+```
+
+## Recipe: a wrong password
+
+Count the failed attempts and watch the count. Each failure shakes the field, and an error feedback event can buzz the device where a handler is set (see [feedback](/guides/feedback)). The first composition plays nothing, so the field is still when the screen opens.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.KapowFeedbackEvent
+import com.jantursky.kapow.ShakeAxis
+import com.jantursky.kapow.changeEffect
+import kotlin.time.Duration.Companion.milliseconds
+
+@Composable
+fun LoginForm(onSubmit: (String) -> Boolean) {
+    var failedAttempts by remember { mutableIntStateOf(0) }
+    Box(
+        Modifier
+            .size(width = 240.dp, height = 56.dp)
+            .background(Color(0xFFFF6B5A))
+            .changeEffect(
+                failedAttempts,
+                ChangeEffect.shake(axis = ShakeAxis.Horizontal, distance = 12.dp, duration = 400.milliseconds),
+                feedback = KapowFeedbackEvent.Error,
+            ),
+    )
+    // Call this when the server says no:
+    // if (!onSubmit(password)) failedAttempts++
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `axis` | `ShakeAxis.Horizontal` | The direction of the swings: `Horizontal`, `Vertical` or `Both` (along the diagonal). |
+| `distance` | `8.dp` | How far the first swing goes from the resting place. Must not be negative. |
+| `swings` | `4` | How many back-and-forth swings there are, from 1 to 20. |
+| `rotation` | `0f` | How many degrees the element tilts at the first swing. 0 keeps it upright. |
+| `duration` | `500.milliseconds` | How long the shake takes. Must be positive. |
+| `decay` | `1f` | How fast the swings shrink. 1 shrinks them evenly, more shrinks them quickly at the start. Must not be negative. |
+| `easing` | `LinearEasing` | The curve of the whole shake. |
+
+## Reduced motion
+
+The element does not move. It brightens briefly. With `reducedMotion(ReducedMotionMode.EndState)` nothing shows at all, since the effect ends at rest.
+
+## Notes
+
+- The shake ends at rest in the element's normal place, size and rotation.
+- A change while the element is still shaking starts a new shake from where the element is, so it never jumps back.
+- The movement is applied to the element's layer, so it does not change layout. Neighbors do not move.
+- Two transform effects on one element, such as shake and [spin](/effects/change-spin), add up.
+- There is no cooldown. Add one with `ChangeEffect.shake().cooldown(...)`.
+
+## Live example
+
+<include example="change-shake">../_snippets/live-example.mdx</include>

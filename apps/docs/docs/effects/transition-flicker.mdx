@@ -1,0 +1,60 @@
+---
+title: "Transition: flicker"
+description: Content stutters on and off, within a safe flash rate, then stays.
+---
+
+Flicker switches content on and off in a seeded sequence like a failing light, and ends in the final state. Use it for neon signs, glitchy boot screens and arcade moments.
+
+## Usage
+
+The sample flickers a neon sign on and off.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+
+@Composable
+fun NeonSign(visible: Boolean) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        enter = KapowEnter.flicker(),
+        exit = KapowExit.flicker(),
+    ) {
+        Box(Modifier.size(width = 180.dp, height = 110.dp).background(Color(0xFF3D7BFF)))
+    }
+}
+```
+
+## Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `duration` | `800.milliseconds` | How long the transition takes. Must be positive. |
+| `steps` | `8` | The most on and off steps there are, from 2 to 30. |
+| `seed` | `61` | The seed of the step lengths. The same seed and duration give the same sequence on every target. |
+| `dim` | `0f` | How visible the content is in the off steps, from 0 (hidden) to 1. |
+
+Every transition also has `.delay(...)`, `.easing(...)` and `.reducedMotion(...)`. See [Stagger](/effects/transition-stagger).
+
+
+## Reduced motion
+
+The transition becomes a fade over the same duration or shorter. Nothing flashes.
+
+## Notes
+
+- **Flashing content can harm people who are sensitive to it.** Flicker never flashes more than three times in any second, in line with the WCAG 2.3.1 general flash threshold: steps shorter than a sixth of a second are merged, so a short `duration` or a high `steps` gives fewer flashes. That is a rate cap on this transition, not a claim that your whole screen conforms. Use it sparingly, and see the [accessibility guide](/guides/accessibility).
+- The last step is always the final state: on for an enter, off for an exit.
+- A transition shorter than about a third of a second has no room for a flash and just switches.
+
+## Live example
+
+<include example="transition-flicker">../_snippets/live-example.mdx</include>
