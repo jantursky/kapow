@@ -4,6 +4,8 @@ All notable changes to `io.github.jantursky:kapow` and its companion artifacts a
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-11-09
+
 ### Added
 
 - `ChangeEffect.shake` (swings that shrink to nothing along `ShakeAxis.Horizontal`, `Vertical` or `Both`, with an optional tilt) and `ChangeEffect.jump` (one to five hops with a squash on landing).
@@ -64,7 +66,8 @@ All notable changes to `io.github.jantursky:kapow` and its companion artifacts a
 - `kapow-multihaptic` (`io.github.jantursky:kapow-multihaptic`): `rememberMultihapticFeedback()` plays feedback events as haptics through multihaptic.
 - Targets: Android (minSdk 23), iOS, JVM and wasmJs. The core needs only Compose runtime, foundation, UI and animation. Not yet checked on an Android or iOS device, or in Firefox and Safari.
 
-[Unreleased]: https://github.com/jantursky/kapow/compare/1.3.0...HEAD
+[Unreleased]: https://github.com/jantursky/kapow/compare/1.4.0...HEAD
+[1.4.0]: https://github.com/jantursky/kapow/compare/1.3.0...1.4.0
 [1.3.0]: https://github.com/jantursky/kapow/compare/1.2.0...1.3.0
 [1.2.0]: https://github.com/jantursky/kapow/compare/1.1.0...1.2.0
 [1.1.0]: https://github.com/jantursky/kapow/compare/1.0.0...1.1.0
