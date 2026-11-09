@@ -19,6 +19,7 @@ import com.jantursky.kapow.effects.ShapedProgressRunner
 import com.jantursky.kapow.effects.ShineProgressRunner
 import com.jantursky.kapow.effects.TraceProgressRunner
 import com.jantursky.kapow.internal.ProgressRunner
+import com.jantursky.kapow.internal.requireArg
 
 /**
  * An effect drawn at a progress you control, from 0 to 1, such as a scroll position or a hinge angle. Attach it
@@ -39,8 +40,8 @@ public abstract class ProgressEffect internal constructor() {
         dampingRatio: Float = Spring.DampingRatioNoBouncy,
         stiffness: Float = Spring.StiffnessMedium,
     ): ProgressEffect {
-        require(dampingRatio > 0f) { "dampingRatio must be positive" }
-        require(stiffness > 0f) { "stiffness must be positive" }
+        requireArg(dampingRatio > 0f, "dampingRatio", "be positive", dampingRatio)
+        requireArg(stiffness > 0f, "stiffness", "be positive", stiffness)
         return shaped().copy(smoothing = dampingRatio to stiffness)
     }
 
@@ -81,10 +82,10 @@ public abstract class ProgressEffect internal constructor() {
             bandSpacing: Float = 0.3f,
             blendMode: BlendMode = BlendMode.SrcAtop,
         ): ProgressEffect {
-            require(bandWidth > 0f && bandWidth <= 1.5f) { "bandWidth must be above 0 and at most 1.5" }
-            require(softness > 0f && softness.isFinite()) { "softness must be positive" }
-            require(bands > 0) { "bands must be positive" }
-            require(bandSpacing >= 0f) { "bandSpacing must not be negative" }
+            requireArg(bandWidth > 0f && bandWidth <= 1.5f, "bandWidth", "be above 0 and at most 1.5", bandWidth)
+            requireArg(softness > 0f && softness.isFinite(), "softness", "be positive", softness)
+            requireArg(bands > 0, "bands", "be positive", bands)
+            requireArg(bandSpacing >= 0f, "bandSpacing", "not be negative", bandSpacing)
             return Shine(angle, color, bandWidth, softness, bands, bandSpacing, blendMode)
         }
 
@@ -101,6 +102,9 @@ public abstract class ProgressEffect internal constructor() {
          * @param alphaCurve scales the halo's opacity by this curve at the progress, such as to keep it faint at
          *   first. Null leaves the opacity to the halo's strength.
          * @param colorRamp the halo's colors from progress 0 to 1, blended in between. Null keeps [color].
+         * @param fromContent shapes the halo after what the element draws, its alpha, instead of after [shape]. A
+         *   round icon in a square then gets a round halo. Before Android 12, which cannot blur a layer, the halo
+         *   falls back to [shape].
          */
         public fun glow(
             color: Color = Color(0xFF6B62F2),
@@ -108,11 +112,22 @@ public abstract class ProgressEffect internal constructor() {
             shape: Shape = RectangleShape,
             alphaCurve: Easing? = null,
             colorRamp: List<Color>? = null,
+            fromContent: Boolean = false,
         ): ProgressEffect {
-            require(radius >= 0.dp) { "radius must not be negative" }
-            require(colorRamp == null || colorRamp.isNotEmpty()) { "colorRamp must not be empty" }
-            return Glow(color, radius, shape, alphaCurve, colorRamp)
+            requireArg(radius >= 0.dp, "radius", "not be negative", radius)
+            requireArg(colorRamp == null || colorRamp.isNotEmpty(), "colorRamp", "not be empty", colorRamp)
+            return Glow(color, radius, shape, alphaCurve, colorRamp, fromContent)
         }
+
+        // Kept for binaries compiled against 1.4.0.
+        @Deprecated("Use the overload with fromContent.", level = DeprecationLevel.HIDDEN)
+        public fun glow(
+            color: Color = Color(0xFF6B62F2),
+            radius: Dp = 16.dp,
+            shape: Shape = RectangleShape,
+            alphaCurve: Easing? = null,
+            colorRamp: List<Color>? = null,
+        ): ProgressEffect = glow(color, radius, shape, alphaCurve, colorRamp, false)
 
         // Kept for binaries compiled against 1.0.0.
         @Deprecated("Use the overload with more options.", level = DeprecationLevel.HIDDEN)
@@ -136,7 +151,7 @@ public abstract class ProgressEffect internal constructor() {
             shape: Shape? = null,
             invert: Boolean = false,
         ): ProgressEffect {
-            require(softEdge >= 0.dp) { "softEdge must not be negative" }
+            requireArg(softEdge >= 0.dp, "softEdge", "not be negative", softEdge)
             return Iris(origin, softEdge, shape, invert)
         }
 
@@ -170,11 +185,11 @@ public abstract class ProgressEffect internal constructor() {
             foam: Dp = 0.dp,
             foamColor: Color = Color.White,
         ): ProgressEffect {
-            require(wave >= 0.dp) { "wave must not be negative" }
-            require(waves > 0f && waves.isFinite()) { "waves must be positive" }
-            require(roll.isFinite()) { "roll must be a number" }
-            require(colorRamp == null || colorRamp.isNotEmpty()) { "colorRamp must not be empty" }
-            require(foam >= 0.dp) { "foam must not be negative" }
+            requireArg(wave >= 0.dp, "wave", "not be negative", wave)
+            requireArg(waves > 0f && waves.isFinite(), "waves", "be positive", waves)
+            requireArg(roll.isFinite(), "roll", "be a number", roll)
+            requireArg(colorRamp == null || colorRamp.isNotEmpty(), "colorRamp", "not be empty", colorRamp)
+            requireArg(foam >= 0.dp, "foam", "not be negative", foam)
             return Fill(color, wave, direction, waves, roll, colorRamp, foam, foamColor)
         }
 
@@ -209,9 +224,9 @@ public abstract class ProgressEffect internal constructor() {
             tail: Float = 1f,
             cap: StrokeCap = StrokeCap.Round,
         ): ProgressEffect {
-            require(width > 0.dp) { "width must be positive" }
-            require(start in 0f..1f) { "start must be between 0 and 1" }
-            require(tail > 0f && tail <= 1f) { "tail must be above 0 and at most 1" }
+            requireArg(width > 0.dp, "width", "be positive", width)
+            requireArg(start in 0f..1f, "start", "be between 0 and 1", start)
+            requireArg(tail > 0f && tail <= 1f, "tail", "be above 0 and at most 1", tail)
             return Trace(shape, color, width, brush, clockwise, start, tail, cap)
         }
 
@@ -243,8 +258,10 @@ public abstract class ProgressEffect internal constructor() {
         val shape: Shape,
         val alphaCurve: Easing?,
         val colorRamp: List<Color>?,
+        val fromContent: Boolean = false,
     ) : ProgressEffect() {
-        override fun createRunner(): ProgressRunner = GlowProgressRunner(color, radius, shape, alphaCurve, colorRamp)
+        override fun createRunner(): ProgressRunner =
+            GlowProgressRunner(color, radius, shape, alphaCurve, colorRamp, fromContent)
     }
 
     internal data class Iris(

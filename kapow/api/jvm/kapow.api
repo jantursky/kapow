@@ -49,7 +49,9 @@ public final class com/jantursky/kapow/ChangeEffect$Companion {
 	public static synthetic fun glitch-_GIBnP8$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JFILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final synthetic fun glow-5DgIosw (JFLandroidx/compose/ui/graphics/Shape;)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun glow-5DgIosw$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;ILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
-	public final fun glow-wWexfUc (JFLandroidx/compose/ui/graphics/Shape;FFJFLkotlin/time/Duration;Lkotlin/time/Duration;F)Lcom/jantursky/kapow/ChangeEffect;
+	public final fun glow-dnUyyIU (JFLandroidx/compose/ui/graphics/Shape;FFJFLkotlin/time/Duration;Lkotlin/time/Duration;FZ)Lcom/jantursky/kapow/ChangeEffect;
+	public static synthetic fun glow-dnUyyIU$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;FFJFLkotlin/time/Duration;Lkotlin/time/Duration;FZILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
+	public final synthetic fun glow-wWexfUc (JFLandroidx/compose/ui/graphics/Shape;FFJFLkotlin/time/Duration;Lkotlin/time/Duration;F)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun glow-wWexfUc$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;FFJFLkotlin/time/Duration;Lkotlin/time/Duration;FILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
 	public final fun hearts-7KG2hnA (JILcom/jantursky/kapow/ParticlePhysics;IZFFLjava/util/List;FJ)Lcom/jantursky/kapow/ChangeEffect;
 	public static synthetic fun hearts-7KG2hnA$default (Lcom/jantursky/kapow/ChangeEffect$Companion;JILcom/jantursky/kapow/ParticlePhysics;IZFFLjava/util/List;FJILjava/lang/Object;)Lcom/jantursky/kapow/ChangeEffect;
@@ -153,8 +155,10 @@ public final class com/jantursky/kapow/ConditionalEffect$Companion {
 	public final fun getRainbowColors ()Ljava/util/List;
 	public final synthetic fun glow-5DgIosw (JFLandroidx/compose/ui/graphics/Shape;)Lcom/jantursky/kapow/ConditionalEffect;
 	public static synthetic fun glow-5DgIosw$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;ILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
-	public final fun glow-Qdc6GvQ (JFLandroidx/compose/ui/graphics/Shape;FFJF)Lcom/jantursky/kapow/ConditionalEffect;
+	public final synthetic fun glow-Qdc6GvQ (JFLandroidx/compose/ui/graphics/Shape;FFJF)Lcom/jantursky/kapow/ConditionalEffect;
 	public static synthetic fun glow-Qdc6GvQ$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;FFJFILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
+	public final fun glow-spnpbiI (JFLandroidx/compose/ui/graphics/Shape;FFJFZ)Lcom/jantursky/kapow/ConditionalEffect;
+	public static synthetic fun glow-spnpbiI$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;FFJFZILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
 	public final synthetic fun grayscale (F)Lcom/jantursky/kapow/ConditionalEffect;
 	public static synthetic fun grayscale$default (Lcom/jantursky/kapow/ConditionalEffect$Companion;FILjava/lang/Object;)Lcom/jantursky/kapow/ConditionalEffect;
 	public final fun grayscale-bi-UJ9A (FLandroidx/compose/ui/graphics/Color;F)Lcom/jantursky/kapow/ConditionalEffect;
@@ -655,8 +659,10 @@ public final class com/jantursky/kapow/ProgressEffect$Companion {
 	public static synthetic fun fill-l07J4OM$default (Lcom/jantursky/kapow/ProgressEffect$Companion;JFILjava/lang/Object;)Lcom/jantursky/kapow/ProgressEffect;
 	public final synthetic fun glow-5DgIosw (JFLandroidx/compose/ui/graphics/Shape;)Lcom/jantursky/kapow/ProgressEffect;
 	public static synthetic fun glow-5DgIosw$default (Lcom/jantursky/kapow/ProgressEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;ILjava/lang/Object;)Lcom/jantursky/kapow/ProgressEffect;
-	public final fun glow-iPRSM58 (JFLandroidx/compose/ui/graphics/Shape;Landroidx/compose/animation/core/Easing;Ljava/util/List;)Lcom/jantursky/kapow/ProgressEffect;
+	public final synthetic fun glow-iPRSM58 (JFLandroidx/compose/ui/graphics/Shape;Landroidx/compose/animation/core/Easing;Ljava/util/List;)Lcom/jantursky/kapow/ProgressEffect;
 	public static synthetic fun glow-iPRSM58$default (Lcom/jantursky/kapow/ProgressEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;Landroidx/compose/animation/core/Easing;Ljava/util/List;ILjava/lang/Object;)Lcom/jantursky/kapow/ProgressEffect;
+	public final fun glow-vJenqF0 (JFLandroidx/compose/ui/graphics/Shape;Landroidx/compose/animation/core/Easing;Ljava/util/List;Z)Lcom/jantursky/kapow/ProgressEffect;
+	public static synthetic fun glow-vJenqF0$default (Lcom/jantursky/kapow/ProgressEffect$Companion;JFLandroidx/compose/ui/graphics/Shape;Landroidx/compose/animation/core/Easing;Ljava/util/List;ZILjava/lang/Object;)Lcom/jantursky/kapow/ProgressEffect;
 	public final synthetic fun iris-__ExYCQ (J)Lcom/jantursky/kapow/ProgressEffect;
 	public static synthetic fun iris-__ExYCQ$default (Lcom/jantursky/kapow/ProgressEffect$Companion;JILjava/lang/Object;)Lcom/jantursky/kapow/ProgressEffect;
 	public final fun iris-hKhS2fQ (JFLandroidx/compose/ui/graphics/Shape;Z)Lcom/jantursky/kapow/ProgressEffect;

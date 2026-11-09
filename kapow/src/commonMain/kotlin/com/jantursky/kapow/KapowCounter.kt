@@ -31,6 +31,7 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.LayoutDirection
+import com.jantursky.kapow.internal.requireArg
 import com.jantursky.kapow.text.SlotKind
 import com.jantursky.kapow.text.countValue
 import com.jantursky.kapow.text.rollDirection
@@ -92,7 +93,7 @@ public fun KapowCounter(
     easing: Easing = FastOutSlowInEasing,
     announce: KapowAnnounce = KapowAnnounce.Off,
 ) {
-    require(!duration.isNegative()) { "duration must not be negative" }
+    requireArg(!duration.isNegative(), "duration", "not be negative", duration)
     val measurer = rememberTextMeasurer(cacheSize = 32)
     val reduced = isReducedMotion()
     val state = remember { CounterState(value) }

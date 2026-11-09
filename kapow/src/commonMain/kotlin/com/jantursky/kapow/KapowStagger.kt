@@ -1,5 +1,6 @@
 package com.jantursky.kapow
 
+import com.jantursky.kapow.internal.requireArg
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -26,9 +27,9 @@ public object KapowStagger {
         step: Duration = 50.milliseconds,
         max: Duration = 500.milliseconds,
     ): Duration {
-        require(index >= 0) { "index must not be negative" }
-        require(!step.isNegative()) { "step must not be negative" }
-        require(!max.isNegative()) { "max must not be negative" }
+        requireArg(index >= 0, "index", "not be negative", index)
+        requireArg(!step.isNegative(), "step", "not be negative", step)
+        requireArg(!max.isNegative(), "max", "not be negative", max)
         return minOf(step * index, max)
     }
 }

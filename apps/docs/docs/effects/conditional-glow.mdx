@@ -44,6 +44,7 @@ fun SelectableCard(selected: Boolean) {
 | `breathe` | `0f` | How much the halo swells and shrinks, as a share of its strength, from 0 (steady) to 1. |
 | `period` | `2.seconds` | How long one breath takes. Must be positive. |
 | `brighten` | `0.25f` | How much the element itself brightens at full strength, from 0 to 1. |
+| `fromContent` | `false` | Shapes the halo after what the element draws, its alpha, instead of after `shape`. A round icon in a square then gets a round halo. |
 
 ## Reduced motion
 
@@ -52,9 +53,9 @@ The halo stays steady and appears without the fade. It is not removed.
 ## Notes
 
 - The halo fades in over a quarter of a second when the condition turns true and fades out when it turns false.
-- The halo follows the `shape` you pass, not the alpha of the content.
+- The halo follows the `shape` you pass, not the alpha of the content, unless you set `fromContent = true`. Then it is a blurred, tinted copy of the element, and the element is recorded into a layer while the halo shows.
 - The element is brightened a little while the halo is on.
-- Blur is used where the platform has it (all Skia targets and Android 12 and later). On Android below 12 the halo is five stacked copies of the shape at falling opacity.
+- Blur is used where the platform has it (all Skia targets and Android 12 and later). Before Android 12 the halo is five stacked copies of the shape at falling opacity, and `fromContent` has no effect.
 - The halo is drawn outside the element's bounds, so a clipping parent cuts it off.
 
 ## Live example

@@ -87,7 +87,7 @@ internal class FillProgressRunner(
     private val back = Path()
     private val surface = Path()
 
-    override val needsLayer: Boolean get() = true
+    override val needsLayer: Boolean get() = progress() > 0f
 
     override fun DrawScope.configureLayer(layer: GraphicsLayer) {
         layer.compositingStrategy =

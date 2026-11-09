@@ -52,10 +52,10 @@ Compose already animates layout, alpha and transforms well, and libraries like a
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("io.github.jantursky:kapow:1.4.0")
+            implementation("io.github.jantursky:kapow:1.5.0")
             // Optional:
-            implementation("io.github.jantursky:kapow-crease:1.4.0")
-            implementation("io.github.jantursky:kapow-multihaptic:1.4.0")
+            implementation("io.github.jantursky:kapow-crease:1.5.0")
+            implementation("io.github.jantursky:kapow-multihaptic:1.5.0")
         }
     }
 }
@@ -143,18 +143,16 @@ A search of the web and GitHub in October 2026 found no port of Pow to Compose. 
 
 ## Not covered yet
 
-- No shaders. Compose Multiplatform has no common shader API, and every effect here works without one. Glow uses a blurred layer where blur exists and stacked outlines on Android before 12.
+- No shaders. Compose Multiplatform has no common shader API, and every effect here works without one. Glow uses a blurred layer where blur exists and stacked outlines on Android before 12. By default it follows the `shape` you pass; `fromContent = true` shapes it after the element's own pixels where blur exists.
 - Pow's `vanish`, `flip`, `swoosh`, `move`, `snapshot` and film exposure transitions. `vanish` is close to `disintegrate` with different options, and the others need shared bounds or a captured bitmap.
 - No sprite or image-sequence effects. Smoke, dust and the poof are drawn procedurally, so they don't look like Pow's sprites.
-- Glow follows the element's `Shape`, not the alpha of its content.
-- In-flight particles don't follow content that scrolls after they were emitted.
 - `kapow-multihaptic` maps events to multihaptic's predefined primitives. Custom events are left to your own `KapowFeedback`.
 
 ## Platform support
 
-| platform | effects | blurred glow | reduced motion from | checked on |
+| platform | effects | blurred glow, `fromContent` | reduced motion from | checked on |
 | --- | --- | --- | --- | --- |
-| Android 6+ (API 23) | all | Android 12+, stacked outlines before | animator duration scale | Robolectric; not yet on a device |
+| Android 6+ (API 23) | all | Android 12+, stacked outlines (shape only) before | animator duration scale | Robolectric; not yet on a device |
 | iOS | all | yes | Reduce Motion | simulator tests; not yet on a device |
 | JVM desktop | all | yes | none, use `LocalKapowMotion` ([guide](https://kapow-docs.vercel.app/guides/reduced-motion)) | tests and screenshots |
 | wasmJs | all | yes | `prefers-reduced-motion` | Chromium via Playwright; not yet Firefox or Safari |

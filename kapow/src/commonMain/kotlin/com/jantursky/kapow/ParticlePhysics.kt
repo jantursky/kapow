@@ -3,6 +3,7 @@ package com.jantursky.kapow
 import androidx.compose.animation.core.Easing
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.BlendMode
+import com.jantursky.kapow.internal.requireArg
 
 /** Where [ParticlePhysics] starts particles, centered on the effect's own origin and sized to the element. */
 @Immutable
@@ -133,13 +134,13 @@ public class ParticlePhysics internal constructor(
             blendMode: BlendMode? = null,
             colorPick: ColorPick? = null,
         ): ParticlePhysics {
-            require(spread == null || spread in 0f..360f) { "spread must be between 0 and 360" }
-            require(speed == null || speed.start >= 0f) { "speed must not be negative" }
-            require(drag == null || (drag > 0f && drag <= 1f)) { "drag must be above 0 and at most 1" }
-            require(lifetime == null || lifetime.start > 0f) { "lifetime must be positive" }
-            require(size == null || size.start >= 0f) { "size must not be negative" }
-            require(startScale == null || startScale >= 0f) { "startScale must not be negative" }
-            require(endScale == null || endScale >= 0f) { "endScale must not be negative" }
+            requireArg(spread == null || spread in 0f..360f, "spread", "be between 0 and 360", spread)
+            requireArg(speed == null || speed.start >= 0f, "speed", "not be negative", speed)
+            requireArg(drag == null || (drag > 0f && drag <= 1f), "drag", "be above 0 and at most 1", drag)
+            requireArg(lifetime == null || lifetime.start > 0f, "lifetime", "be positive", lifetime)
+            requireArg(size == null || size.start >= 0f, "size", "not be negative", size)
+            requireArg(startScale == null || startScale >= 0f, "startScale", "not be negative", startScale)
+            requireArg(endScale == null || endScale >= 0f, "endScale", "not be negative", endScale)
             return ParticlePhysics(
                 direction,
                 spread,

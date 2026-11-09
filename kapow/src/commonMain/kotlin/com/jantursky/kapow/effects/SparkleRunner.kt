@@ -90,7 +90,7 @@ internal class SparkleRunner(
     // Each change gets the next seed: a different pattern from the last, the same from run to run.
     private var seed = firstSeed
 
-    override val needsLayer: Boolean get() = true
+    override val needsLayer: Boolean get() = flash.isVisible
 
     override fun DrawScope.configureLayer(layer: GraphicsLayer) {
         layer.compositingStrategy = flash.compositingStrategy

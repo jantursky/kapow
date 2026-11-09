@@ -37,6 +37,7 @@ internal class GlowProgressRunner(
     private val shape: Shape,
     private val alphaCurve: Easing? = null,
     private val colorRamp: List<Color>? = null,
+    private val fromContent: Boolean = false,
 ) : ProgressRunner() {
     private val plain = Halo(color, radius, shape)
     private val shades = arrayOfNulls<Halo>(STEPS)
@@ -60,10 +61,12 @@ internal class GlowProgressRunner(
     override fun ContentDrawScope.drawEffect() {
         val p = progress().coerceIn(0f, 1f)
         val amount = p * MAX_HALO
-        haloAt(p).draw(this, amount)
+        val halo = haloAt(p)
         val brighten = min(amount, MAX_HALO) / MAX_HALO * 0.25f
         val graphics = graphics
-        if (brighten <= 0f || graphics == null) {
+        val followsContent = fromContent && graphics != null && amount > 0f && halo.canFollowContent
+        if (!followsContent) halo.draw(this, amount)
+        if ((brighten <= 0f && !followsContent) || graphics == null) {
             drawContent()
             return
         }
@@ -76,8 +79,9 @@ internal class GlowProgressRunner(
             }
         layer.record {
             this@drawEffect.drawContent()
-            drawRect(Color.White, alpha = brighten, blendMode = BlendMode.SrcAtop)
+            if (brighten > 0f) drawRect(Color.White, alpha = brighten, blendMode = BlendMode.SrcAtop)
         }
+        if (followsContent) halo.drawFromContent(this, amount, layer)
         drawLayer(layer)
     }
 

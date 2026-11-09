@@ -35,7 +35,7 @@ internal class ShakeRunner(
     private var carryOffset = 0f
     private var carryRotation = 0f
 
-    override val needsLayer: Boolean get() = true
+    override val needsLayer: Boolean get() = progress.value < 1f || flash.isVisible
 
     private fun swing(): Float = shakeOffset(progress.value, swings, decay)
 

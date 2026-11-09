@@ -40,9 +40,13 @@ Put one layer around a screen or the whole app. You do not need one per effect. 
 
 If there is no `KapowParticleLayer` above an element, it draws its own particles around itself. Nothing breaks, but any ancestor that clips will clip the particles too. For effects on elements that sit in the open, such as a button in the middle of a screen, you can skip the layer.
 
-## Particles do not follow
+## Particles follow the element
 
-Particles start where the element was when the effect fired. If the element moves or scrolls afterwards, particles already in flight stay on their path. This is on purpose: it is what you see when a burst leaves a list row that scrolls away, and it avoids tracking positions every frame.
+Particles start at the element and keep their place relative to it. If the element scrolls or moves while they are in flight, they move with it, so a burst on a list row scrolls away with the row.
+
+Two cases leave them where they were instead: the element leaving the tree, and a lazy list reusing the row for another item. The particles finish from the last place they were drawn, and never jump to the item that took the row's place.
+
+Without a layer the particles are drawn by the element itself, so they move with it as well.
 
 ## Idle cost
 

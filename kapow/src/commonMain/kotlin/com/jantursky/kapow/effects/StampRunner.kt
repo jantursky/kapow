@@ -95,7 +95,7 @@ internal class StampRunner(
     private var job: Job? = null
     private var seed = firstSeed
 
-    override val needsLayer: Boolean get() = true
+    override val needsLayer: Boolean get() = time.value < 1f || flash.isVisible
 
     override fun DrawScope.configureLayer(layer: GraphicsLayer) {
         val pose = stampPose(time.value * STAMP_DURATION, scale, squash, rebound, tilt)

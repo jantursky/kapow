@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSpecified
+import com.jantursky.kapow.internal.requireArg
 import com.jantursky.kapow.transitions.SHATTER_SEED
 import com.jantursky.kapow.transitions.flickerSteps
 import kotlin.time.Duration
@@ -74,7 +75,7 @@ public class KapowEnter internal constructor(
      * list.
      */
     public fun delay(delay: Duration): KapowEnter {
-        require(!delay.isNegative()) { "delay must not be negative" }
+        requireArg(!delay.isNegative(), "delay", "not be negative", delay)
         return KapowEnter(kind, duration, delay, easing, reducedMotion)
     }
 
@@ -378,7 +379,7 @@ public class KapowEnter internal constructor(
             cameraDistance: Dp = 12.dp,
             shading: Float = 0.35f,
         ): KapowEnter {
-            require(axis != SpinAxis.Z) { "axis must be X or Y" }
+            requireArg(axis != SpinAxis.Z, "axis", "be X or Y", axis)
             return KapowEnter(
                 TransitionKind.Rotate3D(
                     axis,
@@ -628,7 +629,7 @@ public class KapowExit internal constructor(
      * ended. Use [KapowStagger.delay] to cascade the items of a list.
      */
     public fun delay(delay: Duration): KapowExit {
-        require(!delay.isNegative()) { "delay must not be negative" }
+        requireArg(!delay.isNegative(), "delay", "not be negative", delay)
         return KapowExit(kind, duration, delay, easing, reducedMotion)
     }
 
@@ -883,7 +884,7 @@ public class KapowExit internal constructor(
             cameraDistance: Dp = 12.dp,
             shading: Float = 0.35f,
         ): KapowExit {
-            require(axis != SpinAxis.Z) { "axis must be X or Y" }
+            requireArg(axis != SpinAxis.Z, "axis", "be X or Y", axis)
             return KapowExit(
                 TransitionKind.Rotate3D(
                     axis,
@@ -1114,9 +1115,9 @@ public class KapowExit internal constructor(
             impact: TransformOrigin = TransformOrigin.Center,
             seed: Int = SHATTER_SEED,
         ): KapowExit {
-            require(shards in 2..200) { "shards must be from 2 to 200" }
-            require(gravity >= 0f && gravity.isFinite()) { "gravity must not be negative" }
-            require(spin >= 0f && spin.isFinite()) { "spin must not be negative" }
+            requireArg(shards in 2..200, "shards", "be from 2 to 200", shards)
+            requireArg(gravity >= 0f && gravity.isFinite(), "gravity", "not be negative", gravity)
+            requireArg(spin >= 0f && spin.isFinite(), "spin", "not be negative", spin)
             return KapowExit(TransitionKind.Shatter(shards, gravity, spin, impact, seed), duration.checked())
         }
 
@@ -1148,8 +1149,8 @@ public class KapowExit internal constructor(
             particleSize: Dp = 3.dp,
             wind: Float = 0f,
         ): KapowExit {
-            require(particleSize in 1.dp..16.dp) { "particleSize must be from 1 dp to 16 dp" }
-            require(wind in -1f..1f) { "wind must be from -1 to 1" }
+            requireArg(particleSize in 1.dp..16.dp, "particleSize", "be from 1 dp to 16 dp", particleSize)
+            requireArg(wind in -1f..1f, "wind", "be from -1 to 1", wind)
             return KapowExit(TransitionKind.Disintegrate(color, duration.checked(), particleSize, wind), duration)
         }
 
@@ -1177,79 +1178,79 @@ private fun tuningText(
     }
 
 private fun Duration.checked(): Duration {
-    require(isPositive()) { "duration must be positive" }
+    requireArg(isPositive(), "duration", "be positive", this)
     return this
 }
 
 private fun Dp.checkedCell(): Dp {
-    require(this >= 2.dp) { "cellSize must be at least 2 dp" }
+    requireArg(this >= 2.dp, "cellSize", "be at least 2 dp", this)
     return this
 }
 
 private fun Dp.checkedSoft(): Dp {
-    require(this >= 0.dp && value.isFinite()) { "softEdge must not be negative" }
+    requireArg(this >= 0.dp && value.isFinite(), "softEdge", "not be negative", this)
     return this
 }
 
 private fun Dp.checkedGlareWidth(): Dp {
-    require(!isSpecified || (this > 0.dp && value.isFinite())) { "width must be positive" }
+    requireArg(!isSpecified || (this > 0.dp && value.isFinite()), "width", "be positive", this)
     return this
 }
 
 private fun Float.checkedIntensity(): Float {
-    require(this in 0f..1f) { "intensity must be between 0 and 1" }
+    requireArg(this in 0f..1f, "intensity", "be between 0 and 1", this)
     return this
 }
 
 /** Null (sized by width) becomes 0; a count must be from 1 to 200. */
 private fun Int?.checkedSlats(): Int {
     if (this == null) return 0
-    require(this in 1..200) { "slatCount must be from 1 to 200" }
+    requireArg(this in 1..200, "slatCount", "be from 1 to 200", this)
     return this
 }
 
 private fun Float.checkedStagger(): Float {
-    require(this >= 0f && isFinite()) { "staggerAmount must not be negative" }
+    requireArg(this >= 0f && isFinite(), "staggerAmount", "not be negative", this)
     return this
 }
 
 private fun Float.checkedSoftness(): Float {
-    require(this in 0f..1f) { "softness must be between 0 and 1" }
+    requireArg(this in 0f..1f, "softness", "be between 0 and 1", this)
     return this
 }
 
 private fun Float.checkedRoughness(): Float {
-    require(this in 0f..1f) { "roughness must be between 0 and 1" }
+    requireArg(this in 0f..1f, "roughness", "be between 0 and 1", this)
     return this
 }
 
 private fun Int.checkedPoints(): Int {
-    require(this in 4..32) { "points must be from 4 to 32" }
+    requireArg(this in 4..32, "points", "be from 4 to 32", this)
     return this
 }
 
 private fun Float.checkedWobble(): Float {
-    require(this in 0f..0.5f) { "wobble must be between 0 and 0.5" }
+    requireArg(this in 0f..0.5f, "wobble", "be between 0 and 0.5", this)
     return this
 }
 
 private fun Dp.checkedDrop(): Dp {
-    require(!isSpecified || (this > 0.dp && value.isFinite())) { "dropHeight must be positive" }
+    requireArg(!isSpecified || (this > 0.dp && value.isFinite()), "dropHeight", "be positive", this)
     return this
 }
 
 private fun Float.checkedShake(): Float {
-    require(this >= 0f && isFinite()) { "shake must not be negative" }
+    requireArg(this >= 0f && isFinite(), "shake", "not be negative", this)
     return this
 }
 
 private fun Float.checkedOvershoot(): Float {
-    require(this >= 0f && isFinite()) { "overshoot must not be negative" }
+    requireArg(this >= 0f && isFinite(), "overshoot", "not be negative", this)
     return this
 }
 
 private fun Dp.checkedPuff(): Dp {
-    require(this > 0.dp && value.isFinite()) { "puffSize must be positive" }
+    requireArg(this > 0.dp && value.isFinite(), "puffSize", "be positive", this)
     return this
 }
 
@@ -1257,62 +1258,62 @@ private fun Int.checkedCount(
     range: IntRange,
     name: String,
 ): Int {
-    require(this in range) { "$name must be from ${range.first} to ${range.last}" }
+    requireArg(this in range, name, "be from ${range.first} to ${range.last}", this)
     return this
 }
 
 private fun Float.checkedSplit(): Float {
-    require(this in 0f..1f) { "split must be between 0 and 1" }
+    requireArg(this in 0f..1f, "split", "be between 0 and 1", this)
     return this
 }
 
 private fun Float.checkedScale(): Float {
-    require(this >= 1f && isFinite()) { "scale must be at least 1" }
+    requireArg(this >= 1f && isFinite(), "scale", "be at least 1", this)
     return this
 }
 
 private fun Dp.checkedTooth(): Dp {
-    require(this >= 2.dp) { "toothSize must be at least 2 dp" }
+    requireArg(this >= 2.dp, "toothSize", "be at least 2 dp", this)
     return this
 }
 
 private fun Float.checkedSquash(): Float {
-    require(this in 0f..1f) { "squash must be between 0 and 1" }
+    requireArg(this in 0f..1f, "squash", "be between 0 and 1", this)
     return this
 }
 
 private fun Dp.checkedBlur(): Dp {
-    require(this > 0.dp && value.isFinite()) { "radius must be positive" }
+    requireArg(this > 0.dp && value.isFinite(), "radius", "be positive", this)
     return this
 }
 
 private fun Float.checkedBlurScale(): Float {
-    require(this in 0.1f..1f) { "scale must be between 0.1 and 1" }
+    requireArg(this in 0.1f..1f, "scale", "be between 0.1 and 1", this)
     return this
 }
 
 private fun Float.checkedDim(): Float {
-    require(this in 0f..1f) { "dim must be between 0 and 1" }
+    requireArg(this in 0f..1f, "dim", "be between 0 and 1", this)
     return this
 }
 
 private fun Float.checkedLean(): Float {
-    require(isFinite() && this in -45f..45f) { "lean must be between -45 and 45 degrees" }
+    requireArg(isFinite() && this in -45f..45f, "lean", "be between -45 and 45 degrees", this)
     return this
 }
 
 private fun Float.checkedDegrees(): Float {
-    require(this in 1f..180f) { "degrees must be from 1 to 180" }
+    requireArg(this in 1f..180f, "degrees", "be from 1 to 180", this)
     return this
 }
 
 private fun Dp.checkedCamera(): Dp {
-    require(this > 0.dp && value.isFinite()) { "cameraDistance must be positive" }
+    requireArg(this > 0.dp && value.isFinite(), "cameraDistance", "be positive", this)
     return this
 }
 
 private fun Float.checkedShading(): Float {
-    require(this in 0f..1f) { "shading must be between 0 and 1" }
+    requireArg(this in 0f..1f, "shading", "be between 0 and 1", this)
     return this
 }
 

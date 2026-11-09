@@ -30,6 +30,7 @@ import com.jantursky.kapow.effects.SparklesRunner
 import com.jantursky.kapow.effects.SpotlightRunner
 import com.jantursky.kapow.effects.TunedConditionalRunner
 import com.jantursky.kapow.internal.ConditionalRunner
+import com.jantursky.kapow.internal.requireArg
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -42,25 +43,25 @@ public abstract class ConditionalEffect internal constructor() {
 
     /** How long the effect takes to fade in when the condition turns true, instead of its own fade. */
     public fun fadeIn(duration: Duration): ConditionalEffect {
-        require(!duration.isNegative()) { "duration must not be negative" }
+        requireArg(!duration.isNegative(), "duration", "not be negative", duration)
         return tuned().copy(fadeIn = duration)
     }
 
     /** How long the effect takes to fade out when the condition turns false, instead of its own fade. */
     public fun fadeOut(duration: Duration): ConditionalEffect {
-        require(!duration.isNegative()) { "duration must not be negative" }
+        requireArg(!duration.isNegative(), "duration", "not be negative", duration)
         return tuned().copy(fadeOut = duration)
     }
 
     /** Waits [delay] after the condition turns true before the effect starts. */
     public fun startDelay(delay: Duration): ConditionalEffect {
-        require(!delay.isNegative()) { "delay must not be negative" }
+        requireArg(!delay.isNegative(), "delay", "not be negative", delay)
         return tuned().copy(startDelay = delay)
     }
 
     /** Runs the effect at [multiplier] times the pace: 2 is twice as fast. */
     public fun speed(multiplier: Float): ConditionalEffect {
-        require(multiplier > 0f && multiplier.isFinite()) { "multiplier must be positive" }
+        requireArg(multiplier > 0f && multiplier.isFinite(), "multiplier", "be positive", multiplier)
         val tuned = tuned()
         return tuned.copy(speed = tuned.speed * multiplier)
     }
@@ -103,9 +104,9 @@ public abstract class ConditionalEffect internal constructor() {
             jitter: Float = 0f,
             seed: Int = 0,
         ): ConditionalEffect {
-            require(!initialDelay.isNegative()) { "initialDelay must not be negative" }
-            require(maxCount == null || maxCount > 0) { "maxCount must be positive" }
-            require(jitter in 0f..1f) { "jitter must be between 0 and 1" }
+            requireArg(!initialDelay.isNegative(), "initialDelay", "not be negative", initialDelay)
+            requireArg(maxCount == null || maxCount > 0, "maxCount", "be positive", maxCount)
+            requireArg(jitter in 0f..1f, "jitter", "be between 0 and 1", jitter)
             return Repeat(effect, every.coerceAtLeast(MinRepeatInterval), initialDelay, maxCount, jitter, seed)
         }
 
@@ -125,6 +126,9 @@ public abstract class ConditionalEffect internal constructor() {
          * @param breathe how much the halo swells and shrinks, as a share of its strength, from 0 (steady) to 1.
          * @param period how long one breath takes.
          * @param brighten how much the element itself brightens at full strength, from 0 to 1.
+         * @param fromContent shapes the halo after what the element draws, its alpha, instead of after [shape]. A
+         *   round icon in a square then gets a round halo. Before Android 12, which cannot blur a layer, the halo
+         *   falls back to [shape].
          */
         public fun glow(
             color: Color = Color(0xFF6B62F2),
@@ -134,14 +138,27 @@ public abstract class ConditionalEffect internal constructor() {
             breathe: Float = 0f,
             period: Duration = 2.seconds,
             brighten: Float = 0.25f,
+            fromContent: Boolean = false,
         ): ConditionalEffect {
-            require(radius >= 0.dp) { "radius must not be negative" }
-            require(strength > 0f && strength <= 1.5f) { "strength must be above 0 and at most 1.5" }
-            require(breathe in 0f..1f) { "breathe must be between 0 and 1" }
-            require(period.isPositive()) { "period must be positive" }
-            require(brighten in 0f..1f) { "brighten must be between 0 and 1" }
-            return Glow(color, radius, shape, strength, breathe, period, brighten)
+            requireArg(radius >= 0.dp, "radius", "not be negative", radius)
+            requireArg(strength > 0f && strength <= 1.5f, "strength", "be above 0 and at most 1.5", strength)
+            requireArg(breathe in 0f..1f, "breathe", "be between 0 and 1", breathe)
+            requireArg(period.isPositive(), "period", "be positive", period)
+            requireArg(brighten in 0f..1f, "brighten", "be between 0 and 1", brighten)
+            return Glow(color, radius, shape, strength, breathe, period, brighten, fromContent)
         }
+
+        // Kept for binaries compiled against 1.4.0.
+        @Deprecated("Use the overload with fromContent.", level = DeprecationLevel.HIDDEN)
+        public fun glow(
+            color: Color = Color(0xFF6B62F2),
+            radius: Dp = 16.dp,
+            shape: Shape = RectangleShape,
+            strength: Float = 0.7f,
+            breathe: Float = 0f,
+            period: Duration = 2.seconds,
+            brighten: Float = 0.25f,
+        ): ConditionalEffect = glow(color, radius, shape, strength, breathe, period, brighten, false)
 
         // Kept for binaries compiled against 1.0.0.
         @Deprecated("Use the overload with more options.", level = DeprecationLevel.HIDDEN)
@@ -169,10 +186,10 @@ public abstract class ConditionalEffect internal constructor() {
             translation: Dp = 0.dp,
             origin: TransformOrigin = TransformOrigin.Center,
         ): ConditionalEffect {
-            require(scale > 0f) { "scale must be positive" }
-            require(damping > 0f) { "damping must be positive" }
-            require(stiffness > 0f) { "stiffness must be positive" }
-            require(dim in 0f..1f) { "dim must be between 0 and 1" }
+            requireArg(scale > 0f, "scale", "be positive", scale)
+            requireArg(damping > 0f, "damping", "be positive", damping)
+            requireArg(stiffness > 0f, "stiffness", "be positive", stiffness)
+            requireArg(dim in 0f..1f, "dim", "be between 0 and 1", dim)
             return PushDown(scale, damping, stiffness, dim, translation, origin)
         }
 
@@ -204,10 +221,10 @@ public abstract class ConditionalEffect internal constructor() {
             physics: ParticlePhysics = ParticlePhysics.Default,
             seed: Int = 0,
         ): ConditionalEffect {
-            require(rate > 0f && rate.isFinite()) { "rate must be positive" }
-            require(size > 0.dp) { "size must be positive" }
-            require(opacity > 0f && opacity <= 1f) { "opacity must be above 0 and at most 1" }
-            require(wind.isFinite()) { "wind must be a number" }
+            requireArg(rate > 0f && rate.isFinite(), "rate", "be positive", rate)
+            requireArg(size > 0.dp, "size", "be positive", size)
+            requireArg(opacity > 0f && opacity <= 1f, "opacity", "be above 0 and at most 1", opacity)
+            requireArg(wind.isFinite(), "wind", "be a number", wind)
             return Smoke(color, rate, size, opacity, wind, physics, seed)
         }
 
@@ -247,13 +264,13 @@ public abstract class ConditionalEffect internal constructor() {
             glow: Float = 1f,
             tailFade: Float = 1.5f,
         ): ConditionalEffect {
-            require(width > 0.dp) { "width must be positive" }
-            require(length > 0f && length <= 1f) { "length must be above 0 and at most 1" }
-            require(duration.isPositive()) { "duration must be positive" }
-            require(trackAlpha in 0f..1f) { "trackAlpha must be between 0 and 1" }
-            require(beams > 0) { "beams must be positive" }
-            require(glow >= 0f) { "glow must not be negative" }
-            require(tailFade >= 0f) { "tailFade must not be negative" }
+            requireArg(width > 0.dp, "width", "be positive", width)
+            requireArg(length > 0f && length <= 1f, "length", "be above 0 and at most 1", length)
+            requireArg(duration.isPositive(), "duration", "be positive", duration)
+            requireArg(trackAlpha in 0f..1f, "trackAlpha", "be between 0 and 1", trackAlpha)
+            requireArg(beams > 0, "beams", "be positive", beams)
+            requireArg(glow >= 0f, "glow", "not be negative", glow)
+            requireArg(tailFade >= 0f, "tailFade", "not be negative", tailFade)
             return BorderBeam(
                 color,
                 width,
@@ -311,10 +328,10 @@ public abstract class ConditionalEffect internal constructor() {
             roundCaps: Boolean = false,
             dashOffset: Dp = 0.dp,
         ): ConditionalEffect {
-            require(width > 0.dp) { "width must be positive" }
-            require(dash > 0.dp) { "dash must be positive" }
-            require(gap >= 0.dp) { "gap must not be negative" }
-            require(speed >= 0.dp) { "speed must not be negative" }
+            requireArg(width > 0.dp, "width", "be positive", width)
+            requireArg(dash > 0.dp, "dash", "be positive", dash)
+            requireArg(gap >= 0.dp, "gap", "not be negative", gap)
+            requireArg(speed >= 0.dp, "speed", "not be negative", speed)
             return MarchingAnts(
                 color,
                 gapColor,
@@ -377,11 +394,11 @@ public abstract class ConditionalEffect internal constructor() {
             alpha: Float = 1f,
             glow: Dp = 0.dp,
         ): ConditionalEffect {
-            require(colors.isNotEmpty()) { "colors must not be empty" }
-            require(width > 0.dp) { "width must be positive" }
-            require(duration.isPositive()) { "duration must be positive" }
-            require(alpha > 0f && alpha <= 1f) { "alpha must be above 0 and at most 1" }
-            require(glow >= 0.dp) { "glow must not be negative" }
+            requireArg(colors.isNotEmpty(), "colors", "not be empty", colors)
+            requireArg(width > 0.dp, "width", "be positive", width)
+            requireArg(duration.isPositive(), "duration", "be positive", duration)
+            requireArg(alpha > 0f && alpha <= 1f, "alpha", "be above 0 and at most 1", alpha)
+            requireArg(glow >= 0.dp, "glow", "not be negative", glow)
             return RainbowBorder(colors, width, shape, duration, clockwise, easing, alpha, glow)
         }
 
@@ -419,10 +436,10 @@ public abstract class ConditionalEffect internal constructor() {
             shape: ParticleShape = ParticleShape.Sparkle,
             seed: Int = 0,
         ): ConditionalEffect {
-            require(colors.isNotEmpty()) { "colors must not be empty" }
-            require(size > 0.dp) { "size must be positive" }
-            require(count > 0) { "count must be positive" }
-            require(lifetime.start > 0f) { "lifetime must be positive" }
+            requireArg(colors.isNotEmpty(), "colors", "not be empty", colors)
+            requireArg(size > 0.dp, "size", "be positive", size)
+            requireArg(count > 0, "count", "be positive", count)
+            requireArg(lifetime.start > 0f, "lifetime", "be positive", lifetime)
             return Sparkles(colors, size, count, lifetime, areaPadding, shape, seed)
         }
 
@@ -466,14 +483,14 @@ public abstract class ConditionalEffect internal constructor() {
             content: ParticleContent? = null,
             trail: Int = 4,
         ): ConditionalEffect {
-            require(colors.isNotEmpty()) { "colors must not be empty" }
-            require(count > 0) { "count must be positive" }
-            require(size > 0.dp) { "size must be positive" }
-            require(duration.isPositive()) { "duration must be positive" }
-            require(radius > 0f && radius.isFinite()) { "radius must be positive" }
-            require(tilt.isFinite()) { "tilt must be a number" }
-            require(depthScale > 0f && depthScale <= 1f) { "depthScale must be above 0 and at most 1" }
-            require(trail >= 0) { "trail must not be negative" }
+            requireArg(colors.isNotEmpty(), "colors", "not be empty", colors)
+            requireArg(count > 0, "count", "be positive", count)
+            requireArg(size > 0.dp, "size", "be positive", size)
+            requireArg(duration.isPositive(), "duration", "be positive", duration)
+            requireArg(radius > 0f && radius.isFinite(), "radius", "be positive", radius)
+            requireArg(tilt.isFinite(), "tilt", "be a number", tilt)
+            requireArg(depthScale > 0f && depthScale <= 1f, "depthScale", "be above 0 and at most 1", depthScale)
+            requireArg(trail >= 0, "trail", "not be negative", trail)
             return Orbit(colors, count, size, duration, radius, tilt, clockwise, depthScale, content, trail)
         }
 
@@ -513,10 +530,10 @@ public abstract class ConditionalEffect internal constructor() {
             physics: ParticlePhysics = ParticlePhysics.Default,
             seed: Int = 0,
         ): ConditionalEffect {
-            require(size > 0.dp) { "size must be positive" }
-            require(rate > 0f && rate.isFinite()) { "rate must be positive" }
-            require(wobble >= 0.dp) { "wobble must not be negative" }
-            require(colorVariation in 0f..1f) { "colorVariation must be between 0 and 1" }
+            requireArg(size > 0.dp, "size", "be positive", size)
+            requireArg(rate > 0f && rate.isFinite(), "rate", "be positive", rate)
+            requireArg(wobble >= 0.dp, "wobble", "not be negative", wobble)
+            requireArg(colorVariation in 0f..1f, "colorVariation", "be between 0 and 1", colorVariation)
             return Bubbles(color, size, rate, wobble, pop, colorVariation, physics, seed)
         }
 
@@ -563,12 +580,12 @@ public abstract class ConditionalEffect internal constructor() {
             physics: ParticlePhysics = ParticlePhysics.Default,
             seed: Int = 0,
         ): ConditionalEffect {
-            require(colors.size >= 2) { "colors needs at least two colors" }
-            require(height > 0.dp) { "height must be positive" }
-            require(width == null || width > 0.dp) { "width must be positive" }
-            require(intensity > 0f && intensity.isFinite()) { "intensity must be positive" }
-            require(wind.isFinite()) { "wind must be a number" }
-            require(flicker >= 0f && flicker.isFinite()) { "flicker must not be negative" }
+            requireArg(colors.size >= 2, "colors", "have at least two colors", colors.size)
+            requireArg(height > 0.dp, "height", "be positive", height)
+            requireArg(width == null || width > 0.dp, "width", "be positive", width)
+            requireArg(intensity > 0f && intensity.isFinite(), "intensity", "be positive", intensity)
+            requireArg(wind.isFinite(), "wind", "be a number", wind)
+            requireArg(flicker >= 0f && flicker.isFinite(), "flicker", "not be negative", flicker)
             return Flame(colors, height, width, intensity, wind, edge, flicker, physics, seed)
         }
 
@@ -595,8 +612,8 @@ public abstract class ConditionalEffect internal constructor() {
             tint: Color? = null,
             dim: Float = 0f,
         ): ConditionalEffect {
-            require(amount in 0f..1f) { "amount must be between 0 and 1" }
-            require(dim in 0f..1f) { "dim must be between 0 and 1" }
+            requireArg(amount in 0f..1f, "amount", "be between 0 and 1", amount)
+            requireArg(dim in 0f..1f, "dim", "be between 0 and 1", dim)
             return Grayscale(amount, tint, dim)
         }
 
@@ -634,11 +651,11 @@ public abstract class ConditionalEffect internal constructor() {
             breathe: Dp = 0.dp,
             period: Duration = 1500.milliseconds,
         ): ConditionalEffect {
-            require(padding >= 0.dp) { "padding must not be negative" }
-            require(softness >= 0.dp) { "softness must not be negative" }
-            require(ring >= 0.dp) { "ring must not be negative" }
-            require(breathe >= 0.dp) { "breathe must not be negative" }
-            require(period.isPositive()) { "period must be positive" }
+            requireArg(padding >= 0.dp, "padding", "not be negative", padding)
+            requireArg(softness >= 0.dp, "softness", "not be negative", softness)
+            requireArg(ring >= 0.dp, "ring", "not be negative", ring)
+            requireArg(breathe >= 0.dp, "breathe", "not be negative", breathe)
+            requireArg(period.isPositive(), "period", "be positive", period)
             return Spotlight(color, shape, padding, softness, ring, ringColor, breathe, period)
         }
 
@@ -677,10 +694,10 @@ public abstract class ConditionalEffect internal constructor() {
             pause: Duration = 400.milliseconds,
             blendMode: BlendMode = BlendMode.SrcAtop,
         ): ConditionalEffect {
-            require(duration.isPositive()) { "duration must be positive" }
-            require(bandWidth > 0f && bandWidth.isFinite()) { "bandWidth must be positive" }
-            require(softness > 0f && softness <= 1f) { "softness must be above 0 and at most 1" }
-            require(!pause.isNegative()) { "pause must not be negative" }
+            requireArg(duration.isPositive(), "duration", "be positive", duration)
+            requireArg(bandWidth > 0f && bandWidth.isFinite(), "bandWidth", "be positive", bandWidth)
+            requireArg(softness > 0f && softness <= 1f, "softness", "be above 0 and at most 1", softness)
+            requireArg(!pause.isNegative(), "pause", "not be negative", pause)
             return Shimmer(color, angle, duration, bandWidth, softness, pause, blendMode)
         }
 
@@ -701,9 +718,9 @@ public abstract class ConditionalEffect internal constructor() {
             float: Dp = 0.dp,
             duration: Duration = 3.seconds,
         ): ConditionalEffect {
-            require(scale >= 1f && scale.isFinite()) { "scale must be at least 1" }
-            require(float >= 0.dp) { "float must not be negative" }
-            require(duration.isPositive()) { "duration must be positive" }
+            requireArg(scale >= 1f && scale.isFinite(), "scale", "be at least 1", scale)
+            requireArg(float >= 0.dp, "float", "not be negative", float)
+            requireArg(duration.isPositive(), "duration", "be positive", duration)
             return Breathe(scale, float, duration)
         }
 
@@ -731,10 +748,10 @@ public abstract class ConditionalEffect internal constructor() {
             duration: Duration = 1600.milliseconds,
             width: Dp = 2.dp,
         ): ConditionalEffect {
-            require(rings in 1..MAX_PING_RINGS) { "rings must be between 1 and $MAX_PING_RINGS" }
-            require(scale > 1f && scale.isFinite()) { "scale must be above 1" }
-            require(duration.isPositive()) { "duration must be positive" }
-            require(width > 0.dp) { "width must be positive" }
+            requireArg(rings in 1..MAX_PING_RINGS, "rings", "be between 1 and $MAX_PING_RINGS", rings)
+            requireArg(scale > 1f && scale.isFinite(), "scale", "be above 1", scale)
+            requireArg(duration.isPositive(), "duration", "be positive", duration)
+            requireArg(width > 0.dp, "width", "be positive", width)
             return Ping(color, shape, rings, scale, duration, width)
         }
 
@@ -764,9 +781,9 @@ public abstract class ConditionalEffect internal constructor() {
             physics: ParticlePhysics = ParticlePhysics.Default,
             seed: Int = 0,
         ): ConditionalEffect {
-            require(colors.isNotEmpty()) { "colors must not be empty" }
-            require(density > 0f && density.isFinite()) { "density must be positive" }
-            require(size > 0.dp) { "size must be positive" }
+            requireArg(colors.isNotEmpty(), "colors", "not be empty", colors)
+            requireArg(density > 0f && density.isFinite(), "density", "be positive", density)
+            requireArg(size > 0.dp, "size", "be positive", size)
             return ConfettiRain(colors, density, size, physics, seed)
         }
     }
@@ -791,9 +808,10 @@ public abstract class ConditionalEffect internal constructor() {
         val breathe: Float,
         val period: Duration,
         val brighten: Float,
+        val fromContent: Boolean = false,
     ) : ConditionalEffect() {
         override fun createRunner(): ConditionalRunner =
-            ConditionalGlowRunner(color, radius, shape, strength, breathe, period, brighten)
+            ConditionalGlowRunner(color, radius, shape, strength, breathe, period, brighten, fromContent)
     }
 
     internal data class PushDown(

@@ -25,7 +25,7 @@ internal fun shimmerProgress(
 
 /** Draws the shimmer band at [progress], or an even wash when it is still, over the pixels already drawn. */
 internal fun DrawScope.drawShimmer(
-    stops: Array<Pair<Float, Color>>,
+    shine: ShineBrush,
     angle: Float,
     progress: Float?,
     alpha: Float,
@@ -34,7 +34,7 @@ internal fun DrawScope.drawShimmer(
 ) {
     if (alpha <= 0f) return
     if (progress == null) return
-    drawShine(stops, angle, progress, alpha, bandFraction, blendMode = blendMode)
+    drawShine(shine, angle, progress, alpha, bandFraction, blendMode = blendMode)
 }
 
 /**
@@ -50,10 +50,10 @@ internal class ShimmerRunner(
     softness: Float,
     private val blendMode: BlendMode,
 ) : FadingLoopRunner(fadeMillis = FADE_MILLIS) {
-    private val stops = shineStops(color, softness, peak = 1f)
+    private val shine = ShineBrush(shineStops(color, softness, peak = 1f))
     private val wash = color.copy(alpha = color.alpha * WASH_SHARE)
 
-    override val needsLayer: Boolean get() = true
+    override val needsLayer: Boolean get() = strength > 0f
 
     override fun DrawScope.configureLayer(layer: GraphicsLayer) {
         layer.compositingStrategy =
@@ -67,7 +67,7 @@ internal class ShimmerRunner(
         if (isReduced) {
             drawRect(wash, alpha = s, blendMode = blendMode)
         } else {
-            drawShimmer(stops, angle, shimmerProgress(time, sweep, pause), s, bandFraction, blendMode)
+            drawShimmer(shine, angle, shimmerProgress(time, sweep, pause), s, bandFraction, blendMode)
         }
     }
 

@@ -8,6 +8,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jantursky.kapow.internal.requireArg
 
 /** The built-in particle shapes. */
 public enum class ParticleShape { Circle, Square, Star, Heart, Sparkle }
@@ -46,7 +47,7 @@ public sealed class ParticleContent {
             colors: List<Color> = DefaultColors,
             size: Dp = 14.dp,
         ): ParticleContent {
-            require(colors.isNotEmpty()) { "colors must not be empty" }
+            requireArg(colors.isNotEmpty(), "colors", "not be empty", colors)
             return Shape(shape, colors, size)
         }
 

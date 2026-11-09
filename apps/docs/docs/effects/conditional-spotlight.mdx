@@ -62,7 +62,7 @@ The dim comes and goes at once, without the fade.
 - The dim fades in and out over 0.3 s.
 - The scrim is drawn by the element itself, far past its bounds. It covers what was drawn before the element. Anything drawn after it stays on top: later siblings, and later siblings of its parents. Give the element, or the parent that holds it, a higher `Modifier.zIndex` where that matters. A tooltip that should stay readable can sit above it the same way.
 - A parent that clips its children, such as a card with `clip`, a scrolling list or a dialog, cuts the scrim off at its own bounds. For a full-screen dim, keep the path from the element to the screen free of clipping, or draw your own scrim.
-- Near the element, the soft edge is a blurred cut-out where the platform can blur (all Skia targets and Android 12 and later). On Android below 12 it is 16 stacked rings, which can show faint steps on a wide soft edge.
+- Near the element, the soft edge is a blurred cut-out where the platform can blur (all Skia targets and Android 12 and later). Before Android 12 it is 16 stacked rings, which can show faint steps on a wide soft edge.
 - The spotlight does not block input. Taps on dimmed content still reach it.
 
 ## Live example

@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
+import com.jantursky.kapow.internal.requireArg
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -22,8 +23,8 @@ public class StarShape(
     public val innerRatio: Float = 0.5f,
 ) : Shape {
     init {
-        require(points >= 3) { "points must be at least 3" }
-        require(innerRatio > 0f && innerRatio <= 1f) { "innerRatio must be in (0, 1]" }
+        requireArg(points >= 3, "points", "be at least 3", points)
+        requireArg(innerRatio > 0f && innerRatio <= 1f, "innerRatio", "be in (0, 1]", innerRatio)
     }
 
     override fun createOutline(

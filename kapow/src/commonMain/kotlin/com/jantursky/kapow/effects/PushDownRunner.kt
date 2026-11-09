@@ -34,7 +34,7 @@ internal class PushDownRunner(
     private var reduced = false
     private var job: Job? = null
 
-    override val needsLayer: Boolean get() = true
+    override val needsLayer: Boolean get() = press.value != 0f
 
     override fun DrawScope.configureLayer(layer: GraphicsLayer) {
         val p = press.value

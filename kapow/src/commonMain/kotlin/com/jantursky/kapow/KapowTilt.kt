@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.internal.requireArg
 import com.jantursky.kapow.tilt.TiltAngles
 import com.jantursky.kapow.tilt.sheenCenter
 import com.jantursky.kapow.tilt.tiltAngles
@@ -71,9 +72,9 @@ public fun Modifier.kapowTilt(
     perspective: Dp = 8.dp,
     damping: Float = 0.6f,
 ): Modifier {
-    require(maxAngle >= 0f && maxAngle.isFinite()) { "maxAngle must not be negative" }
-    require(perspective.value > 0f && perspective.value.isFinite()) { "perspective must be positive" }
-    require(damping > 0f && damping.isFinite()) { "damping must be positive" }
+    requireArg(maxAngle >= 0f && maxAngle.isFinite(), "maxAngle", "not be negative", maxAngle)
+    requireArg(perspective.value > 0f && perspective.value.isFinite(), "perspective", "be positive", perspective)
+    requireArg(damping > 0f && damping.isFinite(), "damping", "be positive", damping)
     return this then TiltElement(maxAngle, sheen, enabled, perspective, damping)
 }
 

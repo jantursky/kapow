@@ -44,7 +44,7 @@ internal class BreatheRunner(
     private val clock = LoopClock()
     private var job: Job? = null
 
-    override val needsLayer: Boolean get() = true
+    override val needsLayer: Boolean get() = amount.value > 0f
 
     override fun DrawScope.configureLayer(layer: GraphicsLayer) {
         val k = amount.value

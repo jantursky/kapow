@@ -66,7 +66,7 @@ internal class ColorFlashRunner(
     private val strength: Float
         get() = if (progress.value < 1f) flashStrength(strobeProgress(progress.value, activeStrobes)) * peak else 0f
 
-    override val needsLayer: Boolean get() = true
+    override val needsLayer: Boolean get() = progress.value < 1f
 
     override fun DrawScope.configureLayer(layer: GraphicsLayer) {
         // SrcAtop needs the element's pixels in a buffer of their own, but only while the flash shows.

@@ -14,6 +14,7 @@ import com.jantursky.kapow.particles.ParticleBatch
 import com.jantursky.kapow.particles.ParticlePainter
 import com.jantursky.kapow.particles.ParticleSystem
 import com.jantursky.kapow.particles.Spread
+import com.jantursky.kapow.particles.painterOf
 import com.jantursky.kapow.particles.shapePainter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
@@ -68,7 +69,7 @@ internal fun sparklePainter(
                 sizePx * 0.7f,
             )
         }
-    return ParticlePainter { i, alpha ->
+    return painterOf(sizePx) { i, alpha ->
         drawCircle(glows[i % glows.size], sizePx * 0.7f, Offset.Zero, alpha)
         with(star) { drawParticle(i, alpha) }
     }

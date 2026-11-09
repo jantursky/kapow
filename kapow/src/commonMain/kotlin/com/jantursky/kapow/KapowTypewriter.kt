@@ -26,6 +26,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.internal.requireArg
 import com.jantursky.kapow.text.cursorVisible
 import com.jantursky.kapow.text.isScrambled
 import com.jantursky.kapow.text.scrambleGlyph
@@ -85,8 +86,8 @@ public class TypewriterCursor internal constructor(
             blink: Duration = 530.milliseconds,
             hideWhenDone: Boolean = false,
         ): TypewriterCursor {
-            require(width.value > 0f) { "width must be positive" }
-            require(blink.isPositive()) { "blink must be positive" }
+            requireArg(width.value > 0f, "width", "be positive", width)
+            requireArg(blink.isPositive(), "blink", "be positive", blink)
             return TypewriterCursor(color, width, blink, hideWhenDone)
         }
     }
@@ -133,11 +134,11 @@ public fun KapowTypewriter(
     seed: Int = 0,
     announce: KapowAnnounce = KapowAnnounce.Off,
 ) {
-    require(charsPerSecond > 0f && charsPerSecond.isFinite()) { "charsPerSecond must be positive" }
-    require(!startDelay.isNegative()) { "startDelay must not be negative" }
-    require(!punctuationPause.isNegative()) { "punctuationPause must not be negative" }
-    require(glyphs.isNotEmpty()) { "glyphs must not be empty" }
-    require(glyphRate.isPositive()) { "glyphRate must be positive" }
+    requireArg(charsPerSecond > 0f && charsPerSecond.isFinite(), "charsPerSecond", "be positive", charsPerSecond)
+    requireArg(!startDelay.isNegative(), "startDelay", "not be negative", startDelay)
+    requireArg(!punctuationPause.isNegative(), "punctuationPause", "not be negative", punctuationPause)
+    requireArg(glyphs.isNotEmpty(), "glyphs", "not be empty", glyphs)
+    requireArg(glyphRate.isPositive(), "glyphRate", "be positive", glyphRate)
     val measurer = rememberTextMeasurer(cacheSize = 64)
     val reduced = isReducedMotion()
     val measured = remember { MeasuredText() }

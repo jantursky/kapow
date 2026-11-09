@@ -99,7 +99,7 @@ internal class ConfettiPopRunner(
     private var flashJob: Job? = null
     private var seed = firstSeed
 
-    override val needsLayer: Boolean get() = true
+    override val needsLayer: Boolean get() = flash.isVisible
 
     override fun DrawScope.configureLayer(layer: GraphicsLayer) {
         layer.compositingStrategy = flash.compositingStrategy

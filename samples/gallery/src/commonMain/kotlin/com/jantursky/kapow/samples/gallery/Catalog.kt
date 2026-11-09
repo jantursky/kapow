@@ -501,6 +501,13 @@ val entries: List<Entry> =
             Example("ClippedRowExample.kt") { ClippedRowDemo() },
         ),
         Entry(
+            "more-scrolling-hearts",
+            Group.More,
+            "Scrolling particles",
+            "Particles stay with their row while a list scrolls.",
+            Example("ScrollingHeartsExample.kt") { ScrollingHeartsDemo() },
+        ),
+        Entry(
             "more-hinge",
             Group.More,
             "Hinge",

@@ -21,6 +21,19 @@ Particles are simulated in flat `FloatArray`s with a fixed capacity per emission
 
 The loop that steps and draws particles stops when no particle is alive. A [particle layer](/guides/particle-layer) or an element with nothing in flight asks for no frames.
 
+## No layer at rest
+
+An effect records its element into a graphics layer only while it needs one: while it plays, while a flash is visible, or while its condition holds. When it finishes the layer is released and the element draws directly.
+
+This matters in lists. A test composes a `LazyColumn` of 100 rows, each with a `changeEffect` at rest, and counts layer recordings over 60 forced redraws:
+
+| | Layer recordings |
+| --- | --- |
+| Before 1.5.0 (every row recorded a layer on every draw) | 6,000 (100 rows x 60 draws) |
+| From 1.5.0 | 0 |
+
+The "before" figure follows from the old rule that those runners always asked for a layer. It is not a separate measurement. The "from 1.5.0" figure is asserted by `LazyListIdleCostTest`. Transitions still keep their layer, because they hide and show the element.
+
 ## No shaders
 
 Kapow v1 uses no SkSL or AGSL. Masks are drawn with an offscreen layer and a blend mode, which works on every target including Android API 23. Blurred halos use the platform blur where it exists (all Skia targets, Android 12 and later) and stacked outlines elsewhere.

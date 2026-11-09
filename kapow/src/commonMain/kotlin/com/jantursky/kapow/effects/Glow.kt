@@ -52,6 +52,7 @@ internal abstract class GlowRunnerBase(
     private val limit: Float = MAX_HALO,
     private val inner: InnerGlow? = null,
     private val brightening: Float = BRIGHTENING,
+    private val fromContent: Boolean = false,
 ) : EffectRunner() {
     private val halo = Halo(color, radius, shape, limit = limit)
     private var graphics: GraphicsContext? = null
@@ -66,30 +67,48 @@ internal abstract class GlowRunnerBase(
     }
 
     private fun ContentDrawScope.drawHaloAndContent(amount: Float) {
+        val graphics = graphics
+        if (fromContent && graphics != null && amount > 0f && halo.canFollowContent) {
+            // The element is recorded once, and the halo is made from copies of that recording.
+            val layer = contentLayer(graphics)
+            val brighten = min(amount, limit) / limit * brightening
+            layer.record {
+                this@drawHaloAndContent.drawContent()
+                if (brighten > 0f) drawRect(Color.White, alpha = brighten, blendMode = BlendMode.SrcAtop)
+            }
+            if (offset == DpOffset.Zero) {
+                halo.drawFromContent(this, amount, layer)
+            } else {
+                translate(offset.x.toPx(), offset.y.toPx()) { halo.drawFromContent(this, amount, layer) }
+            }
+            drawLayer(layer)
+            return
+        }
         if (offset == DpOffset.Zero) {
             halo.draw(this, amount)
         } else {
             translate(offset.x.toPx(), offset.y.toPx()) { halo.draw(this, amount) }
         }
         val brighten = min(amount, limit) / limit * brightening
-        val graphics = graphics
         if (brighten <= 0f || graphics == null) {
             drawContent()
             return
         }
         // Brightening only the element's own pixels needs them in a buffer of their own. It is a separate layer so
         // the halo, which reaches outside the element, isn't clipped to it.
-        val layer =
-            content ?: graphics.createGraphicsLayer().also {
-                it.compositingStrategy = androidx.compose.ui.graphics.layer.CompositingStrategy.Offscreen
-                content = it
-            }
+        val layer = contentLayer(graphics)
         layer.record {
             this@drawHaloAndContent.drawContent()
             drawRect(Color.White, alpha = brighten, blendMode = BlendMode.SrcAtop)
         }
         drawLayer(layer)
     }
+
+    private fun contentLayer(graphics: GraphicsContext): GraphicsLayer =
+        content ?: graphics.createGraphicsLayer().also {
+            it.compositingStrategy = androidx.compose.ui.graphics.layer.CompositingStrategy.Offscreen
+            content = it
+        }
 
     override fun attach(context: EffectContext) {
         graphics = context.graphicsContext
@@ -114,6 +133,7 @@ internal class GlowRunner(
     private val flare: Duration? = null,
     private val decay: Duration? = null,
     private val stackLimit: Float = MAX_HALO,
+    fromContent: Boolean = false,
 ) : ChangeRunner() {
     private val shown = if (intensity == 1f) color else color.copy(alpha = color.alpha * intensity)
     private val base =
@@ -124,6 +144,7 @@ internal class GlowRunner(
             offset,
             stackLimit,
             if (innerGlow > 0f) InnerGlow(shown, radius + spread, shape, innerGlow, stackLimit) else null,
+            fromContent = fromContent,
         ) {
             override val amount: Float get() = glow.value.coerceAtLeast(0f) * SPRING_GAIN
         }
@@ -203,12 +224,13 @@ internal class ConditionalGlowRunner(
     private val breathe: Float = 0f,
     private val period: Duration = 2.seconds,
     brighten: Float = BRIGHTENING,
+    fromContent: Boolean = false,
 ) : ConditionalRunner() {
     private val strength = Animatable(0f)
     private var clock by mutableDoubleStateOf(0.0)
     private var clockJob: Job? = null
     private val base =
-        object : GlowRunnerBase(color, radius, shape, brightening = brighten) {
+        object : GlowRunnerBase(color, radius, shape, brightening = brighten, fromContent = fromContent) {
             override val amount: Float
                 get() =
                     if (breathe > 0f) {

@@ -55,7 +55,10 @@ internal class GrayscaleRunner(
     private var filter: ColorFilter? = null
     private var filtered = 1f
 
-    override val needsLayer: Boolean get() = true
+    private val idle: Boolean
+        get() = if (tint == null && dim <= 0f) grayscaleSaturation(amount, strength) >= 1f else strength <= 0f
+
+    override val needsLayer: Boolean get() = !idle
 
     override fun DrawScope.configureLayer(layer: GraphicsLayer) {
         val saturation = grayscaleSaturation(amount, strength)

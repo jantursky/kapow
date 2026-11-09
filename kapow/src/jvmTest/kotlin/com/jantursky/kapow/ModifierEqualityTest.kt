@@ -35,6 +35,19 @@ class ModifierEqualityTest {
     }
 
     @Test
+    fun theFromContentOptionTakesPartInEquality() {
+        assertEquals(ChangeEffect.glow(fromContent = true), ChangeEffect.glow(fromContent = true))
+        assertNotEquals(ChangeEffect.glow(fromContent = true), ChangeEffect.glow())
+        assertEquals(ChangeEffect.glow(), ChangeEffect.glow(fromContent = false))
+        assertNotEquals(ConditionalEffect.glow(fromContent = true), ConditionalEffect.glow())
+        assertNotEquals(ProgressEffect.glow(fromContent = true), ProgressEffect.glow())
+        assertNotEquals(
+            Modifier.changeEffect(1, ChangeEffect.glow(fromContent = true)),
+            Modifier.changeEffect(1, ChangeEffect.glow()),
+        )
+    }
+
+    @Test
     fun transitionsCompareByKindAndDuration() {
         assertEquals(KapowEnter.iris(), KapowEnter.iris())
         assertEquals(KapowEnter.iris().hashCode(), KapowEnter.iris().hashCode())

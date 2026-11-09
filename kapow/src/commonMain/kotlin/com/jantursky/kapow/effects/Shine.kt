@@ -13,6 +13,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.layer.CompositingStrategy
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import com.jantursky.kapow.internal.ChangeRunner
@@ -23,7 +25,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.abs
+import kotlin.math.atan2
 import kotlin.math.cos
+import kotlin.math.hypot
 import kotlin.math.sin
 import kotlin.time.Duration
 
@@ -82,9 +86,64 @@ internal fun shineStops(
     }
 }
 
+/** How many shine gradients have been built, for tests. */
+internal var shineBrushCreations: Int = 0
+
+/**
+ * The band's gradient, built once for [stops] along a unit axis from (0, 0) to (1, 0). [drawBand] moves a canvas
+ * so that axis lies on the band, so a sweep needs no new gradient for each frame.
+ */
+internal class ShineBrush(
+    private val stops: Array<Pair<Float, Color>>,
+) {
+    private var built: Brush? = null
+
+    val brush: Brush
+        get() =
+            built ?: Brush.linearGradient(*stops, start = Offset.Zero, end = Offset(1f, 0f)).also {
+                shineBrushCreations++
+                built = it
+            }
+}
+
+/**
+ * Fills the element with the band that runs from [start] to [end], over its own pixels only. The gradient colors
+ * come from the unit gradient of [shine]; the canvas is moved, turned and scaled so its x axis runs from [start]
+ * to [end], and the element's rectangle is cut out of it, so only the points change from frame to frame.
+ */
+internal fun DrawScope.drawBand(
+    shine: ShineBrush,
+    start: Offset,
+    end: Offset,
+    alpha: Float = 1f,
+    blendMode: BlendMode = BlendMode.SrcAtop,
+) {
+    val dx = end.x - start.x
+    val dy = end.y - start.y
+    val length = hypot(dx, dy)
+    if (length <= 0f) return
+    // Every point of the element is within this many band lengths of the band's start.
+    val reach = 2f * (size.width + size.height + length) / length
+    clipRect(0f, 0f, size.width, size.height) {
+        withTransform({
+            translate(start.x, start.y)
+            rotate(atan2(dy, dx) * 180f / PI.toFloat(), Offset.Zero)
+            scale(length, length, Offset.Zero)
+        }) {
+            drawRect(
+                shine.brush,
+                topLeft = Offset(-reach, -reach),
+                size = Size(2f * reach, 2f * reach),
+                alpha = alpha,
+                blendMode = blendMode,
+            )
+        }
+    }
+}
+
 /** Draws the band over the element's own pixels only. The caller keeps the layer offscreen while it draws. */
 internal fun DrawScope.drawShine(
-    stops: Array<Pair<Float, Color>>,
+    shine: ShineBrush,
     angle: Float,
     progress: Float,
     alpha: Float = 1f,
@@ -97,7 +156,7 @@ internal fun DrawScope.drawShine(
     for (i in 0 until bands) {
         val lag = if (i == 0) 0f else shineLag(size, angle, bandFraction, spacing, i)
         val (start, end) = shineBand(size, angle, progress, bandFraction, lag, extra)
-        drawRect(Brush.linearGradient(*stops, start = start, end = end), alpha = alpha, blendMode = blendMode)
+        drawBand(shine, start, end, alpha, blendMode)
     }
 }
 
@@ -116,11 +175,12 @@ internal class ShineRunner(
 ) : ChangeRunner() {
     private val sweepAngle = if (reverse) angle + 180f else angle
     private val stops = shineStops(color, softness, peak)
+    private val shine = ShineBrush(stops)
     private val sweep = Animatable(0f)
     private val flash = Animatable(0f)
     private var job: Job? = null
 
-    override val needsLayer: Boolean get() = true
+    override val needsLayer: Boolean get() = sweep.isRunning || flash.value > 0f
 
     override fun DrawScope.configureLayer(layer: GraphicsLayer) {
         // SrcAtop needs the element's pixels in their own buffer; only pay for it while something is drawn.
@@ -132,7 +192,7 @@ internal class ShineRunner(
         drawContent()
         if (sweep.isRunning) {
             val t = sweep.value
-            drawShine(stops, sweepAngle, t, 1f - t.pow8(), bandFraction, bands, spacing, blendMode)
+            drawShine(shine, sweepAngle, t, 1f - t.pow8(), bandFraction, bands, spacing, blendMode)
         }
         val f = flash.value
         if (f > 0f) drawRect(stops[stops.size / 2].second, alpha = f, blendMode = BlendMode.SrcAtop)

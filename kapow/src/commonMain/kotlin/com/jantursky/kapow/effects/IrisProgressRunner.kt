@@ -39,7 +39,7 @@ internal class IrisProgressRunner(
     private val shape: Shape? = null,
     private val invert: Boolean = false,
 ) : ProgressRunner() {
-    override val needsLayer: Boolean get() = true
+    override val needsLayer: Boolean get() = progress().let { it > 0f && it < 1f }
 
     override fun DrawScope.configureLayer(layer: GraphicsLayer) {
         val p = progress()

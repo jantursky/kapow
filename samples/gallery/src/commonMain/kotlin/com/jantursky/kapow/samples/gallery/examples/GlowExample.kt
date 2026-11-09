@@ -25,12 +25,22 @@ fun GlowExample(
     shape: Shape,
     spread: Dp = 0.dp,
     innerGlow: Float = 0f,
+    fromContent: Boolean = false,
 ) {
     Box(
         Modifier
             .size(width = 220.dp, height = 120.dp)
-            .changeEffect(count, ChangeEffect.glow(color, radius, shape, spread = spread, innerGlow = innerGlow))
-            .clip(shape)
+            .changeEffect(
+                count,
+                ChangeEffect.glow(
+                    color,
+                    radius,
+                    shape,
+                    spread = spread,
+                    innerGlow = innerGlow,
+                    fromContent = fromContent,
+                ),
+            ).clip(shape)
             .background(KapowTheme.colors.panel),
         contentAlignment = Alignment.Center,
     ) {

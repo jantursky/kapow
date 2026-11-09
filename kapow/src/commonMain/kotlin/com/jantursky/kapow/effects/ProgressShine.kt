@@ -70,9 +70,9 @@ internal class ShineProgressRunner(
     private val bandSpacing: Float = 0.3f,
     private val blendMode: BlendMode = BlendMode.SrcAtop,
 ) : ProgressRunner() {
-    private val stops = progressShineStops(color, softness)
+    private val shine = ShineBrush(progressShineStops(color, softness))
 
-    override val needsLayer: Boolean get() = true
+    override val needsLayer: Boolean get() = progress().let { it > 0f && it < 1f }
 
     override fun DrawScope.configureLayer(layer: GraphicsLayer) {
         layer.compositingStrategy = CompositingStrategy.Offscreen
@@ -84,7 +84,7 @@ internal class ShineProgressRunner(
         if (t <= 0f || t >= 1f) return
         for (i in 0 until bands) {
             val (start, end) = progressShineBand(size, angle, t, bandWidth, bandSpacing, i, bands)
-            drawRect(Brush.linearGradient(*stops, start = start, end = end), blendMode = blendMode)
+            drawBand(shine, start, end, blendMode = blendMode)
         }
     }
 }

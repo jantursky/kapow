@@ -21,8 +21,9 @@ import com.jantursky.kapow.particles.ParticleHost
  * (lists, cards, scrolling containers) don't cut them off. Put it high in the tree, around a screen or the whole
  * app. Without one, particles draw around the element that emits them.
  *
- * Particles start where the element was when the effect fired. If the element moves or scrolls afterwards, the
- * particles already in flight stay where they are.
+ * Particles start at the element and move with it: if the element scrolls or moves while they are in flight, they
+ * keep their place relative to it. When the element leaves the tree, or a lazy list reuses it for another item,
+ * the particles stay where they were and finish there.
  */
 @Composable
 public fun KapowParticleLayer(
@@ -44,7 +45,14 @@ private class HostState : ParticleHost {
     ): Boolean {
         val node = node ?: return false
         val coordinates = node.coordinates?.takeIf { it.isAttached && emitter.isAttached } ?: return false
-        batch.origin += coordinates.localPositionOf(emitter)
+        // The origin arrives in the emitter's coordinates. It is worked out again on each draw, so the particles
+        // follow the emitter as it moves or scrolls, and stay where they were once it is gone.
+        val local = batch.origin
+        batch.origin = coordinates.localPositionOf(emitter, local)
+        batch.follow = {
+            val layer = node.coordinates
+            if (layer != null && layer.isAttached && emitter.isAttached) layer.localPositionOf(emitter, local) else null
+        }
         node.field.add(batch, node.coroutineScope)
         return true
     }

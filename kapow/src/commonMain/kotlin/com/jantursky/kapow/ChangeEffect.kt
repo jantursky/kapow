@@ -36,6 +36,7 @@ import com.jantursky.kapow.effects.StampRunner
 import com.jantursky.kapow.effects.StrikeRunner
 import com.jantursky.kapow.effects.TraceRunner
 import com.jantursky.kapow.internal.ChangeRunner
+import com.jantursky.kapow.internal.requireArg
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -57,7 +58,7 @@ public abstract class ChangeEffect internal constructor() {
 
     /** Plays this effect [delay] after the change instead of right away. */
     public fun delay(delay: Duration): ChangeEffect {
-        require(!delay.isNegative()) { "delay must not be negative" }
+        requireArg(!delay.isNegative(), "delay", "not be negative", delay)
         return Delayed(this, delay)
     }
 
@@ -66,7 +67,7 @@ public abstract class ChangeEffect internal constructor() {
      * own cooldown (which is none for most effects).
      */
     public fun cooldown(cooldown: Duration): ChangeEffect {
-        require(!cooldown.isNegative()) { "cooldown must not be negative" }
+        requireArg(!cooldown.isNegative(), "cooldown", "not be negative", cooldown)
         return tuned().copy(customCooldown = cooldown)
     }
 
@@ -78,14 +79,14 @@ public abstract class ChangeEffect internal constructor() {
         count: Int,
         gap: Duration = Duration.ZERO,
     ): ChangeEffect {
-        require(count > 0) { "count must be positive" }
-        require(!gap.isNegative()) { "gap must not be negative" }
+        requireArg(count > 0, "count", "be positive", count)
+        requireArg(!gap.isNegative(), "gap", "not be negative", gap)
         return tuned().copy(times = count, gap = gap)
     }
 
     /** Plays the effect at [multiplier] times the pace: 2 takes half as long, 0.5 twice as long. */
     public fun speed(multiplier: Float): ChangeEffect {
-        require(multiplier > 0f && multiplier.isFinite()) { "multiplier must be positive" }
+        requireArg(multiplier > 0f && multiplier.isFinite(), "multiplier", "be positive", multiplier)
         val tuned = tuned()
         return tuned.copy(speed = tuned.speed * multiplier)
     }
@@ -117,7 +118,7 @@ public abstract class ChangeEffect internal constructor() {
             rotation: ClosedFloatingPointRange<Float> = -30f..30f,
             seed: Int = 0,
         ): ChangeEffect {
-            require(count > 0) { "count must be positive" }
+            requireArg(count > 0, "count", "be positive", count)
             return Spray(particles, count, physics, origin, rotation, seed)
         }
 
@@ -159,11 +160,11 @@ public abstract class ChangeEffect internal constructor() {
             label: ((Any?) -> String)? = null,
             anchor: TransformOrigin = TransformOrigin(0.5f, 0f),
         ): ChangeEffect {
-            require(distance == Dp.Unspecified || distance > 0.dp) { "distance must be positive" }
-            require(duration.isPositive()) { "duration must be positive" }
-            require(wobble >= 0.dp) { "wobble must not be negative" }
-            require(scaleIn in 0f..1f) { "scaleIn must be between 0 and 1" }
-            require(scaleOut >= 0f) { "scaleOut must not be negative" }
+            requireArg(distance == Dp.Unspecified || distance > 0.dp, "distance", "be positive", distance)
+            requireArg(duration.isPositive(), "duration", "be positive", duration)
+            requireArg(wobble >= 0.dp, "wobble", "not be negative", wobble)
+            requireArg(scaleIn in 0f..1f, "scaleIn", "be between 0 and 1", scaleIn)
+            requireArg(scaleOut >= 0f, "scaleOut", "not be negative", scaleOut)
             return Rise(
                 particles,
                 distance,
@@ -213,12 +214,12 @@ public abstract class ChangeEffect internal constructor() {
             bandSpacing: Float = 1.5f,
             reverse: Boolean = false,
         ): ChangeEffect {
-            require(duration.isPositive()) { "duration must be positive" }
-            require(bandWidth > 0f && bandWidth.isFinite()) { "bandWidth must be positive" }
-            require(softness > 0f && softness <= 1f) { "softness must be above 0 and at most 1" }
-            require(peakAlpha in 0f..1f) { "peakAlpha must be between 0 and 1" }
-            require(bands > 0) { "bands must be positive" }
-            require(bandSpacing >= 0f && bandSpacing.isFinite()) { "bandSpacing must not be negative" }
+            requireArg(duration.isPositive(), "duration", "be positive", duration)
+            requireArg(bandWidth > 0f && bandWidth.isFinite(), "bandWidth", "be positive", bandWidth)
+            requireArg(softness > 0f && softness <= 1f, "softness", "be above 0 and at most 1", softness)
+            requireArg(peakAlpha in 0f..1f, "peakAlpha", "be between 0 and 1", peakAlpha)
+            requireArg(bands > 0, "bands", "be positive", bands)
+            requireArg(bandSpacing >= 0f && bandSpacing.isFinite(), "bandSpacing", "not be negative", bandSpacing)
             return Shine(
                 angle,
                 duration,
@@ -271,11 +272,11 @@ public abstract class ChangeEffect internal constructor() {
             startInset: Dp = 0.dp,
             fade: Easing? = null,
         ): ChangeEffect {
-            require(count > 0) { "count must be positive" }
-            require(reach == Dp.Unspecified || reach >= 0.dp) { "reach must not be negative" }
-            require(duration == null || duration.isPositive()) { "duration must be positive" }
-            require(!interval.isNegative()) { "interval must not be negative" }
-            require(startInset >= 0.dp) { "startInset must not be negative" }
+            requireArg(count > 0, "count", "be positive", count)
+            requireArg(reach == Dp.Unspecified || reach >= 0.dp, "reach", "not be negative", reach)
+            requireArg(duration == null || duration.isPositive(), "duration", "be positive", duration)
+            requireArg(!interval.isNegative(), "interval", "not be negative", interval)
+            requireArg(startInset >= 0.dp, "startInset", "not be negative", startInset)
             return Pulse(shape, color, style, count, brush, reach, duration, interval, easing, startInset, fade)
         }
 
@@ -302,6 +303,9 @@ public abstract class ChangeEffect internal constructor() {
          * @param decay how long the halo takes to fade away once it peaks. See [flare].
          * @param stackLimit how strong quick repeated changes can make the halo, as a multiple of a single one's
          *   (which is 1). With reduced motion the halo is faint and short and does not stack.
+         * @param fromContent shapes the halo after what the element draws, its alpha, instead of after [shape]. A
+         *   round icon in a square then gets a round halo. It records the element into a layer while the halo
+         *   shows. Before Android 12, which cannot blur a layer, the halo falls back to [shape].
          */
         public fun glow(
             color: Color = Color(0xFF6B62F2),
@@ -314,16 +318,45 @@ public abstract class ChangeEffect internal constructor() {
             flare: Duration? = null,
             decay: Duration? = null,
             stackLimit: Float = 1.5f,
+            fromContent: Boolean = false,
         ): ChangeEffect {
-            require(radius >= 0.dp) { "radius must not be negative" }
-            require(intensity in 0f..1f) { "intensity must be between 0 and 1" }
-            require(spread >= 0.dp) { "spread must not be negative" }
-            require(innerGlow in 0f..1f) { "innerGlow must be between 0 and 1" }
-            require(flare == null || flare.isPositive()) { "flare must be positive" }
-            require(decay == null || decay.isPositive()) { "decay must be positive" }
-            require(stackLimit > 0f && stackLimit.isFinite()) { "stackLimit must be positive" }
-            return Glow(color, radius, shape, intensity, spread, offset, innerGlow, flare, decay, stackLimit)
+            requireArg(radius >= 0.dp, "radius", "not be negative", radius)
+            requireArg(intensity in 0f..1f, "intensity", "be between 0 and 1", intensity)
+            requireArg(spread >= 0.dp, "spread", "not be negative", spread)
+            requireArg(innerGlow in 0f..1f, "innerGlow", "be between 0 and 1", innerGlow)
+            requireArg(flare == null || flare.isPositive(), "flare", "be positive", flare)
+            requireArg(decay == null || decay.isPositive(), "decay", "be positive", decay)
+            requireArg(stackLimit > 0f && stackLimit.isFinite(), "stackLimit", "be positive", stackLimit)
+            return Glow(
+                color,
+                radius,
+                shape,
+                intensity,
+                spread,
+                offset,
+                innerGlow,
+                flare,
+                decay,
+                stackLimit,
+                fromContent,
+            )
         }
+
+        // Kept for binaries compiled against 1.4.0.
+        @Deprecated("Use the overload with fromContent.", level = DeprecationLevel.HIDDEN)
+        public fun glow(
+            color: Color = Color(0xFF6B62F2),
+            radius: Dp = 16.dp,
+            shape: Shape = RectangleShape,
+            intensity: Float = 1f,
+            spread: Dp = 0.dp,
+            offset: DpOffset = DpOffset.Zero,
+            innerGlow: Float = 0f,
+            flare: Duration? = null,
+            decay: Duration? = null,
+            stackLimit: Float = 1.5f,
+        ): ChangeEffect =
+            glow(color, radius, shape, intensity, spread, offset, innerGlow, flare, decay, stackLimit, false)
 
         // Kept for binaries compiled against 1.0.0.
         @Deprecated("Use the overload with options.", level = DeprecationLevel.HIDDEN)
@@ -363,11 +396,11 @@ public abstract class ChangeEffect internal constructor() {
             shading: Float = 0.35f,
             overshoot: Float = 0.35f,
         ): ChangeEffect {
-            require(turns == null || turns > 0) { "turns must be positive" }
-            require(duration == null || duration.isPositive()) { "duration must be positive" }
-            require(cameraDistance > 0.dp) { "cameraDistance must be positive" }
-            require(shading in 0f..1f) { "shading must be between 0 and 1" }
-            require(overshoot in 0f..0.95f) { "overshoot must be between 0 and 0.95" }
+            requireArg(turns == null || turns > 0, "turns", "be positive", turns)
+            requireArg(duration == null || duration.isPositive(), "duration", "be positive", duration)
+            requireArg(cameraDistance > 0.dp, "cameraDistance", "be positive", cameraDistance)
+            requireArg(shading in 0f..1f, "shading", "be between 0 and 1", shading)
+            requireArg(overshoot in 0f..0.95f, "overshoot", "be between 0 and 0.95", overshoot)
             return Spin(axis, rate, turns, duration, easing, reverse, pivot, cameraDistance, shading, overshoot)
         }
 
@@ -400,11 +433,11 @@ public abstract class ChangeEffect internal constructor() {
             decay: Float = 1f,
             easing: Easing = LinearEasing,
         ): ChangeEffect {
-            require(distance >= 0.dp && distance.value.isFinite()) { "distance must not be negative" }
-            require(swings in 1..20) { "swings must be from 1 to 20" }
-            require(rotation.isFinite()) { "rotation must be a number" }
-            require(duration.isPositive()) { "duration must be positive" }
-            require(decay >= 0f && decay.isFinite()) { "decay must not be negative" }
+            requireArg(distance >= 0.dp && distance.value.isFinite(), "distance", "not be negative", distance)
+            requireArg(swings in 1..20, "swings", "be from 1 to 20", swings)
+            requireArg(rotation.isFinite(), "rotation", "be a number", rotation)
+            requireArg(duration.isPositive(), "duration", "be positive", duration)
+            requireArg(decay >= 0f && decay.isFinite(), "decay", "not be negative", decay)
             return Shake(axis, distance, swings, rotation, duration, decay, easing)
         }
 
@@ -426,10 +459,10 @@ public abstract class ChangeEffect internal constructor() {
             duration: Duration? = null,
             easing: Easing = LinearEasing,
         ): ChangeEffect {
-            require(height >= 0.dp && height.value.isFinite()) { "height must not be negative" }
-            require(hops in 1..5) { "hops must be from 1 to 5" }
-            require(squash in 0f..1f) { "squash must be between 0 and 1" }
-            require(duration == null || duration.isPositive()) { "duration must be positive" }
+            requireArg(height >= 0.dp && height.value.isFinite(), "height", "not be negative", height)
+            requireArg(hops in 1..5, "hops", "be from 1 to 5", hops)
+            requireArg(squash in 0f..1f, "squash", "be between 0 and 1", squash)
+            requireArg(duration == null || duration.isPositive(), "duration", "be positive", duration)
             return Jump(height, hops, squash, duration ?: (450.milliseconds * hops), easing)
         }
 
@@ -459,13 +492,16 @@ public abstract class ChangeEffect internal constructor() {
             ringSpacing: Float = 0.2f,
             easing: Easing = LinearEasing,
         ): ChangeEffect {
-            require(duration.isPositive()) { "duration must be positive" }
-            require(rings > 0) { "rings must be positive" }
-            require(ringWidth == Dp.Unspecified || ringWidth > 0.dp) { "ringWidth must be positive" }
-            require(maxRadius == Dp.Unspecified || maxRadius > 0.dp) { "maxRadius must be positive" }
-            require(ringSpacing >= 0f && (rings - 1) * ringSpacing < 1f) {
-                "ringSpacing must not be negative and (rings - 1) * ringSpacing must be below 1"
-            }
+            requireArg(duration.isPositive(), "duration", "be positive", duration)
+            requireArg(rings > 0, "rings", "be positive", rings)
+            requireArg(ringWidth == Dp.Unspecified || ringWidth > 0.dp, "ringWidth", "be positive", ringWidth)
+            requireArg(maxRadius == Dp.Unspecified || maxRadius > 0.dp, "maxRadius", "be positive", maxRadius)
+            requireArg(
+                ringSpacing >= 0f && (rings - 1) * ringSpacing < 1f,
+                "ringSpacing",
+                "not be negative and (rings - 1) * ringSpacing must be below 1",
+                ringSpacing,
+            )
             return Ripple(color, shape, origin, duration, rings, ringWidth, maxRadius, ringSpacing, easing)
         }
 
@@ -497,9 +533,9 @@ public abstract class ChangeEffect internal constructor() {
             strobes: Int = 1,
             shape: Shape? = null,
         ): ChangeEffect {
-            require(duration.isPositive()) { "duration must be positive" }
-            require(peak > 0f && peak <= 1f) { "peak must be above 0 and at most 1" }
-            require(strobes > 0) { "strobes must be positive" }
+            requireArg(duration.isPositive(), "duration", "be positive", duration)
+            requireArg(peak > 0f && peak <= 1f, "peak", "be above 0 and at most 1", peak)
+            requireArg(strobes > 0, "strobes", "be positive", strobes)
             return Flash(color, duration, peak, blendMode, strobes, shape)
         }
 
@@ -543,12 +579,12 @@ public abstract class ChangeEffect internal constructor() {
             duration: Duration = 600.milliseconds,
             seed: Int = 0,
         ): ChangeEffect {
-            require(spikes >= 3) { "spikes must be at least 3" }
-            require(sizeScale > 0f && sizeScale.isFinite()) { "sizeScale must be positive" }
-            require(overshoot >= 0f && overshoot.isFinite()) { "overshoot must not be negative" }
-            require(innerRatio in 0f..1f) { "innerRatio must be between 0 and 1" }
-            require(outline >= 0.dp) { "outline must not be negative" }
-            require(duration.isPositive()) { "duration must be positive" }
+            requireArg(spikes >= 3, "spikes", "be at least 3", spikes)
+            requireArg(sizeScale > 0f && sizeScale.isFinite(), "sizeScale", "be positive", sizeScale)
+            requireArg(overshoot >= 0f && overshoot.isFinite(), "overshoot", "not be negative", overshoot)
+            requireArg(innerRatio in 0f..1f, "innerRatio", "be between 0 and 1", innerRatio)
+            requireArg(outline >= 0.dp, "outline", "not be negative", outline)
+            requireArg(duration.isPositive(), "duration", "be positive", duration)
             return Burst(
                 color,
                 spikes,
@@ -601,12 +637,12 @@ public abstract class ChangeEffect internal constructor() {
             easing: Easing = LinearEasing,
             seed: Int = 0,
         ): ChangeEffect {
-            require(count > 0) { "count must be positive" }
-            require(length == Dp.Unspecified || length > 0.dp) { "length must be positive" }
-            require(thickness > 0.dp) { "thickness must be positive" }
-            require(innerRadius >= 0.dp) { "innerRadius must not be negative" }
-            require(taper in 0f..1f) { "taper must be between 0 and 1" }
-            require(duration.isPositive()) { "duration must be positive" }
+            requireArg(count > 0, "count", "be positive", count)
+            requireArg(length == Dp.Unspecified || length > 0.dp, "length", "be positive", length)
+            requireArg(thickness > 0.dp, "thickness", "be positive", thickness)
+            requireArg(innerRadius >= 0.dp, "innerRadius", "not be negative", innerRadius)
+            requireArg(taper in 0f..1f, "taper", "be between 0 and 1", taper)
+            requireArg(duration.isPositive(), "duration", "be positive", duration)
             return SpeedLines(color, count, length, thickness, innerRadius, taper, directions, duration, easing, seed)
         }
 
@@ -642,10 +678,10 @@ public abstract class ChangeEffect internal constructor() {
             shape: ParticleShape = ParticleShape.Sparkle,
             seed: Int = 0,
         ): ChangeEffect {
-            require(count > 0) { "count must be positive" }
-            require(size == Dp.Unspecified || size > 0.dp) { "size must be positive" }
-            require(duration.isPositive()) { "duration must be positive" }
-            require(spread > 0f && spread.isFinite()) { "spread must be positive" }
+            requireArg(count > 0, "count", "be positive", count)
+            requireArg(size == Dp.Unspecified || size > 0.dp, "size", "be positive", size)
+            requireArg(duration.isPositive(), "duration", "be positive", duration)
+            requireArg(spread > 0f && spread.isFinite(), "spread", "be positive", spread)
             return Sparkle(color, count, size, duration, spread, spin, shape, seed)
         }
 
@@ -687,13 +723,13 @@ public abstract class ChangeEffect internal constructor() {
             physics: ParticlePhysics = ParticlePhysics.Default,
             seed: Int = 0,
         ): ChangeEffect {
-            require(colors.isNotEmpty()) { "colors must not be empty" }
-            require(count > 0) { "count must be positive" }
-            require(rocketHeight > 0.dp) { "rocketHeight must be positive" }
-            require(rocketDuration.isPositive()) { "rocketDuration must be positive" }
-            require(burstRadius == Dp.Unspecified || burstRadius > 0.dp) { "burstRadius must be positive" }
-            require(trailLength >= 0f) { "trailLength must not be negative" }
-            require(particleSize > 0.dp) { "particleSize must be positive" }
+            requireArg(colors.isNotEmpty(), "colors", "not be empty", colors)
+            requireArg(count > 0, "count", "be positive", count)
+            requireArg(rocketHeight > 0.dp, "rocketHeight", "be positive", rocketHeight)
+            requireArg(rocketDuration.isPositive(), "rocketDuration", "be positive", rocketDuration)
+            requireArg(burstRadius == Dp.Unspecified || burstRadius > 0.dp, "burstRadius", "be positive", burstRadius)
+            requireArg(trailLength >= 0f, "trailLength", "not be negative", trailLength)
+            requireArg(particleSize > 0.dp, "particleSize", "be positive", particleSize)
             return Fireworks(
                 colors,
                 count,
@@ -738,10 +774,10 @@ public abstract class ChangeEffect internal constructor() {
             origin: TransformOrigin = TransformOrigin.Center,
             seed: Int = 0,
         ): ChangeEffect {
-            require(colors.isNotEmpty()) { "colors must not be empty" }
-            require(count > 0) { "count must be positive" }
-            require(ribbonRatio in 0f..1f) { "ribbonRatio must be between 0 and 1" }
-            require(pieceSize > 0.dp) { "pieceSize must be positive" }
+            requireArg(colors.isNotEmpty(), "colors", "not be empty", colors)
+            requireArg(count > 0, "count", "be positive", count)
+            requireArg(ribbonRatio in 0f..1f, "ribbonRatio", "be between 0 and 1", ribbonRatio)
+            requireArg(pieceSize > 0.dp, "pieceSize", "be positive", pieceSize)
             return ConfettiPop(colors, count, physics, ribbonRatio, pieceSize, origin, seed)
         }
 
@@ -786,10 +822,10 @@ public abstract class ChangeEffect internal constructor() {
             heartSize: Dp = 14.dp,
             origin: TransformOrigin = TransformOrigin.Center,
         ): ChangeEffect {
-            require(count >= 0) { "count must not be negative" }
-            require(bigHeartScale > 0f && bigHeartScale.isFinite()) { "bigHeartScale must be positive" }
-            require(overshoot >= 0f && overshoot.isFinite()) { "overshoot must not be negative" }
-            require(heartSize > 0.dp) { "heartSize must be positive" }
+            requireArg(count >= 0, "count", "not be negative", count)
+            requireArg(bigHeartScale > 0f && bigHeartScale.isFinite(), "bigHeartScale", "be positive", bigHeartScale)
+            requireArg(overshoot >= 0f && overshoot.isFinite(), "overshoot", "not be negative", overshoot)
+            requireArg(heartSize > 0.dp, "heartSize", "be positive", heartSize)
             return Hearts(
                 color,
                 count,
@@ -835,12 +871,12 @@ public abstract class ChangeEffect internal constructor() {
             headGlow: Float = 1f,
             brush: Brush? = null,
         ): ChangeEffect {
-            require(width > 0.dp) { "width must be positive" }
-            require(duration.isPositive()) { "duration must be positive" }
-            require(tail in 0f..1f) { "tail must be between 0 and 1" }
-            require(startAt in 0f..1f) { "startAt must be between 0 and 1" }
-            require(laps > 0) { "laps must be positive" }
-            require(headGlow >= 0f) { "headGlow must not be negative" }
+            requireArg(width > 0.dp, "width", "be positive", width)
+            requireArg(duration.isPositive(), "duration", "be positive", duration)
+            requireArg(tail in 0f..1f, "tail", "be between 0 and 1", tail)
+            requireArg(startAt in 0f..1f, "startAt", "be between 0 and 1", startAt)
+            requireArg(laps > 0, "laps", "be positive", laps)
+            requireArg(headGlow >= 0f, "headGlow", "not be negative", headGlow)
             return Trace(shape, color, width, duration, tail, clockwise, startAt, laps, easing, headGlow, brush)
         }
 
@@ -887,14 +923,14 @@ public abstract class ChangeEffect internal constructor() {
             lineSpacing: Dp = 6.dp,
             brush: Brush? = null,
         ): ChangeEffect {
-            require(width > 0.dp) { "width must be positive" }
-            require(!hold.isNegative()) { "hold must not be negative" }
-            require(drawDuration.isPositive()) { "drawDuration must be positive" }
-            require(offset in -0.5f..0.5f) { "offset must be between -0.5 and 0.5" }
-            require(waveAmplitude >= 0.dp) { "waveAmplitude must not be negative" }
-            require(waveLength > 0.dp) { "waveLength must be positive" }
-            require(lines > 0) { "lines must be positive" }
-            require(lineSpacing >= 0.dp) { "lineSpacing must not be negative" }
+            requireArg(width > 0.dp, "width", "be positive", width)
+            requireArg(!hold.isNegative(), "hold", "not be negative", hold)
+            requireArg(drawDuration.isPositive(), "drawDuration", "be positive", drawDuration)
+            requireArg(offset in -0.5f..0.5f, "offset", "be between -0.5 and 0.5", offset)
+            requireArg(waveAmplitude >= 0.dp, "waveAmplitude", "not be negative", waveAmplitude)
+            requireArg(waveLength > 0.dp, "waveLength", "be positive", waveLength)
+            requireArg(lines > 0, "lines", "be positive", lines)
+            requireArg(lineSpacing >= 0.dp, "lineSpacing", "not be negative", lineSpacing)
             return Strike(
                 color,
                 width,
@@ -951,13 +987,13 @@ public abstract class ChangeEffect internal constructor() {
             origin: TransformOrigin = TransformOrigin.Center,
             seed: Int = 0,
         ): ChangeEffect {
-            require(scale >= 1f) { "scale must be at least 1" }
-            require(duration.isPositive()) { "duration must be positive" }
-            require(squash in 0f..0.5f) { "squash must be between 0 and 0.5" }
-            require(rebound in 0f..1f) { "rebound must be between 0 and 1" }
-            require(dustCount >= 0) { "dustCount must not be negative" }
-            require(dustSize > 0.dp) { "dustSize must be positive" }
-            require(dustSpread >= 0f && dustSpread.isFinite()) { "dustSpread must not be negative" }
+            requireArg(scale >= 1f, "scale", "be at least 1", scale)
+            requireArg(duration.isPositive(), "duration", "be positive", duration)
+            requireArg(squash in 0f..0.5f, "squash", "be between 0 and 0.5", squash)
+            requireArg(rebound in 0f..1f, "rebound", "be between 0 and 1", rebound)
+            requireArg(dustCount >= 0, "dustCount", "not be negative", dustCount)
+            requireArg(dustSize > 0.dp, "dustSize", "be positive", dustSize)
+            requireArg(dustSpread >= 0f && dustSpread.isFinite(), "dustSpread", "not be negative", dustSpread)
             return Stamp(
                 scale,
                 dustColor,
@@ -1004,14 +1040,17 @@ public abstract class ChangeEffect internal constructor() {
             jitterRate: Float = 20f,
             seed: Int = 0,
         ): ChangeEffect {
-            require(duration.isPositive()) { "duration must be positive" }
-            require(offset >= 0.dp) { "offset must not be negative" }
-            require(sliceHeight.start > 0f && sliceHeight.endInclusive <= 1f) {
-                "sliceHeight must be above 0 and at most 1"
-            }
-            require(channelColors.size == 3) { "channelColors must have three colors" }
-            require(jumpChance in 0f..1f) { "jumpChance must be between 0 and 1" }
-            require(jitterRate > 0f && jitterRate.isFinite()) { "jitterRate must be positive" }
+            requireArg(duration.isPositive(), "duration", "be positive", duration)
+            requireArg(offset >= 0.dp, "offset", "not be negative", offset)
+            requireArg(
+                sliceHeight.start > 0f && sliceHeight.endInclusive <= 1f,
+                "sliceHeight",
+                "be above 0 and at most 1",
+                sliceHeight,
+            )
+            requireArg(channelColors.size == 3, "channelColors", "have three colors", channelColors)
+            requireArg(jumpChance in 0f..1f, "jumpChance", "be between 0 and 1", jumpChance)
+            requireArg(jitterRate > 0f && jitterRate.isFinite(), "jitterRate", "be positive", jitterRate)
             return Glitch(duration, offset, sliceHeight, channelColors, jumpChance, jitterRate, seed)
         }
 
@@ -1153,11 +1192,24 @@ public abstract class ChangeEffect internal constructor() {
         val flare: Duration?,
         val decay: Duration?,
         val stackLimit: Float,
+        val fromContent: Boolean = false,
     ) : ChangeEffect() {
         override val cooldown: Duration get() = Duration.ZERO
 
         override fun createRunner(): ChangeRunner =
-            GlowRunner(color, radius, shape, intensity, spread, offset, innerGlow, flare, decay, stackLimit)
+            GlowRunner(
+                color,
+                radius,
+                shape,
+                intensity,
+                spread,
+                offset,
+                innerGlow,
+                flare,
+                decay,
+                stackLimit,
+                fromContent,
+            )
     }
 
     internal data class Spin(

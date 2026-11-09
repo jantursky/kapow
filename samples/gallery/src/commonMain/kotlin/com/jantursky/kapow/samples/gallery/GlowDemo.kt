@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.samples.design.KapowToggle
 import com.jantursky.kapow.samples.design.LabeledSlider
 import com.jantursky.kapow.samples.design.PrimaryPill
 import com.jantursky.kapow.samples.gallery.examples.GlowExample
@@ -21,11 +22,12 @@ internal fun GlowDemo() {
     var radius by remember { mutableFloatStateOf(16f) }
     var spread by remember { mutableFloatStateOf(0f) }
     var inner by remember { mutableFloatStateOf(0f) }
+    var fromContent by remember { mutableStateOf(false) }
     var shape by remember { mutableStateOf(ShapeChoice.Rounded) }
     var swatch by remember { mutableStateOf(Swatch.Violet) }
     ExampleScaffold(
         autoplay = Autoplay(2.2.seconds) { count++ },
-        stage = { GlowExample(count, swatch.color, radius.dp, shape.shape, spread.dp, inner) },
+        stage = { GlowExample(count, swatch.color, radius.dp, shape.shape, spread.dp, inner, fromContent) },
         code = {
             changeEffectCode(
                 call(
@@ -35,6 +37,7 @@ internal fun GlowDemo() {
                     "shape" to shape.kt(),
                     "spread" to spread.dp.kt(),
                     "innerGlow" to "${inner.oneDecimal()}f",
+                    "fromContent" to fromContent.toString(),
                 ),
             )
         },
@@ -45,6 +48,7 @@ internal fun GlowDemo() {
             LabeledSlider("Radius", "${radius.roundToInt()} dp", radius, { radius = it }, 4f..40f)
             LabeledSlider("Spread", "${spread.roundToInt()} dp", spread, { spread = it }, 0f..30f)
             LabeledSlider("Inner glow", inner.oneDecimal(), inner, { inner = it }, 0f..1f)
+            KapowToggle(fromContent, { fromContent = it }, "From content")
         },
     )
 }

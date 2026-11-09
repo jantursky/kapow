@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.effects.shimmerProgress
 import com.jantursky.kapow.effects.shineBand
 import com.jantursky.kapow.effects.shineStops
+import com.jantursky.kapow.internal.requireArg
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -91,8 +92,8 @@ public fun Modifier.kapowSkeleton(
     revealEasing: Easing = FastOutSlowInEasing,
     loadingDescription: String? = null,
 ): Modifier {
-    require(duration.isPositive()) { "duration must be positive" }
-    require(!revealDuration.isNegative()) { "revealDuration must not be negative" }
+    requireArg(duration.isPositive(), "duration", "be positive", duration)
+    requireArg(!revealDuration.isNegative(), "revealDuration", "not be negative", revealDuration)
     return this then
         SkeletonElement(
             loading,

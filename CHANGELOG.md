@@ -4,6 +4,21 @@ All notable changes to `io.github.jantursky:kapow` and its companion artifacts a
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-11-09
+
+### Added
+
+- `fromContent` on `ChangeEffect.glow`, `ConditionalEffect.glow` and `ProgressEffect.glow`: the halo is a tinted, blurred copy of what the element draws instead of its `shape`, so a round icon in a square gets a round halo. Before Android 12 it falls back to `shape`. A "From content" switch in the gallery.
+- `KapowParticleLayer` particles now follow their emitter while it moves or scrolls. When the emitter leaves the tree, or a lazy list reuses its row, they finish where they were last drawn.
+
+### Changed
+
+- Invalid arguments now say which one and what it was: `count must be positive, was 0`. The exception type is unchanged.
+- An effect that is not playing no longer records its element into a graphics layer. A `LazyColumn` of 100 rows with effects at rest records no layers (before, one per row on every draw). Transitions keep their layer.
+- A blended particle batch (`blendMode`) reuses one paint and draws its layer over the live particles instead of a huge area, and shine and shimmer build their brush once instead of every frame. The Android-12-and-later blur and the pixels drawn are unchanged apart from edge anti-aliasing.
+- The `glow` factories gain a trailing parameter. The 1.4.0 signatures stay as hidden overloads, so existing binaries and sources keep working.
+
+
 ## [1.4.0] - 2026-11-09
 
 ### Added
@@ -66,7 +81,8 @@ All notable changes to `io.github.jantursky:kapow` and its companion artifacts a
 - `kapow-multihaptic` (`io.github.jantursky:kapow-multihaptic`): `rememberMultihapticFeedback()` plays feedback events as haptics through multihaptic.
 - Targets: Android (minSdk 23), iOS, JVM and wasmJs. The core needs only Compose runtime, foundation, UI and animation. Not yet checked on an Android or iOS device, or in Firefox and Safari.
 
-[Unreleased]: https://github.com/jantursky/kapow/compare/1.4.0...HEAD
+[Unreleased]: https://github.com/jantursky/kapow/compare/1.5.0...HEAD
+[1.5.0]: https://github.com/jantursky/kapow/compare/1.4.0...1.5.0
 [1.4.0]: https://github.com/jantursky/kapow/compare/1.3.0...1.4.0
 [1.3.0]: https://github.com/jantursky/kapow/compare/1.2.0...1.3.0
 [1.2.0]: https://github.com/jantursky/kapow/compare/1.1.0...1.2.0

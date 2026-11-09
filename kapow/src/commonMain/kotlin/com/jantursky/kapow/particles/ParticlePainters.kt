@@ -30,7 +30,7 @@ internal fun ParticleContent.painter(
         is ParticleContent.Image -> {
             val px = with(density) { size.toPx() }
             val filter = tint?.let { ColorFilter.tint(it) }
-            ParticlePainter { _, alpha ->
+            painterOf(px) { _, alpha ->
                 translate(-px / 2, -px / 2) {
                     with(painter) { draw(Size(px, px), alpha, filter) }
                 }
@@ -40,7 +40,7 @@ internal fun ParticleContent.painter(
         is ParticleContent.Text -> {
             val layout: TextLayoutResult = textMeasurer().measure(text, style)
             val half = Offset(layout.size.width / 2f, layout.size.height / 2f)
-            ParticlePainter { _, alpha -> drawText(layout, topLeft = -half, alpha = alpha) }
+            painterOf(maxOf(half.x, half.y) * 1.5f) { _, alpha -> drawText(layout, topLeft = -half, alpha = alpha) }
         }
     }
 
@@ -52,23 +52,18 @@ internal fun shapePainter(
     val half = sizePx / 2
     return when (shape) {
         ParticleShape.Circle -> {
-            ParticlePainter {
-                i,
-                alpha,
-                ->
-                drawCircle(colors[i % colors.size], half, Offset.Zero, alpha)
-            }
+            painterOf(sizePx) { i, alpha -> drawCircle(colors[i % colors.size], half, Offset.Zero, alpha) }
         }
 
         ParticleShape.Square -> {
-            ParticlePainter { i, alpha ->
+            painterOf(sizePx) { i, alpha ->
                 drawRect(colors[i % colors.size], Offset(-half, -half), Size(sizePx, sizePx), alpha)
             }
         }
 
         else -> {
             val path = unitPath(shape).apply { transform(scaleMatrix(sizePx)) }
-            ParticlePainter { i, alpha -> drawPath(path, colors[i % colors.size], alpha) }
+            painterOf(sizePx) { i, alpha -> drawPath(path, colors[i % colors.size], alpha) }
         }
     }
 }
@@ -84,7 +79,7 @@ internal fun puffPainter(
             Offset.Zero,
             radiusPx,
         )
-    return ParticlePainter { _, alpha -> drawCircle(brush, radiusPx, Offset.Zero, alpha) }
+    return painterOf(radiusPx) { _, alpha -> drawCircle(brush, radiusPx, Offset.Zero, alpha) }
 }
 
 /** The shape fitted in a 1 × 1 box centered on (0, 0). */

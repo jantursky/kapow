@@ -37,7 +37,7 @@ internal class JumpRunner(
     // How high the element was, in pixels, where a restart began. It fades out over the new jump.
     private var carry = 0f
 
-    override val needsLayer: Boolean get() = true
+    override val needsLayer: Boolean get() = progress.value < 1f || flash.isVisible
 
     override fun DrawScope.configureLayer(layer: GraphicsLayer) {
         val t = progress.value

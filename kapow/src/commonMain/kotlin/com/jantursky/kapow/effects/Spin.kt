@@ -81,7 +81,7 @@ internal class SpinRunner(
     private var job: Job? = null
     private var target: Float? = null
 
-    override val needsLayer: Boolean get() = true
+    override val needsLayer: Boolean get() = angle.isRunning || angle.value != 0f || flash.isVisible
 
     override fun DrawScope.configureLayer(layer: GraphicsLayer) {
         val degrees = if (reverse) -angle.value else angle.value

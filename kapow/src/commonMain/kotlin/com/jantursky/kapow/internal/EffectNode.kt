@@ -51,6 +51,9 @@ internal abstract class EffectNode<R : EffectRunner>(
         private set
 
     private val particles = ParticleField()
+
+    // Batches a particle layer holds that still follow this element.
+    private val hosted = mutableListOf<ParticleBatch>()
     private var coordinates: LayoutCoordinates? = null
     private var layer: GraphicsLayer? = null
 
@@ -73,7 +76,11 @@ internal abstract class EffectNode<R : EffectRunner>(
     override fun emit(batch: ParticleBatch) {
         val emitter = coordinates
         val host = currentValueOf(LocalParticleHost)
-        if (emitter != null && host != null && host.add(batch, emitter)) return
+        if (emitter != null && host != null && host.add(batch, emitter)) {
+            hosted.removeAll { it.finished }
+            hosted += batch
+            return
+        }
         particles.add(batch, coroutineScope)
     }
 
@@ -111,6 +118,7 @@ internal abstract class EffectNode<R : EffectRunner>(
             // apply to both and never reach whatever is drawn behind the element.
             val layer = layer ?: requireGraphicsContext().createGraphicsLayer().also { layer = it }
             with(runner) { configureLayer(layer) }
+            layerRecords++
             val outer = this
             // The recording scope gets a density of its own; borrowing this scope's would loop back into it.
             layer.record(Density(density, fontScale), layoutDirection, size.toIntSize()) {
@@ -126,6 +134,9 @@ internal abstract class EffectNode<R : EffectRunner>(
             }
             drawLayer(layer)
         } else {
+            // Idle: the content is drawn straight into the parent's layer and the one recorded for the effect,
+            // which would otherwise be replayed with nothing in it, goes back to the graphics context.
+            releaseLayer()
             with(runner) { drawEffect() }
         }
         particles.draw(this)
@@ -141,20 +152,35 @@ internal abstract class EffectNode<R : EffectRunner>(
 
     // A reused node, such as a lazy list item showing another item, starts from rest.
     override fun onReset() {
+        freezeHosted()
         particles.clear()
         replaceRunner()
+    }
+
+    // The element no longer shows what it did, so particles it emitted must not follow it to somewhere else.
+    private fun freezeHosted() {
+        hosted.forEach { it.freeze() }
+        hosted.clear()
+    }
+
+    private fun releaseLayer() {
+        layer?.let { requireGraphicsContext().releaseGraphicsLayer(it) }
+        layer = null
     }
 
     override fun onDetach() {
         // A fresh runner, so an animation cut off here doesn't come back frozen mid-frame on the next attach.
         runner.stop()
         runner = newRunner()
+        freezeHosted()
         particles.clear()
         coordinates = null
-        layer?.let { requireGraphicsContext().releaseGraphicsLayer(it) }
-        layer = null
+        releaseLayer()
     }
 }
+
+/** How many times an effect's content has been recorded into a graphics layer, for tests. */
+internal var layerRecords: Int = 0
 
 /** Draws into a layer that is being recorded, with [drawContent] still drawing the element's content. */
 private class LayerContentScope(

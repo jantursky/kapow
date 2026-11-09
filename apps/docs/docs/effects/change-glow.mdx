@@ -46,6 +46,36 @@ fun ScoreCard(score: Int) {
 | `flare` | `null` | How long the halo takes to reach full strength. Setting this or `decay` replaces the default spring, which overshoots and settles on its own, with a rise and a fall that take the times given. The other one defaults to 150 ms or 1 second. |
 | `decay` | `null` | How long the halo takes to fade away once it peaks. See `flare`. |
 | `stackLimit` | `1.5f` | How strong quick repeated changes can make the halo, as a multiple of a single change's strength (which is 1). |
+| `fromContent` | `false` | Shapes the halo after what the element draws instead of after `shape`. See [Following the content](#following-the-content). |
+
+## Following the content
+
+A transparent image or a round icon in a square box gets a rectangular halo by default, because the halo follows `shape`. With `fromContent = true` the halo is made from the element's own pixels: a tinted, blurred copy of what it draws, spread outward by the radius.
+
+```kotlin
+import androidx.compose.foundation.Image
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun HeartIcon(painter: Painter, likes: Int) {
+    Image(
+        painter = painter,
+        contentDescription = "Likes",
+        modifier = Modifier.changeEffect(
+            likes,
+            ChangeEffect.glow(color = Color(0xFFFF4D6D), radius = 24.dp, fromContent = true),
+        ),
+    )
+}
+```
+
+It records the element into a layer while the halo shows, so it costs a little more than the shape halo, and nothing at rest. Before Android 12, which cannot blur a layer, the halo falls back to `shape`. The same option exists on `ConditionalEffect.glow` and `ProgressEffect.glow`.
 
 ## Reduced motion
 
@@ -53,10 +83,10 @@ No spring. A faint halo appears and fades out in 0.3 s. The element is brightene
 
 ## Notes
 
-- The halo follows the `shape` you pass, not the alpha of the content. A transparent image inside a rectangle still gets a rectangular halo.
+- The halo follows the `shape` you pass, not the alpha of the content, unless you set `fromContent = true`.
 - Changes that arrive while the glow is still running add to it. The halo gets stronger up to a cap, then stays there.
 - The element itself is brightened by up to a quarter at the strongest point.
-- Where the platform can blur (all Skia targets and Android 12 and later) the halo is one blurred layer. On Android below 12 it is five stacked copies of the shape at falling opacity. It looks harder-edged there.
+- Where the platform can blur (all Skia targets and Android 12 and later) the halo is one blurred layer. On Android below 12 it is five stacked copies of the shape at falling opacity. It looks harder-edged there. Spotlight and the other blur-based looks fall back the same way before Android 12.
 - There is no cooldown. Every change adds a push.
 - The halo is drawn outside the element's bounds, so a clipping parent cuts it off.
 
