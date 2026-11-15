@@ -60,6 +60,7 @@ public abstract class ProgressEffect internal constructor() {
             ShapedProgressRunner(effect.createRunner(), curve, smoothing, mode)
     }
 
+    /** The ready-made [ProgressEffect] values. */
     public companion object {
         /**
          * A band of light whose position across the element follows the progress.

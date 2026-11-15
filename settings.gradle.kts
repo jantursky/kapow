@@ -47,7 +47,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "kapow"
 
-include(":kapow", ":kapow-crease", ":kapow-multihaptic")
+include(":kapow", ":kapow-crease", ":kapow-multihaptic", ":kapow-test")
 
 include(
     ":samples:design",

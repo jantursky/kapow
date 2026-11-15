@@ -19,7 +19,9 @@ import kotlin.math.sin
  */
 @Immutable
 public class StarShape(
+    /** How many points the star has. */
     public val points: Int = 5,
+    /** The inner radius as a share of the outer one: lower is spikier. */
     public val innerRatio: Float = 0.5f,
 ) : Shape {
     init {
@@ -27,6 +29,7 @@ public class StarShape(
         requireArg(innerRatio > 0f && innerRatio <= 1f, "innerRatio", "be in (0, 1]", innerRatio)
     }
 
+    /** The star as an outline that fits [size]. */
     override fun createOutline(
         size: Size,
         layoutDirection: LayoutDirection,
@@ -46,10 +49,13 @@ public class StarShape(
         return Outline.Generic(path)
     }
 
+    /** Whether [other] has the same settings. */
     override fun equals(other: Any?): Boolean =
         other is StarShape && points == other.points && innerRatio == other.innerRatio
 
+    /** A hash of the settings, consistent with [equals]. */
     override fun hashCode(): Int = 31 * points + innerRatio.hashCode()
 
+    /** The settings as text. */
     override fun toString(): String = "StarShape(points=$points, innerRatio=$innerRatio)"
 }

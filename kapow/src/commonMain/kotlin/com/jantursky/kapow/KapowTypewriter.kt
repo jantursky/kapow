@@ -60,6 +60,7 @@ public class TypewriterCursor internal constructor(
     /** Whether the bar goes away when the text is complete instead of blinking on. */
     public val hideWhenDone: Boolean,
 ) {
+    /** Whether [other] has the same settings. */
     override fun equals(other: Any?): Boolean =
         other is TypewriterCursor &&
             other.color == color &&
@@ -67,12 +68,15 @@ public class TypewriterCursor internal constructor(
             other.blink == blink &&
             other.hideWhenDone == hideWhenDone
 
+    /** A hash of the settings, consistent with [equals]. */
     override fun hashCode(): Int =
         ((color.hashCode() * 31 + width.hashCode()) * 31 + blink.hashCode()) * 31 + hideWhenDone.hashCode()
 
+    /** The settings as text. */
     override fun toString(): String =
         "TypewriterCursor.bar(color=$color, width=$width, blink=$blink, hideWhenDone=$hideWhenDone)"
 
+    /** The ready-made [TypewriterCursor] values. */
     public companion object {
         /**
          * A vertical bar the height of the line. It stays solid while characters appear and then blinks, or goes

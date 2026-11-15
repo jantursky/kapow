@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
   pull_request:
+  # The release workflow runs the whole suite at the tag before it publishes.
+  workflow_call:
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -16,6 +18,9 @@ jobs:
   checks:
     # macOS, so the klib API dump covers the iOS targets too; Linux cannot build them.
     runs-on: macos-latest
+    env:
+      # Forks and pull requests from them have no secret; the upload is skipped there instead of failing.
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-java@v6
@@ -24,16 +29,16 @@ jobs:
           java-version: 17
       - uses: gradle/actions/setup-gradle@v6
       - name: Format, API, JVM and Android host tests, screenshots, coverage gate
-        run: ./gradlew spotlessCheck apiCheck :kapow:jvmTest :kapow:testAndroidHostTest :kapow:verifyRoborazziJvm :kapow-crease:jvmTest :kapow-multihaptic:jvmTest koverXmlReport koverVerify
+        run: ./gradlew spotlessCheck apiCheck :kapow:jvmTest :kapow:testAndroidHostTest :kapow:verifyRoborazziJvm :kapow-crease:jvmTest :kapow-multihaptic:jvmTest :kapow-test:jvmTest koverXmlReport koverVerify
       - name: Docs and README samples compile
         run: python3 scripts/doc-samples.py && ./gradlew :samples:docs-check:compileTestKotlinJvm
       - name: Upload coverage to Codecov
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && env.CODECOV_TOKEN != '' }}
         uses: codecov/codecov-action@v7
         with:
-          files: kapow/build/reports/kover/report.xml,kapow-crease/build/reports/kover/report.xml,kapow-multihaptic/build/reports/kover/report.xml
+          files: kapow/build/reports/kover/report.xml,kapow-crease/build/reports/kover/report.xml,kapow-multihaptic/build/reports/kover/report.xml,kapow-test/build/reports/kover/report.xml
           token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: false
+          fail_ci_if_error: true
 
   wasm:
     runs-on: ubuntu-latest
@@ -45,15 +50,17 @@ jobs:
           java-version: 17
       - uses: gradle/actions/setup-gradle@v6
       - name: Wasm tests (headless Chrome) and the gallery build
-        run: ./gradlew :kapow:wasmJsTest :kapow-crease:wasmJsTest :kapow-multihaptic:wasmJsTest :samples:web:wasmJsBrowserDistribution :samples:desktop:build
+        run: ./gradlew :kapow:wasmJsTest :kapow-crease:wasmJsTest :kapow-multihaptic:wasmJsTest :kapow-test:wasmJsTest :samples:web:wasmJsBrowserDistribution :samples:desktop:build
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: .bun-version
       - uses: actions/setup-node@v7
         with:
           node-version: 22
+      - name: Gallery wasm size budget
+        run: node scripts/check-wasm-size.mjs
       - run: bun install --frozen-lockfile
-      - run: bunx playwright install --with-deps chromium
+      - run: bunx playwright install --with-deps chromium firefox webkit
       - name: Browser tests of the gallery
         run: bun run test:web
       - name: Keep the Playwright traces of a failed run
@@ -73,7 +80,7 @@ jobs:
           java-version: 17
       - uses: gradle/actions/setup-gradle@v6
       - name: Simulator tests
-        run: ./gradlew :kapow:iosSimulatorArm64Test :kapow-crease:iosSimulatorArm64Test :kapow-multihaptic:iosSimulatorArm64Test
+        run: ./gradlew :kapow:iosSimulatorArm64Test :kapow-crease:iosSimulatorArm64Test :kapow-multihaptic:iosSimulatorArm64Test :kapow-test:iosSimulatorArm64Test
 
   pack:
     runs-on: ubuntu-latest

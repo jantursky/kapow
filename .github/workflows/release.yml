@@ -3,7 +3,11 @@ name: Release
 # Pushing a version tag, `1.0.0` or `v1.0.0`, creates the GitHub release with the
 # matching CHANGELOG section, then runs every check and publishes that version to
 # Maven Central. The two jobs are independent: a failed publish still leaves the
-# GitHub release. Run it by hand with a tag to release a tag pushed earlier.
+# GitHub release. Run it by hand with a tag to release a tag pushed earlier: pick that tag in "Use workflow from"
+# as well, because the checks below run on the commit the workflow itself runs on.
+#
+# Publishing waits for the whole CI suite (JVM, wasm, iOS, Roborazzi, Playwright, pack), so what blocks a merge
+# also blocks a tag.
 #
 # iOS klibs are built on macOS, so the publish job runs there. Its secrets live in the
 # `maven-central` environment.
@@ -53,7 +57,12 @@ jobs:
           echo "[Maven Central](https://central.sonatype.com/artifact/io.github.jantursky/kapow/${TAG#v})" >> notes.md
           gh release create "$TAG" --verify-tag --title "$TAG" --notes-file notes.md
 
+  ci:
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+
   maven-central:
+    needs: ci
     runs-on: macos-latest
     environment: maven-central
     permissions:
@@ -67,26 +76,31 @@ jobs:
           distribution: temurin
           java-version: 17
       - uses: gradle/actions/setup-gradle@v6
-      - name: Skip a version that is already on Maven Central
+      - name: Find the modules that are not on Maven Central yet
         id: check
         run: |
           version="${TAG#v}"
           test "$version" = "$(sed -n 's/^VERSION_NAME=//p' gradle.properties)" ||
             { echo "Tag $TAG does not match gradle.properties" >&2; exit 1; }
-          if curl -sf "https://repo1.maven.org/maven2/io/github/jantursky/kapow/$version/kapow-$version.pom" > /dev/null; then
-            echo "kapow@$version is already on Maven Central"
-            echo "publish=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "publish=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Checks
-        if: steps.check.outputs.publish == 'true'
-        run: ./gradlew :kapow:check :kapow-crease:check :kapow-multihaptic:check apiCheck koverVerify
+          tasks=""
+          for module in kapow kapow-crease kapow-multihaptic kapow-test; do
+            if curl -sf "https://repo1.maven.org/maven2/io/github/jantursky/$module/$version/$module-$version.pom" > /dev/null; then
+              echo "$module@$version is already on Maven Central"
+            else
+              echo "$module@$version is missing and will be published"
+              tasks="$tasks :$module:publishAndReleaseToMavenCentral"
+            fi
+          done
+          echo "tasks=${tasks# }" >> "$GITHUB_OUTPUT"
       - name: Publish to Maven Central
-        if: steps.check.outputs.publish == 'true'
+        if: steps.check.outputs.tasks != ''
         env:
+          TASKS: ${{ steps.check.outputs.tasks }}
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
-        run: ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
+        run: |
+          # TASKS is a fixed list of task names built above, split on purpose.
+          # shellcheck disable=SC2086
+          ./gradlew $TASKS --no-configuration-cache

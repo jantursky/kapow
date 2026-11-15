@@ -1,0 +1,113 @@
+---
+title: Testing your screens
+description: Switch Kapow effects off, force reduced or full motion, or step an effect with the test clock, using kapow-test.
+---
+
+Effects keep drawing and animating while a UI test waits, which makes screenshots and assertions flaky. The `kapow-test` artifact gives your tests a switch for that. It is a test dependency only; nothing in it ships in your app.
+
+```kotlin
+// shared/build.gradle.kts
+kotlin {
+    sourceSets {
+        commonTest.dependencies {
+            implementation("io.github.jantursky:kapow-test:{{version}}")
+        }
+    }
+}
+```
+
+It builds on `ComposeUiTest`, which exists on Android, iOS, JVM desktop and wasmJs, so there is no JUnit rule: the same test runs on every target.
+
+## Switch effects off
+
+`setKapowContent` wraps your content in `KapowTest`. The default mode, `Disabled`, makes every change, conditional and progress effect draw nothing and send no feedback. Transitions skip their animation: entering content is visible at once and exiting content leaves without waiting for an effect. Your own content lays out and draws as it does without Kapow.
+
+```kotlin
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.runComposeUiTest
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+import com.jantursky.kapow.test.setKapowContent
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import kotlin.test.Test
+
+@OptIn(ExperimentalTestApi::class)
+class LikeButtonTest {
+    @Test
+    fun likeCountChangesWithoutEffects() =
+        runComposeUiTest {
+            var likes by mutableIntStateOf(0)
+            setKapowContent {
+                Box(Modifier.size(48.dp).changeEffect(likes, ChangeEffect.shine()))
+            }
+            likes++
+            waitForIdle()
+        }
+}
+```
+
+Screens that do not use `setKapowContent` behave as in the released library. To wrap part of a composition yourself, use the composable `KapowTest(mode) { ... }`.
+
+## Keep effects, reduced or full
+
+`KapowTestMode` has three values:
+
+- `Disabled` draws nothing (the default).
+- `Reduced` plays every effect's reduced-motion version, even where the platform has no such setting.
+- `Full` plays full effects, even where the platform asks for reduced motion.
+
+Use `Reduced` to test what your users with the setting see (see [reduced motion](/guides/reduced-motion)) and `Full` for screenshots of an effect.
+
+## Step an effect with the test clock
+
+`advanceKapowEffects(duration)` stops the clock from advancing by itself, moves it by `duration` and lets the composition settle. Starting from the same state and moving by the same amount always gives the same pixels, so you can capture an effect at a known moment.
+
+```kotlin
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+import com.jantursky.kapow.test.KapowTestMode
+import com.jantursky.kapow.test.advanceKapowEffects
+import com.jantursky.kapow.test.setKapowContent
+import kotlin.test.Test
+import kotlin.time.Duration.Companion.milliseconds
+
+@OptIn(ExperimentalTestApi::class)
+class ShineMidwayTest {
+    @Test
+    fun shineMidway() =
+        runComposeUiTest {
+            var value by mutableIntStateOf(0)
+            setKapowContent(KapowTestMode.Full) {
+                Box(Modifier.size(100.dp).changeEffect(value, ChangeEffect.shine()))
+            }
+            value++
+            advanceKapowEffects(300.milliseconds)
+            // Capture the node here and compare it with a stored image.
+        }
+}
+```
+
+## Why there is no seed option
+
+Particle colors and positions come from a seed that each effect takes as an option. A test that needs fixed particles passes that option; a test that does not care uses `Disabled`, which removes the particles.
+
+## Platform notes
+
+- **Android:** run the same test as an instrumented test or with Robolectric. Kapow needs no R8 keep rules, so a minified build of your app runs the same code. The reduced-motion setting is read from the system, so pin the mode instead of relying on it.
+- **iOS:** the test runs in the simulator through the Kotlin/Native test task. Reduce Motion in the simulator's settings changes what `System` mode sees, which is another reason to set the mode.
+- **Web and desktop:** no extra setup.

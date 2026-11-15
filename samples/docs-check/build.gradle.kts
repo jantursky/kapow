@@ -16,6 +16,7 @@ kotlin {
             implementation(project(":kapow"))
             implementation(project(":kapow-crease"))
             implementation(project(":kapow-multihaptic"))
+            implementation(project(":kapow-test"))
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.ui)

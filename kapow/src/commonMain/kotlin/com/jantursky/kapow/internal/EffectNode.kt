@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.toIntSize
 import com.jantursky.kapow.KapowFeedbackEvent
+import com.jantursky.kapow.KapowTestApi
+import com.jantursky.kapow.LocalKapowEffects
 import com.jantursky.kapow.LocalKapowFeedback
 import com.jantursky.kapow.LocalKapowMaxFlashesPerSecond
 import com.jantursky.kapow.LocalKapowMotion
@@ -71,9 +73,14 @@ internal abstract class EffectNode<R : EffectRunner>(
     override fun isReducedMotion(): Boolean =
         resolveReducedMotion(currentValueOf(LocalKapowMotion), coroutineScope.coroutineContext.durationScale)
 
+    /** False inside a `KapowTest` scope with effects disabled. */
+    @OptIn(KapowTestApi::class)
+    val effectsEnabled: Boolean get() = currentValueOf(LocalKapowEffects)
+
     override val maxFlashesPerSecond: Int? get() = currentValueOf(LocalKapowMaxFlashesPerSecond)
 
     override fun emit(batch: ParticleBatch) {
+        if (!effectsEnabled) return
         val emitter = coordinates
         val host = currentValueOf(LocalParticleHost)
         if (emitter != null && host != null && host.add(batch, emitter)) {
@@ -87,7 +94,7 @@ internal abstract class EffectNode<R : EffectRunner>(
     override suspend fun snapshot(): ImageBitmap? = layer?.toImageBitmap()
 
     fun perform(feedback: KapowFeedbackEvent?) {
-        if (feedback != null) currentValueOf(LocalKapowFeedback)?.perform(feedback)
+        if (feedback != null && effectsEnabled) currentValueOf(LocalKapowFeedback)?.perform(feedback)
     }
 
     /** A runner for the current configuration, at rest. */
@@ -112,6 +119,11 @@ internal abstract class EffectNode<R : EffectRunner>(
 
     override fun ContentDrawScope.draw() {
         beforeDraw()
+        if (!effectsEnabled) {
+            releaseLayer()
+            drawContent()
+            return
+        }
         val runner = runner
         if (runner.needsLayer) {
             // The layer wraps the runner's own drawing as well as the content, so offscreen blending and transforms

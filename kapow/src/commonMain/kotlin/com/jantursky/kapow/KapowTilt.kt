@@ -1,3 +1,5 @@
+@file:OptIn(KapowTestApi::class)
+
 package com.jantursky.kapow
 
 import androidx.compose.animation.core.Animatable
@@ -135,6 +137,7 @@ private class TiltNode(
     private val active: Boolean
         get() =
             enabled &&
+                currentValueOf(LocalKapowEffects) &&
                 !resolveReducedMotion(currentValueOf(LocalKapowMotion), coroutineScope.coroutineContext.durationScale)
 
     private fun angles(): TiltAngles = TiltAngles(rotationX.value, rotationY.value)

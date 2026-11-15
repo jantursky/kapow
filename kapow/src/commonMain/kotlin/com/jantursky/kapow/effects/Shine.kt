@@ -53,8 +53,8 @@ internal fun shineBand(
 }
 
 /**
- * The extra travel, and the lag of each band behind the first, of a sweep of [bands] bands that are [spacing]
- * band widths apart on an element [length] long along the sweep.
+ * The extra travel, and the lag of each band behind the first, of a sweep of `bands` bands that are [spacing]
+ * band widths apart on an element `length` long along the sweep.
  */
 internal fun shineLag(
     size: Size,

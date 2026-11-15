@@ -8,10 +8,33 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.kmp.library) apply false
     alias(libs.plugins.kover) apply false
-    alias(libs.plugins.dokka) apply false
+    alias(libs.plugins.dokka)
     alias(libs.plugins.maven.publish) apply false
     alias(libs.plugins.binary.compatibility.validator) apply false
     alias(libs.plugins.spotless)
+}
+
+// One API reference for the four published modules, built with ./gradlew dokkaGenerate. A public symbol without
+// KDoc is a warning, and warnings fail the build.
+dependencies {
+    dokka(project(":kapow"))
+    dokka(project(":kapow-crease"))
+    dokka(project(":kapow-multihaptic"))
+    dokka(project(":kapow-test"))
+}
+
+dokka {
+    moduleName.set("Kapow")
+    dokkaPublications.configureEach { failOnWarning.set(true) }
+}
+
+subprojects {
+    plugins.withId("org.jetbrains.dokka") {
+        extensions.configure<org.jetbrains.dokka.gradle.DokkaExtension> {
+            dokkaSourceSets.configureEach { reportUndocumented.set(true) }
+            dokkaPublications.configureEach { failOnWarning.set(true) }
+        }
+    }
 }
 
 spotless {

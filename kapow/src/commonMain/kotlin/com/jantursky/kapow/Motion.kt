@@ -27,9 +27,12 @@ public val LocalKapowMotion: ProvidableCompositionLocal<KapowMotion> = compositi
  * Whether effects here play their reduced version: [LocalKapowMotion] when it is [KapowMotion.Full] or
  * [KapowMotion.Reduced], otherwise the platform setting.
  */
+@OptIn(KapowTestApi::class)
 @Composable
 public fun isReducedMotion(): Boolean =
-    resolveReducedMotion(LocalKapowMotion.current, rememberCoroutineScope().coroutineContext.durationScale)
+    // With effects off, text and tilt effects take their end state, as under reduced motion.
+    !LocalKapowEffects.current ||
+        resolveReducedMotion(LocalKapowMotion.current, rememberCoroutineScope().coroutineContext.durationScale)
 
 /**
  * Effects call this when they fire. Compose sets [MotionDurationScale] to 0 when animations are off on Android
@@ -47,3 +50,21 @@ internal fun resolveReducedMotion(
 
 internal val CoroutineContext.durationScale: Float
     get() = this[MotionDurationScale]?.scaleFactor ?: 1f
+
+/**
+ * Opt-in to the switch that turns Kapow effects off, meant for UI tests. App code should not set it: use
+ * `KapowTest` from `kapow-test` instead.
+ */
+@RequiresOptIn(
+    message = "Switches Kapow effects off for tests. Use KapowTest from kapow-test instead of setting it in app code.",
+    level = RequiresOptIn.Level.WARNING,
+)
+@Retention(AnnotationRetention.BINARY)
+public annotation class KapowTestApi
+
+/**
+ * Whether Kapow effects play here. Defaults to `true`. With `false`, effects draw nothing, send no feedback and
+ * transitions end in their final state at once; the element's own content is untouched. For tests only.
+ */
+@KapowTestApi
+public val LocalKapowEffects: ProvidableCompositionLocal<Boolean> = compositionLocalOf { true }

@@ -45,6 +45,7 @@ import kotlin.time.Duration
  *
  * @param feedback asked of the [LocalKapowFeedback] handler when the content starts to enter or exit.
  */
+@OptIn(KapowTestApi::class)
 @Composable
 public fun Modifier.kapowTransition(
     scope: AnimatedVisibilityScope,
@@ -54,6 +55,8 @@ public fun Modifier.kapowTransition(
 ): Modifier {
     val transition = scope.transition
     val reduced = isReducedMotion()
+    // With effects off, both directions jump to their end state, so the container neither waits nor draws.
+    val effectsOff = !LocalKapowEffects.current
     val progress: State<Float> =
         transition.animateFloat(
             transitionSpec = {
@@ -65,7 +68,7 @@ public fun Modifier.kapowTransition(
                         enter.duration,
                         enter.delay,
                         enter.easing,
-                        skipsMotion(reduced, enter.reducedMotion),
+                        effectsOff || skipsMotion(reduced, enter.reducedMotion),
                     )
                 } else {
                     spec(
@@ -73,14 +76,14 @@ public fun Modifier.kapowTransition(
                         exit.duration,
                         exit.delay,
                         exit.easing,
-                        skipsMotion(reduced, exit.reducedMotion),
+                        effectsOff || skipsMotion(reduced, exit.reducedMotion),
                     )
                 }
             },
             label = "kapowTransition",
         ) { if (it == EnterExitState.Visible) 1f else 0f }
     val handler = rememberUpdatedState(LocalKapowFeedback.current)
-    val event = rememberUpdatedState(feedback)
+    val event = rememberUpdatedState(if (effectsOff) null else feedback)
     LaunchedEffect(transition) {
         // Content that starts out visible has nothing to announce; after that, each new target is an enter or exit.
         snapshotFlow { transition.targetState }

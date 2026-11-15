@@ -139,8 +139,8 @@ internal class OutlineTracer(
     }
 
     /**
-     * Draws the part of a route that [start] to [end] cover. The route goes [laps] times around the outline,
-     * beginning [startAt] (a fraction of the outline) past its usual start, clockwise or not, and distances count
+     * Draws the part of a route that [start] to [end] cover. The route goes `laps` times around the outline,
+     * beginning `startAt` (a fraction of the outline) past its usual start, clockwise or not, and distances count
      * along the whole route.
      */
     fun DrawScope.drawRoute(

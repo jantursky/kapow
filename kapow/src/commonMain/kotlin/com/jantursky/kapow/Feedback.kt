@@ -10,28 +10,37 @@ import androidx.compose.runtime.staticCompositionLocalOf
  * already uses through [LocalKapowFeedback], or use the `kapow-multihaptic` artifact.
  */
 public fun interface KapowFeedback {
+    /** Plays the feedback for [event]. Events the handler doesn't know can be ignored. */
     public fun perform(event: KapowFeedbackEvent)
 }
 
 /** The feedback an effect asks for. Handlers map each event to whatever their platform offers. */
 @Immutable
 public sealed class KapowFeedbackEvent {
+    /** A selection changed: the lightest tick. */
     public data object Selection : KapowFeedbackEvent()
 
+    /** A light physical tap. */
     public data object ImpactLight : KapowFeedbackEvent()
 
+    /** A medium physical tap. */
     public data object ImpactMedium : KapowFeedbackEvent()
 
+    /** A heavy physical thud. */
     public data object ImpactHeavy : KapowFeedbackEvent()
 
+    /** Something worked. */
     public data object Success : KapowFeedbackEvent()
 
+    /** Something needs attention. */
     public data object Warning : KapowFeedbackEvent()
 
+    /** Something failed. */
     public data object Error : KapowFeedbackEvent()
 
     /** An event your own handler understands, such as a sound named "coin". */
     public data class Custom(
+        /** The name your handler looks up. */
         val name: String,
     ) : KapowFeedbackEvent()
 }

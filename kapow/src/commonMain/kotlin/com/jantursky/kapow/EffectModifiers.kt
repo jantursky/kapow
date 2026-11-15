@@ -354,6 +354,7 @@ internal class ChangeEffectNode(
 
     /** Plays the effect once, subject to its cooldown and delay. Shared with [ConditionalEffect.repeat]. */
     fun trigger() {
+        if (!effectsEnabled) return
         val plan = effect.plan().limitedTo(maxFlashesPerSecond)
         val runner = runner
         val event = feedback

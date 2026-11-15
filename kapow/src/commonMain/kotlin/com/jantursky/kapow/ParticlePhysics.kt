@@ -13,6 +13,7 @@ public sealed class EmissionArea {
 
     /** Particles start spread along one edge of the element. */
     public data class Edge(
+        /** The side the particles start along. */
         val side: EdgeSide,
     ) : EmissionArea()
 
@@ -58,6 +59,7 @@ public class ParticlePhysics internal constructor(
     internal val blendMode: BlendMode?,
     internal val colorPick: ColorPick?,
 ) {
+    /** Whether [other] has the same settings. */
     override fun equals(other: Any?): Boolean =
         other is ParticlePhysics &&
             direction == other.direction &&
@@ -75,6 +77,7 @@ public class ParticlePhysics internal constructor(
             blendMode == other.blendMode &&
             colorPick == other.colorPick
 
+    /** A hash of the settings, consistent with [equals]. */
     override fun hashCode(): Int =
         listOf(
             direction,
@@ -93,11 +96,13 @@ public class ParticlePhysics internal constructor(
             colorPick,
         ).hashCode()
 
+    /** The settings as text. */
     override fun toString(): String =
         "ParticlePhysics(direction=$direction, spread=$spread, speed=$speed, gravity=$gravity, drag=$drag, " +
             "lifetime=$lifetime, size=$size, spin=$spin, startScale=$startScale, endScale=$endScale, fade=$fade, " +
             "emission=$emission, blendMode=$blendMode, colorPick=$colorPick)"
 
+    /** The ready-made [ParticlePhysics] values. */
     public companion object {
         /** Every part left to the effect. */
         public val Default: ParticlePhysics = of()

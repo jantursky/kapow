@@ -1,3 +1,5 @@
+@file:OptIn(KapowTestApi::class)
+
 package com.jantursky.kapow
 
 import androidx.compose.foundation.layout.Box
@@ -7,9 +9,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.node.CompositionLocalConsumerModifierNode
 import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.GlobalPositionAwareModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.node.currentValueOf
 import androidx.compose.ui.platform.InspectorInfo
 import com.jantursky.kapow.particles.LocalParticleHost
 import com.jantursky.kapow.particles.ParticleBatch
@@ -80,7 +84,8 @@ private class ParticleLayerNode(
     var host: HostState,
 ) : Modifier.Node(),
     DrawModifierNode,
-    GlobalPositionAwareModifierNode {
+    GlobalPositionAwareModifierNode,
+    CompositionLocalConsumerModifierNode {
     val field = ParticleField()
     var coordinates: LayoutCoordinates? = null
 
@@ -100,6 +105,6 @@ private class ParticleLayerNode(
 
     override fun ContentDrawScope.draw() {
         drawContent()
-        field.draw(this)
+        if (currentValueOf(LocalKapowEffects)) field.draw(this)
     }
 }

@@ -1,0 +1,16 @@
+public final class com/jantursky/kapow/test/KapowTestKt {
+	public static final fun KapowTest (Lcom/jantursky/kapow/test/KapowTestMode;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+	public static final fun advanceKapowEffects-HG0u8IE (Landroidx/compose/ui/test/ComposeUiTest;J)V
+	public static final fun setKapowContent (Landroidx/compose/ui/test/ComposeUiTest;Lcom/jantursky/kapow/test/KapowTestMode;Lkotlin/jvm/functions/Function2;)V
+	public static synthetic fun setKapowContent$default (Landroidx/compose/ui/test/ComposeUiTest;Lcom/jantursky/kapow/test/KapowTestMode;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
+}
+
+public final class com/jantursky/kapow/test/KapowTestMode : java/lang/Enum {
+	public static final field Disabled Lcom/jantursky/kapow/test/KapowTestMode;
+	public static final field Full Lcom/jantursky/kapow/test/KapowTestMode;
+	public static final field Reduced Lcom/jantursky/kapow/test/KapowTestMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/jantursky/kapow/test/KapowTestMode;
+	public static fun values ()[Lcom/jantursky/kapow/test/KapowTestMode;
+}
+

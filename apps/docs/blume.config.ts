@@ -19,6 +19,7 @@ export default defineConfig({
   navigation: {
     actions: [
       { href: 'https://kapow-demo.vercel.app', label: 'Demo' },
+      { href: 'https://jantursky.github.io/kapow/', label: 'API reference' },
       { href: 'https://central.sonatype.com/artifact/io.github.jantursky/kapow', label: 'Maven Central' },
     ],
   },

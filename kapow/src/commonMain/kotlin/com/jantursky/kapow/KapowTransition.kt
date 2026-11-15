@@ -93,16 +93,20 @@ public class KapowEnter internal constructor(
      */
     public fun reducedMotion(mode: ReducedMotionMode): KapowEnter = KapowEnter(kind, duration, delay, easing, mode)
 
+    /** Whether [other] has the same settings. */
     override fun equals(other: Any?): Boolean =
         other is KapowEnter && kind == other.kind && duration == other.duration && delay == other.delay &&
             easing == other.easing && reducedMotion == other.reducedMotion
 
+    /** A hash of the settings, consistent with [equals]. */
     override fun hashCode(): Int =
         (((31 * kind.hashCode() + duration.hashCode()) * 31 + delay.hashCode()) * 31 + easing.hashCode()) * 31 +
             reducedMotion.hashCode()
 
+    /** The settings as text. */
     override fun toString(): String = "KapowEnter($kind, $duration${tuningText(delay, easing, reducedMotion)})"
 
+    /** The ready-made [KapowEnter] values. */
     public companion object {
         /** No Kapow transition. Content appears with whatever stock transition the caller set. */
         public val None: KapowEnter = KapowEnter(TransitionKind.None, Duration.ZERO)
@@ -647,16 +651,20 @@ public class KapowExit internal constructor(
      */
     public fun reducedMotion(mode: ReducedMotionMode): KapowExit = KapowExit(kind, duration, delay, easing, mode)
 
+    /** Whether [other] has the same settings. */
     override fun equals(other: Any?): Boolean =
         other is KapowExit && kind == other.kind && duration == other.duration && delay == other.delay &&
             easing == other.easing && reducedMotion == other.reducedMotion
 
+    /** A hash of the settings, consistent with [equals]. */
     override fun hashCode(): Int =
         (((31 * kind.hashCode() + duration.hashCode()) * 31 + delay.hashCode()) * 31 + easing.hashCode()) * 31 +
             reducedMotion.hashCode()
 
+    /** The settings as text. */
     override fun toString(): String = "KapowExit($kind, $duration${tuningText(delay, easing, reducedMotion)})"
 
+    /** The ready-made [KapowExit] values. */
     public companion object {
         /** No Kapow transition. Content disappears with whatever stock transition the caller set. */
         public val None: KapowExit = KapowExit(TransitionKind.None, Duration.ZERO)

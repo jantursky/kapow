@@ -85,18 +85,12 @@ apiValidation {
 
 kover {
     reports {
-        filters {
-            excludes {
-                // Reduced-motion readers talk to the OS; they are exercised on devices, not in host tests.
-                packages("com.jantursky.kapow.platform")
-            }
-        }
         verify {
             rule {
                 bound { minValue = 90 }
                 bound {
                     coverageUnits = kotlinx.kover.gradle.plugin.dsl.CoverageUnit.BRANCH
-                    minValue = 78
+                    minValue = 81
                 }
             }
         }

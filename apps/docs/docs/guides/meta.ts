@@ -16,5 +16,6 @@ export default defineMeta({
     'feedback',
     'hinge',
     'performance',
+    'testing',
   ],
 })

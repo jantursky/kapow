@@ -6,7 +6,7 @@ name: Demo
 on:
   push:
     branches: [main]
-    paths: ['kapow/**', 'kapow-crease/**', 'kapow-multihaptic/**', 'samples/**', 'gradle/**', 'build.gradle.kts', 'settings.gradle.kts', 'gradle.properties']
+    paths: ['kapow/**', 'kapow-crease/**', 'kapow-multihaptic/**', 'kapow-test/**', 'samples/**', 'gradle/**', 'build.gradle.kts', 'settings.gradle.kts', 'gradle.properties']
   workflow_dispatch:
 
 concurrency:

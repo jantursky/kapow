@@ -36,6 +36,7 @@ public sealed class ParticleContent {
         val style: TextStyle,
     ) : ParticleContent()
 
+    /** The ready-made [ParticleContent] values. */
     public companion object {
         /** Warm amber, coral, violet and cobalt. */
         public val DefaultColors: List<Color> =

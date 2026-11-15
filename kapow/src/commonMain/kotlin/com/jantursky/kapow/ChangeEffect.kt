@@ -96,6 +96,7 @@ public abstract class ChangeEffect internal constructor() {
 
     private fun tuned(): Tuned = this as? Tuned ?: Tuned(this, null, 1, Duration.ZERO, 1f, null)
 
+    /** The ready-made [ChangeEffect] values. */
     public companion object {
         /**
          * A burst of particles that fan upward from the element, grow, then fade. With reduced motion no particles
@@ -1554,10 +1555,13 @@ public abstract class ChangeEffect internal constructor() {
 /** Whether a [ChangeEffect.pulse] draws rings or filled shapes. */
 @Immutable
 public sealed class PulseStyle {
+    /** A ring that grows from the element's outline. */
     public data class Stroke(
+        /** The ring's thickness. */
         val width: Dp = 2.dp,
     ) : PulseStyle()
 
+    /** A filled shape that grows from the element and fades out. */
     public data object Fill : PulseStyle()
 }
 

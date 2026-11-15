@@ -82,6 +82,7 @@ public abstract class ConditionalEffect internal constructor() {
         override fun createRunner(): ConditionalRunner = TunedConditionalRunner(effect.createRunner(), this)
     }
 
+    /** The ready-made [ConditionalEffect] values. */
     public companion object {
         /** The shortest interval [repeat] accepts. Shorter ones are raised to it. */
         public val MinRepeatInterval: Duration = (1000.0 / 15).milliseconds

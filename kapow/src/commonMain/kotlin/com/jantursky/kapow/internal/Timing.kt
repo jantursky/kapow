@@ -4,7 +4,7 @@ import androidx.compose.runtime.withFrameNanos
 import kotlin.time.Duration
 
 /**
- * Accepts a trigger only if [cooldown] has passed since the last accepted one. Times come from the frame clock,
+ * Accepts a trigger only if `cooldown` has passed since the last accepted one. Times come from the frame clock,
  * so tests drive it with a paused clock.
  */
 internal class TriggerGate {

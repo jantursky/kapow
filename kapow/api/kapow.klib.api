@@ -6,6 +6,10 @@
 // - Show declarations: true
 
 // Library unique name: <kapow:kapow>
+open annotation class com.jantursky.kapow/KapowTestApi : kotlin/Annotation { // com.jantursky.kapow/KapowTestApi|null[0]
+    constructor <init>() // com.jantursky.kapow/KapowTestApi.<init>|<init>(){}[0]
+}
+
 final enum class com.jantursky.kapow/BlindsOrientation : kotlin/Enum<com.jantursky.kapow/BlindsOrientation> { // com.jantursky.kapow/BlindsOrientation|null[0]
     enum entry Horizontal // com.jantursky.kapow/BlindsOrientation.Horizontal|null[0]
     enum entry Vertical // com.jantursky.kapow/BlindsOrientation.Vertical|null[0]
@@ -638,6 +642,8 @@ final object com.jantursky.kapow/KapowStagger { // com.jantursky.kapow/KapowStag
 final const val com.jantursky.kapow/KapowWcagMaxFlashesPerSecond // com.jantursky.kapow/KapowWcagMaxFlashesPerSecond|{}KapowWcagMaxFlashesPerSecond[0]
     final fun <get-KapowWcagMaxFlashesPerSecond>(): kotlin/Int // com.jantursky.kapow/KapowWcagMaxFlashesPerSecond.<get-KapowWcagMaxFlashesPerSecond>|<get-KapowWcagMaxFlashesPerSecond>(){}[0]
 
+final val com.jantursky.kapow/LocalKapowEffects // com.jantursky.kapow/LocalKapowEffects|{}LocalKapowEffects[0]
+    final fun <get-LocalKapowEffects>(): androidx.compose.runtime/ProvidableCompositionLocal<kotlin/Boolean> // com.jantursky.kapow/LocalKapowEffects.<get-LocalKapowEffects>|<get-LocalKapowEffects>(){}[0]
 final val com.jantursky.kapow/LocalKapowFeedback // com.jantursky.kapow/LocalKapowFeedback|{}LocalKapowFeedback[0]
     final fun <get-LocalKapowFeedback>(): androidx.compose.runtime/ProvidableCompositionLocal<com.jantursky.kapow/KapowFeedback?> // com.jantursky.kapow/LocalKapowFeedback.<get-LocalKapowFeedback>|<get-LocalKapowFeedback>(){}[0]
 final val com.jantursky.kapow/LocalKapowMaxFlashesPerSecond // com.jantursky.kapow/LocalKapowMaxFlashesPerSecond|{}LocalKapowMaxFlashesPerSecond[0]

@@ -1,3 +1,5 @@
+@file:OptIn(KapowTestApi::class)
+
 package com.jantursky.kapow
 
 import androidx.compose.animation.core.Animatable
@@ -185,7 +187,8 @@ private class SkeletonNode(
     }
 
     private fun isReduced(): Boolean =
-        resolveReducedMotion(currentValueOf(LocalKapowMotion), coroutineScope.coroutineContext.durationScale)
+        !currentValueOf(LocalKapowEffects) ||
+            resolveReducedMotion(currentValueOf(LocalKapowMotion), coroutineScope.coroutineContext.durationScale)
 
     fun update(next: SkeletonElement) {
         val previous = config

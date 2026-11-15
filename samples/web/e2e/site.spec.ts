@@ -1,15 +1,21 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 import sharp from 'sharp'
+import { isKnownConsoleError, skipKnownGaps } from './engine-skips'
 
-// Skiko warns about an API it uses itself. Nothing else may reach the console as an error.
+// Skiko warns about an API it uses itself. Nothing else may reach the console as an error, except what an engine
+// is known to log (see engine-skips.ts).
 const KNOWN_ERRORS = [/Accessing `memory` via `wasmExports` is deprecated/]
+
+test.beforeEach(({ browserName }, testInfo) => skipKnownGaps(browserName, testInfo.title))
 
 const collectErrors = (page: Page) => {
   const errors: string[] = []
   page.on('pageerror', (error) => errors.push(error.message))
   page.on('console', (message) => {
-    if (message.type() === 'error' && !KNOWN_ERRORS.some((known) => known.test(message.text()))) {
+    const engine = page.context().browser()?.browserType().name() ?? ''
+    const known = KNOWN_ERRORS.some((pattern) => pattern.test(message.text())) || isKnownConsoleError(engine, message.text())
+    if (message.type() === 'error' && !known) {
       errors.push(message.text())
     }
   })

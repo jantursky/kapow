@@ -68,13 +68,13 @@ internal fun EmissionArea.offsets(
     }
 }
 
-/** How visible a particle is at [life] (0 to 1), using [ParticlePhysics.fade] when set, otherwise [default]. */
+/** How visible a particle is at `life` (0 to 1), using [ParticlePhysics.fade] when set, otherwise [default]. */
 internal fun ParticlePhysics.opacityCurve(default: (Float) -> Float): (Float) -> Float {
     val easing = fade ?: return default
     return { 1f - easing.transform(it.coerceIn(0f, 1f)) }
 }
 
-/** The size factor at [life] (0 to 1), from [ParticlePhysics.startScale] to [ParticlePhysics.endScale] when set. */
+/** The size factor at `life` (0 to 1), from [ParticlePhysics.startScale] to [ParticlePhysics.endScale] when set. */
 internal fun ParticlePhysics.growthCurve(default: (Float) -> Float): (Float) -> Float {
     if (startScale == null && endScale == null) return default
     val from = startScale ?: default(0f)

@@ -23,6 +23,6 @@ internal fun Duration.at(speed: Float): Duration =
         (inWholeNanoseconds / speed.toDouble()).toLong().nanoseconds
     }
 
-/** Whether an effect with [mode] should draw nothing right now. */
+/** Whether an effect with `mode` should draw nothing right now. */
 internal fun EffectContext.skipsForReducedMotion(): Boolean =
     reducedMotionMode == ReducedMotionMode.Nothing && isReducedMotion()

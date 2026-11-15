@@ -1,0 +1,23 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <kapow:kapow-test>
+final enum class com.jantursky.kapow.test/KapowTestMode : kotlin/Enum<com.jantursky.kapow.test/KapowTestMode> { // com.jantursky.kapow.test/KapowTestMode|null[0]
+    enum entry Disabled // com.jantursky.kapow.test/KapowTestMode.Disabled|null[0]
+    enum entry Full // com.jantursky.kapow.test/KapowTestMode.Full|null[0]
+    enum entry Reduced // com.jantursky.kapow.test/KapowTestMode.Reduced|null[0]
+
+    final val entries // com.jantursky.kapow.test/KapowTestMode.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.jantursky.kapow.test/KapowTestMode> // com.jantursky.kapow.test/KapowTestMode.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.jantursky.kapow.test/KapowTestMode // com.jantursky.kapow.test/KapowTestMode.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.jantursky.kapow.test/KapowTestMode> // com.jantursky.kapow.test/KapowTestMode.values|values#static(){}[0]
+}
+
+final fun (androidx.compose.ui.test/ComposeUiTest).com.jantursky.kapow.test/advanceKapowEffects(kotlin.time/Duration) // com.jantursky.kapow.test/advanceKapowEffects|advanceKapowEffects@androidx.compose.ui.test.ComposeUiTest(kotlin.time.Duration){}[0]
+final fun (androidx.compose.ui.test/ComposeUiTest).com.jantursky.kapow.test/setKapowContent(com.jantursky.kapow.test/KapowTestMode = ..., kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>) // com.jantursky.kapow.test/setKapowContent|setKapowContent@androidx.compose.ui.test.ComposeUiTest(com.jantursky.kapow.test.KapowTestMode;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>){}[0]
+final fun com.jantursky.kapow.test/KapowTest(com.jantursky.kapow.test/KapowTestMode?, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.jantursky.kapow.test/KapowTest|KapowTest(com.jantursky.kapow.test.KapowTestMode?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]

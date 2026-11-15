@@ -1,0 +1,4 @@
+{
+  "maxGzipBytes": 4665000,
+  "note": "gzip level 9 of the gallery's production wasm files. Measured 4442482 bytes on 2026-11-15, plus about 5 percent."
+}
