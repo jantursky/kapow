@@ -14,7 +14,7 @@ All notable changes to `io.github.jantursky:kapow` and its companion artifacts a
 
 ### Changed
 
-- Contributors: CI now covers the `platform` readers (reduced motion, blur) in the Kover gate with a branch floor of 81 (was 78 without them), checks the gallery's wasm size against `samples/web/size-budget.json`, builds a minified Android app with R8 and no Kapow rules, and runs the gallery's browser tests in Chromium, Firefox and WebKit. A failed Codecov upload now fails the run when a token is present. A tag release waits for the whole CI suite and publishes only the modules that are missing from Maven Central.
+- Contributors: CI now covers the `platform` readers (reduced motion, blur) in the Kover gate with a branch floor of 81 (was 78 without them), checks the gallery's wasm size against `samples/web/size-budget.json`, builds a minified Android app with R8 and no Kapow rules, and runs the gallery's browser tests in Chromium and WebKit (Firefox runs too, reports its failures and does not block yet). A failed Codecov upload now fails the run when a token is present. A tag release waits for the whole CI suite and publishes only the modules that are missing from Maven Central.
 - Every public symbol now has KDoc, and the build fails on a new one without it.
 
 ## [1.5.0] - 2026-11-09

@@ -4,7 +4,8 @@ type Engine = 'chromium' | 'firefox' | 'webkit'
 
 /**
  * Gallery tests that a browser engine can't pass yet. The README and the docs platform table name these. A test is
- * listed here instead of being retried until it passes. `issue` is the upstream issue, or null while none is filed.
+ * listed here instead of being retried until it passes. Firefox is not listed test by test: most of its gallery
+ * tests log "Exception while trying to handle coroutine exception" and CI runs its project without blocking. `issue` is the upstream issue, or null while none is filed.
  */
 export type EngineSkip = {
   engine: Engine

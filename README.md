@@ -160,7 +160,7 @@ A search of the web and GitHub in October 2026 found no port of Pow to Compose. 
 | Android 6+ (API 23) | all | Android 12+, stacked outlines (shape only) before | animator duration scale | Robolectric; not yet on a device |
 | iOS | all | yes | Reduce Motion | simulator tests; not yet on a device |
 | JVM desktop | all | yes | none, use `LocalKapowMotion` ([guide](https://kapow-docs.vercel.app/guides/reduced-motion)) | tests and screenshots |
-| wasmJs | all | yes | `prefers-reduced-motion` | Chromium via Playwright; not yet Firefox or Safari |
+| wasmJs | all | yes | `prefers-reduced-motion` | Chromium and WebKit via Playwright, with the skips in `samples/web/e2e/engine-skips.ts`; Firefox runs in CI but does not pass yet |
 
 Built with Kotlin 2.4 and Compose Multiplatform 1.12.
 
