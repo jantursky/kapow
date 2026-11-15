@@ -4,6 +4,19 @@ All notable changes to `io.github.jantursky:kapow` and its companion artifacts a
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-11-15
+
+### Added
+
+- New artifact `io.github.jantursky:kapow-test` for your UI tests: `KapowTest { }`, `ComposeUiTest.setKapowContent(mode)` and `ComposeUiTest.advanceKapowEffects(duration)`. `KapowTestMode.Disabled` makes every effect draw nothing and send no feedback and transitions end in their final state at once; `Reduced` and `Full` force the motion mode. It works on every target through `ComposeUiTest`. A "Testing your screens" guide explains it.
+- `LocalKapowEffects`, behind the `@KapowTestApi` opt-in, is the switch `kapow-test` sets. Effects behave exactly as before unless it is set to `false`.
+- A hosted API reference of the four modules, built with Dokka and published to GitHub Pages on each release.
+
+### Changed
+
+- Contributors: CI now covers the `platform` readers (reduced motion, blur) in the Kover gate with a branch floor of 81 (was 78 without them), checks the gallery's wasm size against `samples/web/size-budget.json`, builds a minified Android app with R8 and no Kapow rules, and runs the gallery's browser tests in Chromium, Firefox and WebKit. A failed Codecov upload now fails the run when a token is present. A tag release waits for the whole CI suite and publishes only the modules that are missing from Maven Central.
+- Every public symbol now has KDoc, and the build fails on a new one without it.
+
 ## [1.5.0] - 2026-11-09
 
 ### Added
@@ -81,7 +94,8 @@ All notable changes to `io.github.jantursky:kapow` and its companion artifacts a
 - `kapow-multihaptic` (`io.github.jantursky:kapow-multihaptic`): `rememberMultihapticFeedback()` plays feedback events as haptics through multihaptic.
 - Targets: Android (minSdk 23), iOS, JVM and wasmJs. The core needs only Compose runtime, foundation, UI and animation. Not yet checked on an Android or iOS device, or in Firefox and Safari.
 
-[Unreleased]: https://github.com/jantursky/kapow/compare/1.5.0...HEAD
+[Unreleased]: https://github.com/jantursky/kapow/compare/1.6.0...HEAD
+[1.6.0]: https://github.com/jantursky/kapow/compare/1.5.0...1.6.0
 [1.5.0]: https://github.com/jantursky/kapow/compare/1.4.0...1.5.0
 [1.4.0]: https://github.com/jantursky/kapow/compare/1.3.0...1.4.0
 [1.3.0]: https://github.com/jantursky/kapow/compare/1.2.0...1.3.0

@@ -6,7 +6,7 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.jantursky/kapow)](https://central.sonatype.com/artifact/io.github.jantursky/kapow) [![CI](https://github.com/jantursky/kapow/actions/workflows/ci.yml/badge.svg)](https://github.com/jantursky/kapow/actions/workflows/ci.yml) [![Kotlin](https://img.shields.io/badge/kotlin-2.4-7f52ff)](https://kotlinlang.org) [![license](https://img.shields.io/github/license/jantursky/kapow)](LICENSE) [![codecov](https://codecov.io/gh/jantursky/kapow/graph/badge.svg)](https://codecov.io/gh/jantursky/kapow)
 
-[Docs](https://kapow-docs.vercel.app) · [Demo](https://kapow-demo.vercel.app) · [Maven Central](https://central.sonatype.com/artifact/io.github.jantursky/kapow) · [Changelog](CHANGELOG.md)
+[Docs](https://kapow-docs.vercel.app) · [API reference](https://jantursky.github.io/kapow/) · [Demo](https://kapow-demo.vercel.app) · [Maven Central](https://central.sonatype.com/artifact/io.github.jantursky/kapow) · [Changelog](CHANGELOG.md)
 
 Effects for Compose Multiplatform that react to state: a burst of particles when a value changes, a halo while a condition holds, an iris or a puff of smoke when content appears or goes. Android, iOS, desktop and the browser, from one `commonMain`.
 
@@ -38,6 +38,7 @@ Compose already animates layout, alpha and transforms well, and libraries like a
 | `kapow`             | The library, published to Maven Central as `io.github.jantursky:kapow`.                              |
 | `kapow-crease`      | Optional: progress effects driven by the hinge angle of a foldable, through [Crease](https://github.com/jantursky/crease). |
 | `kapow-multihaptic` | Optional: plays Kapow's feedback events as haptics through [multihaptic](https://github.com/xfqwdsj/multihaptic). |
+| `kapow-test`        | Optional, for your tests: switch effects off, force reduced or full motion, or step an effect with the test clock. |
 | `samples/gallery`   | The gallery's examples and their controls, shared by the web, desktop and mobile gallery.            |
 | `samples/web`       | The effect gallery: every effect live in the browser, with controls and its source.                  |
 | `samples/desktop`   | The same gallery in a desktop window: `./gradlew :samples:desktop:run`.                              |
@@ -52,10 +53,14 @@ Compose already animates layout, alpha and transforms well, and libraries like a
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("io.github.jantursky:kapow:1.5.0")
+            implementation("io.github.jantursky:kapow:1.6.0")
             // Optional:
-            implementation("io.github.jantursky:kapow-crease:1.5.0")
-            implementation("io.github.jantursky:kapow-multihaptic:1.5.0")
+            implementation("io.github.jantursky:kapow-crease:1.6.0")
+            implementation("io.github.jantursky:kapow-multihaptic:1.6.0")
+        }
+        commonTest.dependencies {
+            // Optional: switch effects off in your UI tests.
+            implementation("io.github.jantursky:kapow-test:1.6.0")
         }
     }
 }
