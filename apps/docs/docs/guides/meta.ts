@@ -17,5 +17,7 @@ export default defineMeta({
     'hinge',
     'performance',
     'testing',
+    'recipes',
+    'from-pow',
   ],
 })

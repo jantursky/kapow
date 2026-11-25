@@ -263,6 +263,33 @@ for (const id of LIVE) {
   })
 }
 
+// Examples that need the visitor to act say what to try, under the stage (see ExampleScaffold's hint).
+const HINTS: [string, RegExp][] = [
+  ['more-tilt', /^(Move the pointer over|Press and drag on) the card to tilt it\.$/],
+  ['progress-scroll', /^Scroll the list and watch the header\.$/],
+  ['more-hinge', /^Drag the angle slider, or press Unfold\.$/],
+  ['more-interaction', /^Hover, press or Tab to the stage to see it react\.$/],
+]
+
+for (const [id, hint] of HINTS) {
+  test(`${id} shows its hint`, async ({ page }) => {
+    await page.goto(`/#${id}`)
+    await ready(page)
+    // Compose draws the stage on a canvas; its text reaches the DOM through the accessibility tree, which
+    // starts once the visitor moves focus into the page.
+    await page.locator('#stage canvas').focus()
+    await page.keyboard.press('Tab')
+    await expect(page.getByText(hint)).toBeAttached()
+  })
+}
+
+test('grid tiles show no hint', async ({ page }) => {
+  await page.goto('/')
+  await gridReady(page)
+  await expect(page.getByText(/^Scroll the list and watch the header\.$/)).toHaveCount(0)
+  await expect(page.getByText(/^Drag the angle slider, or press Unfold\.$/)).toHaveCount(0)
+})
+
 for (const path of ['/', '/#transition-iris']) {
   test(`the page never scrolls sideways (${path})`, async ({ page }) => {
     await page.goto(path)

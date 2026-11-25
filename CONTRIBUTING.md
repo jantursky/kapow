@@ -54,6 +54,7 @@ open `GalleryApp.xcodeproj` and run it on a simulator; its build phase builds th
 ./gradlew apiDump                          # after changing the public API
 bun run build:docs                         # from the repository root
 bun run test:web                           # browser tests of the gallery, after :samples:web:wasmJsBrowserDistribution
+python3 scripts/docs-drift.py            # effect tables and reference signatures against the Kotlin API
 ```
 
 CI runs all of them on every pull request. `koverVerify` fails the build when coverage drops below the gate in the Gradle build.

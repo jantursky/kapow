@@ -14,10 +14,11 @@ public fun Modifier.changeEffect(
     effect: ChangeEffect,
     isEnabled: Boolean = true,
     feedback: KapowFeedbackEvent? = null,
+    playOnStart: Boolean = false,
 ): Modifier
 ```
 
-Plays `effect` each time `value` changes to a value not equal to the previous one. The effect's own wrappers (`delay`, `cooldown`, `times`, `speed`, `reducedMotion`) apply. Nothing plays on the first composition. While `isEnabled` is false, changes are recorded but play nothing. `feedback` is sent to `LocalKapowFeedback` each time the effect plays, also with reduced motion. See [Change effects](/guides/change-effects).
+Plays `effect` each time `value` changes to a value not equal to the previous one. The effect's own wrappers (`delay`, `cooldown`, `times`, `speed`, `reducedMotion`) apply. Nothing plays on the first composition unless `playOnStart` is true, which plays it once when the element first appears. While `isEnabled` is false, changes are recorded but play nothing. `feedback` is sent to `LocalKapowFeedback` each time the effect plays, also with reduced motion. See [Change effects](/guides/change-effects).
 
 ## conditionalEffect
 
@@ -103,6 +104,7 @@ public fun KapowTypewriter(
     glyphs: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=?",
     glyphRate: Duration = 40.milliseconds,
     seed: Int = 0,
+    announce: KapowAnnounce = KapowAnnounce.Off,
 )
 ```
 
@@ -120,6 +122,7 @@ public fun KapowCounter(
     format: (Long) -> String = { it.toString() },
     duration: Duration = 600.milliseconds,
     easing: Easing = FastOutSlowInEasing,
+    announce: KapowAnnounce = KapowAnnounce.Off,
 )
 ```
 
@@ -154,6 +157,7 @@ public fun Modifier.kapowSkeleton(
     duration: Duration = 1500.milliseconds,
     revealDuration: Duration = 300.milliseconds,
     revealEasing: Easing = FastOutSlowInEasing,
+    loadingDescription: String? = null,
 ): Modifier
 ```
 

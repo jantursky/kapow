@@ -53,14 +53,14 @@ Compose already animates layout, alpha and transforms well, and libraries like a
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("io.github.jantursky:kapow:1.6.0")
+            implementation("io.github.jantursky:kapow:1.7.0")
             // Optional:
-            implementation("io.github.jantursky:kapow-crease:1.6.0")
-            implementation("io.github.jantursky:kapow-multihaptic:1.6.0")
+            implementation("io.github.jantursky:kapow-crease:1.7.0")
+            implementation("io.github.jantursky:kapow-multihaptic:1.7.0")
         }
         commonTest.dependencies {
             // Optional: switch effects off in your UI tests.
-            implementation("io.github.jantursky:kapow-test:1.6.0")
+            implementation("io.github.jantursky:kapow-test:1.7.0")
         }
     }
 }
@@ -122,6 +122,8 @@ Transitions are `KapowEnter` and `KapowExit` values: `iris`, `clock`, `wipe`, `g
 
 Beyond effects on a modifier there are a few more pieces: `Modifier.kapowSkeleton(loading)` covers content with a shimmering placeholder and reveals it when loading ends, `KapowTypewriter` types or unscrambles text, `KapowCounter` rolls or counts a number to its new value, and `Modifier.kapowTilt()` tilts an element in 3D toward the pointer. Every effect has many more options than the defaults show; particle effects take a `ParticlePhysics` for direction, speed, gravity, lifetime and more. The [effect pages](https://kapow-docs.vercel.app/effects) list them all.
 
+Effects in lazy lists, dialogs, navigation and Android `ComposeView`s are covered in [Recipes](https://kapow-docs.vercel.app/guides/recipes).
+
 ## Demo
 
 The [gallery](https://kapow-demo.vercel.app) runs every effect in the browser, compiled to Kotlin/Wasm. Each page sets the effect in a small app scene, lets you change its parameters and shows the code next to it. A meter in the bar shows the frame time while effects play, and a switch shows what each effect does with reduced motion.
@@ -149,7 +151,7 @@ A search of the web and GitHub in October 2026 found no port of Pow to Compose. 
 ## Not covered yet
 
 - No shaders. Compose Multiplatform has no common shader API, and every effect here works without one. Glow uses a blurred layer where blur exists and stacked outlines on Android before 12. By default it follows the `shape` you pass; `fromContent = true` shapes it after the element's own pixels where blur exists.
-- Pow's `vanish`, `flip`, `swoosh`, `move`, `snapshot` and film exposure transitions. `vanish` is close to `disintegrate` with different options, and the others need shared bounds or a captured bitmap.
+- Pow's `swoosh`, `move`, `snapshot` and film exposure transitions. Pow's `flip` is Kapow's `rotate3D` and `vanish` is close to `disintegrate` with different options. [Coming from Pow](https://kapow-docs.vercel.app/guides/from-pow) maps every Pow effect and says what has no counterpart.
 - No sprite or image-sequence effects. Smoke, dust and the poof are drawn procedurally, so they don't look like Pow's sprites.
 - `kapow-multihaptic` maps events to multihaptic's predefined primitives. Custom events are left to your own `KapowFeedback`.
 

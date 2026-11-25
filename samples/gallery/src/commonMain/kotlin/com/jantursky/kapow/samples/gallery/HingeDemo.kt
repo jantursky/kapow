@@ -21,6 +21,7 @@ internal fun HingeDemo() {
     ExampleScaffold(
         autoplay = Autoplay(1.seconds) { sweepThereAndBack { angle = it * 180f } },
         stage = { HingeExample(angle) },
+        hint = "Drag the angle slider, or press Unfold.",
         code = {
             call(
                 "Modifier.hingeEffect",

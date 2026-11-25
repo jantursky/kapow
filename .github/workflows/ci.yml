@@ -31,7 +31,7 @@ jobs:
       - name: Format, API, JVM and Android host tests, screenshots, coverage gate
         run: ./gradlew spotlessCheck apiCheck :kapow:jvmTest :kapow:testAndroidHostTest :kapow:verifyRoborazziJvm :kapow-crease:jvmTest :kapow-multihaptic:jvmTest :kapow-test:jvmTest koverXmlReport koverVerify
       - name: Docs and README samples compile
-        run: python3 scripts/doc-samples.py && ./gradlew :samples:docs-check:compileTestKotlinJvm
+        run: python3 scripts/doc-samples.py && ./gradlew :samples:docs-check:compileTestKotlinJvm && python3 scripts/docs-drift.py
       - name: Upload coverage to Codecov
         if: ${{ !cancelled() && env.CODECOV_TOKEN != '' }}
         uses: codecov/codecov-action@v7

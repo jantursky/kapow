@@ -1,0 +1,172 @@
+---
+title: Recipes
+description: Effects in lazy lists, dialogs, navigation and shared-element moves, with the caveats of each, and how to use Kapow from Android Views.
+---
+
+Most effects are placed on one element, and that element can sit in a list, a dialog or a screen that changes. These recipes cover the containers where that goes wrong, and each sample compiles in the docs check.
+
+## Lazy list rows
+
+A `LazyColumn` reuses its row nodes as they scroll, so an effect on a row follows the row, not the item it first showed. Each row keeps the last value it saw, and it plays only when that value changes.
+
+```kotlin
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.KapowParticleLayer
+import com.jantursky.kapow.changeEffect
+
+data class Message(val id: Long, val unread: Int)
+
+@Composable
+fun Inbox(messages: List<Message>) {
+    KapowParticleLayer(Modifier.fillMaxSize()) {
+        LazyColumn {
+            items(messages, key = { it.id }) { message ->
+                BasicText(
+                    text = "${message.unread} unread",
+                    modifier = Modifier.clipToBounds().changeEffect(message.unread, ChangeEffect.rise()),
+                )
+            }
+        }
+    }
+}
+```
+
+- **Scrolling plays nothing.** A row that scrolls in with a value it already had does not play. Scrolling is not a change.
+- **Give rows a key.** With `key = { it.id }` a row stays with its message. Without keys, `LazyColumn` matches rows by position, so a reorder can play a row for a message whose value did not change.
+- **Clip with the layer.** A row's `LazyColumn` clips its children, so the particles need `KapowParticleLayer` above the list (see [particle layer](/guides/particle-layer)).
+
+## Dialogs
+
+Wrap the dialog content in `KapowAnimatedVisibility`. The enter and exit transitions run when `visible` changes.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+
+@Composable
+fun ConfirmDialog(visible: Boolean, onDismiss: () -> Unit) {
+    KapowAnimatedVisibility(
+        visible = visible,
+        enter = KapowEnter.pop(),
+        exit = KapowExit.poof(),
+    ) {
+        Box(
+            Modifier
+                .size(200.dp)
+                .background(Color.DarkGray)
+                .clickable(onClick = onDismiss),
+        )
+    }
+}
+```
+
+- **Scrim and focus stay yours.** Kapow animates the panel. Dim the background and trap focus with your dialog host, as you do without Kapow.
+- **Reduced motion** swaps the transition for its end state, so the dialog appears without the pop (see [reduced motion](/guides/reduced-motion)).
+
+## Navigation
+
+Kapow has no navigator. Keep the current screen in your own state and animate each screen's root with `KapowAnimatedVisibility`.
+
+```kotlin
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import com.jantursky.kapow.KapowAnimatedVisibility
+import com.jantursky.kapow.KapowEnter
+import com.jantursky.kapow.KapowExit
+
+enum class Screen { Home, Settings }
+
+@Composable
+fun App() {
+    var screen by mutableStateOf(Screen.Home)
+    Box(Modifier.fillMaxSize()) {
+        KapowAnimatedVisibility(
+            visible = screen == Screen.Home,
+            enter = KapowEnter.wipe(),
+            exit = KapowExit.wipe(),
+        ) {
+            Box(Modifier.fillMaxSize()) { /* Home */ }
+        }
+        KapowAnimatedVisibility(
+            visible = screen == Screen.Settings,
+            enter = KapowEnter.wipe(),
+            exit = KapowExit.wipe(),
+        ) {
+            Box(Modifier.fillMaxSize()) { /* Settings */ }
+        }
+    }
+}
+```
+
+- **Back gestures** still come from your navigation library. Change `screen` from its callback.
+- **Both screens animate** during a switch, so keep them light; the exit runs while the next screen is already on top.
+
+## Shared elements
+
+Kapow has no shared-element transition, and an effect does not follow an element to another screen. Play the effect where the element lands, on the value that moves it, so the arrival reads as the same thing. For the movement itself, use Compose's `SharedTransitionLayout` and put Kapow effects on the destination.
+
+```kotlin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.jantursky.kapow.ChangeEffect
+import com.jantursky.kapow.changeEffect
+
+@Composable
+fun Thumbnail(open: Boolean) {
+    // The detail opens when `open` turns true; the thumbnail ripples as it arrives.
+    Box(
+        Modifier
+            .size(96.dp)
+            .changeEffect(open, ChangeEffect.ripple())
+            .background(Color.Gray),
+    )
+}
+```
+
+## Android Views
+
+Kapow runs inside a `ComposeView`, so it works in an Android `View` hierarchy as it does in Compose. Two things differ from a pure Compose screen: where the particle layer goes, and what the parent `ViewGroup` clips.
+
+This sample uses Android types, so the docs check does not compile it. The names are the Kapow and Compose APIs used above.
+
+```kotlin
+// Android only: a ComposeView inside an existing View screen.
+val compose = androidx.compose.ui.platform.ComposeView(context).apply {
+    setContent {
+        com.jantursky.kapow.KapowParticleLayer(androidx.compose.ui.Modifier.fillMaxSize()) {
+            // Effects inside here send their particles to the layer above.
+            ContentOfTheScreen()
+        }
+    }
+}
+container.addView(compose)
+```
+
+- **Place the particle layer at the `ComposeView`, not inside a row.** The layer should cover the area the particles may reach, and it belongs at the top of the `ComposeView`'s content.
+- **A clipping `ViewGroup` clips particles.** `ViewGroup` clips its children by default. Particles drawn outside the group's bounds are cut off at its edge. Set `clipChildren` to `false` on the group and on every clipping parent above the `ComposeView`, or give the `ComposeView` the whole area so nothing sits outside it.

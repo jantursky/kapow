@@ -33,6 +33,8 @@ kapow = { module = "io.github.jantursky:kapow", version.ref = "kapow" }
 
 The core artifact depends on Compose runtime, foundation, ui and animation only. The [hinge](/guides/hinge) and [feedback](/guides/feedback) integrations are separate artifacts, and [`kapow-test`](/guides/testing) is a test-only artifact for your UI tests.
 
+For effects in lazy lists, dialogs and Android `ComposeView`s, see [Recipes](/guides/recipes). If you know Pow, [Coming from Pow](/guides/from-pow) maps its names to Kapow's.
+
 On Android, a release build with R8 in full mode needs no keep rules for Kapow. CI builds a minified app against all four artifacts without any, and the build fails if R8 removes the classes the effects need.
 
 ## Your first change effect

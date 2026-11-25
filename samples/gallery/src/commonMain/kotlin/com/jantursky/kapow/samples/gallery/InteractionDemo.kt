@@ -18,6 +18,7 @@ internal fun InteractionDemo() {
     ExampleScaffold(
         autoplay = Autoplay(4.seconds) {},
         stage = { InteractionExample(interaction, source) },
+        hint = "Hover, press or Tab to the stage to see it react.",
         code = {
             "val source = remember { MutableInteractionSource() }\n\n" +
                 call(

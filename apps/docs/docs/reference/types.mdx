@@ -76,6 +76,7 @@ public abstract class ChangeEffect {
             flare: Duration? = null,
             decay: Duration? = null,
             stackLimit: Float = 1.5f,
+            fromContent: Boolean = false,
         ): ChangeEffect
         public fun spin(
             axis: SpinAxis = SpinAxis.Y,
@@ -314,6 +315,7 @@ public abstract class ConditionalEffect {
             breathe: Float = 0f,
             period: Duration = 2.seconds,
             brighten: Float = 0.25f,
+            fromContent: Boolean = false,
         ): ConditionalEffect
         public fun pushDown(
             scale: Float = 0.95f,
@@ -516,6 +518,7 @@ public abstract class ProgressEffect {
             shape: Shape = RectangleShape,
             alphaCurve: Easing? = null,
             colorRamp: List<Color>? = null,
+            fromContent: Boolean = false,
         ): ProgressEffect
         public fun iris(
             origin: TransformOrigin = TransformOrigin.Center,

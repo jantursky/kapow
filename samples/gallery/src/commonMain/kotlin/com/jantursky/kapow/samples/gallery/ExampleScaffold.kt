@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,6 +24,7 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.jantursky.kapow.samples.design.EffectCard
+import com.jantursky.kapow.samples.design.KapowCaption
 import com.jantursky.kapow.samples.design.Stage
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -34,6 +36,9 @@ import kotlin.time.Duration.Companion.milliseconds
  * ([GalleryStage]) is on, [autoplay] plays the example over and over. [code] is the usage snippet for the
  * values the controls hold now (built with `changeEffectCode` and friends), which the host shows to copy. Inside
  * an [EffectTile] only the stage shows, scaled to the tile, and the controls stay out.
+ *
+ * [hint] says what to try, for an example that needs the visitor to act. It sits under the stage in the controls
+ * column, and is left out of tiles and of [code].
  */
 @Composable
 internal fun ExampleScaffold(
@@ -41,6 +46,7 @@ internal fun ExampleScaffold(
     stage: @Composable () -> Unit,
     controls: @Composable ColumnScope.() -> Unit,
     code: () -> String = { "" },
+    hint: String? = null,
 ) {
     val onTouch = runAutoplay(autoplay, LocalGalleryAutoplay.current)
     if (LocalExamplePreview.current) {
@@ -50,7 +56,10 @@ internal fun ExampleScaffold(
     PublishCode(code)
     EffectCard(Modifier.fillMaxSize().onTouch(onTouch)) {
         Stage(Modifier.weight(1f)) { stage() }
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp), content = controls)
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (hint != null) KapowCaption(hint, Modifier.fillMaxWidth())
+            controls()
+        }
     }
 }
 

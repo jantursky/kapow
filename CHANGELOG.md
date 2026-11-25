@@ -4,6 +4,18 @@ All notable changes to `io.github.jantursky:kapow` and its companion artifacts a
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-11-25
+
+### Added
+
+- Docs guides: [Recipes](https://kapow-docs.vercel.app/guides/recipes) for effects in lazy lists, dialogs, navigation, shared-element moves and Android `ComposeView`s, and [Coming from Pow](https://kapow-docs.vercel.app/guides/from-pow), which maps every Pow effect and transition to the closest Kapow factory.
+- Gallery hints: examples that need the visitor to act (tilt, scroll progress, hinge, interaction) say what to try under the stage. The tilt hint names the pointer or the touch gesture, whichever was used last. Grid tiles and the copied code show no hint.
+- `scripts/docs-drift.py`, run in CI beside the docs sample compile: fails when an effect page's Parameters table or a reference signature differs from the public Kotlin API.
+
+### Fixed
+
+- Reference signatures that had drifted from the API: `changeEffect` (`playOnStart`), `KapowCounter` and `KapowTypewriter` (`announce`), `kapowSkeleton` (`loadingDescription`), and the `glow` listings (`fromContent`).
+
 ## [1.6.0] - 2026-11-15
 
 ### Added
@@ -94,7 +106,8 @@ All notable changes to `io.github.jantursky:kapow` and its companion artifacts a
 - `kapow-multihaptic` (`io.github.jantursky:kapow-multihaptic`): `rememberMultihapticFeedback()` plays feedback events as haptics through multihaptic.
 - Targets: Android (minSdk 23), iOS, JVM and wasmJs. The core needs only Compose runtime, foundation, UI and animation. Not yet checked on an Android or iOS device, or in Firefox and Safari.
 
-[Unreleased]: https://github.com/jantursky/kapow/compare/1.6.0...HEAD
+[Unreleased]: https://github.com/jantursky/kapow/compare/1.7.0...HEAD
+[1.7.0]: https://github.com/jantursky/kapow/compare/1.6.0...1.7.0
 [1.6.0]: https://github.com/jantursky/kapow/compare/1.5.0...1.6.0
 [1.5.0]: https://github.com/jantursky/kapow/compare/1.4.0...1.5.0
 [1.4.0]: https://github.com/jantursky/kapow/compare/1.3.0...1.4.0

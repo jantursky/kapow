@@ -1,5 +1,6 @@
 package com.jantursky.kapow.samples.gallery
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -7,6 +8,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import com.jantursky.kapow.samples.design.KapowToggle
 import com.jantursky.kapow.samples.design.LabeledSlider
 import com.jantursky.kapow.samples.design.PrimaryPill
@@ -22,10 +24,16 @@ internal fun TiltDemo() {
     var angle by remember { mutableFloatStateOf(12f) }
     var sheen by remember { mutableStateOf(true) }
     var enabled by remember { mutableStateOf(true) }
+    var touch by remember { mutableStateOf(false) }
     ExampleScaffold(
         // A pointer cannot be played back, so autoplay taps the card to show that it stays clickable.
         autoplay = Autoplay(3.seconds) { taps++ },
-        stage = { TiltExample(taps, { taps++ }, swatch.color, angle, sheen, enabled) },
+        stage = {
+            Box(Modifier.watchPointerKind { touch = it }) {
+                TiltExample(taps, { taps++ }, swatch.color, angle, sheen, enabled)
+            }
+        },
+        hint = tiltHint(touch),
         code = {
             call(
                 "Modifier.kapowTilt",

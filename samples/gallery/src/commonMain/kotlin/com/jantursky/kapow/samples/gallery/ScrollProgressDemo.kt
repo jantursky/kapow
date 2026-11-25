@@ -24,6 +24,7 @@ internal fun ScrollProgressDemo() {
     ExampleScaffold(
         autoplay = Autoplay(1.seconds, scroll),
         stage = { ScrollProgressExample(scrollState, glow) },
+        hint = "Scroll the list and watch the header.",
         code = {
             val effect =
                 if (glow) {

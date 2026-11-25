@@ -1,0 +1,62 @@
+---
+title: Coming from Pow
+description: Every Pow effect and transition mapped to the Kapow API that comes closest, with the ones Kapow does not have and why.
+---
+
+Kapow is inspired by [Pow](https://github.com/EmergeTools/Pow) for SwiftUI and takes its three groups, change effects, conditional effects and transitions. This page lists each Pow effect and transition from Pow's repository, with the Kapow factory that comes closest. Where Kapow has no counterpart, the last column says why and what to do instead.
+
+Matches are close, not exact. Pow's parameters are not always Kapow's, and a port should be compared on a device before it ships.
+
+## Change effects
+
+| Pow | Kapow | Notes |
+| --- | --- | --- |
+| `spray` | [`ChangeEffect.spray`](/effects/change-spray) | Particles that rise from an origin. |
+| Haptic feedback (`feedback(hapticNotification:)`, `feedback(hapticImpact:)`) | `feedback` parameter of `changeEffect`, see [feedback](/guides/feedback) | Kapow sends an event; the app turns it into a haptic. |
+| `jump` | [`ChangeEffect.jump`](/effects/change-jump) | |
+| `ping` | [`ChangeEffect.pulse`](/effects/change-pulse) | Rings that grow and fade behind the element. Kapow also has a [conditional ping](/effects/conditional-ping) for an effect that runs while a state holds. |
+| `rise` | [`ChangeEffect.rise`](/effects/change-rise) | Needs `KapowParticleLayer` above clipping parents, see [particle layer](/guides/particle-layer). |
+| `shake` | [`ChangeEffect.shake`](/effects/change-shake) | |
+| `shine` | [`ChangeEffect.shine`](/effects/change-shine) | |
+| `spin` | [`ChangeEffect.spin`](/effects/change-spin) | |
+| `delay` | [`ChangeEffect.delay`](/effects/change-delay) | Also `KapowEnter.delay` and `KapowExit.delay` on transitions. |
+| Sound effect feedback (`feedback(_:)` with a `SoundEffect`) | No counterpart | Kapow ships no audio. Play your own sound from the handler of the `feedback` event. |
+
+## Conditional effects
+
+Pow's source has more effects than its README. These are the ones in the `Effects` folder, and the Kapow page for each.
+
+| Pow | Kapow | Notes |
+| --- | --- | --- |
+| Glow | [`ConditionalEffect.glow`](/effects/conditional-glow) | |
+| Pulse | [`ChangeEffect.pulse`](/effects/change-pulse) | Compare on a device. |
+| Push down | [`ConditionalEffect.pushDown`](/effects/conditional-push-down) | |
+| Smoke | [`ConditionalEffect.smoke`](/effects/conditional-smoke) | |
+| Wiggle | [`ChangeEffect.shake`](/effects/change-shake) | Closest, not identical. Compare on a device. |
+
+## Transitions
+
+| Pow | Kapow | Notes |
+| --- | --- | --- |
+| `anvil` | [`KapowEnter.anvil`](/effects/transition-anvil) and `KapowExit.anvil` | |
+| `blinds` | [`KapowEnter.blinds`](/effects/transition-blinds) and `KapowExit.blinds` | |
+| `blur` | [`KapowEnter.blur`](/effects/transition-blur) and `KapowExit.blur` | |
+| `boing` | [`KapowEnter.boing`](/effects/transition-boing) and `KapowExit.boing` | |
+| `clock` | [`KapowEnter.clock`](/effects/transition-clock) and `KapowExit.clock` | |
+| `flicker` | [`KapowEnter.flicker`](/effects/transition-flicker) and `KapowExit.flicker` | |
+| Film exposure | No counterpart | Pow fades from dark on insertion. Use `KapowAnimatedVisibility(stockEnter = fadeIn(), stockExit = fadeOut())` for a plain fade. |
+| `flip` | [`KapowEnter.rotate3D`](/effects/transition-rotate3d) and `KapowExit.rotate3D` | Closest: Kapow's 3D rotation takes an axis and a camera distance. |
+| `glare` | [`KapowEnter.glare`](/effects/transition-glare) and `KapowExit.glare` | |
+| `iris` | [`KapowEnter.iris`](/effects/transition-iris) and `KapowExit.iris` | |
+| `move` | No counterpart | Pow moves the view from an edge. Use `KapowAnimatedVisibility(stockEnter = slideInHorizontally(), stockExit = slideOutHorizontally())`, which Compose already has. |
+| `pop` | [`KapowEnter.pop`](/effects/transition-pop) and `KapowExit.pop` | |
+| `poof` | [`KapowEnter.poof`](/effects/transition-poof) and `KapowExit.poof` | |
+| Snapshot | No counterpart | Pow brightens the view on insertion. The nearest Kapow effect is [glare](/effects/transition-glare), which is not a snapshot; compare on a device. |
+| `skid` | [`KapowEnter.skid`](/effects/transition-skid) and `KapowExit.skid` | |
+| `swoosh` | [`KapowEnter.rotate3D`](/effects/transition-rotate3d) and `KapowExit.rotate3D` | Closest: both move the view in 3D from the back to the front. Compare on a device. |
+| `vanish` | [`KapowExit.disintegrate`](/effects/transition-disintegrate) | Pow removes the view into particles. Kapow's disintegrate does the same on exit. |
+| `wipe` | [`KapowEnter.wipe`](/effects/transition-wipe) and `KapowExit.wipe` | |
+
+## Particle layer
+
+Pow's `layer` parameter (`.local` or a shared layer) has no direct switch in Kapow. An effect draws in the nearest [`KapowParticleLayer`](/guides/particle-layer) above it, or around its own element when there is none.
